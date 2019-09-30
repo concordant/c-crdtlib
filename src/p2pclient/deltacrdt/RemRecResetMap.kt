@@ -33,7 +33,7 @@ class RemRecResetMap : MapDeltaCRDT<RemRecResetMap> {
             val pos2 = fkey.indexOf( ':')
             if( pos2 == -1)
                 fkey = fkey + ":" + this::class.simpleName
-            val el = entries[fkey] ?: return null
+            val el = entries[fkey] ?: return false
             if( el is MapDeltaCRDT)
                 return el.containsKey( key.substring( pos + 1), type)
             else
