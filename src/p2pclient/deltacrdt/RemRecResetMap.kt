@@ -14,6 +14,34 @@ import kotlin.reflect.KClass
 class RemRecResetMap : MapDeltaCRDT<RemRecResetMap> {
     private val entries: MutableMap<String,DeltaCRDT<*>> = mutableMapOf<String,DeltaCRDT<*>>()
 
+
+    /**
+     * Returns  true if the  given key exists
+     */
+    override fun containsKey(key: String, type: KClass<*>): Boolean {
+        val pos = key.indexOf( '.')
+        if( pos == -1) {
+            val pos2 = key.indexOf( ':')
+            if( pos2 > -1) {
+                return entries.containsKey( key)
+            } else {
+                val fkey = key + ":" + type.simpleName
+                return entries.containsKey( fkey)
+            }
+        } else {
+            var fkey = key.substring( 0, pos)
+            val pos2 = fkey.indexOf( ':')
+            if( pos2 == -1)
+                fkey = fkey + ":" + this::class.simpleName
+            val el = entries[fkey] ?: return null
+            if( el is MapDeltaCRDT)
+                return el.containsKey( key.substring( pos + 1), type)
+            else
+                throw UnexpectedTypeException( "Expecting map CRDT in key of : " + el::class)
+        }
+
+    }
+
     /**
      * Returns the object associated with the given key.
      * If the object does not exist, return null
@@ -21,8 +49,14 @@ class RemRecResetMap : MapDeltaCRDT<RemRecResetMap> {
     override fun get( key: String, type: KClass<*>) : DeltaCRDT<*>? {
         val pos = key.indexOf( '.')
         if( pos == -1) {
-            val fkey = key + ":" + type.simpleName
-            return entries.get( fkey)
+            val pos2 = key.indexOf( ':')
+            if( pos2 > -1) {
+                //TODO: check that the type matches the encoded key
+                return entries[key]
+            } else {
+                val fkey = key + ":" + type.simpleName
+                return entries[fkey]
+            }
         } else {
             var fkey = key.substring( 0, pos)
             val pos2 = fkey.indexOf( ':')
@@ -40,8 +74,13 @@ class RemRecResetMap : MapDeltaCRDT<RemRecResetMap> {
         val pos = key.indexOf( '.')
         if( pos == -1) {
             val pos2 = key.indexOf( ':')
-            val fkey = key + ":" + value::class.simpleName
-            entries.put( fkey, value)
+            if( pos2  < pos) {
+                //TODO: check that the type matches the encoded key
+                entries.put(key, value)
+            } else {
+                val fkey = key + ":" + value::class.simpleName
+                entries.put(fkey, value)
+            }
         } else {
             var fkey = key.substring( 0, pos)
             val pos2 = fkey.indexOf( ':')

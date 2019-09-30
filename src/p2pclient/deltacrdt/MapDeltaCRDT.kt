@@ -6,6 +6,7 @@ import p2pclient.utils.VersionVector
 import kotlin.reflect.KClass
 
 interface MapDeltaCRDT<T> : DeltaCRDT<T> {
+    fun containsKey(key: String, type: KClass<*>): Boolean
     fun get(key: String, type: KClass<*>): DeltaCRDT<*>?
     fun put(key: String, value: DeltaCRDT<*>, ts: Timestamp, vv: VersionVector)
     fun put(key: String, value: DeltaCRDT<*>, env: Environment)
