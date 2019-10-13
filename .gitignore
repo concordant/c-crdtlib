@@ -1,8 +1,9 @@
 /.DS_Store
 /.gradle/
-/.classpath/
-/.idea(
-/.project/
+/.classpath
+/.idea/
+/.project
+/.settings/
 /build/
 /target/
 /bin/
