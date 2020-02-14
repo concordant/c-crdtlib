@@ -17,7 +17,7 @@ class LWWRegister<DataT>(var value: DataT, var valueTs: Timestamp) : DeltaCRDT<L
     }
 
     fun doAssign(v: DataT, ts: Timestamp): Boolean {
-        if(this.valueTs.smallerThan(ts)) {
+        if(this.valueTs < ts) {
             this.valueTs = ts
             this.value = v
         }
