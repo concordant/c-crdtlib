@@ -12,10 +12,7 @@ import kotlin.test.assertNull
 class LWWMapTest {
     @Test
     fun emptyGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
         val key = "key"
-        val value = "value"
         val map = LWWMap()
 
         assertNull(map.get(key))
@@ -58,7 +55,6 @@ class LWWMapTest {
         val dc = SimpleEnvironment(id)
         val ts1 = dc.getNewTimestamp()
         val key = "key"
-        val value = "value"
         val map = LWWMap()
 
         map.delete(key, ts1)
