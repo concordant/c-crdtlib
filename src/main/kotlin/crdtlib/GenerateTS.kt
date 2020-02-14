@@ -2,24 +2,23 @@ package crdtlib
 
 import me.ntrrgc.tsGenerator.TypeScriptGenerator
 import crdtlib.utils.*
-import crdtlib.deltacrdt.*
+import crdtlib.crdt.*
 
 
 fun main(args: Array<String>) {
     println(TypeScriptGenerator(
         rootClasses = setOf(
             DCId::class,
-			Environment::class,
-			SimpleEnvironment::class,
-			Timestamp::class,
-			VersionVector::class,
-			UnexpectedTypeException::class,
-			DeltaCRDT::class,
-			DeltaDeltaCRDT::class,
-			FullStateDelta::class,
-			LWWRegister::class,
-			MapDeltaCRDT::class,
-			RemRecResetMap::class
+			      Environment::class,
+			      SimpleEnvironment::class,
+			      Timestamp::class,
+			      UnexpectedTypeException::class,
+			      VersionVector::class,
+			      DeltaCRDT::class,
+            Delta::class,
+			      LWWRegister::class,
+            UpdateOperation::class,
+            EmptyDelta::class
         )/*,
         mappings = mapOf(
             LocalDateTime::class to "Date",
