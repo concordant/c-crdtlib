@@ -37,18 +37,6 @@ class LWWMap : DeltaCRDT<LWWMap> {
         return true
     }
 
-    class PutOp(val opKey: String, val opVal: String, val opTs: Timestamp) : UpdateOperation<LWWMap> {
-        override fun exec(obj: LWWMap): Boolean {
-            return obj.doPut(opKey, opVal, opTs)
-        }
-    }
-
-    class DelOp(val opKey: String, val opTs: Timestamp) : UpdateOperation<LWWMap> {
-        override fun exec(obj: LWWMap): Boolean {
-            return obj.doDelete(opKey, opTs)
-        }
-    }
-
     override fun generateDelta(vv: VersionVector): Delta<LWWMap> {
         var delta = LWWMap()
         for ((key, pair) in this.entries) {
@@ -82,5 +70,17 @@ class LWWMap : DeltaCRDT<LWWMap> {
             str += "key:${key}, value:${pair.first}, ts:${pair.second}\n"
         }
         return str + "}\n"
+    }
+
+    class PutOp(val opKey: String, val opVal: String, val opTs: Timestamp) : UpdateOperation<LWWMap> {
+        override fun exec(obj: LWWMap): Boolean {
+            return obj.doPut(opKey, opVal, opTs)
+        }
+    }
+
+    class DelOp(val opKey: String, val opTs: Timestamp) : UpdateOperation<LWWMap> {
+        override fun exec(obj: LWWMap): Boolean {
+            return obj.doDelete(opKey, opTs)
+        }
     }
 }
