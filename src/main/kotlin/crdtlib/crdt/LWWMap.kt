@@ -31,7 +31,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
 
     fun doDelete(key: String, ts: Timestamp): Boolean {
         var entry = this.entries.get(key)
-        if (entry != null && entry.second < ts) {
+        if (entry != null && entry.second <= ts) {
             this.entries.put(key, Pair<String?, Timestamp>(null, entry.second))
         }
         return true
