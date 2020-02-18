@@ -14,6 +14,7 @@ fun main(args: Array<String>) {
 			      Timestamp::class,
 			      UnexpectedTypeException::class,
 			      VersionVector::class,
+            AddWinsMap::class,
 			      DeltaCRDT::class,
             Delta::class,
 			      LWWRegister::class,
