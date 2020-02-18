@@ -51,7 +51,7 @@ class AddWinsMap : DeltaCRDT<AddWinsMap> {
     * @return the delta corresponding to this operation.
     **/
     fun put(key: String, value: String, ts: Timestamp): AddWinsMap {
-        var putOp = AddWinsMap()
+        val putOp = AddWinsMap()
         if (!this.causalContext.includesTS(ts)) {
             this.entries.put(key, Pair<String?, Timestamp>(value, ts))
             this.causalContext.addTS(ts)
@@ -67,7 +67,7 @@ class AddWinsMap : DeltaCRDT<AddWinsMap> {
     * @return the delta corresponding to this operation.
     **/
     fun delete(key: String, ts: Timestamp): AddWinsMap {
-        var delOp = AddWinsMap(this.causalContext)
+        val delOp = AddWinsMap(this.causalContext)
         if (this.entries.contains(key) && !this.causalContext.includesTS(ts)) {
             this.entries.put(key, Pair<String?, Timestamp>(null, ts))
             this.causalContext.addTS(ts)
@@ -84,8 +84,8 @@ class AddWinsMap : DeltaCRDT<AddWinsMap> {
     override fun generateDelta(vv: VersionVector): Delta<AddWinsMap> {
         var delta = AddWinsMap()
         for ((key, pair) in this.entries) {
-            var value = pair.first
-            var ts = pair.second
+            val value = pair.first
+            val ts = pair.second
             if (!vv.includesTS(ts)) {
                 delta.entries.put(key, Pair<String?, Timestamp>(value, ts))
             }
