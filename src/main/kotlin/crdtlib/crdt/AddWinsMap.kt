@@ -106,37 +106,37 @@ class AddWinsMap : DeltaCRDT<AddWinsMap> {
     * @param delta the delta that should be merge with the local replica.
     */
     override fun merge(delta: Delta<AddWinsMap>) {
-        if (delta is AddWinsMap) {
-            for ((key, meta) in delta.entries) {
-                val value = meta.first
-                val ts = meta.second
+        if (delta !is AddWinsMap)
+            throw UnexpectedTypeException("AddWins does not support merging with type: " + delta::class)
 
-                val localMeta = this.entries.get(key)
-                val localValue = localMeta?.first
-                val localTs = localMeta?.second
+        for ((key, meta) in delta.entries) {
+            val value = meta.first
+            val ts = meta.second
 
-                var updateEntry = false
-                if (value != null) {
-                    if (localTs == null) {
-                        updateEntry = true
-                    } else if (localValue != null && localTs < ts) {
-                        updateEntry = true
-                    } else if (localValue == null && !this.causalContext.includesTS(ts)) {
-                        updateEntry = true
-                    }
-                } else {
-                    if (localTs != null && delta.causalContext.includesTS(localTs)) {
-                        updateEntry = true
-                    }
+            val localMeta = this.entries.get(key)
+            val localValue = localMeta?.first
+            val localTs = localMeta?.second
+
+            var updateEntry = false
+            if (value != null) {
+                if (localTs == null) {
+                    updateEntry = true
+                } else if (localValue != null && localTs < ts) {
+                    updateEntry = true
+                } else if (localValue == null && !this.causalContext.includesTS(ts)) {
+                    updateEntry = true
                 }
-
-                if (updateEntry) {
-                    this.entries.put(key, Pair<String?, Timestamp>(value, ts))
-                    this.causalContext.addTS(ts)
+            } else {
+                if (localTs != null && delta.causalContext.includesTS(localTs)) {
+                    updateEntry = true
                 }
             }
-        } else
-            throw UnexpectedTypeException("AddWins does not support merging with type: " + delta::class)
+
+            if (updateEntry) {
+                this.entries.put(key, Pair<String?, Timestamp>(value, ts))
+                this.causalContext.addTS(ts)
+            }
+        }
     }
 
     /**
