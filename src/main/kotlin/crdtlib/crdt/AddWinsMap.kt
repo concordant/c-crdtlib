@@ -117,22 +117,10 @@ class AddWinsMap : DeltaCRDT<AddWinsMap> {
             val localValue = localMeta?.first
             val localTs = localMeta?.second
 
-            var updateEntry = false
-            if (value != null) {
-                if (localTs == null) {
-                    updateEntry = true
-                } else if (localValue != null && localTs < ts) {
-                    updateEntry = true
-                } else if (localValue == null && !this.causalContext.includesTS(ts)) {
-                    updateEntry = true
-                }
-            } else {
-                if (localTs != null && delta.causalContext.includesTS(localTs)) {
-                    updateEntry = true
-                }
-            }
-
-            if (updateEntry) {
+            if (value != null && (localTs == null || (localValue != null && localTs < ts)
+                    || (localValue == null && !this.causalContext.includesTS(ts)))) {
+                this.entries.put(key, Pair<String?, Timestamp>(value, ts))
+            } else if (value == null && localTs != null && delta.causalContext.includesTS(localTs)) {
                 this.entries.put(key, Pair<String?, Timestamp>(value, ts))
             }
 
