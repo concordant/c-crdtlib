@@ -134,8 +134,9 @@ class AddWinsMap : DeltaCRDT<AddWinsMap> {
 
             if (updateEntry) {
                 this.entries.put(key, Pair<String?, Timestamp>(value, ts))
-                this.causalContext.addTS(ts)
             }
+
+            this.causalContext.addTS(ts)
         }
     }
 
