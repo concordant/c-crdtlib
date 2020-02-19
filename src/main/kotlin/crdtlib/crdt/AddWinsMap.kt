@@ -67,7 +67,7 @@ class AddWinsMap : DeltaCRDT<AddWinsMap> {
     * @return the delta corresponding to this operation.
     **/
     fun delete(key: String, ts: Timestamp): AddWinsMap {
-        val delOp = AddWinsMap(this.causalContext)
+        val delOp = AddWinsMap(this.causalContext.copy())
         if (this.entries.contains(key) && !this.causalContext.includesTS(ts)) {
             this.entries.put(key, Pair<String?, Timestamp>(null, ts))
             this.causalContext.addTS(ts)
