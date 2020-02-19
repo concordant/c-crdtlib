@@ -5,9 +5,9 @@ import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
 
 /**
-* This class is a delta-based CRDT map implementing add-wins to resolve conflicts.
+* This class is a delta-based CRDT map implementing last writer wins (LWW) to resolve conflicts.
 */
-class AddWinsMap : DeltaCRDT<AddWinsMap> {
+class LWWMap : DeltaCRDT<LWWMap> {
 
     /**
     * A mutable map storing metadata relative to each key.
@@ -50,14 +50,15 @@ class AddWinsMap : DeltaCRDT<AddWinsMap> {
     * @param ts the timestamp linked to this operation.
     * @return the delta corresponding to this operation.
     **/
-    fun put(key: String, value: String, ts: Timestamp): AddWinsMap {
-        val putOp = AddWinsMap()
-        if (!this.causalContext.includesTS(ts)) {
+    fun put(key: String, value: String?, ts: Timestamp): LWWMap {
+        val op = LWWMap()
+        val currentTs = this.entries.get(key)?.second
+        if (currentTs == null || currentTs < ts) {
             this.entries.put(key, Pair<String?, Timestamp>(value, ts))
-            this.causalContext.addTS(ts)
-            putOp.entries.put(key, Pair<String?, Timestamp>(value, ts))
+            op.entries.put(key, Pair<String?, Timestamp>(value, ts))
         }
-        return putOp
+        this.causalContext.addTS(ts)
+        return op
     }
 
     /**
@@ -66,14 +67,8 @@ class AddWinsMap : DeltaCRDT<AddWinsMap> {
     * @param ts the timestamp linked to this operation.
     * @return the delta corresponding to this operation.
     **/
-    fun delete(key: String, ts: Timestamp): AddWinsMap {
-        val delOp = AddWinsMap(this.causalContext.copy())
-        if (this.entries.contains(key) && !this.causalContext.includesTS(ts)) {
-            this.entries.put(key, Pair<String?, Timestamp>(null, ts))
-            this.causalContext.addTS(ts)
-            delOp.entries.put(key, Pair<String?, Timestamp>(null, ts))
-        }
-        return delOp
+    fun delete(key: String, ts: Timestamp): LWWMap {
+        return put(key, null, ts)
     }
 
     /**
@@ -81,11 +76,11 @@ class AddWinsMap : DeltaCRDT<AddWinsMap> {
     * @param vv the context used as starting point to generate the delta.
     * @return the corresponding delta of operations.
     */
-    override fun generateDelta(vv: VersionVector): Delta<AddWinsMap> {
-        var delta = AddWinsMap()
-        for ((key, pair) in this.entries) {
-            val value = pair.first
-            val ts = pair.second
+    override fun generateDelta(vv: VersionVector): Delta<LWWMap> {
+        var delta = LWWMap()
+        for ((key, meta) in this.entries) {
+            val value = meta.first
+            val ts = meta.second
             if (!vv.includesTS(ts)) {
                 delta.entries.put(key, Pair<String?, Timestamp>(value, ts))
             }
@@ -94,36 +89,23 @@ class AddWinsMap : DeltaCRDT<AddWinsMap> {
     }
 
     /**
-    * Merges informations contained in a given delta into the local replica, the merge is
-    * unilateral and only local replica is modified.
-    * A foreign 'PUT' operation is applied if:
-    * -the key does not exists in the local replica or;
-    * -last operation is a 'PUT' with a smaller timestamp compared to the foreign one or;
-    * -last operation is a 'DEL' and the foreign timestamp is not included in the local causal
-    * context.
-    * A foreign 'DEL' operation is applied iff the local timestamp is included in the foreign
-    * context.
+    * Merges informations contained in a given delta into the local replica, the merge is unilateral
+    * and only local replica is modified.
+    * A foreign operation (i.e., put or delete) is applied iff last locally stored operation has a
+    * smaller timestamp compared to the foreign one, or there is no local operation recorded.
     * @param delta the delta that should be merge with the local replica.
     */
-    override fun merge(delta: Delta<AddWinsMap>) {
-        if (delta !is AddWinsMap)
-            throw UnexpectedTypeException("AddWins does not support merging with type: " + delta::class)
+    override fun merge(delta: Delta<LWWMap>) {
+        if (delta !is LWWMap)
+            throw UnexpectedTypeException("LWWMap does not support merging with type: " + delta::class)
 
         for ((key, meta) in delta.entries) {
             val value = meta.first
             val ts = meta.second
-
-            val localMeta = this.entries.get(key)
-            val localValue = localMeta?.first
-            val localTs = localMeta?.second
-
-            if (value != null && (localTs == null || (localValue != null && localTs < ts)
-                    || (localValue == null && !this.causalContext.includesTS(ts)))) {
-                this.entries.put(key, Pair<String?, Timestamp>(value, ts))
-            } else if (value == null && localTs != null && delta.causalContext.includesTS(localTs)) {
+            val localTs = this.entries.get(key)?.second
+            if (localTs == null || localTs < ts) {
                 this.entries.put(key, Pair<String?, Timestamp>(value, ts))
             }
-
             this.causalContext.addTS(ts)
         }
     }
@@ -133,7 +115,7 @@ class AddWinsMap : DeltaCRDT<AddWinsMap> {
     * @return a string containing the state of the map.
     **/
     override fun toString(): String {
-        var str = "AddWinsMap{\n"
+        var str = "LWWMap{\n"
         for ((key, pair) in this.entries) {
             str += "key:${key}, value:${pair.first}, ts:${pair.second}\n"
         }
