@@ -34,6 +34,20 @@ class VersionVector {
                 entries.put(k, v)
     }
 
+    fun isSmaller(vv: VersionVector): Boolean {
+        var nEquals = 0
+        for((k, v) in vv.entries) {
+            val localV = entries.getOrElse(k, { 0 })
+            if(localV > v) return false
+            if (localV == v) nEquals += 1
+            if (nEquals > 1) return false
+        }
+        for (k in this.entries.keys) {
+            if (!vv.entries.contains(k)) return false
+        }
+        return true
+    }
+
     fun copy(): VersionVector {
         return VersionVector(this)
     }
