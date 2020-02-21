@@ -45,7 +45,8 @@ class VersionVector {
         for (k in this.entries.keys) {
             if (!vv.entries.contains(k)) return false
         }
-        return true
+
+        return nEquals == 0 || maxOf(vv.entries.size, this.entries.size) > 1
     }
 
     fun copy(): VersionVector {
