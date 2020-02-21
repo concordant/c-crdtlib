@@ -18,6 +18,7 @@ fun main(args: Array<String>) {
             Delta::class,
             LWWMap::class,
             LWWRegister::class,
+            PNCounter::class,
             UpdateOperation::class,
             EmptyDelta::class
         )/*,
