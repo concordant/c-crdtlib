@@ -207,35 +207,55 @@ class MVRegisterTest {
     /*
     * This test evaluates the generation of delta plus its merging into another replica.
     * Call to value should return a set containing values assigned by operations registered in the
-    * second and third replicas.
+    * first and second replicas.
     */
     @Test
     fun generateDelta() {
         val id1 = DCId("dcid1")
         val id2 = DCId("dcid2")
-        val id3 = DCId("dcid3")
         val dc1 = SimpleEnvironment(id1)
         val dc2 = SimpleEnvironment(id2)
-        val dc3 = SimpleEnvironment(id3)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
-        val ts3 = dc3.getNewTimestamp()
-        dc1.updateStateTS(ts1)
-        dc1.updateStateTS(dc1.getNewTimestamp())
         val vv = dc1.getCurrentState()
         val val1 = "value1"
         val val2 = "value2"
-        val val3 = "value3"
         val reg1 = MVRegister<String>(val1, ts1)
         val reg2 = MVRegister<String>(val2, ts2)
-        val reg3 = MVRegister<String>(val3, ts3)
-        val reg4 = MVRegister<String>()
+        val reg3 = MVRegister<String>()
 
         reg2.merge(reg1)
-        reg3.merge(reg2)
-        val delta = reg3.generateDelta(vv)
-        reg4.merge(delta)
+        val delta = reg2.generateDelta(vv)
+        reg3.merge(delta)
 
-        assertEquals(setOf(val2, val3), reg4.get())
+        assertEquals(setOf(val1, val2), reg3.get())
+    }
+
+    /*
+    * This test evaluates the generation of an empty delta plus its merging into another replica.
+    * Call to value should return an empty set.
+    */
+    @Test
+    fun generateEmptyDelta() {
+        val id1 = DCId("dcid1")
+        val id2 = DCId("dcid2")
+        val dc1 = SimpleEnvironment(id1)
+        val dc2 = SimpleEnvironment(id2)
+        val ts1 = dc1.getNewTimestamp()
+        val ts2 = dc2.getNewTimestamp()
+        dc1.updateStateTS(ts1)
+        dc1.updateStateTS(ts2)
+        val vv = dc1.getCurrentState()
+        val val1 = "value1"
+        val val2 = "value2"
+        val reg1 = MVRegister<String>(val1, ts1)
+        val reg2 = MVRegister<String>(val2, ts2)
+        val reg3 = MVRegister<String>()
+
+        reg2.merge(reg1)
+        val delta = reg2.generateDelta(vv)
+        reg3.merge(delta)
+
+        assertEquals(setOf(), reg3.get())
     }
 }

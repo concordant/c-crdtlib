@@ -10,15 +10,21 @@ import crdtlib.utils.VersionVector
 class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
 
     /**
-    * A mutable set storing pairs of value and associated version vector.
+    * A mutable set storing the different values.
     */
-    private val entries: MutableSet<Pair<DataT, VersionVector>>
+    private val entries: MutableSet<DataT>
+
+    /**
+    * A version vector summarizing the entries seen by all values.
+    */
+    private val causalContext: VersionVector
 
     /**
     * Default constructor creating a empty register.
     */
     constructor() {
         this.entries = mutableSetOf()
+        this.causalContext = VersionVector()
     }
 
     /**
@@ -27,10 +33,9 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
     * @param ts the associated timestamp.
     */
     constructor(value: DataT, ts: Timestamp) {
-        this.entries = mutableSetOf()
-        val vv = VersionVector()
-        vv.addTS(ts)
-        this.entries.add(Pair<DataT, VersionVector>(value, vv))
+        this.entries = mutableSetOf(value)
+        this.causalContext = VersionVector()
+        this.causalContext.addTS(ts)
     }
 
     /**
@@ -39,9 +44,11 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
     */
     constructor(other: MVRegister<DataT>) {
         this.entries = mutableSetOf()
-        for ((value, vv) in other.entries) {
-            this.entries.add(Pair<DataT, VersionVector>(value, vv))
+        for (value in other.entries) {
+            this.entries.add(value)
         }
+        this.causalContext = VersionVector()
+        this.causalContext.pointWiseMax(other.causalContext)
     }
 
     /**
@@ -49,31 +56,25 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
     * @return the set of values stored.
     **/
     fun get(): Set<DataT> {
-        return this.entries.map { it.first }.toSet()
+        return this.entries.map { it }.toSet()
     }
 
     /**
     * Assigns a given value to the register.
-    * This value overload all others and the associated version vector is the point wise max of all
-    * version vector. Assign is not effective if the associated timestamp is smaller (older) than
-    * the one of an already registered local assign.
+    * This value overload all others and the causal context is updated with the given timestamp.
+    * Assign is not effective if the associated timestamp is already included in the causal context.
     * @param value the value that should be assigned.
     * @param ts the timestamp associated to the operation.
     * @return the delta corresponding to this operation.
     */
-    fun assign(value: DataT, ts: Timestamp): MVRegister<DataT> {
-        val op = MVRegister<DataT>()
-        val newVv = VersionVector()
-        for ((_, vv) in this.entries) {
-            newVv.pointWiseMax(vv)
-        }
-        if (!newVv.includesTS(ts)) {
-            newVv.addTS(ts)
-            this.entries.clear()
-            this.entries.add(Pair<DataT, VersionVector>(value, newVv))
-            op.entries.add(Pair<DataT, VersionVector>(value, newVv))
-        }
-        return op
+    fun assign(value: DataT, ts: Timestamp): Delta<MVRegister<DataT>> {
+        if (this.causalContext.includesTS(ts)) return EmptyDelta<MVRegister<DataT>>()
+
+        this.entries.clear()
+        this.entries.add(value)
+        this.causalContext.addTS(ts)
+
+        return MVRegister(this)
     }
 
     /**
@@ -82,40 +83,28 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
     * @return the corresponding delta of operations.
     */
     override fun generateDelta(vv: VersionVector): Delta<MVRegister<DataT>> {
-        val delta = MVRegister<DataT>()
-        for ((value, localVv) in this.entries) {
-            if (!localVv.isSmaller(vv)) {
-                delta.entries.add(Pair<DataT, VersionVector>(value, localVv))
-            }
-        }
-        return delta
+        if (this.causalContext.isSmallerOrEquals(vv)) return EmptyDelta<MVRegister<DataT>>()
+        return MVRegister(this)
     }
 
     /**
     * Merges informations contained in a given delta into the local replica, the merge is unilateral
     * and only local replica is modified.
-    * Values foreign (local) value is kept if its associated version vector is not smaller than any
-    * local (foreign) stored version vector.
+    * Only foreign value(s) are kept if delta's causal context is not smaller than the local one.
+    * Foreign plus local values are kept if delta's causal context is concurrent to the local one.
     * @param delta the delta that should be merge with the local replica.
     */
     override fun merge(delta: Delta<MVRegister<DataT>>) {
+        if (delta is EmptyDelta<MVRegister<DataT>>) return
         if (delta !is MVRegister) throw UnexpectedTypeException("MVRegister does not support merging with type:" + delta::class)
+        if (delta.causalContext.isSmaller(this.causalContext)) return
 
-        val tmpEntries = mutableSetOf<Pair<DataT, VersionVector>>()
-        for ((localVal, localVv) in this.entries) {
-            if (!delta.entries.map { it.second }.any { localVv.isSmaller(it) }) {
-                tmpEntries.add(Pair<DataT, VersionVector>(localVal, localVv))
-            }
+        if (this.causalContext.isSmaller(delta.causalContext)) {
+            this.entries.clear()
         }
-        for ((otherVal, otherVv) in delta.entries) {
-            if (!this.entries.map { it.second }.any { otherVv.isSmaller(it) }) {
-                tmpEntries.add(Pair<DataT, VersionVector>(otherVal, otherVv))
-            }
+        for (value in delta.entries) {
+            this.entries.add(value)
         }
-
-        this.entries.clear()
-        for ((value, vv) in tmpEntries) {
-            this.entries.add(Pair<DataT, VersionVector>(value, vv))
-        }
+        this.causalContext.pointWiseMax(delta.causalContext)
     }
 }

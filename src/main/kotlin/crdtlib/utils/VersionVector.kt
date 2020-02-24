@@ -49,6 +49,20 @@ class VersionVector {
         return nEquals == 0 || maxOf(vv.entries.size, this.entries.size) > 1
     }
 
+    fun isSmallerOrEquals(vv: VersionVector): Boolean {
+        var nEquals = 0
+        for((k, v) in vv.entries) {
+            val localV = entries.getOrElse(k, { 0 })
+            if(localV > v) return false
+            if (localV == v) nEquals += 1
+        }
+        for (k in this.entries.keys) {
+            if (!vv.entries.contains(k)) return false
+        }
+
+        return nEquals <= 1 || nEquals == this.entries.size
+    }
+
     fun copy(): VersionVector {
         return VersionVector(this)
     }
