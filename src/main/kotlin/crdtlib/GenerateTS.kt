@@ -16,6 +16,7 @@ fun main(args: Array<String>) {
             VersionVector::class,
             DeltaCRDT::class,
             Delta::class,
+            Immutable::class,
             LWWRegister::class,
             MVRegister::class,
             PNCounter::class,
