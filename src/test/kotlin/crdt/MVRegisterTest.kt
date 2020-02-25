@@ -184,6 +184,59 @@ class MVRegisterTest {
     }
 
     /**
+    * This test evaluates the scenario: assign(before merge1) assign(before merge 2) || merge1
+    * merge2 get.
+    * Call to get should return a set containing the last value assigned by the first replica.
+    */
+    @Test
+    fun assignBeforeMerge1AssignBeforeMerge2_Merge1Merge2Get() {
+        val id = DCId("dcid")
+        val dc = SimpleEnvironment(id)
+        val ts1 = dc.getNewTimestamp()
+        dc.updateStateTS(ts1)
+        val ts2 = dc.getNewTimestamp()
+        val val1 = "value1"
+        val val2 = "value2"
+
+        val reg1 = MVRegister<String>(val1, ts1)
+        val reg2 = MVRegister<String>(val2, ts2)
+        reg2.merge(reg1)
+        reg1.assign(val2, ts2)
+        reg2.merge(reg1)
+
+        assertEquals(setOf(val2), reg2.get())
+    }
+
+    /**
+    * This test evaluates the scenario: assign(before merge1) assign(before merge 2) || assign
+    * merge1 merge2 get.
+    * Call to get should return a set containing the last value assigned by the first replica and
+    * value assigned by replica two.
+    */
+    @Test
+    fun assignBeforeMerge1AssignBeforeMerge2_AssignMerge1Merge2Get() {
+        val id1 = DCId("dcid1")
+        val id2 = DCId("dcid2")
+        val dc1 = SimpleEnvironment(id1)
+        val dc2 = SimpleEnvironment(id2)
+        val ts1 = dc1.getNewTimestamp()
+        val ts2 = dc2.getNewTimestamp()
+        dc1.updateStateTS(ts1)
+        val ts3 = dc1.getNewTimestamp()
+        val val1 = "value1"
+        val val2 = "value2"
+        val val3 = "value3"
+
+        val reg1 = MVRegister<String>(val1, ts1)
+        val reg2 = MVRegister<String>(val2, ts2)
+        reg2.merge(reg1)
+        reg1.assign(val3, ts3)
+        reg2.merge(reg1)
+
+        assertEquals(setOf(val2, val3), reg2.get())
+    }
+
+    /**
     * This test evaluates the use of delta return by call to assign method.
     * Call to get should return a set containing the value assigned by the first replica.
     */

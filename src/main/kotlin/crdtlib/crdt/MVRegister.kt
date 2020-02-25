@@ -10,9 +10,9 @@ import crdtlib.utils.VersionVector
 class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
 
     /**
-    * A mutable set storing the different values.
+    * A mutable set storing the different values with their associated timestamp.
     */
-    private val entries: MutableSet<DataT>
+    private val entries: MutableSet<Pair<DataT, Timestamp>>
 
     /**
     * A version vector summarizing the entries seen by all values.
@@ -33,7 +33,7 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
     * @param ts the associated timestamp.
     */
     constructor(value: DataT, ts: Timestamp) {
-        this.entries = mutableSetOf(value)
+        this.entries = mutableSetOf(Pair<DataT, Timestamp>(value, ts))
         this.causalContext = VersionVector()
         this.causalContext.addTS(ts)
     }
@@ -44,8 +44,8 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
     */
     constructor(other: MVRegister<DataT>) {
         this.entries = mutableSetOf()
-        for (value in other.entries) {
-            this.entries.add(value)
+        for ((value, ts) in other.entries) {
+            this.entries.add(Pair<DataT, Timestamp>(value, ts))
         }
         this.causalContext = VersionVector()
         this.causalContext.pointWiseMax(other.causalContext)
@@ -56,7 +56,7 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
     * @return the set of values stored.
     **/
     fun get(): Set<DataT> {
-        return this.entries.map { it }.toSet()
+        return this.entries.map { it.first }.toSet()
     }
 
     /**
@@ -71,7 +71,7 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
         if (this.causalContext.includesTS(ts)) return EmptyDelta<MVRegister<DataT>>()
 
         this.entries.clear()
-        this.entries.add(value)
+        this.entries.add(Pair<DataT, Timestamp>(value, ts))
         this.causalContext.addTS(ts)
 
         return MVRegister(this)
@@ -102,8 +102,12 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
         if (this.causalContext.isSmaller(delta.causalContext)) {
             this.entries.clear()
         }
-        for (value in delta.entries) {
-            this.entries.add(value)
+        for ((value, ts) in delta.entries) {
+            val sameDcValues = this.entries.filter { it.second.id == ts.id }
+            if (sameDcValues.all { it.second < ts }) {
+                sameDcValues.forEach { this.entries.remove(it) }
+                this.entries.add(Pair<DataT, Timestamp>(value, ts))
+            }
         }
         this.causalContext.pointWiseMax(delta.causalContext)
     }
