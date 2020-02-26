@@ -1,3 +1,5 @@
+[![pipeline status](https://gitlab.inria.fr/concordant/software/crdtlib-kotlin/badges/master/pipeline.svg)](https://gitlab.inria.fr/concordant/software/crdtlib-kotlin/commits/master)
+
 # CRDT lib
 
 CRDT library in kotlin for use in concordant.
