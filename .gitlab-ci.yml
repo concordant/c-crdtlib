@@ -1,6 +1,5 @@
 image: maven:latest
 
-
 build:
   stage: build
   script:
@@ -10,4 +9,3 @@ test:
   stage: test
   script:
     - mvn test
-
