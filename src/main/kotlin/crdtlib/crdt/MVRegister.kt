@@ -12,7 +12,7 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
     /**
     * A mutable set storing the different values with their associated timestamp.
     */
-    private val entries: MutableSet<Pair<DataT, Timestamp>>
+    private var entries: MutableSet<Pair<DataT, Timestamp>>
 
     /**
     * A version vector summarizing the entries seen by all values.
@@ -90,25 +90,27 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
     /**
     * Merges informations contained in a given delta into the local replica, the merge is unilateral
     * and only local replica is modified.
-    * Only foreign value(s) are kept if delta's causal context is not smaller than the local one.
-    * Foreign plus local values are kept if delta's causal context is concurrent to the local one.
+    * A foreign (local) value is kept iff it is contained in the local (foreign) replica or its
+    * associated timestamp is not included in the local (foreign) causal context.
     * @param delta the delta that should be merge with the local replica.
     */
     override fun merge(delta: Delta<MVRegister<DataT>>) {
         if (delta is EmptyDelta<MVRegister<DataT>>) return
-        if (delta !is MVRegister) throw UnexpectedTypeException("MVRegister does not support merging with type:" + delta::class)
-        if (delta.causalContext.isSmaller(this.causalContext)) return
+        if (delta !is MVRegister) throw UnexpectedTypeException("MVRegister does not support merging with type: " + delta::class)
 
-        if (this.causalContext.isSmaller(delta.causalContext)) {
-            this.entries.clear()
-        }
-        for ((value, ts) in delta.entries) {
-            val sameDcValues = this.entries.filter { it.second.id == ts.id }
-            if (sameDcValues.all { it.second < ts }) {
-                sameDcValues.forEach { this.entries.remove(it) }
-                this.entries.add(Pair<DataT, Timestamp>(value, ts))
+        val keptEntries = mutableSetOf<Pair<DataT, Timestamp>>()
+        for (meta in this.entries) {
+            if (delta.entries.contains(meta) || !delta.causalContext.includesTS(meta.second)) {
+                keptEntries.add(Pair(meta.first, meta.second))
             }
         }
+        for (meta in delta.entries) {
+            if (this.entries.contains(meta) || !this.causalContext.includesTS(meta.second)) {
+                keptEntries.add(Pair(meta.first, meta.second))
+            }
+        }
+
+        this.entries = keptEntries
         this.causalContext.pointWiseMax(delta.causalContext)
     }
 }
