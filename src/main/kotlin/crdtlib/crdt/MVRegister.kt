@@ -99,14 +99,14 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
         if (delta !is MVRegister) throw UnexpectedTypeException("MVRegister does not support merging with type: " + delta::class)
 
         val keptEntries = mutableSetOf<Pair<DataT, Timestamp>>()
-        for (meta in this.entries) {
-            if (delta.entries.contains(meta) || !delta.causalContext.includesTS(meta.second)) {
-                keptEntries.add(Pair(meta.first, meta.second))
+        for ((value, ts) in this.entries) {
+            if (delta.entries.any { it.second == ts } || !delta.causalContext.includesTS(ts)) {
+                keptEntries.add(Pair(value, ts))
             }
         }
-        for (meta in delta.entries) {
-            if (this.entries.contains(meta) || !this.causalContext.includesTS(meta.second)) {
-                keptEntries.add(Pair(meta.first, meta.second))
+        for ((value, ts) in delta.entries) {
+            if (this.entries.any { it.second == ts } || !this.causalContext.includesTS(ts)) {
+                keptEntries.add(Pair(value, ts))
             }
         }
 

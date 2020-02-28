@@ -122,7 +122,7 @@ class MVRegisterTest {
     * Call to get should return value assigned by the first replica.
     */
     @Test
-    fun assign_mergeGet() {
+    fun assign_MergeGet() {
         val id = DCId("dcid")
         val dc = SimpleEnvironment(id)
         val ts = dc.getNewTimestamp()
@@ -142,7 +142,7 @@ class MVRegisterTest {
     * Call to get should return a set containing the value assigned by the second replica.
     */
     @Test
-    fun assign_mergeAssignGet() {
+    fun assign_MergeAssignGet() {
         val id1 = DCId("dcid1")
         val id2 = DCId("dcid2")
         val dc1 = SimpleEnvironment(id1)
@@ -165,7 +165,7 @@ class MVRegisterTest {
     * Call to get should return a set containing the two values.
     */
     @Test
-    fun assign_assignMergeGet() {
+    fun assign_AssignMergeGet() {
         val id1 = DCId("dcid1")
         val id2 = DCId("dcid2")
         val dc1 = SimpleEnvironment(id1)
@@ -234,6 +234,70 @@ class MVRegisterTest {
         reg2.merge(reg1)
 
         assertEquals(setOf(val2, val3), reg2.get())
+    }
+
+    /**
+    * This test evaluates the scenario: assign || assign merge(from 3) || assign merge(from 1)
+    * merge(from 2) get.
+    * Call to get should return a set containing the value assigned by the first, second, and third
+    * replicas.
+    */
+    @Test
+    fun assign_AssignMerge3_AssignMerge1Merge2Get() {
+        val id1 = DCId("dcid1")
+        val id2 = DCId("dcid2")
+        val id3 = DCId("dcid3")
+        val dc1 = SimpleEnvironment(id1)
+        val dc2 = SimpleEnvironment(id2)
+        val dc3 = SimpleEnvironment(id3)
+        val ts1 = dc1.getNewTimestamp()
+        val ts2 = dc2.getNewTimestamp()
+        val ts3 = dc3.getNewTimestamp()
+        val val1 = "value1"
+        val val2 = "value2"
+        val val3 = "value3"
+        val reg1 = MVRegister<String>(val1, ts1)
+        val reg2 = MVRegister<String>(val2, ts2)
+        val reg3 = MVRegister<String>(val3, ts3)
+
+        reg2.merge(reg3)
+        reg3.merge(reg1)
+        reg3.merge(reg2)
+
+        assertEquals(setOf(val1, val2, val3), reg3.get())
+    }
+
+    /**
+    * This test evaluates the scenario: assign || merge(from 3) assign || assign merge(from 1)
+    * merge(from 2) get.
+    * Call to get should return a set containing the value assigned by the first and second
+    * replicas, the value assigned by replica three should not be present since it has been
+    * overrided by replica two.
+    */
+    @Test
+    fun assign_Merge3Assign_AssignMerge1Merge2Get() {
+        val id1 = DCId("dcid1")
+        val id2 = DCId("dcid2")
+        val id3 = DCId("dcid3")
+        val dc1 = SimpleEnvironment(id1)
+        val dc2 = SimpleEnvironment(id2)
+        val dc3 = SimpleEnvironment(id3)
+        val ts1 = dc1.getNewTimestamp()
+        val ts2 = dc2.getNewTimestamp()
+        val ts3 = dc3.getNewTimestamp()
+        val val1 = "value1"
+        val val2 = "value2"
+        val val3 = "value3"
+        val reg1 = MVRegister<String>(val1, ts1)
+        val reg2 = MVRegister<String>()
+        val reg3 = MVRegister<String>(val3, ts3)
+
+        reg2.merge(reg3)
+        reg2.assign(val2, ts2)
+        reg3.merge(reg1)
+        reg3.merge(reg2)
+
+        assertEquals(setOf(val1, val2), reg3.get())
     }
 
     /**
