@@ -1,8 +1,8 @@
 package crdtlib
 
-import me.ntrrgc.tsGenerator.TypeScriptGenerator
-import crdtlib.utils.*
 import crdtlib.crdt.*
+import crdtlib.utils.*
+import me.ntrrgc.tsGenerator.TypeScriptGenerator
 
 
 fun main(args: Array<String>) {
@@ -17,6 +17,7 @@ fun main(args: Array<String>) {
             DeltaCRDT::class,
             Delta::class,
             Immutable::class,
+            LWWMap::class,
             LWWRegister::class,
             MVRegister::class,
             PNCounter::class,
