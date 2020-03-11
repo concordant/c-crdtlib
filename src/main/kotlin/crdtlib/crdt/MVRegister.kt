@@ -100,12 +100,12 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
 
         val keptEntries = mutableSetOf<Pair<DataT, Timestamp>>()
         for ((value, ts) in this.entries) {
-            if (delta.entries.any { it.second == ts } || !delta.causalContext.includesTS(ts)) {
+            if (!delta.causalContext.includesTS(ts) || delta.entries.any { it.second == ts }) {
                 keptEntries.add(Pair(value, ts))
             }
         }
         for ((value, ts) in delta.entries) {
-            if (this.entries.any { it.second == ts } || !this.causalContext.includesTS(ts)) {
+            if (!this.causalContext.includesTS(ts) || this.entries.any { it.second == ts }) {
                 keptEntries.add(Pair(value, ts))
             }
         }
