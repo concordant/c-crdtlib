@@ -18,13 +18,13 @@ class VersionVector {
     }
 
     fun addTS(ts: Timestamp) {
-        val curCnt = entries.getOrElse(ts.id, { -1 })
+        val curCnt = entries.getOrElse(ts.id, { 0 })
         if(curCnt < ts.cnt)
             entries[ts.id] = ts.cnt
     }
 
     fun includesTS(ts: Timestamp): Boolean {
-        val cnt = entries.getOrElse(ts.id, { -1 })
+        val cnt = entries.getOrElse(ts.id, { 0 })
         return cnt >= ts.cnt
     }
 
@@ -34,33 +34,18 @@ class VersionVector {
                 entries.put(k, v)
     }
 
-    fun isSmaller(vv: VersionVector): Boolean {
-        var nEquals = 0
-        for((k, v) in vv.entries) {
-            val localV = entries.getOrElse(k, { 0 })
-            if(localV > v) return false
-            if (localV == v) nEquals += 1
-            if (nEquals > 1) return false
-        }
-        for (k in this.entries.keys) {
-            if (!vv.entries.contains(k)) return false
-        }
-
-        return nEquals == 0 || maxOf(vv.entries.size, this.entries.size) > 1
-    }
-
     fun isSmallerOrEquals(vv: VersionVector): Boolean {
-        var nEquals = 0
         for((k, v) in vv.entries) {
             val localV = entries.getOrElse(k, { 0 })
             if(localV > v) return false
-            if (localV == v) nEquals += 1
-        }
-        for (k in this.entries.keys) {
-            if (!vv.entries.contains(k)) return false
         }
 
-        return nEquals <= 1 || nEquals == this.entries.size
+        for ((k, localV) in this.entries) {
+            val v = vv.entries.getOrElse(k, { 0 })
+            if(localV > v) return false
+        }
+
+        return true
     }
 
     fun copy(): VersionVector {
