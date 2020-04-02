@@ -19,6 +19,7 @@ fun main(args: Array<String>) {
             Immutable::class,
             LWWMap::class,
             LWWRegister::class,
+            MVRegister::class,
             PNCounter::class,
             UpdateOperation::class,
             EmptyDelta::class
