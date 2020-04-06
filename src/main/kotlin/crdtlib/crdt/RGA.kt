@@ -52,7 +52,7 @@ class RGA : DeltaCRDT<RGA> {
     */
     fun insertAt(index: Int, atom: Char, ts: Timestamp): RGA {
         val realIdx = this.toRealIndex(index)
-        val anchor = this.nodes.getOrNull(realIdx - 1)?.uid
+        val anchor = this.nodes.getOrNull(realIdx - 1)?.uid // Anchor is null if left node is supposed to be at index -1
         val newNode = RGANode(atom, anchor, ts, ts, false)
 
         this.nodes.add(realIdx, newNode)
@@ -111,7 +111,12 @@ class RGA : DeltaCRDT<RGA> {
     /**
     * Merges informations contained in a given delta into the local replica, the merge is unilateral
     * and only local replica is modified.
-    * TODO: add description
+    * For each node in foreign replica: if the node already exists in the local replica we update it
+    * only if its timestamp is not included in local causal context; else we insert it correctly.
+    * The correct place is at the right of node's anchor. If other nodes have the same anchor bigger
+    * timestamp wins: meaning that the distant node will be either put at the left of the first
+    * weaker (with smaller timestamp) node found, or at the end of the array if no weaker node
+    * exist.
     * @param delta the delta that should be merge with the local replica.
     */
     override fun merge(delta: Delta<RGA>) {
@@ -121,7 +126,7 @@ class RGA : DeltaCRDT<RGA> {
             if (this.causalContext.includesTS(node.ts)) continue 
 
             val localNode = this.nodes.find { it.uid == node.uid }
-            if (localNode == null) {
+            if (localNode == null) { // First time this node is seen.
                 var index = -1
                 val anchorNode = this.nodes.find { it.uid == node.anchor }
                 if (anchorNode != null) {
@@ -130,22 +135,22 @@ class RGA : DeltaCRDT<RGA> {
                 index++
 
                 val sameAnchorNodes = this.nodes.filter { it.anchor == node.anchor }
-                if (sameAnchorNodes.size > 0) {
+                if (sameAnchorNodes.size > 0) { // There exist node with the same anchor.
                     var foundWeaker = false
                     for (tmpNode in sameAnchorNodes) {
-                        if (tmpNode.ts < node.ts) {
+                        if (tmpNode.ts < node.ts) { // A weaker node has been found.
                             index = this.nodes.indexOf(tmpNode)
                             foundWeaker = true
                             break
                         }
                     }
-                    if (foundWeaker == false) {
+                    if (foundWeaker == false) { // No weaker node exist.
                         index = this.nodes.size
                     }
                 }
 
                 this.nodes.add(index, node.copy())
-            } else {
+            } else { // This node already exists.
                 var index = this.nodes.indexOf(localNode)
                 this.nodes.set(index, node.copy())
             }
