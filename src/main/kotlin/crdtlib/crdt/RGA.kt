@@ -135,7 +135,7 @@ class RGA : DeltaCRDT<RGA> {
                 index++
 
                 val sameAnchorNodes = this.nodes.filter { it.anchor == node.anchor }
-                if (sameAnchorNodes.size > 0) { // There exist node with the same anchor.
+                if (sameAnchorNodes.size > 0) { // There exist nodes with the same anchor.
                     var foundWeaker = false
                     for (tmpNode in sameAnchorNodes) {
                         if (tmpNode.ts < node.ts) { // A weaker node has been found.
