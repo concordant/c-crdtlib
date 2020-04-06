@@ -147,7 +147,7 @@ class RGA : DeltaCRDT<RGA> {
                 this.nodes.add(index, node.copy())
             } else {
                 var index = this.nodes.indexOf(localNode)
-                this.nodes.set(index, RGANode(node.atom, localNode.anchor, node.uid, node.ts, node.removed))
+                this.nodes.set(index, node.copy())
             }
         }
         this.causalContext.pointWiseMax(delta.causalContext)
