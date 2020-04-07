@@ -8,18 +8,42 @@ import kotlin.test.assertEquals
 
 /**
 * Represents a suite test for RGA.
-* TODO: comment code
 **/
 class RGATest {
 
+    /**
+    * This test evaluates the scenario: create, value.
+    * Call to get should return an empty array.
+    */
     @Test
-    fun createVal() {
+    fun createValue() {
         val rga = RGA()
         assertEquals(listOf(), rga.value())
     }
 
+    /**
+    * This test evaluates the scenario: insert at 0, value.
+    * Call to value should return an array containing the inserted value.
+    */
     @Test
-    fun add0Add0Val() {
+    fun add0Value() {
+        val id = DCId("dcid")
+        val dc = SimpleEnvironment(id)
+        val ts = dc.getNewTimestamp()
+        val rga = RGA()
+
+        rga.insertAt(0, 'A', ts)
+
+        assertEquals(listOf('A'), rga.value())
+    }
+
+    /**
+    * This test evaluates the scenario: insert at 0 twice, value.
+    * Call to value should return an array containing the two inserted values.
+    * Second value should be at index 0 and first value at index 1.
+    */
+    @Test
+    fun add0Add0Value() {
         val id = DCId("dcid")
         val dc = SimpleEnvironment(id)
         val ts1 = dc.getNewTimestamp()
@@ -32,9 +56,14 @@ class RGATest {
 
         assertEquals(listOf('A', 'B'), rga.value())
     }
-    
+
+    /**
+    * This test evaluates the scenario: insert at 0, insert at 1, value.
+    * Call to value should return an array containing the two inserted values.
+    * First value should be at index 0 and second value at index 1.
+    */
     @Test
-    fun add0Add1Val() {
+    fun add0Add1Value() {
         val id = DCId("dcid")
         val dc = SimpleEnvironment(id)
         val ts1 = dc.getNewTimestamp()
@@ -48,8 +77,12 @@ class RGATest {
         assertEquals(listOf('A', 'B'), rga.value())
     }
 
+    /**
+    * This test evaluates the scenario: insert at 0, remove at 0, value.
+    * Call to value should return an empty array.
+    */
     @Test
-    fun add0Rem0Val() {
+    fun add0Remove0Value() {
         val id = DCId("dcid")
         val dc = SimpleEnvironment(id)
         val ts1 = dc.getNewTimestamp()
@@ -63,8 +96,12 @@ class RGATest {
         assertEquals(listOf(), rga.value())
     }
 
+    /**
+    * This test evaluates the scenario: insert at 0 twice, remove at 0 twice, value.
+    * Call to value should return an empty array.
+    */
     @Test
-    fun add0Add0Rem0Rem0Val() {
+    fun add0Add0Remove0Remove0Value() {
         val id = DCId("dcid")
         val dc = SimpleEnvironment(id)
         val ts1 = dc.getNewTimestamp()
@@ -84,8 +121,13 @@ class RGATest {
         assertEquals(listOf(), rga.value())
     }
 
+    /**
+    * This test evaluates the scenario: insert at 0, insert at 1, remove at 0, insert at 1, value.
+    * Call to value should return an array containing the two last inserted values.
+    * Second inserted value should be at index 0 and third inserted value at index 1.
+    */
     @Test
-    fun add0Add1Rem0Add1Val() {
+    fun add0Add1Remove0Add1Value() {
         val id = DCId("dcid")
         val dc = SimpleEnvironment(id)
         val ts1 = dc.getNewTimestamp()
@@ -105,8 +147,13 @@ class RGATest {
         assertEquals(listOf('B', 'C'), rga.value())
     }
 
+    /**
+    * This test evaluates the scenario: insert at 0, insert at 1, remove at 1, insert at 1, value.
+    * Call to value should return an array containing the first and third inserted values.
+    * First inserted value should be at index 0 and thrid inserted value at index 1.
+    */
     @Test
-    fun add0Add1Rem1Add1Val() {
+    fun add0Add1Remove1Add1Value() {
         val id = DCId("dcid")
         val dc = SimpleEnvironment(id)
         val ts1 = dc.getNewTimestamp()
@@ -126,8 +173,12 @@ class RGATest {
         assertEquals(listOf('A', 'C'), rga.value())
     }
 
+    /**
+    * This test evaluates the scenario: insert at 0 twice || merge, value.
+    * Call to value should return an array containing the two values inserted in replica 1.
+    */
     @Test
-    fun add0Add0_MergeVal() {
+    fun add0Add0_MergeValue() {
         val id = DCId("dcid")
         val dc = SimpleEnvironment(id)
         val ts1 = dc.getNewTimestamp()
@@ -143,8 +194,12 @@ class RGATest {
         assertEquals(listOf('A', 'B'), rga2.value())
     }
 
+    /**
+    * This test evaluates the scenario: insert at 0, insert at 1, insert at 2 || merge, value.
+    * Call to value should return an array containing the three values inserted in replica 1.
+    */
     @Test
-    fun add0Add1Add2_MergeVal() {
+    fun add0Add1Add2_MergeValue() {
         val id = DCId("dcid")
         val dc = SimpleEnvironment(id)
         val ts1 = dc.getNewTimestamp()
@@ -163,8 +218,14 @@ class RGATest {
         assertEquals(listOf('A', 'B', 'C'), rga2.value())
     }
 
+    /**
+    * This test evaluates the scenario: insert at 0 || insert at 0 (with greater timestamp), merge
+    * value.
+    * Call to value should return an array containing the two values. Value inserted in replica 2
+    * should be at index 0 and the one inserted at replica 1 at index 1.
+    */
     @Test
-    fun add0_AddWin0MergeVal() {
+    fun add0_AddWin0MergeValue() {
         val id1 = DCId("dcid1")
         val id2 = DCId("dcid2")
         val dc1 = SimpleEnvironment(id1)
@@ -181,8 +242,14 @@ class RGATest {
         assertEquals(listOf('A', 'B'), rga2.value())
     }
 
+    /**
+    * This test evaluates the scenario: insert at 0 (with greater timestamp) || insert at 0, merge
+    * value.
+    * Call to value should return an array containing the two values. Value inserted in replica
+    * 1 should be at index 0 and the one inserted at replica 2 at index 1.
+    */
     @Test
-    fun addWin0_Add0MergeVal() {
+    fun addWin0_Add0MergeValue() {
         val id1 = DCId("dcid1")
         val id2 = DCId("dcid2")
         val dc1 = SimpleEnvironment(id1)
@@ -199,8 +266,13 @@ class RGATest {
         assertEquals(listOf('A', 'B'), rga2.value())
     }
  
+    /**
+    * This test evaluates the scenario: insert at 0 twice || insert at 0 twice, merge value.
+    * Call to value should return an array containing the four values. Values should be ordered
+    * according to decreasing order of their associated timestamp.
+    */
     @Test
-    fun concurrentAdd0MergeVal() {
+    fun add0Add0_Add0Add0MergeValue() {
         val id1 = DCId("dcid1")
         val id2 = DCId("dcid2")
         val dc1 = SimpleEnvironment(id1)
@@ -223,8 +295,14 @@ class RGATest {
         assertEquals(listOf('A', 'B', 'C', 'D'), rga2.value())
     }
 
+    /**
+    * This test evaluates the scenario: insert at 0 (with greater timestamp), insert at 1 || insert
+    * at 0, insert at 1, merge value.
+    * Call to value should return an array containing the four values. Values inserted in replica 1
+    * should be before the one inserted in replica 2.
+    */
     @Test
-    fun concurrentAddMerge1Val() {
+    fun addWin0Add1_Add0Add1MergeValue() {
         val id1 = DCId("dcid1")
         val id2 = DCId("dcid2")
         val dc1 = SimpleEnvironment(id1)
@@ -247,8 +325,14 @@ class RGATest {
         assertEquals(listOf('A', 'B', 'C', 'D'), rga1.value())
     }
 
+    /**
+    * This test evaluates the scenario: insert at 0, insert at 1 || insert at 0 (with greater
+    * timestamp), insert at 1, merge value.
+    * Call to value should return an array containing the four values. Values inserted in replica 2
+    * should be before the one inserted in replica 1.
+    */
     @Test
-    fun concurrentAddMerge2Val() {
+    fun add0Add1_AddWin0Add1MergeValue() {
         val id1 = DCId("dcid1")
         val id2 = DCId("dcid2")
         val dc1 = SimpleEnvironment(id1)
@@ -271,8 +355,14 @@ class RGATest {
         assertEquals(listOf('A', 'B', 'C', 'D'), rga2.value())
     }
 
+    /**
+    * This test evaluates the scenario: insert four values, remove at 1 || merge, remove at 2,
+    * merge, value.
+    * Call to value should return an array containing the two values that have not been remove (the
+    * first and the fourth one).
+    */
     @Test
-    fun concurrentRemMergeVal() {
+    fun add0Add1Add2Add3Remove1_MergeAfterAddsRemove2MergeValue() {
         val id1 = DCId("dcid1")
         val id2 = DCId("dcid2")
         val dc1 = SimpleEnvironment(id1)
