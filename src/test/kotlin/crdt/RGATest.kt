@@ -356,8 +356,8 @@ class RGATest {
     }
 
     /**
-    * This test evaluates the scenario: insert four values, remove at 1 || merge, remove at 2,
-    * merge, value.
+    * This test evaluates the scenario: insert four values, remove at 1 || merge (after adds in
+    * replica 1), remove at 2, merge, value.
     * Call to value should return an array containing the two values that have not been remove (the
     * first and the fourth one).
     */
@@ -390,6 +390,252 @@ class RGATest {
         rga2.merge(rga1)
 
         assertEquals(listOf('A', 'D'), rga2.value())
+    }
+
+    /**
+    * This test evaluates the scenario: insert at 0 (with greater timestamp) insert at 1 || insert
+    * at 0 (with second greater timestamp), insert at 1 || insert at 0, insert at 1, merge from
+    * replica 1, merge from replica 2, value.
+    * Call to value should return an array containing the six values. Values inserted in replica 1
+    * should be before the one inserted in replica 2 which should be before those inserted at
+    * replica 3.
+    */
+    @Test
+    fun addWin0Add1_AddSecond0Add1_Add0Add1Merge1Merge2Value() {
+        val id1 = DCId("dcid1")
+        val id2 = DCId("dcid2")
+        val id3 = DCId("dcid3")
+        val dc1 = SimpleEnvironment(id1)
+        val dc2 = SimpleEnvironment(id2)
+        val dc3 = SimpleEnvironment(id3)
+        val ts1 = dc1.getNewTimestamp()
+        val ts2 = dc2.getNewTimestamp()
+        val ts3 = dc3.getNewTimestamp()
+        dc1.updateStateTS(ts1)
+        val ts4 = dc1.getNewTimestamp()
+        dc2.updateStateTS(ts2)
+        val ts5 = dc2.getNewTimestamp()
+        dc3.updateStateTS(ts3)
+        val ts6 = dc3.getNewTimestamp()
+        val rga1 = RGA()
+        val rga2 = RGA()
+        val rga3 = RGA()
+
+        rga1.insertAt(0, 'A', ts3)
+        rga1.insertAt(1, 'B', ts6)
+        rga2.insertAt(0, 'C', ts2)
+        rga2.insertAt(1, 'D', ts5)
+        rga3.insertAt(0, 'E', ts1)
+        rga3.insertAt(1, 'F', ts4)
+        rga3.merge(rga1)
+        rga3.merge(rga2)
+
+        assertEquals(listOf('A', 'B', 'C', 'D', 'E', 'F'), rga3.value())
+    }
+
+    /**
+    * This test evaluates the scenario: insert at 0 (with greater timestamp) insert at 1 || insert
+    * at 0, insert at 1 || insert at 0 (with second greater timestamp), insert at 1, merge from
+    * replica 1, merge from replica 2, value.
+    * Call to value should return an array containing the six values. Values inserted in replica 1
+    * should be before the one inserted in replica 3 which should be before those inserted at
+    * replica 2.
+    */
+    @Test
+    fun addWin0Add1_Add0Add1_AddSecond0Add1Merge1Merge2Value() {
+        val id1 = DCId("dcid1")
+        val id2 = DCId("dcid2")
+        val id3 = DCId("dcid3")
+        val dc1 = SimpleEnvironment(id1)
+        val dc2 = SimpleEnvironment(id2)
+        val dc3 = SimpleEnvironment(id3)
+        val ts1 = dc1.getNewTimestamp()
+        val ts2 = dc2.getNewTimestamp()
+        val ts3 = dc3.getNewTimestamp()
+        dc1.updateStateTS(ts1)
+        val ts4 = dc1.getNewTimestamp()
+        dc2.updateStateTS(ts2)
+        val ts5 = dc2.getNewTimestamp()
+        dc3.updateStateTS(ts3)
+        val ts6 = dc3.getNewTimestamp()
+        val rga1 = RGA()
+        val rga2 = RGA()
+        val rga3 = RGA()
+
+        rga1.insertAt(0, 'A', ts3)
+        rga1.insertAt(1, 'B', ts6)
+        rga2.insertAt(0, 'E', ts1)
+        rga2.insertAt(1, 'F', ts4)
+        rga3.insertAt(0, 'C', ts2)
+        rga3.insertAt(1, 'D', ts5)
+        rga3.merge(rga1)
+        rga3.merge(rga2)
+
+        assertEquals(listOf('A', 'B', 'C', 'D', 'E', 'F'), rga3.value())
+    }
+
+    /**
+    * This test evaluates the scenario: insert at 0 (with second greater timestamp) insert at 1 ||
+    * insert at 0 (with greater timestamp), insert at 1 || insert at 0, insert at 1, merge from
+    * replica 1, merge from replica 2, value.
+    * Call to value should return an array containing the six values. Values inserted in replica 2
+    * should be before the one inserted in replica 1 which should be before those inserted at
+    * replica 3.
+    */
+    @Test
+    fun addSecond0Add1_AddWin0Add1_Add0Add1Merge1Merge2Value() {
+        val id1 = DCId("dcid1")
+        val id2 = DCId("dcid2")
+        val id3 = DCId("dcid3")
+        val dc1 = SimpleEnvironment(id1)
+        val dc2 = SimpleEnvironment(id2)
+        val dc3 = SimpleEnvironment(id3)
+        val ts1 = dc1.getNewTimestamp()
+        val ts2 = dc2.getNewTimestamp()
+        val ts3 = dc3.getNewTimestamp()
+        dc1.updateStateTS(ts1)
+        val ts4 = dc1.getNewTimestamp()
+        dc2.updateStateTS(ts2)
+        val ts5 = dc2.getNewTimestamp()
+        dc3.updateStateTS(ts3)
+        val ts6 = dc3.getNewTimestamp()
+        val rga1 = RGA()
+        val rga2 = RGA()
+        val rga3 = RGA()
+
+        rga1.insertAt(0, 'C', ts2)
+        rga1.insertAt(1, 'D', ts5)
+        rga2.insertAt(0, 'A', ts3)
+        rga2.insertAt(1, 'B', ts6)
+        rga3.insertAt(0, 'E', ts1)
+        rga3.insertAt(1, 'F', ts4)
+        rga3.merge(rga1)
+        rga3.merge(rga2)
+
+        assertEquals(listOf('A', 'B', 'C', 'D', 'E', 'F'), rga3.value())
+    }
+
+    /**
+    * This test evaluates the scenario: insert at 0, insert at 1 || insert at 0 (with greater
+    * timestamp), insert at 1 || insert at 0 (with second greater timestamp), insert at 1, merge
+    * from replica 1, merge from replica 2, value.
+    * Call to value should return an array containing the six values. Values inserted in replica 2
+    * should be before the one inserted in replica 3 which should be before those inserted at
+    * replica 1.
+    */
+    @Test
+    fun add0Add1_AddWin0Add1_AddSecond0Add1Merge1Merge2Value() {
+        val id1 = DCId("dcid1")
+        val id2 = DCId("dcid2")
+        val id3 = DCId("dcid3")
+        val dc1 = SimpleEnvironment(id1)
+        val dc2 = SimpleEnvironment(id2)
+        val dc3 = SimpleEnvironment(id3)
+        val ts1 = dc1.getNewTimestamp()
+        val ts2 = dc2.getNewTimestamp()
+        val ts3 = dc3.getNewTimestamp()
+        dc1.updateStateTS(ts1)
+        val ts4 = dc1.getNewTimestamp()
+        dc2.updateStateTS(ts2)
+        val ts5 = dc2.getNewTimestamp()
+        dc3.updateStateTS(ts3)
+        val ts6 = dc3.getNewTimestamp()
+        val rga1 = RGA()
+        val rga2 = RGA()
+        val rga3 = RGA()
+
+        rga1.insertAt(0, 'E', ts1)
+        rga1.insertAt(1, 'F', ts4)
+        rga2.insertAt(0, 'A', ts3)
+        rga2.insertAt(1, 'B', ts6)
+        rga3.insertAt(0, 'C', ts2)
+        rga3.insertAt(1, 'D', ts5)
+        rga3.merge(rga1)
+        rga3.merge(rga2)
+
+        assertEquals(listOf('A', 'B', 'C', 'D', 'E', 'F'), rga3.value())
+    }
+
+    /**
+    * This test evaluates the scenario: insert at 0, insert at 1 || insert at 0 (with second greater
+    * timestamp), insert at 1 || insert at 0 (with greater timestamp), insert at 1, merge from
+    * replica 1, merge from replica 2, value.
+    * Call to value should return an array containing the six values. Values inserted in replica 3
+    * should be before the one inserted in replica 2 which should be before those inserted at
+    * replica 1.
+    */
+    @Test
+    fun add0Add1_AddSecond0Add1_AddWin0Add1Merge1Merge2Value() {
+        val id1 = DCId("dcid1")
+        val id2 = DCId("dcid2")
+        val id3 = DCId("dcid3")
+        val dc1 = SimpleEnvironment(id1)
+        val dc2 = SimpleEnvironment(id2)
+        val dc3 = SimpleEnvironment(id3)
+        val ts1 = dc1.getNewTimestamp()
+        val ts2 = dc2.getNewTimestamp()
+        val ts3 = dc3.getNewTimestamp()
+        dc1.updateStateTS(ts1)
+        val ts4 = dc1.getNewTimestamp()
+        dc2.updateStateTS(ts2)
+        val ts5 = dc2.getNewTimestamp()
+        dc3.updateStateTS(ts3)
+        val ts6 = dc3.getNewTimestamp()
+        val rga1 = RGA()
+        val rga2 = RGA()
+        val rga3 = RGA()
+
+        rga1.insertAt(0, 'E', ts1)
+        rga1.insertAt(1, 'F', ts4)
+        rga2.insertAt(0, 'C', ts2)
+        rga2.insertAt(1, 'D', ts5)
+        rga3.insertAt(0, 'A', ts3)
+        rga3.insertAt(1, 'B', ts6)
+        rga3.merge(rga1)
+        rga3.merge(rga2)
+
+        assertEquals(listOf('A', 'B', 'C', 'D', 'E', 'F'), rga3.value())
+    }
+
+    /**
+    * This test evaluates the scenario: insert at 0 (with second greater timestamp) insert at 1 ||
+    * insert at 0, insert at 1 || insert at 0 (with greater timestamp), insert at 1, merge from
+    * replica 1, merge from replica 2, value.
+    * Call to value should return an array containing the six values. Values inserted in replica 3
+    * should be before the one inserted in replica 1 which should be before those inserted at
+    * replica 2.
+    */
+    @Test
+    fun addSecond0Add1_Add0Add1_AddWin0Add1Merge1Merge2Value() {
+        val id1 = DCId("dcid1")
+        val id2 = DCId("dcid2")
+        val id3 = DCId("dcid3")
+        val dc1 = SimpleEnvironment(id1)
+        val dc2 = SimpleEnvironment(id2)
+        val dc3 = SimpleEnvironment(id3)
+        val ts1 = dc1.getNewTimestamp()
+        val ts2 = dc2.getNewTimestamp()
+        val ts3 = dc3.getNewTimestamp()
+        dc1.updateStateTS(ts1)
+        val ts4 = dc1.getNewTimestamp()
+        dc2.updateStateTS(ts2)
+        val ts5 = dc2.getNewTimestamp()
+        dc3.updateStateTS(ts3)
+        val ts6 = dc3.getNewTimestamp()
+        val rga1 = RGA()
+        val rga2 = RGA()
+        val rga3 = RGA()
+
+        rga1.insertAt(0, 'C', ts2)
+        rga1.insertAt(1, 'D', ts5)
+        rga2.insertAt(0, 'E', ts1)
+        rga2.insertAt(1, 'F', ts4)
+        rga3.insertAt(0, 'A', ts3)
+        rga3.insertAt(1, 'B', ts6)
+        rga3.merge(rga1)
+        rga3.merge(rga2)
+
+        assertEquals(listOf('A', 'B', 'C', 'D', 'E', 'F'), rga3.value())
     }
 
     //TODO: delta tests
