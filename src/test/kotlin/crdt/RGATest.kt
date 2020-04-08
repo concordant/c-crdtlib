@@ -3,6 +3,7 @@ package crdtlib.test
 import crdtlib.crdt.RGA
 import crdtlib.utils.DCId
 import crdtlib.utils.SimpleEnvironment
+import crdtlib.utils.VersionVector
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -171,6 +172,24 @@ class RGATest {
         rga.insertAt(1, 'C', ts4)
 
         assertEquals(listOf('A', 'C'), rga.value())
+    }
+
+    /**
+    * This test evaluates the scenario: insert at 0 || merge, value.
+    * Call to value should return an array containing the value inserted in replica 1.
+    */
+    @Test
+    fun add0_MergeValue() {
+        val id = DCId("dcid")
+        val dc = SimpleEnvironment(id)
+        val ts = dc.getNewTimestamp()
+        val rga1 = RGA()
+        val rga2 = RGA()
+
+        rga1.insertAt(0, 'A', ts)
+        rga2.merge(rga1)
+
+        assertEquals(listOf('A'), rga2.value())
     }
 
     /**
@@ -638,6 +657,151 @@ class RGATest {
         assertEquals(listOf('A', 'B', 'C', 'D', 'E', 'F'), rga3.value())
     }
 
-    //TODO: delta tests
-    //TODO: op-based
+    /**
+    * This test evaluates the use of delta return by call to insertAt method.
+    * Call to value should return an array containing the value inserted in replica 1.
+    */
+    @Test
+    fun insertOp() {
+        val id = DCId("dcid")
+        val dc = SimpleEnvironment(id)
+        val ts = dc.getNewTimestamp()
+        val rga1 = RGA()
+        val rga2 = RGA()
+
+        val insertOp = rga1.insertAt(0, 'A', ts)
+        rga2.merge(insertOp)
+        rga2.merge(insertOp)
+
+        assertEquals(listOf('A'), rga1.value())
+        assertEquals(listOf('A'), rga2.value())
+    }
+
+    /**
+    * This test evaluates the use of delta return by call to removeAt method.
+    * Call to value should return an empty array.
+    */
+    @Test
+    fun removeOp() {
+        val id = DCId("dcid")
+        val dc = SimpleEnvironment(id)
+        val ts1 = dc.getNewTimestamp()
+        dc.updateStateTS(ts1)
+        val ts2 = dc.getNewTimestamp()
+        val rga1 = RGA()
+        val rga2 = RGA()
+
+        rga1.insertAt(0, 'A', ts1)
+        rga2.merge(rga1)
+        val removeOp = rga1.removeAt(0, ts2)
+        rga1.merge(removeOp)
+        rga2.merge(removeOp)
+
+        assertEquals(listOf(), rga1.value())
+        assertEquals(listOf(), rga2.value())
+    }
+
+    /**
+    * This test evaluates the use of delta return by call to insertAt and removeAt methods.
+    * Call to value should return an empty array.
+    */
+    @Test
+    fun insertRemoveOp() {
+        val id = DCId("dcid")
+        val dc = SimpleEnvironment(id)
+        val ts1 = dc.getNewTimestamp()
+        dc.updateStateTS(ts1)
+        val ts2 = dc.getNewTimestamp()
+        val rga1 = RGA()
+        val rga2 = RGA()
+
+        val insertOp = rga1.insertAt(0, 'A', ts1)
+        val removeOp = rga1.removeAt(0, ts2)
+        rga1.merge(insertOp)
+        rga1.merge(removeOp)
+        rga2.merge(insertOp)
+        rga2.merge(removeOp)
+
+        assertEquals(listOf(), rga1.value())
+        assertEquals(listOf(), rga2.value())
+    }
+
+    /**
+    * This test evaluates the merge of deltas returned by call to insertAt and removeAt methods.
+    * Call to value should return an empty array.
+    */
+    @Test
+    fun insertRemoveOpFusion() {
+        val id = DCId("dcid")
+        val dc = SimpleEnvironment(id)
+        val ts1 = dc.getNewTimestamp()
+        dc.updateStateTS(ts1)
+        val ts2 = dc.getNewTimestamp()
+        val rga1 = RGA()
+        val rga2 = RGA()
+
+        val op1 = rga1.insertAt(0, 'A', ts1)
+        val op2 = rga1.removeAt(0, ts2)
+        op1.merge(op2)
+        rga1.merge(op1)
+        rga2.merge(op1)
+
+        assertEquals(listOf(), rga1.value())
+        assertEquals(listOf(), rga2.value())
+    }
+
+    /**
+    * This test evaluates the merge of deltas returned by call to removeAt and insertAt methods.
+    * Call to value should return an empty array.
+    */
+    @Test
+    fun removeInsertOpFusion() {
+        val id = DCId("dcid")
+        val dc = SimpleEnvironment(id)
+        val ts1 = dc.getNewTimestamp()
+        dc.updateStateTS(ts1)
+        val ts2 = dc.getNewTimestamp()
+        val rga1 = RGA()
+        val rga2 = RGA()
+
+        val op1 = rga1.insertAt(0, 'A', ts1)
+        val op2 = rga1.removeAt(0, ts2)
+        op2.merge(op1)
+        rga1.merge(op2)
+        rga2.merge(op2)
+
+        assertEquals(listOf(), rga1.value())
+        assertEquals(listOf(), rga2.value())
+    }
+
+    /**
+    * This test evaluates the generation of delta plus its merging into another replica.
+    * Call to value should return an array containing the values set yb insertAt w.r.t the given
+    * context.
+    */
+    @Test
+    fun generateDelta() {
+        val id = DCId("dcid")
+        val dc = SimpleEnvironment(id)
+        val ts1 = dc.getNewTimestamp()
+        dc.updateStateTS(ts1)
+        val ts2 = dc.getNewTimestamp()
+        dc.updateStateTS(ts2)
+        val ts3 = dc.getNewTimestamp()
+        dc.updateStateTS(ts3)
+        val ts4 = dc.getNewTimestamp()
+        val vv = VersionVector()
+        vv.addTS(ts2)
+        val rga1 = RGA()
+        val rga2 = RGA()
+
+        rga1.insertAt(0, 'A', ts1)
+        rga1.insertAt(0, 'B', ts3)
+        rga1.insertAt(0, 'C', ts2)
+        rga1.insertAt(0, 'D', ts4)
+        val delta = rga1.generateDelta(vv)
+        rga2.merge(delta)
+
+        assertEquals(listOf('D', 'B'), rga2.value())
+    }
 }
