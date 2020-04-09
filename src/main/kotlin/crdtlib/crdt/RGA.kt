@@ -15,16 +15,10 @@ class RGA : DeltaCRDT<RGA> {
     private val nodes: ArrayList<RGANode>
 
     /**
-    * A version vector storing the local causal context.
-    */
-    public val causalContext: VersionVector
-
-    /**
     * Default constructor.
     */
     constructor() {
         this.nodes = arrayListOf<RGANode>()
-        this.causalContext = VersionVector()
     }
 
     /**
@@ -56,11 +50,9 @@ class RGA : DeltaCRDT<RGA> {
         val newNode = RGANode(atom, anchor, ts, ts, false)
 
         this.nodes.add(realIdx, newNode)
-        this.causalContext.addTS(ts)
 
         val delta = RGA()
         delta.nodes.add(newNode)
-        delta.causalContext.pointWiseMax(this.causalContext)
         return delta
     }
 
@@ -76,11 +68,9 @@ class RGA : DeltaCRDT<RGA> {
         val newNode = RGANode(node.atom, node.anchor, node.uid, ts, true)
 
         this.nodes.set(realIdx, newNode)
-        this.causalContext.addTS(ts)
 
         val delta = RGA()
         delta.nodes.add(newNode)
-        delta.causalContext.pointWiseMax(this.causalContext)
         return delta
     }
 
@@ -104,7 +94,6 @@ class RGA : DeltaCRDT<RGA> {
                 delta.nodes.add(node.copy())
             }
         }
-        delta.causalContext.pointWiseMax(this.causalContext)
         return delta
     }
     
@@ -112,19 +101,16 @@ class RGA : DeltaCRDT<RGA> {
     * Merges informations contained in a given delta into the local replica, the merge is unilateral
     * and only local replica is modified.
     * For each node in foreign replica: if the node already exists in the local replica we update it
-    * only if its timestamp is not included in local causal context; else we insert it correctly.
-    * The correct place is at the right of node's anchor. If other nodes have the same anchor bigger
-    * timestamp wins: meaning that the distant node will be either put at the left of the first
-    * weaker (with smaller timestamp) node found, or at the end of the array if no weaker node
-    * exist.
+    * by applying a last remove wins policy; else we insert it correctly. The correct place is at
+    * the right of foreign node's anchor. If other nodes have the same anchor bigger timestamp wins:
+    * meaning that the distant node will be either put at the left of the first weaker (with smaller
+    * timestamp) node found, or at the end of the array if no weaker node exist.
     * @param delta the delta that should be merge with the local replica.
     */
     override fun merge(delta: Delta<RGA>) {
         if (delta !is RGA) throw UnexpectedTypeException("RGA does not support merging with type:" + delta::class)
 
         for (node in delta.nodes) {
-            if (this.causalContext.includesTS(node.ts)) continue 
-
             val localNode = this.nodes.find { it.uid == node.uid }
             if (localNode == null) { // First time this node is seen.
                 var index = -1
@@ -138,7 +124,7 @@ class RGA : DeltaCRDT<RGA> {
                 if (sameAnchorNodes.size > 0) { // There exist nodes with the same anchor.
                     var foundWeaker = false
                     for (tmpNode in sameAnchorNodes) {
-                        if (tmpNode.ts < node.ts) { // A weaker node has been found.
+                        if (tmpNode.uid < node.uid) { // A weaker node has been found.
                             index = this.nodes.indexOf(tmpNode)
                             foundWeaker = true
                             break
@@ -150,11 +136,12 @@ class RGA : DeltaCRDT<RGA> {
                 }
 
                 this.nodes.add(index, node.copy())
-            } else { // This node already exists.
-                var index = this.nodes.indexOf(localNode)
-                this.nodes.set(index, node.copy())
+            } else if (node.removed) { // This node already exists and foreign node is a tombstone.
+                if (localNode.removed == false || localNode.ts < node.ts) { // Last remove wins.
+                    var index = this.nodes.indexOf(localNode)
+                    this.nodes.set(index, node.copy())
+                }
             }
         }
-        this.causalContext.pointWiseMax(delta.causalContext)
     }
 }
