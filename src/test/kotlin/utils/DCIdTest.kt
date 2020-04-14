@@ -12,7 +12,7 @@ import kotlin.test.assertTrue
 class DCIdTest {
 
     /**
-    * This test evaluates the comparaison of a smaller DCId and a greater one.
+    * This test evaluates the comparison of a smaller DCId and a greater one.
     * Call to compareTo should return negative value.
     */
     @Test
@@ -26,7 +26,7 @@ class DCIdTest {
     }
 
     /**
-    * This test evaluates the comparaison of a greater DCId and a smaller one.
+    * This test evaluates the comparison of a greater DCId and a smaller one.
     * Call to compareTo should return positive value.
     */
     @Test
@@ -40,7 +40,7 @@ class DCIdTest {
     }
 
     /**
-    * This test evaluates the comparaison of two equal DCIds.
+    * This test evaluates the comparison of two equal DCIds.
     * Call to compareTo should return 0.
     */
     @Test
@@ -54,7 +54,7 @@ class DCIdTest {
     }
 
     /**
-    * This test evaluates the comparaison (using operators) of a smaller DCId and a greater one.
+    * This test evaluates the comparison (using operators) of a smaller DCId and a greater one.
     */
     @Test
     fun negativeCompareToOperator() {
@@ -69,7 +69,7 @@ class DCIdTest {
     }
 
     /**
-    * This test evaluates the comparaison (using operators) of a greater DCId and a smaller one.
+    * This test evaluates the comparison (using operators) of a greater DCId and a smaller one.
     */
     @Test
     fun positiveCompareToOperator() {
@@ -84,7 +84,7 @@ class DCIdTest {
     }
 
     /**
-    * This test evaluates the comparaison (using operators) of two equal DCIds.
+    * This test evaluates the comparison (using operators) of two equal DCIds.
     */
     @Test
     fun zeroCompareToOperator() {
