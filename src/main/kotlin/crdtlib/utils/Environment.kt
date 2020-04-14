@@ -1,19 +1,27 @@
 package crdtlib.utils
 
+/**
+* This interface represents a contextual environment.
+**/
 interface Environment {
-    /** Method for generating a monotonically increasing timestamp
-     */
+
+    /**
+    * Generates a monotonically increasing timestamp.
+    **/
     fun getNewTimestamp(): Timestamp
 
-    /** Method for return the current state
-     */
+    /**
+    * Gets the current state associated with the environment.
+    **/
     fun getCurrentState(): VersionVector
 
-    /** Updates the current state with the given timestamp
-     */
+    /**
+    * Updates the current state with the given timestamp.
+    **/
     fun updateStateTS(ts: Timestamp)
 
-    /** Updates the current state with the given version vector
-     */
+    /**
+    * Updates the current state with the given version vector.
+    **/
     fun updateStateVV(vv: VersionVector)
 }
