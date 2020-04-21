@@ -88,8 +88,8 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
     }
 
     /**
-    * Merges informations contained in a given delta into the local replica, the merge is unilateral
-    * and only local replica is modified.
+    * Merges information contained in a given delta into the local replica, the merge is unilateral
+    * and only the local replica is modified.
     * A foreign (local) value is kept iff it is contained in the local (foreign) replica or its
     * associated timestamp is not included in the local (foreign) causal context.
     * @param delta the delta that should be merge with the local replica.
