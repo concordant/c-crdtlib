@@ -5,14 +5,20 @@ import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
 
 /**
+* Represents a unique identifier for RGA nodes. We use timestamps as uids since we assume they are
+* distinct and monotonically increasing.
+**/
+typealias RGAUId = Timestamp
+
+/**
 * Data class representing information stored in an RGA node.
 * @property atom the atom stored within the node.
-* @property anchor the uid of the node at the left of this node when it has been created.
-* @property uid the unique identifier (timestamp) associated with the node.
+* @property anchor the uid of the node to the left of this node, when it was inserted.
+* @property uid the unique identifier associated with the node.
 * @property ts the timestamp associated with last update of the node.
-* @property removed a boolean to know if the node is a tombstone.
+* @property removed a boolean to mark if the node is a tombstone.
 */
-data class RGANode(val atom: Char, val anchor: Timestamp?, val uid: Timestamp, val ts: Timestamp, val removed: Boolean)
+data class RGANode(val atom: Char, val anchor: RGAUId?, val uid: RGAUId, val ts: Timestamp, val removed: Boolean)
 
 /**
 * This class is a delta-based CRDT Replicated Growable Array (RGA).
@@ -50,7 +56,7 @@ class RGA : DeltaCRDT<RGA> {
     }
 
     /**
-    * Inserts a given atom to a given index.
+    * Inserts a given atom at a given index.
     * @param index the index where the atom should be inserted.
     * @param atom the atom that ashould be inserted.
     * @param ts the timestamp associated with the operation.
@@ -110,13 +116,13 @@ class RGA : DeltaCRDT<RGA> {
     }
     
     /**
-    * Merges informations contained in a given delta into the local replica, the merge is unilateral
+    * Merges information contained in a given delta into the local replica, the merge is unilateral
     * and only local replica is modified.
-    * For each node in foreign replica: if the node already exists in the local replica we update it
-    * by applying a last remove wins policy; else we insert it correctly. The correct place is at
-    * the right of foreign node's anchor. If other nodes have the same anchor bigger timestamp wins:
-    * meaning that the distant node will be either put at the left of the first weaker (with smaller
-    * timestamp) node found, or at the end of the array if no weaker node exist.
+    * For each node in the delta: if the node already exists in the local replica, we update it by
+    * applying a last-remove-wins policy; else we insert it correctly. The correct place is at the
+    * right of the foreign node's anchor. If other nodes have the same anchor, higher timestamp
+    * wins: meaning that the delta's node will be either put at the left of the first weaker (with
+    * smaller timestamp) node found, or at the end of the array if no weaker node exists.
     * @param delta the delta that should be merge with the local replica.
     */
     override fun merge(delta: Delta<RGA>) {
@@ -125,12 +131,11 @@ class RGA : DeltaCRDT<RGA> {
         for (node in delta.nodes) {
             val localNode = this.nodes.find { it.uid == node.uid }
             if (localNode == null) { // First time this node is seen.
-                var index = -1
+                var index = 0
                 val anchorNode = this.nodes.find { it.uid == node.anchor }
                 if (anchorNode != null) {
-                    index = this.nodes.indexOf(anchorNode)
+                    index = this.nodes.indexOf(anchorNode) + 1
                 }
-                index++
 
                 val sameAnchorNodes = this.nodes.filter { it.anchor == node.anchor }
                 if (sameAnchorNodes.size > 0) { // There exist nodes with the same anchor.
@@ -149,7 +154,7 @@ class RGA : DeltaCRDT<RGA> {
 
                 this.nodes.add(index, node.copy())
             } else if (node.removed) { // This node already exists and foreign node is a tombstone.
-                if (localNode.removed == false || localNode.ts < node.ts) { // Last remove wins.
+                if (localNode.removed == false) { // Remove-wins.
                     var index = this.nodes.indexOf(localNode)
                     this.nodes.set(index, node.copy())
                 }
