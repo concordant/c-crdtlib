@@ -37,6 +37,8 @@ class RGA : DeltaCRDT<RGA> {
     * @return the real index.
     */
     private fun toRealIndex(index: Int): Int {
+        if (index == -1) return -1
+
         var realIdx = -1
         var nRemoved = 0
         do {
@@ -55,11 +57,11 @@ class RGA : DeltaCRDT<RGA> {
     * @return the resulting delta operation.
     */
     fun insertAt(index: Int, atom: Char, ts: Timestamp): RGA {
-        val realIdx = this.toRealIndex(index)
-        val anchor = this.nodes.getOrNull(realIdx - 1)?.uid // Anchor is null if left node is supposed to be at index -1
+        val realIdx = this.toRealIndex(index - 1)
+        val anchor = this.nodes.getOrNull(realIdx)?.uid // Anchor is null if left node is supposed to be at index -1
         val newNode = RGANode(atom, anchor, ts, ts, false)
 
-        this.nodes.add(realIdx, newNode)
+        this.nodes.add(realIdx + 1, newNode)
 
         val delta = RGA()
         delta.nodes.add(newNode)
