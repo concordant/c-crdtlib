@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project
-                xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-                xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -61,27 +61,95 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>default-resources</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>default-testResources</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <version>${kotlin.version}</version>
-
                 <executions>
                     <execution>
-                        <id>compile</id>
+                        <id>compile-jvm</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>compile</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>test-compile</id>
+                        <id>test-compile-jvm</id>
                         <phase>test-compile</phase>
                         <goals>
                             <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>compile-js</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>js</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDirectory>${project.basedir}/src/main/kotlin/crdtlib/crdt</sourceDirectory>
+                                <sourceDirectory>${project.basedir}/src/main/kotlin/crdtlib/utils</sourceDirectory>
+                            </sourceDirs>
+                            <moduleKind>commonjs</moduleKind>
+                            <sourceMap>true</sourceMap>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-compile-js</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-js</goal>
+                        </goals>
+                        <configuration>
+                            <moduleKind>commonjs</moduleKind>
+                            <sourceMap>true</sourceMap>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+                <executions>
+                    <execution>
+                        <id>default-test</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>test-jvm</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -105,6 +173,7 @@
                 <version>1.6.0</version>
                 <executions>
                     <execution>
+                        <id>ts-generator</id>
                         <phase>test</phase>
                         <goals>
                             <goal>java</goal>
