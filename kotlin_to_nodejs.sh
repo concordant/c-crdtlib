@@ -1,11 +1,13 @@
 #! /bin/bash
 
+# Compile the entire project
+mvn package
+
 # Install the Kotlin module for JavaScript
 npm install kotlin
 
-# Compile the Kotlin crdtlib into Javascript. Sources are put in the node_modules directory to be
-# used using Node.js
-kotlinc-js -output node_modules/crdtlib/crdtlib.js -meta-info src/main/kotlin/crdtlib/*/*.kt -module-kind commonjs
+# Move the JavaScript generated code to node_modules
+cp -r target/js node_modules/crdtlib
 
 # Create a package.json file for the crdtlib module. It should be put in the node_modules/crdtlib/
 # directory, and specify the dependency to the kotlin module.

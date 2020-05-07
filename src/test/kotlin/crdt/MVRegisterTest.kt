@@ -5,6 +5,7 @@ import crdtlib.utils.DCId
 import crdtlib.utils.SimpleEnvironment
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
 * Represents a test suite for MVRegister.
@@ -19,7 +20,7 @@ class MVRegisterTest {
     fun createEmptyGet() {
         val reg = MVRegister<String>()
 
-        assert(reg.get().isEmpty())
+        assertTrue(reg.get().isEmpty())
     }
 
     /**

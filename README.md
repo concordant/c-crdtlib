@@ -6,11 +6,11 @@ CRDT library in kotlin for use in concordant.
 
 ## Javascript generator
 
-Use _gradle_ for generating Javascript version.
-
 You can also use the *kotlin_to_nodejs.sh* script that will configure everything to work using with
 Node.js. You can now use the crdtlib module with JavaScript as describe in the *test_nodejs.js*
 file.
+
+If you want only to generate JavaScript code and tests you can run _mvn package_.
 
 ## Typescript generator
 
