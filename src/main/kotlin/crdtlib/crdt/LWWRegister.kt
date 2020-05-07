@@ -71,9 +71,9 @@ class LWWRegister<DataT> : DeltaCRDT<LWWRegister<DataT>> {
     }
 
     /**
-    * Merges informations contained in a given delta into the local replica, the merge is unilateral
-    * and only local replica is modified.
-    * The foreign value is kept iff its associated timestamp is greater than the current one.
+    * Merges information contained in a given delta into the local replica, the merge is unilateral
+    * and only the local replica is modified.
+    * The foreign value wins iff its associated timestamp is greater than the current one.
     * @param delta the delta that should be merge with the local replica.
     */
     override fun merge(delta: Delta<LWWRegister<DataT>>) {

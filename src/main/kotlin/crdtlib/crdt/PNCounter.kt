@@ -81,9 +81,9 @@ class PNCounter : DeltaCRDT<PNCounter> {
     }
 
     /**
-    * Merges informations contained in a given delta into the local replica, the merge is unilateral
-    * and only local replica is modified.
-    * A foreign information (i.e., increment or decrement values) is applied if last stored
+    * Merges information contained in a given delta into the local replica, the merge is unilateral
+    * and only the local replica is modified.
+    * A foreign information (i.e., increment or decrement values) is applied if the last stored
     * operation w.r.t to a given datacenter is older than the foreign one, or no information is
     * present for this datacenter.
     * @param delta the delta that should be merge with the local replica.
