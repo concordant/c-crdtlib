@@ -1,10 +1,14 @@
 package crdtlib.utils
 
 import kotlin.math.absoluteValue
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
+
 
 /**
 * This class represents a version vector.
 **/
+@Serializable
 class VersionVector {
 
     /**
@@ -91,5 +95,17 @@ class VersionVector {
     */
     fun copy(): VersionVector {
         return VersionVector(this)
+    }
+
+    fun toJson(): String {
+        val JSON = Json(JsonConfiguration.Stable)
+        return JSON.stringify(VersionVector.serializer(), this)
+    }
+
+    companion object {
+        fun fromJson(json: String): VersionVector {
+            val JSON = Json(JsonConfiguration.Stable)
+            return JSON.parse(VersionVector.serializer(), json)
+        }
     }
 }

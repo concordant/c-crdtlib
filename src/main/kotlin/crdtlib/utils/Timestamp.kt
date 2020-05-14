@@ -1,10 +1,14 @@
 package crdtlib.utils
 
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
+
 /**
 * This class represents a timestamp.
 * @property id the datacenter id.
 * @property cnt the value associated to the timestamp.
 **/
+@Serializable
 data class Timestamp(val id: DCId, val cnt: Int) : Comparable<Timestamp> {
 
     /**
@@ -17,5 +21,17 @@ data class Timestamp(val id: DCId, val cnt: Int) : Comparable<Timestamp> {
         if(this.cnt != other.cnt)
             return this.cnt - other.cnt
         return this.id.compareTo(other.id)
+    }
+
+    fun toJson(): String {
+        val JSON = Json(JsonConfiguration.Stable)
+        return JSON.stringify(Timestamp.serializer(), this)
+    }
+
+    companion object {
+        fun fromJson(json: String): Timestamp {
+            val JSON = Json(JsonConfiguration.Stable)
+            return JSON.parse(Timestamp.serializer(), json)
+        }
     }
 }
