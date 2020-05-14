@@ -135,6 +135,9 @@ xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLS
                     <compilerPlugins>
                         <plugin>kotlinx-serialization</plugin>
                     </compilerPlugins>
+                    <args>
+                        <arg>-Xopt-in=kotlin.RequiresOptIn</arg>
+                    </args>
                 </configuration>
                 <dependencies>
                     <dependency>
