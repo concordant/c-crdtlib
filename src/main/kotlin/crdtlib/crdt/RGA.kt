@@ -3,11 +3,11 @@ package crdtlib.crdt
 import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
+import kotlin.reflect.KClass
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.*
 import kotlinx.serialization.internal.*
 import kotlinx.serialization.json.*
-import kotlin.reflect.KClass
 
 /**
 * Represents a unique identifier for RGA nodes. We use timestamps as uids since we assume they are
@@ -194,7 +194,8 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
 }
 
 @Serializer(forClass = RGANode::class)
-class RGANodeSerializer<T : Any>(private val dataSerializer: KSerializer<T>) : KSerializer<RGANode<T>> {
+class RGANodeSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
+        KSerializer<RGANode<T>> {
 
     override val descriptor: SerialDescriptor = SerialDescriptor("RGANodeSerializer") {
         val dataDescriptor = dataSerializer.descriptor
@@ -224,15 +225,15 @@ class RGANodeSerializer<T : Any>(private val dataSerializer: KSerializer<T>) : K
         lateinit var ts: Timestamp
         var removed = true
         loop@ while (true) {
-            when (val i = input.decodeElementIndex(descriptor)) {
+            when (val idx = input.decodeElementIndex(descriptor)) {
                 CompositeDecoder.READ_DONE -> break@loop
 
-                0 -> atom = input.decodeSerializableElement(descriptor, i, dataSerializer)
-                1 -> anchor = input.decodeNullableSerializableElement(descriptor, i, NullableSerializer(RGAUId.serializer()))
-                2 -> uid = input.decodeSerializableElement(descriptor, i, RGAUId.serializer())
-                3 -> ts = input.decodeSerializableElement(descriptor, i, Timestamp.serializer())
-                4 -> removed = input.decodeBooleanElement(descriptor, i)
-                else -> throw SerializationException("Unknown index $i")
+                0 -> atom = input.decodeSerializableElement(descriptor, idx, dataSerializer)
+                1 -> anchor = input.decodeNullableSerializableElement(descriptor, idx, NullableSerializer(RGAUId.serializer()))
+                2 -> uid = input.decodeSerializableElement(descriptor, idx, RGAUId.serializer())
+                3 -> ts = input.decodeSerializableElement(descriptor, idx, Timestamp.serializer())
+                4 -> removed = input.decodeBooleanElement(descriptor, idx)
+                else -> throw SerializationException("Unknown index $idx")
             }
         }
         input.endStructure(descriptor)
@@ -241,29 +242,29 @@ class RGANodeSerializer<T : Any>(private val dataSerializer: KSerializer<T>) : K
 }
 
 @Serializer(forClass = RGA::class)
-class RGASerializer<T : Any>(private val atomSerializer: KSerializer<T>) : KSerializer<RGA<T>> {
+class RGASerializer<T : Any>(private val dataSerializer: KSerializer<T>) : KSerializer<RGA<T>> {
 
     override val descriptor: SerialDescriptor = SerialDescriptor("RGASerializer") {
-        val nodeSerializer = RGANode.serializer(atomSerializer)
+        val nodeSerializer = RGANode.serializer(dataSerializer)
         element("nodes", ListSerializer(nodeSerializer).descriptor)
     }
 
     override fun serialize(encoder: Encoder, value: RGA<T>) {
         val output = encoder.beginStructure(descriptor)
-        val nodeSerializer = RGANode.serializer(atomSerializer)
+        val nodeSerializer = RGANode.serializer(dataSerializer)
         output.encodeSerializableElement(descriptor, 0, ListSerializer(nodeSerializer), value.nodes)
         output.endStructure(descriptor)
     }
 
     override fun deserialize(decoder: Decoder): RGA<T> {
         val input = decoder.beginStructure(descriptor)
-        val nodeSerializer = RGANode.serializer(atomSerializer)
+        val nodeSerializer = RGANode.serializer(dataSerializer)
         lateinit var nodes: List<RGANode<T>>
         loop@ while (true) {
-            when (val i = input.decodeElementIndex(descriptor)) {
+            when (val idx = input.decodeElementIndex(descriptor)) {
                 CompositeDecoder.READ_DONE -> break@loop
-                0 -> nodes = input.decodeSerializableElement(descriptor, 0, ListSerializer(nodeSerializer))
-                else -> throw SerializationException("Unknown index $i")
+                0 -> nodes = input.decodeSerializableElement(descriptor, idx, ListSerializer(nodeSerializer))
+                else -> throw SerializationException("Unknown index $idx")
             }
         }
         input.endStructure(descriptor)
@@ -271,33 +272,34 @@ class RGASerializer<T : Any>(private val atomSerializer: KSerializer<T>) : KSeri
     }
 }
 
-class JsonRGASerializer<T : Any>(private val rgaSerializer: KSerializer<RGA<T>>) : JsonTransformingSerializer<RGA<T>>(rgaSerializer, "JsonRGASerializer") {
+class JsonRGASerializer<T : Any>(private val serializer: KSerializer<RGA<T>>) :
+        JsonTransformingSerializer<RGA<T>>(serializer, "JsonRGASerializer") {
 
     override fun writeTransform(element: JsonElement): JsonElement {
         val metadata = mutableListOf<JsonElement>()
-        val values = mutableListOf<JsonElement>()
+        val value = mutableListOf<JsonElement>()
         for (tmpNode in element.jsonObject.getArray("nodes")) {
-            val removed = tmpNode.jsonObject.get("removed")?.boolean
+            val removed = tmpNode.jsonObject.getPrimitive("removed").boolean
             var transformedNode = tmpNode
             if (removed == false) {
                 transformedNode = JsonObject(tmpNode.jsonObject.filterNot { it.key == "atom" })
-                values.add(tmpNode.jsonObject.get("atom") as JsonElement)
+                value.add(tmpNode.jsonObject.get("atom") as JsonElement)
             }
             metadata.add(transformedNode)
         }
-        return JsonObject(mapOf("_metadata" to JsonArray(metadata), "values" to JsonArray(values)))
+        return JsonObject(mapOf("_metadata" to JsonArray(metadata), "value" to JsonArray(value)))
     }
 
     override fun readTransform(element: JsonElement): JsonElement {
-        val values = element.jsonObject.getArray("values")
+        val value = element.jsonObject.getArray("value")
         val nodes = mutableListOf<JsonElement>()
-        var idxValues = 0
+        var idxValue = 0
         for (tmpNode in element.jsonObject.getArray("_metadata")) {
-            val removed = tmpNode.jsonObject.get("removed")?.boolean
+            val removed = tmpNode.jsonObject.getPrimitive("removed").boolean
             var transformedNode = tmpNode
             if (removed == false) {
-                transformedNode = JsonObject(tmpNode.jsonObject.plus("atom" to values[idxValues]))
-                idxValues++
+                transformedNode = JsonObject(tmpNode.jsonObject.plus("atom" to value[idxValue]))
+                idxValue++
             }
             nodes.add(transformedNode)
         }
