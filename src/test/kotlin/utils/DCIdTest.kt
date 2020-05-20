@@ -97,4 +97,28 @@ class DCIdTest {
         assertTrue(dc1 >= dc2)
         assertTrue(dc1 == dc2)
     }
+
+    /**
+    * This test evaluates JSON serialization.
+    **/
+    @Test
+    fun toJsonSerialization() {
+        val dc = DCId("dcid1")
+
+        val dcJson = dc.toJson()
+
+        assertEquals("""{"name":"dcid1"}""", dcJson)
+    }
+
+    /**
+    * This test evaluates JSON deserialization.
+    **/
+    @Test
+    fun fromJsonDeserialization() {
+        val dc = DCId("dcid1")
+
+        val dcJson = DCId.fromJson("""{"name":"dcid1"}""")
+
+        assertTrue(dc == dcJson)
+    }
 }
