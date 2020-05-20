@@ -589,4 +589,47 @@ class LWWMapTest {
         assertNull(map2.get(key2))
         assertEquals(value, map2.get(key3))
     }
+
+    /**
+    * This test evaluates JSON serialization.
+    **/
+    @Test
+    fun toJsonSerialization() {
+        val id = DCId("dcid")
+        val dc = SimpleEnvironment(id)
+        val ts1 = dc.getNewTimestamp()
+        dc.updateStateTS(ts1)
+        val ts2 = dc.getNewTimestamp()
+        dc.updateStateTS(ts2)
+        val ts3 = dc.getNewTimestamp()
+        dc.updateStateTS(ts3)
+        val ts4 = dc.getNewTimestamp()
+        val key1 = "key1"
+        val key2 = "key2"
+        val key3 = "key3"
+        val value1 = "value1"
+        val value2 = "value2"
+        val value3 = "value3"
+        val map = LWWMap()
+
+        map.put(key1, value1, ts1)
+        map.put(key2, value2, ts2)
+        map.delete(key2, ts3)
+        map.put(key3, value3, ts4)
+        val mapJson = map.toJson()
+
+        assertEquals("""{"_metadata":{"entries":{"key1":{"id":{"name":"dcid"},"cnt":1},"key2":{"id":{"name":"dcid"},"cnt":3},"key3":{"id":{"name":"dcid"},"cnt":4}},"causalContext":{"entries":[{"name":"dcid"},4]}},"key1":"value1","key2":null,"key3":"value3"}""", mapJson)
+    }
+
+    /**
+    * This test evaluates JSON deserialization.
+    **/
+    @Test
+    fun fromJsonDeserialization() {
+        val mapJson = LWWMap.fromJson("""{"_metadata":{"entries":{"key1":{"id":{"name":"dcid"},"cnt":1},"key2":{"id":{"name":"dcid"},"cnt":3},"key3":{"id":{"name":"dcid"},"cnt":4}},"causalContext":{"entries":[{"name":"dcid"},4]}},"key1":"value1","key2":null,"key3":"value3"}""")
+
+        assertEquals("value1", mapJson.get("key1"))
+        assertNull(mapJson.get("key2"))
+        assertEquals("value3", mapJson.get("key3"))
+    }
 }

@@ -3,10 +3,13 @@ package crdtlib.crdt
 import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
 
 /**
 * This class is a delta-based CRDT map implementing last writer wins (LWW) to resolve conflicts.
 */
+@Serializable
 class LWWMap : DeltaCRDT<LWWMap> {
 
     /**
@@ -122,5 +125,46 @@ class LWWMap : DeltaCRDT<LWWMap> {
             str += "key:${key}, value:${pair.first}, ts:${pair.second}\n"
         }
         return str + "}\n"
+    }
+
+    fun toJson(): String {
+        val JSON = Json(JsonConfiguration.Stable)
+        val jsonSerializer = JsonLWWMapSerializer(LWWMap.serializer())
+        return JSON.stringify<LWWMap>(jsonSerializer, this)
+    }
+
+    companion object {
+        fun fromJson(json: String): LWWMap {
+            val JSON = Json(JsonConfiguration.Stable)
+            val jsonSerializer = JsonLWWMapSerializer(LWWMap.serializer())
+            return JSON.parse(jsonSerializer, json)
+        }
+    }
+}
+
+class JsonLWWMapSerializer(private val serializer: KSerializer<LWWMap>) :
+        JsonTransformingSerializer<LWWMap>(serializer, "JsonLWWMapSerializer") {
+
+    override fun writeTransform(element: JsonElement): JsonElement {
+        val value = mutableMapOf<String, JsonElement>()
+        val entries = mutableMapOf<String, JsonElement>()
+        val causalContext = element.jsonObject.getObject("causalContext")
+        for ((key, entry) in element.jsonObject.getObject("entries")) {
+            value.put(key, entry.jsonObject.getPrimitive("first"))
+            entries.put(key, entry.jsonObject.getObject("second"))
+        }
+        val metadata = JsonObject(mapOf("entries" to JsonObject(entries.toMap()), "causalContext" to causalContext))
+        return JsonObject(mapOf("_metadata" to metadata).plus(value))
+    }
+
+    override fun readTransform(element: JsonElement): JsonElement {
+        val metadata = element.jsonObject.getObject("_metadata")
+        val causalContext = metadata.getObject("causalContext")
+        val entries = mutableMapOf<String, JsonElement>()
+        for ((key, entry) in metadata.getObject("entries")) {
+            val tmpEntry = JsonObject(mapOf("first" to element.jsonObject.getPrimitive(key), "second" to entry))
+            entries.put(key, tmpEntry)
+        }
+        return JsonObject(mapOf("entries" to JsonObject(entries), "causalContext" to causalContext))
     }
 }
