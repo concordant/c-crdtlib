@@ -108,6 +108,10 @@ class PNCounter : DeltaCRDT<PNCounter> {
         }
     }
 
+    /**
+    * Serializes this crdt counter to a json string.
+    * @return the resulted json string.
+    */
     fun toJson(): String {
         val JSON = Json(JsonConfiguration.Stable)
         val jsonSerializer = JsonPNCounterSerializer(PNCounter.serializer())
@@ -115,6 +119,11 @@ class PNCounter : DeltaCRDT<PNCounter> {
     }
 
     companion object {
+        /**
+        * Deserializes a given json string in a crdt counter.
+        * @param json the given json string.
+        * @return the resulted crdt counter.
+        */
         fun fromJson(json: String): PNCounter {
             val JSON = Json(JsonConfiguration.Stable)
             val jsonSerializer = JsonPNCounterSerializer(PNCounter.serializer())
@@ -123,6 +132,9 @@ class PNCounter : DeltaCRDT<PNCounter> {
     }
 }
 
+/**
+* This class is a json transformer for PNCounter, it allows the separation between data and metadata.
+*/
 class JsonPNCounterSerializer(private val serializer : KSerializer<PNCounter>) :
         JsonTransformingSerializer<PNCounter>(serializer, "JsonPNCounterSerializer") {
 

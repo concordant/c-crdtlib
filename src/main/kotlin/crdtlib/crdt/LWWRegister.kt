@@ -45,7 +45,7 @@ class LWWRegister<T : Any> : DeltaCRDT<LWWRegister<T>> {
     /**
     * Gets the value currently stored in the register.
     * @return value stored in the register.
-    **/
+    */
     fun get(): T {
         return value
     }
@@ -90,6 +90,10 @@ class LWWRegister<T : Any> : DeltaCRDT<LWWRegister<T>> {
         }
     }
 
+    /**
+    * Serializes this crdt LWW register to a json string.
+    * @return the resulted json string.
+    */
     @OptIn(ImplicitReflectionSerializer::class)
     fun toJson(kclass: KClass<T>): String {
         val JSON = Json(JsonConfiguration.Stable)
@@ -98,6 +102,11 @@ class LWWRegister<T : Any> : DeltaCRDT<LWWRegister<T>> {
     }
 
     companion object {
+        /**
+        * Deserializes a given json string in a crdt LWW register.
+        * @param json the given json string.
+        * @return the resulted LWW register.
+        */
         @OptIn(ImplicitReflectionSerializer::class)
         fun <T : Any> fromJson(kclass: KClass<T>, json: String): LWWRegister<T> {
             val JSON = Json(JsonConfiguration.Stable)
@@ -107,6 +116,9 @@ class LWWRegister<T : Any> : DeltaCRDT<LWWRegister<T>> {
     }
 }
 
+/**
+* This class is a serializer for generic LWWRegister.
+*/
 @Serializer(forClass = LWWRegister::class)
 class LWWRegisterSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
         KSerializer<LWWRegister<T>> {
@@ -140,6 +152,9 @@ class LWWRegisterSerializer<T : Any>(private val dataSerializer: KSerializer<T>)
     }
 }
 
+/**
+* This class is a json transformer for LWWRegister, it allows the separation between data and metadata.
+*/
 class JsonLWWRegisterSerializer<T : Any>(private val serializer: KSerializer<LWWRegister<T>>) :
         JsonTransformingSerializer<LWWRegister<T>>(serializer, "JsonLWWRegisterSerializer") {
 

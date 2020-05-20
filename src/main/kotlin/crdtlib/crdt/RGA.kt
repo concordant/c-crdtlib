@@ -12,7 +12,7 @@ import kotlinx.serialization.json.*
 /**
 * Represents a unique identifier for RGA nodes. We use timestamps as uids since we assume they are
 * distinct and monotonically increasing.
-**/
+*/
 typealias RGAUId = Timestamp
 
 /**
@@ -176,6 +176,10 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
         }
     }
 
+    /**
+    * Serializes this crdt rga to a json string.
+    * @return the resulted json string.
+    */
     @OptIn(ImplicitReflectionSerializer::class)
     fun toJson(kclass: KClass<T>): String {
         val JSON = Json(JsonConfiguration.Stable)
@@ -184,6 +188,11 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
     }
 
     companion object {
+        /**
+        * Deserializes a given json string in a crdt rga.
+        * @param json the given json string.
+        * @return the resulted crdt rga.
+        */
         @OptIn(ImplicitReflectionSerializer::class)
         fun <T : Any> fromJson(kclass: KClass<T>, json: String): RGA<T> {
             val JSON = Json(JsonConfiguration.Stable)
@@ -193,6 +202,9 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
     }
 }
 
+/**
+* This class is a serializer for generic RGANode.
+*/
 @Serializer(forClass = RGANode::class)
 class RGANodeSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
         KSerializer<RGANode<T>> {
@@ -241,6 +253,9 @@ class RGANodeSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
     }
 }
 
+/**
+* This class is a serializer for generic RGA.
+*/
 @Serializer(forClass = RGA::class)
 class RGASerializer<T : Any>(private val dataSerializer: KSerializer<T>) : KSerializer<RGA<T>> {
 
@@ -272,6 +287,9 @@ class RGASerializer<T : Any>(private val dataSerializer: KSerializer<T>) : KSeri
     }
 }
 
+/**
+* This class is a json transformer for RGA, it allows the separation between data and metadata.
+*/
 class JsonRGASerializer<T : Any>(private val serializer: KSerializer<RGA<T>>) :
         JsonTransformingSerializer<RGA<T>>(serializer, "JsonRGASerializer") {
 

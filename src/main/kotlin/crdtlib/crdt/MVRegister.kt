@@ -62,7 +62,7 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
     /**
     * Gets the set of values currently stored in the register.
     * @return the set of values stored.
-    **/
+    */
     fun get(): Set<T> {
         return this.entries.map { it.first }.toSet()
     }
@@ -122,6 +122,10 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
         this.causalContext.pointWiseMax(delta.causalContext)
     }
 
+    /**
+    * Serializes this crdt MV register to a json string.
+    * @return the resulted json string.
+    */
     @OptIn(ImplicitReflectionSerializer::class)
     fun toJson(kclass: KClass<T>): String {
         val JSON = Json(JsonConfiguration.Stable)
@@ -130,6 +134,11 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
     }
 
     companion object {
+        /**
+        * Deserializes a given json string in a crdt MV register.
+        * @param json the given json string.
+        * @return the resulted MV register.
+        */
         @OptIn(ImplicitReflectionSerializer::class)
         fun <T : Any> fromJson(kclass: KClass<T>, json: String): MVRegister<T> {
             val JSON = Json(JsonConfiguration.Stable)
@@ -139,6 +148,9 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
     }
 }
 
+/**
+* This class is a serializer for generic MVRegister.
+*/
 @Serializer(forClass = MVRegister::class)
 class MVRegisterSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
         KSerializer<MVRegister<T>> {
@@ -172,6 +184,9 @@ class MVRegisterSerializer<T : Any>(private val dataSerializer: KSerializer<T>) 
     }
 }
 
+/**
+* This class is a json transformer for MVRegister, it allows the separation between data and metadata.
+*/
 class JsonMVRegisterSerializer<T : Any>(private val serializer: KSerializer<MVRegister<T>>) :
         JsonTransformingSerializer<MVRegister<T>>(serializer, "JsonMVRegisterSerializer") {
 

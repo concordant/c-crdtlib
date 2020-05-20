@@ -43,7 +43,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     * @param key the key that should be looked for.
     * @return the value associated to the key, or null if the key is not present in the map or last
     * operation is a delete.
-    **/
+    */
     fun get(key: String): String? {
         return this.entries.get(key)?.first
     }
@@ -54,7 +54,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     * @param value the value that should be assigned to the key.
     * @param ts the timestamp of this operation.
     * @return the delta corresponding to this operation.
-    **/
+    */
     fun put(key: String, value: String?, ts: Timestamp): LWWMap {
         val op = LWWMap()
         val currentTs = this.entries.get(key)?.second
@@ -71,7 +71,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     * @param key the key that should be deleted.
     * @param ts the timestamp linked to this operation.
     * @return the delta corresponding to this operation.
-    **/
+    */
     fun delete(key: String, ts: Timestamp): LWWMap {
         return put(key, null, ts)
     }
@@ -118,7 +118,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     /**
     * Creates a string containing the state of the map.
     * @return a string containing the state of the map.
-    **/
+    */
     override fun toString(): String {
         var str = "LWWMap{\n"
         for ((key, pair) in this.entries) {
@@ -127,6 +127,10 @@ class LWWMap : DeltaCRDT<LWWMap> {
         return str + "}\n"
     }
 
+    /**
+    * Serializes this crdt map to a json string.
+    * @return the resulted json string.
+    */
     fun toJson(): String {
         val JSON = Json(JsonConfiguration.Stable)
         val jsonSerializer = JsonLWWMapSerializer(LWWMap.serializer())
@@ -134,6 +138,11 @@ class LWWMap : DeltaCRDT<LWWMap> {
     }
 
     companion object {
+        /**
+        * Deserializes a given json string in a crdt map.
+        * @param json the given json string.
+        * @return the resulted crdt map.
+        */
         fun fromJson(json: String): LWWMap {
             val JSON = Json(JsonConfiguration.Stable)
             val jsonSerializer = JsonLWWMapSerializer(LWWMap.serializer())
@@ -142,6 +151,9 @@ class LWWMap : DeltaCRDT<LWWMap> {
     }
 }
 
+/**
+* This class is a json transformer for LWWMap, it allows the separation between data and metadata.
+*/
 class JsonLWWMapSerializer(private val serializer: KSerializer<LWWMap>) :
         JsonTransformingSerializer<LWWMap>(serializer, "JsonLWWMapSerializer") {
 
