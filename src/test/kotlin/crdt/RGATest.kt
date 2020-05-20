@@ -805,4 +805,39 @@ class RGATest {
 
         assertEquals(listOf('D', 'B'), rga2.value())
     }
+
+    /**
+    * This test evaluates JSON serialization.
+    **/
+    @Test
+    fun toJsonSerialization() {
+        val id = DCId("dcid")
+        val dc = SimpleEnvironment(id)
+        val ts1 = dc.getNewTimestamp()
+        dc.updateStateTS(ts1)
+        val ts2 = dc.getNewTimestamp()
+        dc.updateStateTS(ts2)
+        val ts3 = dc.getNewTimestamp()
+        dc.updateStateTS(ts3)
+        val ts4 = dc.getNewTimestamp()
+        val rga = RGA<Char>()
+
+        rga.insertAt(0, 'A', ts1)
+        rga.insertAt(1, 'B', ts2)
+        rga.removeAt(1, ts3)
+        rga.insertAt(1, 'C', ts4)
+        val rgaJson = rga.toJson(Char::class)
+
+        assertEquals("""{"_metadata":[{"anchor":null,"uid":{"id":{"name":"dcid"},"cnt":1},"ts":{"id":{"name":"dcid"},"cnt":1},"removed":false},{"anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":4},"ts":{"id":{"name":"dcid"},"cnt":4},"removed":false},{"atom":"B","anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":2},"ts":{"id":{"name":"dcid"},"cnt":3},"removed":true}],"value":["A","C"]}""", rgaJson)
+    }
+
+    /**
+    * This test evaluates JSON deserialization.
+    **/
+    @Test
+    fun fromJsonDeserialization() {
+        val rgaJson = RGA.fromJson(Char::class, """{"_metadata":[{"anchor":null,"uid":{"id":{"name":"dcid"},"cnt":1},"ts":{"id":{"name":"dcid"},"cnt":1},"removed":false},{"anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":4},"ts":{"id":{"name":"dcid"},"cnt":4},"removed":false},{"atom":"B","anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":2},"ts":{"id":{"name":"dcid"},"cnt":3},"removed":true}],"value":["A","C"]}""")
+
+        assertEquals(listOf('A', 'C'), rgaJson.value())
+    }
 }
