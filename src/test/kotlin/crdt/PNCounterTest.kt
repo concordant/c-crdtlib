@@ -535,4 +535,45 @@ class PNCounterTest {
 
         assertEquals(-30, cnt2.value())
     }
+
+    /**
+    * This test evaluates JSON serialization.
+    **/
+    @Test
+    fun toJsonSerialization() {
+        val id1 = DCId("dcid1")
+        val id2 = DCId("dcid2")
+        val dc1 = SimpleEnvironment(id1)
+        val dc2 = SimpleEnvironment(id2)
+        val ts1 = dc1.getNewTimestamp()
+        val ts2 = dc2.getNewTimestamp()
+        dc1.updateStateTS(ts1)
+        val ts3 = dc1.getNewTimestamp()
+        dc2.updateStateTS(ts2)
+        val ts4 = dc2.getNewTimestamp()
+        val dec1 = 10
+        val dec2 = 20
+        val inc1 = 10
+        val inc2 = 30
+        val cnt1 = PNCounter()
+        val cnt2 = PNCounter()
+
+        cnt1.decrement(dec1, ts1)
+        cnt1.increment(inc1, ts3)
+        cnt2.decrement(dec2, ts2)
+        cnt2.increment(inc2, ts4)
+        cnt2.merge(cnt1)
+
+        assertEquals("""{"_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"id":{"name":"dcid2"},"cnt":2}},{"name":"dcid1"},{"first":10,"second":{"id":{"name":"dcid1"},"cnt":2}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"id":{"name":"dcid2"},"cnt":1}},{"name":"dcid1"},{"first":10,"second":{"id":{"name":"dcid1"},"cnt":1}}]},"value":10}""", cnt2.toJson())
+    }
+
+    /**
+    * This test evaluates JSON deserialization.
+    **/
+    @Test
+    fun fromJsonDeserialization() {
+        val cntJson = PNCounter.fromJson("""{"_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"id":{"name":"dcid2"},"cnt":2}},{"name":"dcid1"},{"first":10,"second":{"id":{"name":"dcid1"},"cnt":2}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"id":{"name":"dcid2"},"cnt":1}},{"name":"dcid1"},{"first":10,"second":{"id":{"name":"dcid1"},"cnt":1}}]},"value":10}""")
+
+        assertEquals(10, cntJson.value())
+    }
 }
