@@ -543,4 +543,47 @@ class VersionVectorTest {
         assertTrue(vv1.isSmallerOrEquals(vv2))
         assertTrue(vv2.isSmallerOrEquals(vv1))
     }
+
+    /**
+    * This test evaluates JSON serialization.
+    **/
+    @Test
+    fun toJsonSerialization() {
+        val dc1 = DCId("dcid1")
+        val dc2 = DCId("dcid2")
+        val dc3 = DCId("dcid3")
+        val ts1 = Timestamp(dc1, 3)
+        val ts2 = Timestamp(dc2, 4)
+        val ts3 = Timestamp(dc3, 2)
+        val vv = VersionVector()
+
+        vv.addTS(ts1)
+        vv.addTS(ts2)
+        vv.addTS(ts3)
+        val vvJson = vv.toJson()
+
+        assertEquals("""{"entries":[{"name":"dcid1"},3,{"name":"dcid2"},4,{"name":"dcid3"},2]}""", vvJson)
+    }
+
+    /**
+    * This test evaluates JSON deserialization.
+    **/
+    @Test
+    fun fromJsonDeserialization() {
+        val dc1 = DCId("dcid1")
+        val dc2 = DCId("dcid2")
+        val dc3 = DCId("dcid3")
+        val ts1 = Timestamp(dc1, 3)
+        val ts2 = Timestamp(dc2, 4)
+        val ts3 = Timestamp(dc3, 2)
+        val vv = VersionVector()
+
+        vv.addTS(ts1)
+        vv.addTS(ts2)
+        vv.addTS(ts3)
+        val vvJson = VersionVector.fromJson("""{"entries":[{"name":"dcid1"},3,{"name":"dcid2"},4,{"name":"dcid3"},2]}""")
+
+        assertTrue(vv.isSmallerOrEquals(vvJson))
+        assertTrue(vvJson.isSmallerOrEquals(vv))
+    }
 }
