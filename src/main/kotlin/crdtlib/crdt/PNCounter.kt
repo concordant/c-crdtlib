@@ -141,7 +141,7 @@ class JsonPNCounterSerializer(private val serializer : KSerializer<PNCounter>) :
     override fun writeTransform(element: JsonElement): JsonElement {
         val incValue = element.jsonObject.getArray("increment").filter { it.jsonObject.containsKey("first") }.sumBy{ it.jsonObject.getPrimitive("first").int }
         val decValue = element.jsonObject.getArray("decrement").filter { it.jsonObject.containsKey("first") }.sumBy{ it.jsonObject.getPrimitive("first").int }
-        return JsonObject(mapOf("_metadata" to element, "value" to JsonPrimitive(incValue - decValue)))
+        return JsonObject(mapOf("_type" to JsonPrimitive("PNCounter"), "_metadata" to element, "value" to JsonPrimitive(incValue - decValue)))
     }
 
     override fun readTransform(element: JsonElement): JsonElement {

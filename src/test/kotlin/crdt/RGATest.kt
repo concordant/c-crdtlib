@@ -828,7 +828,7 @@ class RGATest {
         rga.insertAt(1, 'C', ts4)
         val rgaJson = rga.toJson(Char::class)
 
-        assertEquals("""{"_metadata":[{"anchor":null,"uid":{"id":{"name":"dcid"},"cnt":1},"ts":{"id":{"name":"dcid"},"cnt":1},"removed":false},{"anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":4},"ts":{"id":{"name":"dcid"},"cnt":4},"removed":false},{"atom":"B","anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":2},"ts":{"id":{"name":"dcid"},"cnt":3},"removed":true}],"value":["A","C"]}""", rgaJson)
+        assertEquals("""{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"id":{"name":"dcid"},"cnt":1},"ts":{"id":{"name":"dcid"},"cnt":1},"removed":false},{"anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":4},"ts":{"id":{"name":"dcid"},"cnt":4},"removed":false},{"atom":"B","anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":2},"ts":{"id":{"name":"dcid"},"cnt":3},"removed":true}],"value":["A","C"]}""", rgaJson)
     }
 
     /**
@@ -836,7 +836,7 @@ class RGATest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val rgaJson = RGA.fromJson(Char::class, """{"_metadata":[{"anchor":null,"uid":{"id":{"name":"dcid"},"cnt":1},"ts":{"id":{"name":"dcid"},"cnt":1},"removed":false},{"anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":4},"ts":{"id":{"name":"dcid"},"cnt":4},"removed":false},{"atom":"B","anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":2},"ts":{"id":{"name":"dcid"},"cnt":3},"removed":true}],"value":["A","C"]}""")
+        val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"id":{"name":"dcid"},"cnt":1},"ts":{"id":{"name":"dcid"},"cnt":1},"removed":false},{"anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":4},"ts":{"id":{"name":"dcid"},"cnt":4},"removed":false},{"atom":"B","anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":2},"ts":{"id":{"name":"dcid"},"cnt":3},"removed":true}],"value":["A","C"]}""")
 
         assertEquals(listOf('A', 'C'), rgaJson.value())
     }

@@ -161,7 +161,7 @@ class JsonLWWRegisterSerializer<T : Any>(private val serializer: KSerializer<LWW
     override fun writeTransform(element: JsonElement): JsonElement {
         val value = element.jsonObject.get("value") as JsonElement
         val metadata = element.jsonObject.getObject("ts")
-        return JsonObject(mapOf("_metadata" to metadata, "value" to value))
+        return JsonObject(mapOf("_type" to JsonPrimitive("LWWRegister"), "_metadata" to metadata, "value" to value))
     }
 
     override fun readTransform(element: JsonElement): JsonElement {

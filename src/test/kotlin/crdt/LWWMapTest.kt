@@ -618,7 +618,7 @@ class LWWMapTest {
         map.put(key3, value3, ts4)
         val mapJson = map.toJson()
 
-        assertEquals("""{"_metadata":{"entries":{"key1":{"id":{"name":"dcid"},"cnt":1},"key2":{"id":{"name":"dcid"},"cnt":3},"key3":{"id":{"name":"dcid"},"cnt":4}},"causalContext":{"entries":[{"name":"dcid"},4]}},"key1":"value1","key2":null,"key3":"value3"}""", mapJson)
+        assertEquals("""{"_type":"LWWMap","_metadata":{"entries":{"key1":{"id":{"name":"dcid"},"cnt":1},"key2":{"id":{"name":"dcid"},"cnt":3},"key3":{"id":{"name":"dcid"},"cnt":4}},"causalContext":{"entries":[{"name":"dcid"},4]}},"key1":"value1","key2":null,"key3":"value3"}""", mapJson)
     }
 
     /**
@@ -626,7 +626,7 @@ class LWWMapTest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val mapJson = LWWMap.fromJson("""{"_metadata":{"entries":{"key1":{"id":{"name":"dcid"},"cnt":1},"key2":{"id":{"name":"dcid"},"cnt":3},"key3":{"id":{"name":"dcid"},"cnt":4}},"causalContext":{"entries":[{"name":"dcid"},4]}},"key1":"value1","key2":null,"key3":"value3"}""")
+        val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{"key1":{"id":{"name":"dcid"},"cnt":1},"key2":{"id":{"name":"dcid"},"cnt":3},"key3":{"id":{"name":"dcid"},"cnt":4}},"causalContext":{"entries":[{"name":"dcid"},4]}},"key1":"value1","key2":null,"key3":"value3"}""")
 
         assertEquals("value1", mapJson.get("key1"))
         assertNull(mapJson.get("key2"))

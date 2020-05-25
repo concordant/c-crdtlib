@@ -166,7 +166,7 @@ class JsonLWWMapSerializer(private val serializer: KSerializer<LWWMap>) :
             entries.put(key, entry.jsonObject.getObject("second"))
         }
         val metadata = JsonObject(mapOf("entries" to JsonObject(entries.toMap()), "causalContext" to causalContext))
-        return JsonObject(mapOf("_metadata" to metadata).plus(value))
+        return JsonObject(mapOf("_type" to JsonPrimitive("LWWMap"), "_metadata" to metadata).plus(value))
     }
 
     override fun readTransform(element: JsonElement): JsonElement {

@@ -198,7 +198,7 @@ class JsonMVRegisterSerializer<T : Any>(private val serializer: KSerializer<MVRe
             entries.add(tmpPair.jsonObject.getObject("second"))
         }
         val metadata = JsonObject(mapOf("entries" to JsonArray(entries), "causalContext" to element.jsonObject.getObject("causalContext")))
-        return JsonObject(mapOf("_metadata" to metadata, "value" to JsonArray(value)))
+        return JsonObject(mapOf("_type" to JsonPrimitive("MVRegister"), "_metadata" to metadata, "value" to JsonArray(value)))
     }
 
     override fun readTransform(element: JsonElement): JsonElement {

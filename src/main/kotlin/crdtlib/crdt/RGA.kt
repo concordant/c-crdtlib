@@ -305,7 +305,7 @@ class JsonRGASerializer<T : Any>(private val serializer: KSerializer<RGA<T>>) :
             }
             metadata.add(transformedNode)
         }
-        return JsonObject(mapOf("_metadata" to JsonArray(metadata), "value" to JsonArray(value)))
+        return JsonObject(mapOf("_type" to JsonPrimitive("RGA"), "_metadata" to JsonArray(metadata), "value" to JsonArray(value)))
     }
 
     override fun readTransform(element: JsonElement): JsonElement {
