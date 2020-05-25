@@ -1,5 +1,6 @@
 package crdtlib.crdt
 
+import crdtlib.utils.Json
 import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
@@ -182,9 +183,8 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
     */
     @OptIn(ImplicitReflectionSerializer::class)
     fun toJson(kclass: KClass<T>): String {
-        val JSON = Json(JsonConfiguration.Stable)
         val jsonSerializer = JsonRGASerializer(RGA.serializer(kclass.serializer()))
-        return JSON.stringify<RGA<T>>(jsonSerializer, this)
+        return Json.stringify<RGA<T>>(jsonSerializer, this)
     }
 
     companion object {
@@ -195,9 +195,8 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
         */
         @OptIn(ImplicitReflectionSerializer::class)
         fun <T : Any> fromJson(kclass: KClass<T>, json: String): RGA<T> {
-            val JSON = Json(JsonConfiguration.Stable)
             val jsonSerializer = JsonRGASerializer(RGA.serializer(kclass.serializer()))
-            return JSON.parse(jsonSerializer, json)
+            return Json.parse(jsonSerializer, json)
         }
     }
 }

@@ -1,7 +1,6 @@
 package crdtlib.utils
 
 import kotlinx.serialization.*
-import kotlinx.serialization.json.*
 
 /**
 * This class represents a datacenter (DC) identifier (id).
@@ -24,8 +23,7 @@ data class DCId(val name: String) : Comparable<DCId> {
     * @return the resulted json string.
     */
     fun toJson(): String {
-        val JSON = Json(JsonConfiguration.Stable)
-        return JSON.stringify(DCId.serializer(), this)
+        return Json.stringify(DCId.serializer(), this)
     }
 
     companion object {
@@ -35,8 +33,7 @@ data class DCId(val name: String) : Comparable<DCId> {
         * @return the resulted datacenter id.
         */
         fun fromJson(json: String): DCId {
-            val JSON = Json(JsonConfiguration.Stable)
-            return JSON.parse(DCId.serializer(), json)
+            return Json.parse(DCId.serializer(), json)
         }
     }
 }

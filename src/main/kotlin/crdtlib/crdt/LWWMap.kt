@@ -1,5 +1,6 @@
 package crdtlib.crdt
 
+import crdtlib.utils.Json
 import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
@@ -132,9 +133,8 @@ class LWWMap : DeltaCRDT<LWWMap> {
     * @return the resulted json string.
     */
     fun toJson(): String {
-        val JSON = Json(JsonConfiguration.Stable)
         val jsonSerializer = JsonLWWMapSerializer(LWWMap.serializer())
-        return JSON.stringify<LWWMap>(jsonSerializer, this)
+        return Json.stringify<LWWMap>(jsonSerializer, this)
     }
 
     companion object {
@@ -144,9 +144,8 @@ class LWWMap : DeltaCRDT<LWWMap> {
         * @return the resulted crdt map.
         */
         fun fromJson(json: String): LWWMap {
-            val JSON = Json(JsonConfiguration.Stable)
             val jsonSerializer = JsonLWWMapSerializer(LWWMap.serializer())
-            return JSON.parse(jsonSerializer, json)
+            return Json.parse(jsonSerializer, json)
         }
     }
 }

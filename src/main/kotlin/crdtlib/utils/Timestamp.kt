@@ -1,7 +1,6 @@
 package crdtlib.utils
 
 import kotlinx.serialization.*
-import kotlinx.serialization.json.*
 
 /**
 * This class represents a timestamp.
@@ -28,8 +27,7 @@ data class Timestamp(val id: DCId, val cnt: Int) : Comparable<Timestamp> {
     * @return the resulted json string.
     */
     fun toJson(): String {
-        val JSON = Json(JsonConfiguration.Stable)
-        return JSON.stringify(Timestamp.serializer(), this)
+        return Json.stringify(Timestamp.serializer(), this)
     }
 
     companion object {
@@ -39,8 +37,7 @@ data class Timestamp(val id: DCId, val cnt: Int) : Comparable<Timestamp> {
         * @return the resulted timestamp.
         */
         fun fromJson(json: String): Timestamp {
-            val JSON = Json(JsonConfiguration.Stable)
-            return JSON.parse(Timestamp.serializer(), json)
+            return Json.parse(Timestamp.serializer(), json)
         }
     }
 }

@@ -1,6 +1,7 @@
 package crdtlib.crdt
 
 import crdtlib.utils.DCId
+import crdtlib.utils.Json
 import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
@@ -113,9 +114,8 @@ class PNCounter : DeltaCRDT<PNCounter> {
     * @return the resulted json string.
     */
     fun toJson(): String {
-        val JSON = Json(JsonConfiguration.Stable)
         val jsonSerializer = JsonPNCounterSerializer(PNCounter.serializer())
-        return JSON.stringify<PNCounter>(jsonSerializer, this)
+        return Json.stringify<PNCounter>(jsonSerializer, this)
     }
 
     companion object {
@@ -125,9 +125,8 @@ class PNCounter : DeltaCRDT<PNCounter> {
         * @return the resulted crdt counter.
         */
         fun fromJson(json: String): PNCounter {
-            val JSON = Json(JsonConfiguration.Stable)
             val jsonSerializer = JsonPNCounterSerializer(PNCounter.serializer())
-            return JSON.parse(jsonSerializer, json)
+            return Json.parse(jsonSerializer, json)
         }
     }
 }
