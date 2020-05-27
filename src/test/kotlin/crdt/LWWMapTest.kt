@@ -591,7 +591,36 @@ class LWWMapTest {
     }
 
     /**
-    * This test evaluates JSON serialization.
+    * This test evaluates JSON serialization an empty lww map.
+    **/
+    @Test
+    fun emptyToJsonSerialization() {
+        val map = LWWMap()
+
+        val mapJson = map.toJson()
+
+        assertEquals("""{"_type":"LWWMap","_metadata":{"entries":{},"causalContext":{"entries":[]}}}""", mapJson)
+    }
+
+    /**
+    * This test evaluates JSON deserialization of an empty lww map.
+    **/
+    @Test
+    fun emptyFromJsonDeserialization() {
+        val id = DCId("dcid")
+        val dc = SimpleEnvironment(id)
+        val ts = dc.getNewTimestamp()
+
+        val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{},"causalContext":{"entries":[]}}}""")
+        mapJson.put("key1", "value1", ts)
+
+        assertEquals("value1", mapJson.get("key1"))
+        assertNull(mapJson.get("key2"))
+        assertNull(mapJson.get("key3"))
+    }
+
+    /**
+    * This test evaluates JSON serialization of a lww map.
     **/
     @Test
     fun toJsonSerialization() {
@@ -622,7 +651,7 @@ class LWWMapTest {
     }
 
     /**
-    * This test evaluates JSON deserialization.
+    * This test evaluates JSON deserialization of a lww map.
     **/
     @Test
     fun fromJsonDeserialization() {

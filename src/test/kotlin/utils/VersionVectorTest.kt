@@ -545,7 +545,32 @@ class VersionVectorTest {
     }
 
     /**
-    * This test evaluates JSON serialization.
+    * This test evaluates JSON serialization of an empty version vector.
+    **/
+    @Test
+    fun emptyToJsonSerialization() {
+        val vv = VersionVector()
+
+        val vvJson = vv.toJson()
+
+        assertEquals("""{"entries":[]}""", vvJson)
+    }
+
+    /**
+    * This test evaluates JSON deserialization of an empty version vector.
+    **/
+    @Test
+    fun emptyFromJsonDeserialization() {
+        val vv = VersionVector()
+
+        val vvJson = VersionVector.fromJson("""{"entries":[]}""")
+
+        assertTrue(vv.isSmallerOrEquals(vvJson))
+        assertTrue(vvJson.isSmallerOrEquals(vv))
+    }
+
+    /**
+    * This test evaluates JSON serialization of a version vector.
     **/
     @Test
     fun toJsonSerialization() {
@@ -566,7 +591,7 @@ class VersionVectorTest {
     }
 
     /**
-    * This test evaluates JSON deserialization.
+    * This test evaluates JSON deserialization of a version vector.
     **/
     @Test
     fun fromJsonDeserialization() {

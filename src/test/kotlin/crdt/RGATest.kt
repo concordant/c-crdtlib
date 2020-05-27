@@ -807,7 +807,29 @@ class RGATest {
     }
 
     /**
-    * This test evaluates JSON serialization.
+    * This test evaluates JSON serialization of an empty RGA.
+    **/
+    @Test
+    fun emptyToJsonSerialization() {
+        val rga = RGA<Char>()
+
+        val rgaJson = rga.toJson(Char::class)
+
+        assertEquals("""{"_type":"RGA","_metadata":[],"value":[]}""", rgaJson)
+    }
+
+    /**
+    * This test evaluates JSON deserialization of an empty RGA.
+    **/
+    @Test
+    fun emptyFromJsonDeserialization() {
+        val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[],"value":[]}""")
+
+        assertEquals(listOf(), rgaJson.value())
+    }
+
+    /**
+    * This test evaluates JSON serialization of an RGA.
     **/
     @Test
     fun toJsonSerialization() {
@@ -832,7 +854,7 @@ class RGATest {
     }
 
     /**
-    * This test evaluates JSON deserialization.
+    * This test evaluates JSON deserialization of an RGA.
     **/
     @Test
     fun fromJsonDeserialization() {

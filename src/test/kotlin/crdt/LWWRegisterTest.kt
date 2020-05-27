@@ -184,7 +184,7 @@ class LWWRegisterTest {
     }
 
     /**
-    * This test evaluates JSON serialization.
+    * This test evaluates JSON serialization of a lww register.
     **/
     @Test
     fun toJsonSerialization() {
@@ -199,7 +199,7 @@ class LWWRegisterTest {
     }
 
     /**
-    * This test evaluates JSON deserialization.
+    * This test evaluates JSON deserialization of a lww register.
     **/
     @Test
     fun fromJsonDeserialization() {

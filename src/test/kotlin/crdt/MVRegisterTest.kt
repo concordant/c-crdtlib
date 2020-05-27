@@ -378,7 +378,29 @@ class MVRegisterTest {
     }
 
     /**
-    * This test evaluates JSON serialization.
+    * This test evaluates JSON serialization of an empty mv register.
+    **/
+    @Test
+    fun emptyToJsonSerialization() {
+        val reg = MVRegister<String>()
+
+        val regJson = reg.toJson(String::class)
+
+        assertEquals("""{"_type":"MVRegister","_metadata":{"entries":[],"causalContext":{"entries":[]}},"value":[]}""", regJson)
+    }
+
+    /**
+    * This test evaluates JSON deserialization of an empty mv register.
+    **/
+    @Test
+    fun emptyFromJsonDeserialization() {
+        val regJson = MVRegister.fromJson(String::class, """{"_type":"MVRegister","_metadata":{"entries":[],"causalContext":{"entries":[]}},"value":[]}""")
+
+        assertEquals(setOf(), regJson.get())
+    }
+
+    /**
+    * This test evaluates JSON serialization of a mv register.
     **/
     @Test
     fun toJsonSerialization() {
@@ -401,7 +423,7 @@ class MVRegisterTest {
     }
 
     /**
-    * This test evaluates JSON deserialization.
+    * This test evaluates JSON deserialization of a mv register.
     **/
     @Test
     fun fromJsonDeserialization() {

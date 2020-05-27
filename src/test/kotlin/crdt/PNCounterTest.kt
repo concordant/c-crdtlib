@@ -537,7 +537,29 @@ class PNCounterTest {
     }
 
     /**
-    * This test evaluates JSON serialization.
+    * This test evaluates JSON serialization of an empty pncounter.
+    **/
+    @Test
+    fun emptyToJsonSerialization() {
+        val cnt = PNCounter()
+
+        val cntJson = cnt.toJson();
+
+        assertEquals("""{"_type":"PNCounter","_metadata":{"increment":[],"decrement":[]},"value":0}""", cntJson)
+    }
+
+    /**
+    * This test evaluates JSON deserialization of an empty pncounter.
+    **/
+    @Test
+    fun emptyFromJsonDeserialization() {
+        val cntJson = PNCounter.fromJson("""{"_type":"PNCounter","_metadata":{"increment":[],"decrement":[]},"value":0}""")
+
+        assertEquals(0, cntJson.value())
+    }
+
+    /**
+    * This test evaluates JSON serialization of a pncounter.
     **/
     @Test
     fun toJsonSerialization() {
@@ -568,7 +590,7 @@ class PNCounterTest {
     }
 
     /**
-    * This test evaluates JSON deserialization.
+    * This test evaluates JSON deserialization of a pncounter.
     **/
     @Test
     fun fromJsonDeserialization() {
