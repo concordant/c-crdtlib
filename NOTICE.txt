@@ -1,0 +1,11 @@
+Concordant CRDTLib-Kotlin
+Copyright 2019-2020 Concordant
+
+This product includes software developed at
+Concordant (https://concordant.io)
+
+This product also includes the following third-party components:
+
+* Kotlin Compiler (https://github.com/JetBrains/kotlin)
+    License: Apache 2.0
+    Origin: Copyright 2010-2020 JetBrains s.r.o and respective authors and developers
