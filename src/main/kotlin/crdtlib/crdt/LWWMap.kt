@@ -49,7 +49,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     * Puts a key value pair into the map.
     * @param key the key that is targeted.
     * @param value the value that should be assigned to the key.
-    * @param ts the timestamp linked to this operation.
+    * @param ts the timestamp of this operation.
     * @return the delta corresponding to this operation.
     **/
     fun put(key: String, value: String?, ts: Timestamp): LWWMap {
@@ -91,11 +91,11 @@ class LWWMap : DeltaCRDT<LWWMap> {
     }
 
     /**
-    * Merges informations contained in a given delta into the local replica, the merge is unilateral
-    * and only local replica is modified.
+    * Merges information contained in a given delta into the local replica, the merge is unilateral
+    * and only the local replica is modified.
     * A foreign operation (i.e., put or delete) is applied iff last locally stored operation has a
     * smaller timestamp compared to the foreign one, or there is no local operation recorded.
-    * @param delta the delta that should be merge with the local replica.
+    * @param delta the delta that should be merged with the local replica.
     */
     override fun merge(delta: Delta<LWWMap>) {
         if (delta !is LWWMap)
