@@ -1,23 +1,29 @@
 package crdtlib.crdt
 
+import crdtlib.utils.Json
 import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
+import kotlin.reflect.KClass
+import kotlinx.serialization.*
+import kotlinx.serialization.builtins.*
+import kotlinx.serialization.json.*
 
 /**
 * This class is a delta-based CRDT multi-value register.
 */
-class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
+@Serializable(with = MVRegisterSerializer::class)
+class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
 
     /**
     * A mutable set storing the different values with their associated timestamp.
     */
-    private var entries: MutableSet<Pair<DataT, Timestamp>>
+    var entries: MutableSet<Pair<T, Timestamp>>
 
     /**
     * A version vector summarizing the entries seen by all values.
     */
-    private val causalContext: VersionVector
+    val causalContext: VersionVector
 
     /**
     * Default constructor creating a empty register.
@@ -32,8 +38,8 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
     * @param value the value to be put in the register.
     * @param ts the associated timestamp.
     */
-    constructor(value: DataT, ts: Timestamp) {
-        this.entries = mutableSetOf(Pair<DataT, Timestamp>(value, ts))
+    constructor(value: T, ts: Timestamp) {
+        this.entries = mutableSetOf(Pair<T, Timestamp>(value, ts))
         this.causalContext = VersionVector()
         this.causalContext.addTS(ts)
     }
@@ -42,20 +48,23 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
     * Constructor creating a copy of a given register.
     * @param other the register that should be copy.
     */
-    constructor(other: MVRegister<DataT>) {
-        this.entries = mutableSetOf()
-        for ((value, ts) in other.entries) {
-            this.entries.add(Pair<DataT, Timestamp>(value, ts))
-        }
+    constructor(other: MVRegister<T>) {
+        this.entries = other.entries.toMutableSet()
         this.causalContext = VersionVector()
         this.causalContext.pointWiseMax(other.causalContext)
+    }
+
+    constructor(entries: Set<Pair<T, Timestamp>>, causalContext: VersionVector) {
+        this.entries = entries.toMutableSet()
+        this.causalContext = VersionVector()
+        this.causalContext.pointWiseMax(causalContext)
     }
 
     /**
     * Gets the set of values currently stored in the register.
     * @return the set of values stored.
-    **/
-    fun get(): Set<DataT> {
+    */
+    fun get(): Set<T> {
         return this.entries.map { it.first }.toSet()
     }
 
@@ -67,11 +76,11 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
     * @param ts the timestamp associated to the operation.
     * @return the delta corresponding to this operation.
     */
-    fun assign(value: DataT, ts: Timestamp): Delta<MVRegister<DataT>> {
-        if (this.causalContext.includesTS(ts)) return EmptyDelta<MVRegister<DataT>>()
+    fun assign(value: T, ts: Timestamp): Delta<MVRegister<T>> {
+        if (this.causalContext.includesTS(ts)) return EmptyDelta<MVRegister<T>>()
 
         this.entries.clear()
-        this.entries.add(Pair<DataT, Timestamp>(value, ts))
+        this.entries.add(Pair<T, Timestamp>(value, ts))
         this.causalContext.addTS(ts)
 
         return MVRegister(this)
@@ -82,8 +91,8 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
     * @param vv the context used as starting point to generate the delta.
     * @return the corresponding delta of operations.
     */
-    override fun generateDelta(vv: VersionVector): Delta<MVRegister<DataT>> {
-        if (this.causalContext.isSmallerOrEquals(vv)) return EmptyDelta<MVRegister<DataT>>()
+    override fun generateDelta(vv: VersionVector): Delta<MVRegister<T>> {
+        if (this.causalContext.isSmallerOrEquals(vv)) return EmptyDelta<MVRegister<T>>()
         return MVRegister(this)
     }
 
@@ -94,11 +103,11 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
     * associated timestamp is not included in the local (foreign) causal context.
     * @param delta the delta that should be merge with the local replica.
     */
-    override fun merge(delta: Delta<MVRegister<DataT>>) {
-        if (delta is EmptyDelta<MVRegister<DataT>>) return
+    override fun merge(delta: Delta<MVRegister<T>>) {
+        if (delta is EmptyDelta<MVRegister<T>>) return
         if (delta !is MVRegister) throw UnexpectedTypeException("MVRegister does not support merging with type: " + delta::class)
 
-        val keptEntries = mutableSetOf<Pair<DataT, Timestamp>>()
+        val keptEntries = mutableSetOf<Pair<T, Timestamp>>()
         for ((value, ts) in this.entries) {
             if (!delta.causalContext.includesTS(ts) || delta.entries.any { it.second == ts }) {
                 keptEntries.add(Pair(value, ts))
@@ -112,5 +121,95 @@ class MVRegister<DataT> : DeltaCRDT<MVRegister<DataT>> {
 
         this.entries = keptEntries
         this.causalContext.pointWiseMax(delta.causalContext)
+    }
+
+    /**
+    * Serializes this crdt MV register to a json string.
+    * @return the resulted json string.
+    */
+    @OptIn(ImplicitReflectionSerializer::class)
+    fun toJson(kclass: KClass<T>): String {
+        val jsonSerializer = JsonMVRegisterSerializer(MVRegister.serializer(kclass.serializer()))
+        return Json.stringify<MVRegister<T>>(jsonSerializer, this)
+    }
+
+    companion object {
+        /**
+        * Deserializes a given json string in a crdt MV register.
+        * @param json the given json string.
+        * @return the resulted MV register.
+        */
+        @OptIn(ImplicitReflectionSerializer::class)
+        fun <T : Any> fromJson(kclass: KClass<T>, json: String): MVRegister<T> {
+            val jsonSerializer = JsonMVRegisterSerializer(MVRegister.serializer(kclass.serializer()))
+            return Json.parse(jsonSerializer, json)
+        }
+    }
+}
+
+/**
+* This class is a serializer for generic MVRegister.
+*/
+@Serializer(forClass = MVRegister::class)
+class MVRegisterSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
+        KSerializer<MVRegister<T>> {
+
+    override val descriptor: SerialDescriptor = SerialDescriptor("MVRegisterSerializer") {
+        element("entries", SetSerializer(PairSerializer(dataSerializer, Timestamp.serializer())).descriptor)
+        element("causalContext", VersionVector.serializer().descriptor)
+    }
+
+    override fun serialize(encoder: Encoder, value: MVRegister<T>) {
+        val output = encoder.beginStructure(descriptor)
+        output.encodeSerializableElement(descriptor, 0, SetSerializer(PairSerializer(dataSerializer, Timestamp.serializer())), value.entries)
+        output.encodeSerializableElement(descriptor, 1, VersionVector.serializer(), value.causalContext)
+        output.endStructure(descriptor)
+    }
+
+    override fun deserialize(decoder: Decoder): MVRegister<T> {
+        val input = decoder.beginStructure(descriptor)
+        lateinit var entries: Set<Pair<T, Timestamp>>
+        lateinit var causalContext: VersionVector
+        loop@ while (true) {
+            when (val idx = input.decodeElementIndex(descriptor)) {
+                CompositeDecoder.READ_DONE -> break@loop
+                0 -> entries = input.decodeSerializableElement(descriptor, idx, SetSerializer(PairSerializer(dataSerializer, Timestamp.serializer())))
+                1 -> causalContext = input.decodeSerializableElement(descriptor, idx, VersionVector.serializer())
+                else -> throw SerializationException("Unknown index $idx")
+            }
+        }
+        input.endStructure(descriptor)
+        return MVRegister<T>(entries, causalContext)
+    }
+}
+
+/**
+* This class is a json transformer for MVRegister, it allows the separation between data and metadata.
+*/
+class JsonMVRegisterSerializer<T : Any>(private val serializer: KSerializer<MVRegister<T>>) :
+        JsonTransformingSerializer<MVRegister<T>>(serializer, "JsonMVRegisterSerializer") {
+
+    override fun writeTransform(element: JsonElement): JsonElement {
+        val entries = mutableListOf<JsonElement>()
+        val value = mutableListOf<JsonElement>()
+        for (tmpPair in element.jsonObject.getArray("entries")) {
+            value.add(tmpPair.jsonObject.get("first") as JsonElement)
+            entries.add(tmpPair.jsonObject.getObject("second"))
+        }
+        val metadata = JsonObject(mapOf("entries" to JsonArray(entries), "causalContext" to element.jsonObject.getObject("causalContext")))
+        return JsonObject(mapOf("_type" to JsonPrimitive("MVRegister"), "_metadata" to metadata, "value" to JsonArray(value)))
+    }
+
+    override fun readTransform(element: JsonElement): JsonElement {
+        val entries = mutableListOf<JsonElement>()
+        val metadata = element.jsonObject.getObject("_metadata")
+        val value = element.jsonObject.getArray("value")
+        var idxValue = 0
+        for (tmpEntry in metadata.getArray("entries")) {
+            entries.add(JsonObject(mapOf("first" to value[idxValue], "second" to tmpEntry)))
+            idxValue++
+        }
+        val causalContext = metadata.getObject("causalContext")
+        return JsonObject(mapOf("entries" to JsonArray(entries), "causalContext" to causalContext))
     }
 }

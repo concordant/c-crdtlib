@@ -2,6 +2,7 @@ package crdtlib.test
 
 import crdtlib.crdt.RGA
 import crdtlib.utils.DCId
+import crdtlib.utils.Timestamp
 import crdtlib.utils.SimpleEnvironment
 import crdtlib.utils.VersionVector
 import kotlin.test.Test
@@ -18,7 +19,7 @@ class RGATest {
     */
     @Test
     fun createValue() {
-        val rga = RGA()
+        val rga = RGA<Char>()
         assertEquals(listOf(), rga.value())
     }
 
@@ -31,7 +32,7 @@ class RGATest {
         val id = DCId("dcid")
         val dc = SimpleEnvironment(id)
         val ts = dc.getNewTimestamp()
-        val rga = RGA()
+        val rga = RGA<Char>()
 
         rga.insertAt(0, 'A', ts)
 
@@ -50,7 +51,7 @@ class RGATest {
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
-        val rga = RGA()
+        val rga = RGA<Char>()
 
         rga.insertAt(0, 'B', ts1)
         rga.insertAt(0, 'A', ts2)
@@ -70,7 +71,7 @@ class RGATest {
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
-        val rga = RGA()
+        val rga = RGA<Char>()
 
         rga.insertAt(0, 'A', ts1)
         rga.insertAt(1, 'B', ts2)
@@ -89,7 +90,7 @@ class RGATest {
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
-        val rga = RGA()
+        val rga = RGA<Char>()
 
         rga.insertAt(0, 'A', ts1)
         rga.removeAt(0, ts2)
@@ -112,7 +113,7 @@ class RGATest {
         val ts3 = dc.getNewTimestamp()
         dc.updateStateTS(ts3)
         val ts4 = dc.getNewTimestamp()
-        val rga = RGA()
+        val rga = RGA<Char>()
 
         rga.insertAt(0, 'A', ts1)
         rga.insertAt(0, 'B', ts2)
@@ -138,7 +139,7 @@ class RGATest {
         val ts3 = dc.getNewTimestamp()
         dc.updateStateTS(ts3)
         val ts4 = dc.getNewTimestamp()
-        val rga = RGA()
+        val rga = RGA<Char>()
 
         rga.insertAt(0, 'A', ts1)
         rga.insertAt(1, 'B', ts2)
@@ -164,7 +165,7 @@ class RGATest {
         val ts3 = dc.getNewTimestamp()
         dc.updateStateTS(ts3)
         val ts4 = dc.getNewTimestamp()
-        val rga = RGA()
+        val rga = RGA<Char>()
 
         rga.insertAt(0, 'A', ts1)
         rga.insertAt(1, 'B', ts2)
@@ -183,8 +184,8 @@ class RGATest {
         val id = DCId("dcid")
         val dc = SimpleEnvironment(id)
         val ts = dc.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
 
         rga1.insertAt(0, 'A', ts)
         rga2.merge(rga1)
@@ -203,8 +204,8 @@ class RGATest {
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
 
         rga1.insertAt(0, 'B', ts1)
         rga1.insertAt(0, 'A', ts2)
@@ -226,8 +227,8 @@ class RGATest {
         val ts2 = dc.getNewTimestamp()
         dc.updateStateTS(ts2)
         val ts3 = dc.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
 
         rga1.insertAt(0, 'A', ts1)
         rga1.insertAt(1, 'B', ts2)
@@ -251,8 +252,8 @@ class RGATest {
         val dc2 = SimpleEnvironment(id2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
 
         rga1.insertAt(0, 'B', ts1)
         rga2.insertAt(0, 'A', ts2)
@@ -275,8 +276,8 @@ class RGATest {
         val dc2 = SimpleEnvironment(id2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
 
         rga1.insertAt(0, 'A', ts2)
         rga2.insertAt(0, 'B', ts1)
@@ -302,8 +303,8 @@ class RGATest {
         val ts3 = dc1.getNewTimestamp()
         dc2.updateStateTS(ts2)
         val ts4 = dc2.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
 
         rga1.insertAt(0, 'D', ts1)
         rga1.insertAt(0, 'B', ts3)
@@ -332,8 +333,8 @@ class RGATest {
         val ts3 = dc1.getNewTimestamp()
         dc2.updateStateTS(ts2)
         val ts4 = dc2.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
 
         rga1.insertAt(0, 'C', ts1)
         rga1.insertAt(1, 'D', ts3)
@@ -362,8 +363,8 @@ class RGATest {
         val ts3 = dc1.getNewTimestamp()
         dc2.updateStateTS(ts2)
         val ts4 = dc2.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
 
         rga1.insertAt(0, 'C', ts1)
         rga1.insertAt(1, 'D', ts3)
@@ -396,8 +397,8 @@ class RGATest {
         dc1.updateStateTS(ts4)
         val ts5 = dc1.getNewTimestamp()
         val ts6 = dc2.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
 
         rga1.insertAt(0, 'A', ts1)
         rga1.insertAt(1, 'B', ts2)
@@ -436,9 +437,9 @@ class RGATest {
         val ts5 = dc2.getNewTimestamp()
         dc3.updateStateTS(ts3)
         val ts6 = dc3.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
-        val rga3 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
+        val rga3 = RGA<Char>()
 
         rga1.insertAt(0, 'A', ts3)
         rga1.insertAt(1, 'B', ts6)
@@ -477,9 +478,9 @@ class RGATest {
         val ts5 = dc2.getNewTimestamp()
         dc3.updateStateTS(ts3)
         val ts6 = dc3.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
-        val rga3 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
+        val rga3 = RGA<Char>()
 
         rga1.insertAt(0, 'A', ts3)
         rga1.insertAt(1, 'B', ts6)
@@ -518,9 +519,9 @@ class RGATest {
         val ts5 = dc2.getNewTimestamp()
         dc3.updateStateTS(ts3)
         val ts6 = dc3.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
-        val rga3 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
+        val rga3 = RGA<Char>()
 
         rga1.insertAt(0, 'C', ts2)
         rga1.insertAt(1, 'D', ts5)
@@ -559,9 +560,9 @@ class RGATest {
         val ts5 = dc2.getNewTimestamp()
         dc3.updateStateTS(ts3)
         val ts6 = dc3.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
-        val rga3 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
+        val rga3 = RGA<Char>()
 
         rga1.insertAt(0, 'E', ts1)
         rga1.insertAt(1, 'F', ts4)
@@ -600,9 +601,9 @@ class RGATest {
         val ts5 = dc2.getNewTimestamp()
         dc3.updateStateTS(ts3)
         val ts6 = dc3.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
-        val rga3 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
+        val rga3 = RGA<Char>()
 
         rga1.insertAt(0, 'E', ts1)
         rga1.insertAt(1, 'F', ts4)
@@ -641,9 +642,9 @@ class RGATest {
         val ts5 = dc2.getNewTimestamp()
         dc3.updateStateTS(ts3)
         val ts6 = dc3.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
-        val rga3 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
+        val rga3 = RGA<Char>()
 
         rga1.insertAt(0, 'C', ts2)
         rga1.insertAt(1, 'D', ts5)
@@ -666,8 +667,8 @@ class RGATest {
         val id = DCId("dcid")
         val dc = SimpleEnvironment(id)
         val ts = dc.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
 
         val insertOp = rga1.insertAt(0, 'A', ts)
         rga2.merge(insertOp)
@@ -688,8 +689,8 @@ class RGATest {
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
 
         rga1.insertAt(0, 'A', ts1)
         rga2.merge(rga1)
@@ -712,8 +713,8 @@ class RGATest {
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
 
         val insertOp = rga1.insertAt(0, 'A', ts1)
         val removeOp = rga1.removeAt(0, ts2)
@@ -737,8 +738,8 @@ class RGATest {
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
 
         val op1 = rga1.insertAt(0, 'A', ts1)
         val op2 = rga1.removeAt(0, ts2)
@@ -761,8 +762,8 @@ class RGATest {
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
 
         val op1 = rga1.insertAt(0, 'A', ts1)
         val op2 = rga1.removeAt(0, ts2)
@@ -792,8 +793,8 @@ class RGATest {
         val ts4 = dc.getNewTimestamp()
         val vv = VersionVector()
         vv.addTS(ts2)
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA<Char>()
+        val rga2 = RGA<Char>()
 
         rga1.insertAt(0, 'A', ts1)
         rga1.insertAt(0, 'B', ts3)
@@ -803,5 +804,62 @@ class RGATest {
         rga2.merge(delta)
 
         assertEquals(listOf('D', 'B'), rga2.value())
+    }
+
+    /**
+    * This test evaluates JSON serialization of an empty RGA.
+    **/
+    @Test
+    fun emptyToJsonSerialization() {
+        val rga = RGA<Char>()
+
+        val rgaJson = rga.toJson(Char::class)
+
+        assertEquals("""{"_type":"RGA","_metadata":[],"value":[]}""", rgaJson)
+    }
+
+    /**
+    * This test evaluates JSON deserialization of an empty RGA.
+    **/
+    @Test
+    fun emptyFromJsonDeserialization() {
+        val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[],"value":[]}""")
+
+        assertEquals(listOf(), rgaJson.value())
+    }
+
+    /**
+    * This test evaluates JSON serialization of an RGA.
+    **/
+    @Test
+    fun toJsonSerialization() {
+        val id = DCId("dcid")
+        val dc = SimpleEnvironment(id)
+        val ts1 = dc.getNewTimestamp()
+        dc.updateStateTS(ts1)
+        val ts2 = dc.getNewTimestamp()
+        dc.updateStateTS(ts2)
+        val ts3 = dc.getNewTimestamp()
+        dc.updateStateTS(ts3)
+        val ts4 = dc.getNewTimestamp()
+        val rga = RGA<Char>()
+
+        rga.insertAt(0, 'A', ts1)
+        rga.insertAt(1, 'B', ts2)
+        rga.removeAt(1, ts3)
+        rga.insertAt(1, 'C', ts4)
+        val rgaJson = rga.toJson(Char::class)
+
+        assertEquals("""{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"id":{"name":"dcid"},"cnt":1},"ts":{"id":{"name":"dcid"},"cnt":1},"removed":false},{"anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":4},"ts":{"id":{"name":"dcid"},"cnt":4},"removed":false},{"atom":"B","anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":2},"ts":{"id":{"name":"dcid"},"cnt":3},"removed":true}],"value":["A","C"]}""", rgaJson)
+    }
+
+    /**
+    * This test evaluates JSON deserialization of an RGA.
+    **/
+    @Test
+    fun fromJsonDeserialization() {
+        val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"id":{"name":"dcid"},"cnt":1},"ts":{"id":{"name":"dcid"},"cnt":1},"removed":false},{"anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":4},"ts":{"id":{"name":"dcid"},"cnt":4},"removed":false},{"atom":"B","anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":2},"ts":{"id":{"name":"dcid"},"cnt":3},"removed":true}],"value":["A","C"]}""")
+
+        assertEquals(listOf('A', 'C'), rgaJson.value())
     }
 }

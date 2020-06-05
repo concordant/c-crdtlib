@@ -1,12 +1,16 @@
 package crdtlib.crdt
 
+import crdtlib.utils.Json
 import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
 
 /**
 * This class is a delta-based CRDT map implementing last writer wins (LWW) to resolve conflicts.
 */
+@Serializable
 class LWWMap : DeltaCRDT<LWWMap> {
 
     /**
@@ -40,7 +44,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     * @param key the key that should be looked for.
     * @return the value associated to the key, or null if the key is not present in the map or last
     * operation is a delete.
-    **/
+    */
     fun get(key: String): String? {
         return this.entries.get(key)?.first
     }
@@ -51,7 +55,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     * @param value the value that should be assigned to the key.
     * @param ts the timestamp of this operation.
     * @return the delta corresponding to this operation.
-    **/
+    */
     fun put(key: String, value: String?, ts: Timestamp): LWWMap {
         val op = LWWMap()
         val currentTs = this.entries.get(key)?.second
@@ -68,7 +72,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     * @param key the key that should be deleted.
     * @param ts the timestamp linked to this operation.
     * @return the delta corresponding to this operation.
-    **/
+    */
     fun delete(key: String, ts: Timestamp): LWWMap {
         return put(key, null, ts)
     }
@@ -115,12 +119,63 @@ class LWWMap : DeltaCRDT<LWWMap> {
     /**
     * Creates a string containing the state of the map.
     * @return a string containing the state of the map.
-    **/
+    */
     override fun toString(): String {
         var str = "LWWMap{\n"
         for ((key, pair) in this.entries) {
             str += "key:${key}, value:${pair.first}, ts:${pair.second}\n"
         }
         return str + "}\n"
+    }
+
+    /**
+    * Serializes this crdt map to a json string.
+    * @return the resulted json string.
+    */
+    fun toJson(): String {
+        val jsonSerializer = JsonLWWMapSerializer(LWWMap.serializer())
+        return Json.stringify<LWWMap>(jsonSerializer, this)
+    }
+
+    companion object {
+        /**
+        * Deserializes a given json string in a crdt map.
+        * @param json the given json string.
+        * @return the resulted crdt map.
+        */
+        fun fromJson(json: String): LWWMap {
+            val jsonSerializer = JsonLWWMapSerializer(LWWMap.serializer())
+            return Json.parse(jsonSerializer, json)
+        }
+    }
+}
+
+/**
+* This class is a json transformer for LWWMap, it allows the separation between data and metadata.
+*/
+class JsonLWWMapSerializer(private val serializer: KSerializer<LWWMap>) :
+        JsonTransformingSerializer<LWWMap>(serializer, "JsonLWWMapSerializer") {
+
+    override fun writeTransform(element: JsonElement): JsonElement {
+        val value = mutableMapOf<String, JsonElement>()
+        val entries = mutableMapOf<String, JsonElement>()
+        val causalContext = element.jsonObject.getObject("causalContext")
+        for ((key, entry) in element.jsonObject.getObject("entries")) {
+            value.put(key, entry.jsonObject.getPrimitive("first"))
+            entries.put(key, entry.jsonObject.getObject("second"))
+        }
+        val metadata = JsonObject(mapOf("entries" to JsonObject(entries.toMap()), "causalContext" to causalContext))
+        return JsonObject(mapOf("_type" to JsonPrimitive("LWWMap"), "_metadata" to metadata).plus(value))
+    }
+
+    override fun readTransform(element: JsonElement): JsonElement {
+        val metadata = element.jsonObject.getObject("_metadata")
+        val causalContext = metadata.getObject("causalContext")
+        val entries = mutableMapOf<String, JsonElement>()
+        for ((key, entry) in metadata.getObject("entries")) {
+            val tmpEntry = JsonObject(mapOf("first" to element.jsonObject.getPrimitive(key), "second" to entry))
+            entries.put(key, tmpEntry)
+        }
+        return JsonObject(mapOf("entries" to JsonObject(entries), "causalContext" to causalContext))
     }
 }

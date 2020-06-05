@@ -1,5 +1,6 @@
 plugins {
-    kotlin("multiplatform") version "1.3.72" 
+    kotlin("multiplatform") version "1.3.72"
+    kotlin("plugin.serialization") version "1.3.72"
 }
 
 repositories {
@@ -22,10 +23,15 @@ kotlin {
 
     sourceSets {
 
+        all {
+            languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
+        }
+
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib")) 
                 implementation(kotlin("reflect")) 
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.20.0")
             }
         }
 
@@ -40,6 +46,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
                 implementation("com.github.ntrrgc:ts-generator:1.1.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
             }
         }
 
@@ -52,6 +59,7 @@ kotlin {
         js("nodeJs").compilations["main"].defaultSourceSet  {
             dependencies {
                 implementation(kotlin("stdlib-js")) 
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.20.0")
             }
         }
 

@@ -1,9 +1,12 @@
 package crdtlib.utils
 
+import kotlinx.serialization.*
+
 /**
 * This class represents a datacenter (DC) identifier (id).
 * @property name the name associated with the DC.
 **/
+@Serializable
 data class DCId(val name: String) {
 
     /**
@@ -14,5 +17,26 @@ data class DCId(val name: String) {
     @Name("compareTo")
     operator fun compareTo(other: DCId): Int {
         return this.name.compareTo(other.name)
+    }
+
+    /**
+    * Serializes this datacenter id to a json string.
+    * @return the resulted json string.
+    */
+    @Name("toJson")
+    fun toJson(): String {
+        return Json.stringify(DCId.serializer(), this)
+    }
+
+    companion object {
+        /**
+        * Deserializes a given json string in a datacenter id object.
+        * @param json the given json string.
+        * @return the resulted datacenter id.
+        */
+        @Name("fromJson")
+        fun fromJson(json: String): DCId {
+            return Json.parse(DCId.serializer(), json)
+        }
     }
 }
