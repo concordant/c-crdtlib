@@ -1,5 +1,6 @@
 package crdtlib.crdt
 
+import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
@@ -62,6 +63,7 @@ class RGA : DeltaCRDT<RGA> {
     * @param ts the timestamp associated with the operation.
     * @return the resulting delta operation.
     */
+    @Name("insertAt")
     fun insertAt(index: Int, atom: Char, ts: Timestamp): RGA {
         val realIdx = this.toRealIndex(index - 1)
         val anchor = this.nodes.getOrNull(realIdx)?.uid // Anchor is null if left node is supposed to be at index -1
@@ -80,6 +82,7 @@ class RGA : DeltaCRDT<RGA> {
     * @param ts the timestamp associated with the operation.
     * @return the resulting delta operation.
     */
+    @Name("removeAt")
     fun removeAt(index: Int, ts: Timestamp): RGA {
         val realIdx = this.toRealIndex(index)
         val node = this.nodes.get(realIdx)
@@ -96,6 +99,7 @@ class RGA : DeltaCRDT<RGA> {
     * Gets the value associated with the RGA.
     * @return a list containning the values present in the RGA.
     */
+    @Name("value")
     fun value(): List<Char> {
         return this.nodes.filter { it.removed == false }.map { it.atom }
     }

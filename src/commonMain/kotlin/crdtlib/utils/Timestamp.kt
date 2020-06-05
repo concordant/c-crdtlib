@@ -5,7 +5,7 @@ package crdtlib.utils
 * @property id the datacenter id.
 * @property cnt the value associated to the timestamp.
 **/
-data class Timestamp(val id: DCId, val cnt: Int) : Comparable<Timestamp> {
+data class Timestamp(val id: DCId, val cnt: Int) {
 
     /**
     * Compares this timestamp to a given other timestamp.
@@ -13,7 +13,8 @@ data class Timestamp(val id: DCId, val cnt: Int) : Comparable<Timestamp> {
     * @param other the other instance of timestamp.
     * @return the results of the comparison between the two timestamp.
     **/
-    override fun compareTo(other: Timestamp): Int {
+    @Name("compareTo")
+    operator fun compareTo(other: Timestamp): Int {
         if(this.cnt != other.cnt)
             return this.cnt - other.cnt
         return this.id.compareTo(other.id)

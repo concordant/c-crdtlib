@@ -1,5 +1,6 @@
 /.DS_Store
 /.gradle/
+/package-lock.json
 /.classpath
 /.idea/
 /.project
@@ -7,5 +8,4 @@
 /build/
 /target/
 /bin/
-/.idea/
 /node_modules/
