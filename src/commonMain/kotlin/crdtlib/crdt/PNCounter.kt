@@ -2,6 +2,7 @@ package crdtlib.crdt
 
 import crdtlib.utils.DCId
 import crdtlib.utils.Json
+import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
@@ -28,7 +29,8 @@ class PNCounter : DeltaCRDT<PNCounter> {
     * Gets the value of the counter.
     * @return the value of the counter.
     */
-    fun value(): Int {
+    @Name("get")
+    fun get(): Int {
         return this.increment.values.sumBy{ it.first } - this.decrement.values.sumBy{ it.first }
     }
 
@@ -37,6 +39,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
     * @param amount the value that should be added to the counter.
     * @return the delta corresponding to this operation.
     */
+    @Name("increment")
     fun increment(amount: Int, ts: Timestamp): PNCounter {
         val op = PNCounter()
         if (amount == 0) return op
@@ -53,6 +56,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
     * @param amount the value that should be removed to the counter.
     * @return the delta corresponding to this operation.
     */
+    @Name("decrement")
     fun decrement(amount: Int, ts: Timestamp): PNCounter {
         val op = PNCounter()
         if (amount == 0) return op
@@ -113,6 +117,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
     * Serializes this crdt counter to a json string.
     * @return the resulted json string.
     */
+    @Name("toJson")
     fun toJson(): String {
         val jsonSerializer = JsonPNCounterSerializer(PNCounter.serializer())
         return Json.stringify<PNCounter>(jsonSerializer, this)
@@ -124,6 +129,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
         * @param json the given json string.
         * @return the resulted crdt counter.
         */
+        @Name("fromJson")
         fun fromJson(json: String): PNCounter {
             val jsonSerializer = JsonPNCounterSerializer(PNCounter.serializer())
             return Json.parse(jsonSerializer, json)

@@ -1,6 +1,7 @@
 package crdtlib.crdt
 
 import crdtlib.utils.Json
+import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
@@ -45,6 +46,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     * @return the value associated to the key, or null if the key is not present in the map or last
     * operation is a delete.
     */
+    @Name("get")
     fun get(key: String): String? {
         return this.entries.get(key)?.first
     }
@@ -56,6 +58,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     * @param ts the timestamp of this operation.
     * @return the delta corresponding to this operation.
     */
+    @Name("set")
     fun put(key: String, value: String?, ts: Timestamp): LWWMap {
         val op = LWWMap()
         val currentTs = this.entries.get(key)?.second
@@ -73,6 +76,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     * @param ts the timestamp linked to this operation.
     * @return the delta corresponding to this operation.
     */
+    @Name("delete")
     fun delete(key: String, ts: Timestamp): LWWMap {
         return put(key, null, ts)
     }
@@ -132,6 +136,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     * Serializes this crdt map to a json string.
     * @return the resulted json string.
     */
+    @Name("toJson")
     fun toJson(): String {
         val jsonSerializer = JsonLWWMapSerializer(LWWMap.serializer())
         return Json.stringify<LWWMap>(jsonSerializer, this)
@@ -143,6 +148,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
         * @param json the given json string.
         * @return the resulted crdt map.
         */
+        @Name("fromJson")
         fun fromJson(json: String): LWWMap {
             val jsonSerializer = JsonLWWMapSerializer(LWWMap.serializer())
             return Json.parse(jsonSerializer, json)

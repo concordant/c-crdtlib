@@ -1,6 +1,7 @@
 package crdtlib.crdt
 
 import crdtlib.utils.Json
+import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
@@ -64,6 +65,7 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
     * Gets the set of values currently stored in the register.
     * @return the set of values stored.
     */
+    @Name("get")
     fun get(): Set<T> {
         return this.entries.map { it.first }.toSet()
     }
@@ -76,6 +78,7 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
     * @param ts the timestamp associated to the operation.
     * @return the delta corresponding to this operation.
     */
+    @Name("set")
     fun assign(value: T, ts: Timestamp): Delta<MVRegister<T>> {
         if (this.causalContext.includesTS(ts)) return EmptyDelta<MVRegister<T>>()
 
@@ -128,6 +131,7 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
     * @return the resulted json string.
     */
     @OptIn(ImplicitReflectionSerializer::class)
+    @Name("toJson")
     fun toJson(kclass: KClass<T>): String {
         val jsonSerializer = JsonMVRegisterSerializer(MVRegister.serializer(kclass.serializer()))
         return Json.stringify<MVRegister<T>>(jsonSerializer, this)
@@ -140,6 +144,7 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
         * @return the resulted MV register.
         */
         @OptIn(ImplicitReflectionSerializer::class)
+        @Name("fromJson")
         fun <T : Any> fromJson(kclass: KClass<T>, json: String): MVRegister<T> {
             val jsonSerializer = JsonMVRegisterSerializer(MVRegister.serializer(kclass.serializer()))
             return Json.parse(jsonSerializer, json)

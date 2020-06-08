@@ -12,19 +12,19 @@ import kotlin.test.assertEquals
 class PNCounterTest {
 
     /**
-    * This test evaluates the scenario: value.
-    * Call to value should return 0.
+    * This test evaluates the scenario: get.
+    * Call to get should return 0.
     */
     @Test
     fun createVal() {
         val cnt = PNCounter()
 
-        assertEquals(0, cnt.value())
+        assertEquals(0, cnt.get())
     }
 
     /**
-    * This test evaluates the scenario: increment value.
-    * Call to value should return the value set by increment.
+    * This test evaluates the scenario: increment get.
+    * Call to get should return the value set by increment.
     */
     @Test
     fun increment() {
@@ -36,13 +36,13 @@ class PNCounterTest {
 
         cnt.increment(inc, ts)
 
-        assertEquals(inc, cnt.value())
+        assertEquals(inc, cnt.get())
     }
 
 
     /**
-    * This test evaluates the scenario: decrement value.
-    * Call to value should return the inverse of value set by decrement.
+    * This test evaluates the scenario: decrement get.
+    * Call to get should return the inverse of value set by decrement.
     */
     @Test
     fun decrement() {
@@ -54,12 +54,12 @@ class PNCounterTest {
 
         cnt.decrement(dec, ts)
 
-        assertEquals(-dec, cnt.value())
+        assertEquals(-dec, cnt.get())
     }
 
     /**
-    * This test evaluates the scenario: increment(with a negative value) value.
-    * Call to value should return the value set by increment.
+    * This test evaluates the scenario: increment(with a negative value) get.
+    * Call to get should return the value set by increment.
     */
     @Test
     fun incrementNegativeAmount() {
@@ -71,12 +71,12 @@ class PNCounterTest {
 
         cnt.increment(inc, ts)
 
-        assertEquals(inc, cnt.value())
+        assertEquals(inc, cnt.get())
     }
 
     /**
-    * This test evaluates the scenario: decrement(with a negative value) value.
-    * Call to value should return the inverse of value set by decrement.
+    * This test evaluates the scenario: decrement(with a negative value) get.
+    * Call to get should return the inverse of value set by decrement.
     */
     @Test
     fun decrementNegativeAmount() {
@@ -88,12 +88,12 @@ class PNCounterTest {
 
         cnt.decrement(dec, ts)
 
-        assertEquals(-dec, cnt.value())
+        assertEquals(-dec, cnt.get())
     }
 
     /**
-    * This test evaluates the scenario: incremement(multiple times) value.
-    * Call to value should return the sum of values set by calls to increment.
+    * This test evaluates the scenario: incremement(multiple times) get.
+    * Call to get should return the sum of values set by calls to increment.
     */
     @Test
     fun multiIncrement() {
@@ -113,12 +113,12 @@ class PNCounterTest {
         cnt.increment(inc2, ts2)
         cnt.increment(inc3, ts3)
 
-        assertEquals(111, cnt.value())
+        assertEquals(111, cnt.get())
     }
 
     /**
-    * This test evaluates the scenario: decremement(multiple times) value.
-    * Call to value should return the inverse of the sum of values set by calls to decrement.
+    * This test evaluates the scenario: decremement(multiple times) get.
+    * Call to get should return the inverse of the sum of values set by calls to decrement.
     */
     @Test
     fun multiDecrement() {
@@ -138,12 +138,12 @@ class PNCounterTest {
         cnt.decrement(dec2, ts2)
         cnt.decrement(dec3, ts3)
 
-        assertEquals(-111, cnt.value())
+        assertEquals(-111, cnt.get())
     }
 
     /**
-    * This test evaluates the scenario: multiple increment and decrement value.
-    * Call to value should return the sum of increments minus the sum of decrements.
+    * This test evaluates the scenario: multiple increment and decrement get.
+    * Call to get should return the sum of increments minus the sum of decrements.
     */
     @Test
     fun incrementDecrementPositive() {
@@ -167,12 +167,12 @@ class PNCounterTest {
         cnt.increment(inc2, ts3)
         cnt.decrement(dec2, ts4)
 
-        assertEquals(47, cnt.value())
+        assertEquals(47, cnt.get())
     }
 
     /**
-    * This test evaluates the scenario: multiple increment and decrement value.
-    * Call to value should return the sum of increments minus the sum of decrements.
+    * This test evaluates the scenario: multiple increment and decrement get.
+    * Call to get should return the sum of increments minus the sum of decrements.
     */
     @Test
     fun incrementDecrementNegative() {
@@ -196,12 +196,12 @@ class PNCounterTest {
         cnt.increment(inc2, ts3)
         cnt.decrement(dec2, ts4)
 
-        assertEquals(-14, cnt.value())
+        assertEquals(-14, cnt.get())
     }
 
     /**
-    * This test evaluates the scenario: increment || merge value.
-    * Call to value should return value set by increment in the first replica.
+    * This test evaluates the scenario: increment || merge get.
+    * Call to get should return value set by increment in the first replica.
     */
     @Test
     fun increment_MergeValue() {
@@ -216,13 +216,13 @@ class PNCounterTest {
         cnt2.merge(cnt1)
         cnt1.merge(cnt2)
 
-        assertEquals(11, cnt1.value())
-        assertEquals(11, cnt2.value())
+        assertEquals(11, cnt1.get())
+        assertEquals(11, cnt2.get())
     }
 
     /**
-    * This test evaluates the scenario: decrement || merge value.
-    * Call to value should return the inverse value set by decrement in the first replica.
+    * This test evaluates the scenario: decrement || merge get.
+    * Call to get should return the inverse value set by decrement in the first replica.
     */
     @Test
     fun decrement_MergeValue() {
@@ -237,13 +237,13 @@ class PNCounterTest {
         cnt2.merge(cnt1)
         cnt1.merge(cnt2)
 
-        assertEquals(-11, cnt1.value())
-        assertEquals(-11, cnt2.value())
+        assertEquals(-11, cnt1.get())
+        assertEquals(-11, cnt2.get())
     }
 
     /**
-    * This test evaluates the scenario: increment || increment merge value.
-    * Call to value should return sum of the two increment values.
+    * This test evaluates the scenario: increment || increment merge get.
+    * Call to get should return sum of the two increment values.
     */
     @Test
     fun increment_incrementMergeValue() {
@@ -262,12 +262,12 @@ class PNCounterTest {
         cnt2.increment(inc2, ts2)
         cnt2.merge(cnt1)
 
-        assertEquals(11, cnt2.value())
+        assertEquals(11, cnt2.get())
     }
 
     /**
-    * This test evaluates the scenario: increment || merge increment value.
-    * Call to value should return sum of the two increment values.
+    * This test evaluates the scenario: increment || merge increment get.
+    * Call to get should return sum of the two increment values.
     */
     @Test
     fun increment_mergeIncrementValue() {
@@ -286,12 +286,12 @@ class PNCounterTest {
         cnt2.merge(cnt1)
         cnt2.increment(inc2, ts2)
 
-        assertEquals(11, cnt2.value())
+        assertEquals(11, cnt2.get())
     }
 
     /**
-    * This test evaluates the scenario: decrement || decrement merge value.
-    * Call to value should return the inverse of the sum of the two decrement values.
+    * This test evaluates the scenario: decrement || decrement merge get.
+    * Call to get should return the inverse of the sum of the two decrement values.
     */
     @Test
     fun decrement_decrementMergeValue() {
@@ -310,12 +310,12 @@ class PNCounterTest {
         cnt2.decrement(dec2, ts2)
         cnt2.merge(cnt1)
 
-        assertEquals(-11, cnt2.value())
+        assertEquals(-11, cnt2.get())
     }
 
     /**
-    * This test evaluates the scenario: decrement || merge decrement value.
-    * Call to value should return the inverse of the sum of the two decrement values.
+    * This test evaluates the scenario: decrement || merge decrement get.
+    * Call to get should return the inverse of the sum of the two decrement values.
     */
     @Test
     fun decrement_mergeDecrementValue() {
@@ -334,12 +334,12 @@ class PNCounterTest {
         cnt2.merge(cnt1)
         cnt2.decrement(dec2, ts2)
 
-        assertEquals(-11, cnt2.value())
+        assertEquals(-11, cnt2.get())
     }
 
     /**
-    * This test evaluates the scenario: some operations || some operations merge value.
-    * Call to value should return the sum of increment values minus the sum of the decrement values.
+    * This test evaluates the scenario: some operations || some operations merge get.
+    * Call to get should return the sum of increment values minus the sum of the decrement values.
     */
     @Test
     fun multipleOperations_multipleOperationMergeValue() {
@@ -382,12 +382,12 @@ class PNCounterTest {
         cnt2.decrement(dec4, ts8)
         cnt2.merge(cnt1)
 
-        assertEquals(60, cnt2.value())
+        assertEquals(60, cnt2.get())
     }
 
     /**
-    * This test evaluates the scenario: some operations || merge some operations value.
-    * Call to value should return the sum of increment values minus the sum of the decrement values.
+    * This test evaluates the scenario: some operations || merge some operations get.
+    * Call to get should return the sum of increment values minus the sum of the decrement values.
     */
     @Test
     fun multipleOperations_mergeMultipleOperationsValue() {
@@ -430,12 +430,12 @@ class PNCounterTest {
         cnt2.increment(inc4, ts6)
         cnt2.decrement(dec4, ts8)
 
-        assertEquals(60, cnt2.value())
+        assertEquals(60, cnt2.get())
     }
 
     /**
     * This test evaluates the use of delta return by call to increment method.
-    * Call to value should return the increment value set in the first replica.
+    * Call to get should return the increment value set in the first replica.
     */
     @Test
     fun incrementOp() {
@@ -450,13 +450,13 @@ class PNCounterTest {
         cnt2.merge(incOp)
         cnt1.merge(incOp)
 
-        assertEquals(11, cnt1.value())
-        assertEquals(11, cnt2.value())
+        assertEquals(11, cnt1.get())
+        assertEquals(11, cnt2.get())
     }
 
     /**
     * This test evaluates the use of delta return by call to decrement method.
-    * Call to value should return the inverse of the decrement value set in the first replica.
+    * Call to get should return the inverse of the decrement value set in the first replica.
     */
     @Test
     fun decrementOp() {
@@ -471,13 +471,13 @@ class PNCounterTest {
         cnt2.merge(decOp)
         cnt1.merge(decOp)
 
-        assertEquals(-11, cnt1.value())
-        assertEquals(-11, cnt2.value())
+        assertEquals(-11, cnt1.get())
+        assertEquals(-11, cnt2.get())
     }
 
     /**
     * This test evaluates the use of delta return by call to incremetn and decrement methods.
-    * Call to value should return the sum of increment values minus the sum of decrement values.
+    * Call to get should return the sum of increment values minus the sum of decrement values.
     */
     @Test
     fun multipleOp() {
@@ -498,13 +498,13 @@ class PNCounterTest {
         cnt1.merge(decOp)
         cnt1.merge(incOp)
 
-        assertEquals(11, cnt1.value())
-        assertEquals(11, cnt2.value())
+        assertEquals(11, cnt1.get())
+        assertEquals(11, cnt2.get())
     }
 
     /*
     * This test evaluates the generation of delta plus its merging into another replica.
-    * Call to value should return the values set by operations registered in the first replica after
+    * Call to get should return the values set by operations registered in the first replica after
     * w.r.t the given context (here only the decrements).
     */
     @Test
@@ -533,7 +533,7 @@ class PNCounterTest {
         val delta = cnt1.generateDelta(vv)
         cnt2.merge(delta)
 
-        assertEquals(-30, cnt2.value())
+        assertEquals(-30, cnt2.get())
     }
 
     /**
@@ -555,7 +555,7 @@ class PNCounterTest {
     fun emptyFromJsonDeserialization() {
         val cntJson = PNCounter.fromJson("""{"_type":"PNCounter","_metadata":{"increment":[],"decrement":[]},"value":0}""")
 
-        assertEquals(0, cntJson.value())
+        assertEquals(0, cntJson.get())
     }
 
     /**
@@ -596,6 +596,6 @@ class PNCounterTest {
     fun fromJsonDeserialization() {
         val cntJson = PNCounter.fromJson("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"id":{"name":"dcid2"},"cnt":2}},{"name":"dcid1"},{"first":10,"second":{"id":{"name":"dcid1"},"cnt":2}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"id":{"name":"dcid2"},"cnt":1}},{"name":"dcid1"},{"first":10,"second":{"id":{"name":"dcid1"},"cnt":1}}]},"value":10}""")
 
-        assertEquals(10, cntJson.value())
+        assertEquals(10, cntJson.get())
     }
 }

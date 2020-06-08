@@ -1,6 +1,7 @@
 package crdtlib.crdt
 
 import crdtlib.utils.Json
+import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
@@ -47,6 +48,7 @@ class LWWRegister<T : Any> : DeltaCRDT<LWWRegister<T>> {
     * Gets the value currently stored in the register.
     * @return value stored in the register.
     */
+    @Name("get")
     fun get(): T {
         return value
     }
@@ -58,6 +60,7 @@ class LWWRegister<T : Any> : DeltaCRDT<LWWRegister<T>> {
     * @param ts the timestamp associated to the operation.
     * @return the delta corresponding to this operation.
     */
+    @Name("set")
     fun assign(v: T, ts: Timestamp): Delta<LWWRegister<T>> {
         if (this.ts >= ts) return EmptyDelta<LWWRegister<T>>()
         this.ts = ts
@@ -96,6 +99,7 @@ class LWWRegister<T : Any> : DeltaCRDT<LWWRegister<T>> {
     * @return the resulted json string.
     */
     @OptIn(ImplicitReflectionSerializer::class)
+    @Name("toJson")
     fun toJson(kclass: KClass<T>): String {
         val jsonSerializer = JsonLWWRegisterSerializer(LWWRegister.serializer(kclass.serializer()))
         return Json.stringify<LWWRegister<T>>(jsonSerializer, this)
@@ -108,6 +112,7 @@ class LWWRegister<T : Any> : DeltaCRDT<LWWRegister<T>> {
         * @return the resulted LWW register.
         */
         @OptIn(ImplicitReflectionSerializer::class)
+        @Name("fromJson")
         fun <T : Any> fromJson(kclass: KClass<T>, json: String): LWWRegister<T> {
             val jsonSerializer = JsonLWWRegisterSerializer(LWWRegister.serializer(kclass.serializer()))
             return Json.parse(jsonSerializer, json)

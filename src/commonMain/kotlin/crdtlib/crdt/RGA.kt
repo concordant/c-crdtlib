@@ -114,8 +114,8 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
     * Gets the value associated with the RGA.
     * @return a list containning the values present in the RGA.
     */
-    @Name("value")
-    fun value(): List<T> {
+    @Name("get")
+    fun get(): List<T> {
         return this.nodes.filter { it.removed == false }.map { it.atom }
     }
     

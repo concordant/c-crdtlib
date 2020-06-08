@@ -1,5 +1,7 @@
 package crdtlib.crdt
 
+import crdtlib.utils.Name
+
 /**
 * This class store an immutable value
 */
@@ -22,6 +24,7 @@ class Immutable<DataT> {
     * Gets the value stored in the immutable.
     * @return the value stored in the immutable.
     */
+    @Name("get")
     fun get(): DataT {
         return this.value
     }
