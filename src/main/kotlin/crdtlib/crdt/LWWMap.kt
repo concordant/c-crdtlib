@@ -9,6 +9,19 @@ import kotlinx.serialization.json.*
 
 /**
 * This class is a delta-based CRDT map implementing last writer wins (LWW) to resolve conflicts.
+* It is serializable to JSON and respect the following schema:
+* {
+    "_type": "LWWMap",
+    "_metadata": {
+        "entries": {
+            // $key is a string
+            (( "$key": Timestamp.toJson(), )*( "$key": Timestamp.toJson() ))?
+        },
+        "causalContext": VersionVector.toJson()
+    }
+    // $key and $value are strings
+    ( , "$key": "$value" )*
+* }
 */
 @Serializable
 class LWWMap : DeltaCRDT<LWWMap> {

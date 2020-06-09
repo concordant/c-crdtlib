@@ -29,6 +29,23 @@ data class RGANode<T : Any>(val atom: T, val anchor: RGAUId?, val uid: RGAUId, v
 
 /**
 * This class is a delta-based CRDT Replicated Growable Array (RGA).
+* It is serializable to JSON and respect the following schema:
+* {
+    "_type": "RGA",
+    "_metadata": [
+        ({
+            ( "atom": T.toJson(), )? // If atom is present removed should be true.
+            "anchor": RGAUId.toJson(),
+            "uid": RGAUId.toJson(),
+            "ts": Timestamp.toJson(),
+            "removed" : ( true | false )
+        })
+    ],
+    "value": [
+        // Contains only values for which the corresponding metadata nodes have no atom field.
+        (( T.toJson(), )*( T.toJson() ))?
+    ]
+* }
 */
 @Serializable(with = RGASerializer::class)
 class RGA<T : Any> : DeltaCRDT<RGA<T>> {

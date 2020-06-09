@@ -10,6 +10,12 @@ import kotlinx.serialization.json.*
 
 /**
 * This class is a delta-based CRDT last writer wins (LWW) register.
+* It is serializable to JSON and respect the following schema:
+* {
+    "_type": "LWWRegister",
+    "_metadata": Timestamp.toJson(),
+    "value": T.toJson()
+* }
 */
 @Serializable(with = LWWRegisterSerializer::class)
 class LWWRegister<T : Any> : DeltaCRDT<LWWRegister<T>> {

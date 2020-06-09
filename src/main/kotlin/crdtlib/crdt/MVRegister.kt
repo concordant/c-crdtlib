@@ -11,6 +11,15 @@ import kotlinx.serialization.json.*
 
 /**
 * This class is a delta-based CRDT multi-value register.
+* It is serializable to JSON and respect the following schema:
+* {
+    "_type": "MVRegister",
+    "_metadata": VersionVector.toJson(),
+    "value": [
+        (( T.toJson(), )*( T.toJson() ))?
+    ]
+* }
+*/
 */
 @Serializable(with = MVRegisterSerializer::class)
 class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {

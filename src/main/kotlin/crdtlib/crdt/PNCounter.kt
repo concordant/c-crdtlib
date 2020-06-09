@@ -10,6 +10,31 @@ import kotlinx.serialization.json.*
 
 /**
 * This class is a delta-based CRDT pn-counter.
+* It is serializable to JSON and respect the following schema:
+* {
+    "_type": "PNCounter",
+    "_metadata": {
+        "increment": [
+            (( DCId.toJson(), {
+                "first": $value, // $value is an integer
+                "second": Timestamp.toJson() 
+            }, )*( DCId.toJson(), {
+                "first": $value, // $value is an integer
+                "second": Timestamp.toJson() 
+            } ))?
+        ],
+        "decrement": [ 
+            (( DCId.toJson(), {
+                "first": $value, // $value is an integer
+                "second": Timestamp.toJson() 
+            }, )*( DCId.toJson(), {
+                "first": $value, // $value is an integer
+                "second": Timestamp.toJson() 
+            } ))?
+        ],
+    },
+    "value": $value // $value is an integer
+* }
 */
 @Serializable
 class PNCounter : DeltaCRDT<PNCounter> {
