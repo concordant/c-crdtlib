@@ -73,7 +73,7 @@ class LWWRegister<T : Any> : DeltaCRDT<LWWRegister<T>> {
     * @param vv the context used as starting point to generate the delta.
     * @return the corresponding delta of operations.
     */
-    override fun generateDelta(vv: VersionVector): Delta<LWWRegister<T>> {
+    override fun generateDeltaProtected(vv: VersionVector): Delta<LWWRegister<T>> {
         if (vv.includesTS(ts)) return EmptyDelta<LWWRegister<T>>()
         return LWWRegister<T>(this)
     }
@@ -84,7 +84,7 @@ class LWWRegister<T : Any> : DeltaCRDT<LWWRegister<T>> {
     * The foreign value wins iff its associated timestamp is greater than the current one.
     * @param delta the delta that should be merge with the local replica.
     */
-    override fun merge(delta: Delta<LWWRegister<T>>) {
+    override fun mergeProtected(delta: Delta<LWWRegister<T>>) {
         if (delta is EmptyDelta<LWWRegister<T>>) return
         if (delta !is LWWRegister<T>) throw UnexpectedTypeException("LWWRegister does not support merging with type: " + delta::class)
 

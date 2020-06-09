@@ -18,12 +18,20 @@ class PNCounter : DeltaCRDT<PNCounter> {
     /**
     * A mutable map storing for each datacenter metadata relative to increment operations.
     */
-    private val increment: MutableMap<DCId, Pair<Int, Timestamp>> = mutableMapOf<DCId, Pair<Int, Timestamp>>()
+    private val increment: MutableMap<DCId, Pair<Int, Timestamp>>
 
     /**
     * A mutable map storing for each datacenter metadata relative to decrement operations.
     */
-    private val decrement: MutableMap<DCId, Pair<Int, Timestamp>> = mutableMapOf<DCId, Pair<Int, Timestamp>>()
+    private val decrement: MutableMap<DCId, Pair<Int, Timestamp>>
+
+    /**
+    * Default constructor.
+    */
+    constructor() {
+        increment = mutableMapOf()
+        decrement = mutableMapOf()
+    }
 
     /**
     * Gets the value of the counter.
@@ -73,7 +81,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
     * @param vv the context used as starting point to generate the delta.
     * @return the corresponding delta of operations.
     */
-    override fun generateDelta(vv: VersionVector): Delta<PNCounter> {
+    override fun generateDeltaProtected(vv: VersionVector): Delta<PNCounter> {
         val delta = PNCounter()
         for ((id, meta) in increment) {
             if (!vv.includesTS(meta.second)) {
@@ -96,7 +104,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
     * present for this datacenter.
     * @param delta the delta that should be merge with the local replica.
     */
-    override fun merge(delta: Delta<PNCounter>) {
+    override fun mergeProtected(delta: Delta<PNCounter>) {
         if (delta !is PNCounter) throw UnexpectedTypeException("PNCounter does not support merging with type:" + delta::class)
 
         for ((id, meta) in delta.increment) {
