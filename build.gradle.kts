@@ -11,14 +11,7 @@ repositories {
 kotlin {
     jvm()
     js("nodeJs") {
-        browser {
-            testTask {
-                useKarma {
-                    useChromeHeadless()
-                    useFirefox()
-                }
-            }
-        }
+        nodejs {}
     }
 
     sourceSets {
