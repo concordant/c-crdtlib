@@ -35,6 +35,7 @@ class VersionVector {
     * Gets the maximal value stored in this version vector.
     * @return the maximal value.
     */
+    @Name("maxVal")
     fun maxVal(): Int {
         return entries.values.maxBy { it.absoluteValue } ?: 0
     }
@@ -43,6 +44,7 @@ class VersionVector {
     * Adds a given timestamp to this version vector.
     * @param ts the given timestamp.
     */
+    @Name("addTS")
     fun addTS(ts: Timestamp) {
         val curCnt = entries.getOrElse(ts.id, { 0 })
         if(curCnt < ts.cnt)
@@ -54,6 +56,7 @@ class VersionVector {
     * @param ts the given timestamp.
     * @return true if the timestamp is included in the version vector, false otherwise.
     */
+    @Name("includesTS")
     fun includesTS(ts: Timestamp): Boolean {
         val cnt = entries.getOrElse(ts.id, { 0 })
         return cnt >= ts.cnt
@@ -64,6 +67,7 @@ class VersionVector {
     * entry.
     * @param vv the given version vector used for update.
     */
+    @Name("pointWiseMax")
     fun pointWiseMax(vv: VersionVector) {
         for((k, v) in vv.entries)
             if(entries.getOrElse(k, { 0 }) < v)
@@ -75,6 +79,7 @@ class VersionVector {
     * @param vv the given version vector used for comparison.
     * @return true if this version vector is smaller or equals than the other one, false otherwise.
     */
+    @Name("isSmallerOrEquals")
     fun isSmallerOrEquals(vv: VersionVector): Boolean {
         for((k, v) in vv.entries) {
             val localV = entries.getOrElse(k, { 0 })
@@ -93,6 +98,7 @@ class VersionVector {
     * Copies this version vector.
     * @return a copy of this version vector.
     */
+    @Name("copy")
     fun copy(): VersionVector {
         return VersionVector(this)
     }
@@ -101,6 +107,7 @@ class VersionVector {
     * Serializes this version vector to a json string.
     * @return the resulted json string.
     */
+    @Name("toJson")
     fun toJson(): String {
         val JSON = Json(JsonConfiguration.Stable)
         return JSON.stringify(VersionVector.serializer(), this)
@@ -112,6 +119,7 @@ class VersionVector {
         * @param json the given json string.
         * @return the resulted version vector.
         */
+        @Name("fromJson")
         fun fromJson(json: String): VersionVector {
             val JSON = Json(JsonConfiguration.Stable)
             return JSON.parse(VersionVector.serializer(), json)
