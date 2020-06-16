@@ -2,26 +2,39 @@ package crdtlib.utils
 
 /**
 * This class represents a simple environment generating increasing monotonic timestamps.
-* @property id the datacenter unique identifier associated with this environment.
 */
-class SimpleEnvironment(val id: DCId) : Environment {
+class SimpleEnvironment : Environment {
+
+    /**
+    * The datacenter unique identifier associated with this environment.
+    */
+    private val id: DCId
 
     /**
     * A version vector storing this environment causal context.
     */
-    private var curState = VersionVector()
+    private var curState: VersionVector
 
     /**
     * The value associated with the last generated timestamp.
     * This value is initialized to 0 meaning that the first generated timestamp has the value 1.
     */
-    private var lastTs: Int = 0
+    private var lastTs: Int
+
+    /**
+    * Default constructor.
+    */
+    constructor(id: DCId) {
+        this.id = id
+        this.curState = VersionVector()
+        this.lastTs = 0
+    }
 
     /**
     * Generates a monotonically increasing timestamp.
     * @return the generated timestamp.
     */
-    override fun getNewTimestamp(): Timestamp {
+    override fun getNewTimestampProtected(): Timestamp {
         lastTs = curState.maxVal() + 1
         return Timestamp(id, lastTs)
     }
@@ -30,7 +43,7 @@ class SimpleEnvironment(val id: DCId) : Environment {
     * Gets the current state associated with the environment.
     * @return the current state.
     */
-    override fun getCurrentState(): VersionVector {
+    override fun getCurrentStateProtected(): VersionVector {
         return curState.copy()
     }
 
@@ -38,7 +51,7 @@ class SimpleEnvironment(val id: DCId) : Environment {
     * Updates the current state with the given timestamp.
     * @param ts the given timestamp.
     */
-    override fun updateStateTS(ts: Timestamp) {
+    override fun updateStateTSProtected(ts: Timestamp) {
         curState.addTS(ts)
     }
 
@@ -46,7 +59,7 @@ class SimpleEnvironment(val id: DCId) : Environment {
     * Updates the current state with the given version vector.
     * @param vv the given version vector.
     */
-    override fun updateStateVV(vv: VersionVector) {
+    override fun updateStateVVProtected(vv: VersionVector) {
         curState.pointWiseMax(vv)
     }
 }
