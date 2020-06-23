@@ -248,4 +248,28 @@ class TimestampTest {
         assertTrue(ts1 >= ts2)
         assertTrue(ts1 == ts2)
     }
+
+    /**
+    * This test evaluates JSON serialization.
+    **/
+    @Test
+    fun toJsonSerialization() {
+        val ts = Timestamp(DCId("dcid1"), 3)
+
+        val tsJson = ts.toJson()
+
+        assertEquals("""{"id":{"name":"dcid1"},"cnt":3}""", tsJson)
+    }
+
+    /**
+    * This test evaluates JSON deserialization.
+    **/
+    @Test
+    fun fromJsonDeserialization() {
+        val ts = Timestamp(DCId("dcid1"), 3)
+
+        val tsJson = Timestamp.fromJson("""{"id":{"name":"dcid1"},"cnt":3}""")
+
+        assertTrue(ts == tsJson)
+    }
 }

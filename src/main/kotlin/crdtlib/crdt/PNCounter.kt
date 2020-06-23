@@ -20,13 +20,42 @@
 package crdtlib.crdt
 
 import crdtlib.utils.DCId
+import crdtlib.utils.Json
 import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
 
 /**
 * This class is a delta-based CRDT pn-counter.
+* It is serializable to JSON and respect the following schema:
+* {
+    "_type": "PNCounter",
+    "_metadata": {
+        "increment": [
+            (( DCId.toJson(), {
+                "first": $value, // $value is an integer
+                "second": Timestamp.toJson() 
+            }, )*( DCId.toJson(), {
+                "first": $value, // $value is an integer
+                "second": Timestamp.toJson() 
+            } ))?
+        ],
+        "decrement": [ 
+            (( DCId.toJson(), {
+                "first": $value, // $value is an integer
+                "second": Timestamp.toJson() 
+            }, )*( DCId.toJson(), {
+                "first": $value, // $value is an integer
+                "second": Timestamp.toJson() 
+            } ))?
+        ],
+    },
+    "value": $value // $value is an integer
+* }
 */
+@Serializable
 class PNCounter : DeltaCRDT<PNCounter> {
 
     /**
@@ -122,5 +151,43 @@ class PNCounter : DeltaCRDT<PNCounter> {
                 this.decrement.put(id, Pair<Int, Timestamp>(meta.first, meta.second))
             }
         }
+    }
+
+    /**
+    * Serializes this crdt counter to a json string.
+    * @return the resulted json string.
+    */
+    fun toJson(): String {
+        val jsonSerializer = JsonPNCounterSerializer(PNCounter.serializer())
+        return Json.stringify<PNCounter>(jsonSerializer, this)
+    }
+
+    companion object {
+        /**
+        * Deserializes a given json string in a crdt counter.
+        * @param json the given json string.
+        * @return the resulted crdt counter.
+        */
+        fun fromJson(json: String): PNCounter {
+            val jsonSerializer = JsonPNCounterSerializer(PNCounter.serializer())
+            return Json.parse(jsonSerializer, json)
+        }
+    }
+}
+
+/**
+* This class is a json transformer for PNCounter, it allows the separation between data and metadata.
+*/
+class JsonPNCounterSerializer(private val serializer : KSerializer<PNCounter>) :
+        JsonTransformingSerializer<PNCounter>(serializer, "JsonPNCounterSerializer") {
+
+    override fun writeTransform(element: JsonElement): JsonElement {
+        val incValue = element.jsonObject.getArray("increment").filter { it.jsonObject.containsKey("first") }.sumBy{ it.jsonObject.getPrimitive("first").int }
+        val decValue = element.jsonObject.getArray("decrement").filter { it.jsonObject.containsKey("first") }.sumBy{ it.jsonObject.getPrimitive("first").int }
+        return JsonObject(mapOf("_type" to JsonPrimitive("PNCounter"), "_metadata" to element, "value" to JsonPrimitive(incValue - decValue)))
+    }
+
+    override fun readTransform(element: JsonElement): JsonElement {
+        return element.jsonObject.getObject("_metadata")
     }
 }

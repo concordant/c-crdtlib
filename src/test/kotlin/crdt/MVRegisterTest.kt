@@ -376,4 +376,59 @@ class MVRegisterTest {
 
         assertEquals(setOf(), reg3.get())
     }
+
+    /**
+    * This test evaluates JSON serialization of an empty mv register.
+    **/
+    @Test
+    fun emptyToJsonSerialization() {
+        val reg = MVRegister<String>()
+
+        val regJson = reg.toJson(String::class)
+
+        assertEquals("""{"_type":"MVRegister","_metadata":{"entries":[],"causalContext":{"entries":[]}},"value":[]}""", regJson)
+    }
+
+    /**
+    * This test evaluates JSON deserialization of an empty mv register.
+    **/
+    @Test
+    fun emptyFromJsonDeserialization() {
+        val regJson = MVRegister.fromJson(String::class, """{"_type":"MVRegister","_metadata":{"entries":[],"causalContext":{"entries":[]}},"value":[]}""")
+
+        assertEquals(setOf(), regJson.get())
+    }
+
+    /**
+    * This test evaluates JSON serialization of a mv register.
+    **/
+    @Test
+    fun toJsonSerialization() {
+        val id1 = DCId("dcid1")
+        val id2 = DCId("dcid2")
+        val dc1 = SimpleEnvironment(id1)
+        val dc2 = SimpleEnvironment(id2)
+        val ts1 = dc1.getNewTimestamp()
+        val ts2 = dc2.getNewTimestamp()
+        val val1 = "value1"
+        val val2 = "value2"
+
+        val reg1 = MVRegister<String>(val1, ts1)
+        val reg2 = MVRegister<String>()
+        reg2.assign(val2, ts2)
+        reg2.merge(reg1)
+        val regJson = reg2.toJson(String::class)
+
+        assertEquals("""{"_type":"MVRegister","_metadata":{"entries":[{"id":{"name":"dcid2"},"cnt":1},{"id":{"name":"dcid1"},"cnt":1}],"causalContext":{"entries":[{"name":"dcid2"},1,{"name":"dcid1"},1]}},"value":["value2","value1"]}""", regJson)
+    }
+
+    /**
+    * This test evaluates JSON deserialization of a mv register.
+    **/
+    @Test
+    fun fromJsonDeserialization() {
+        val regJson = MVRegister.fromJson(String::class, """{"_type":"MVRegister","_metadata":{"entries":[{"id":{"name":"dcid2"},"cnt":1},{"id":{"name":"dcid1"},"cnt":1}],"causalContext":{"entries":[{"name":"dcid2"},1,{"name":"dcid1"},1]}},"value":["value2","value1"]}""")
+
+        assertEquals(setOf("value1", "value2"), regJson.get())
+    }
 }

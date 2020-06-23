@@ -182,4 +182,29 @@ class LWWRegisterTest {
         assertEquals(val2, reg1.get())
         assertEquals(val2, reg2.get())
     }
+
+    /**
+    * This test evaluates JSON serialization of a lww register.
+    **/
+    @Test
+    fun toJsonSerialization() {
+        val id = DCId("dcid")
+        val dc = SimpleEnvironment(id)
+        val ts = dc.getNewTimestamp()
+        val value = "value"
+
+        val reg = LWWRegister<String>(value, ts)
+
+        assertEquals("""{"_type":"LWWRegister","_metadata":{"id":{"name":"dcid"},"cnt":1},"value":"value"}""", reg.toJson(String::class))
+    }
+
+    /**
+    * This test evaluates JSON deserialization of a lww register.
+    **/
+    @Test
+    fun fromJsonDeserialization() {
+        val regJson = LWWRegister.fromJson(String::class, """{"_type":"LWWRegister","_metadata":{"id":{"name":"dcid"},"cnt":1},"value":"value"}""")
+
+        assertEquals("value", regJson.get())
+    }
 }
