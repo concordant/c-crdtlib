@@ -39,7 +39,6 @@ import kotlinx.serialization.json.*
     ]
 * }
 */
-*/
 @Serializable(with = MVRegisterSerializer::class)
 class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
 
