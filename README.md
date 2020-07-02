@@ -1,7 +1,7 @@
+# CRDT lib
+
 [![pipeline status](https://gitlab.inria.fr/concordant/software/crdtlib-kotlin/badges/master/pipeline.svg)](https://gitlab.inria.fr/concordant/software/crdtlib-kotlin/commits/master)
 [![License](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
-
-# CRDT lib
 
 CRDT library in Kotlin for the Concordant platform API. This project is based on Kotlin multiplatform feature.
 
@@ -14,12 +14,12 @@ CRDT library in Kotlin for the Concordant platform API. This project is based on
 
 ### Build project
 
-Building is managed through the use of Gradle. Kotlin sources (code and tests) are compiled to JVM bytcode and to Javascript in the form of a Node.js package. The command *gradle build* launches the following tasks:
+The building is managed through the use of Gradle. Kotlin sources (code and tests) are compiled to JVM Bytecode and to Javascript in the form of a Node.js package. The command *gradle build* launches the following tasks:
 
-- compile code and tests to JVM bytecode;
+- compile code and tests to JVM Bytecode;
 - compile code and tests to Javascript (Node.js package);
-- run JVM tests suite;
-- run Node.js tests suite in a server like manner.
+- run JVM test suite;
+- run Node.js test suite in a server like manner.
 
 A report containing all tests result can be found in the file *build/reports/tests/allTests/index.html*.
 
