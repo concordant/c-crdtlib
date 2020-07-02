@@ -19,7 +19,7 @@
 
 package crdtlib.crdt
 
-import crdtlib.utils.DCId
+import crdtlib.utils.DCUId
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
@@ -35,19 +35,19 @@ import kotlinx.serialization.json.*
     "_type": "PNCounter",
     "_metadata": {
         "increment": [
-            (( DCId.toJson(), {
+            (( DCUId.toJson(), {
                 "first": $value, // $value is an integer
                 "second": Timestamp.toJson() 
-            }, )*( DCId.toJson(), {
+            }, )*( DCUId.toJson(), {
                 "first": $value, // $value is an integer
                 "second": Timestamp.toJson() 
             } ))?
         ],
         "decrement": [ 
-            (( DCId.toJson(), {
+            (( DCUId.toJson(), {
                 "first": $value, // $value is an integer
                 "second": Timestamp.toJson() 
-            }, )*( DCId.toJson(), {
+            }, )*( DCUId.toJson(), {
                 "first": $value, // $value is an integer
                 "second": Timestamp.toJson() 
             } ))?
@@ -62,12 +62,12 @@ class PNCounter : DeltaCRDT<PNCounter> {
     /**
     * A mutable map storing for each datacenter metadata relative to increment operations.
     */
-    private val increment: MutableMap<DCId, Pair<Int, Timestamp>>
+    private val increment: MutableMap<DCUId, Pair<Int, Timestamp>>
 
     /**
     * A mutable map storing for each datacenter metadata relative to decrement operations.
     */
-    private val decrement: MutableMap<DCId, Pair<Int, Timestamp>>
+    private val decrement: MutableMap<DCUId, Pair<Int, Timestamp>>
 
     /**
     * Default constructor.
@@ -97,9 +97,9 @@ class PNCounter : DeltaCRDT<PNCounter> {
         if (amount == 0) return op
         if (amount < 0) return this.decrement(-amount, ts)
 
-        val count = this.increment.get(ts.id)?.first ?: 0
-        this.increment.put(ts.id, Pair<Int, Timestamp>(count + amount, ts))
-        op.increment.put(ts.id, Pair<Int, Timestamp>(count + amount, ts))
+        val count = this.increment.get(ts.uid)?.first ?: 0
+        this.increment.put(ts.uid, Pair(count + amount, ts))
+        op.increment.put(ts.uid, Pair(count + amount, ts))
         return op
     }
 
@@ -114,9 +114,9 @@ class PNCounter : DeltaCRDT<PNCounter> {
         if (amount == 0) return op
         if (amount < 0) return this.increment(-amount, ts)
       
-        val count = this.decrement.get(ts.id)?.first ?: 0
-        this.decrement.put(ts.id, Pair<Int, Timestamp>(count + amount, ts))
-        op.decrement.put(ts.id, Pair<Int, Timestamp>(count + amount, ts))
+        val count = this.decrement.get(ts.uid)?.first ?: 0
+        this.decrement.put(ts.uid, Pair(count + amount, ts))
+        op.decrement.put(ts.uid, Pair(count + amount, ts))
         return op
     }
 
@@ -127,14 +127,14 @@ class PNCounter : DeltaCRDT<PNCounter> {
     */
     override fun generateDeltaProtected(vv: VersionVector): Delta<PNCounter> {
         val delta = PNCounter()
-        for ((id, meta) in increment) {
+        for ((uid, meta) in increment) {
             if (!vv.includesTS(meta.second)) {
-                delta.increment.put(id, Pair<Int, Timestamp>(meta.first, meta.second))
+                delta.increment.put(uid, Pair(meta.first, meta.second))
             }
         }
-        for ((id, meta) in decrement) {
+        for ((uid, meta) in decrement) {
             if (!vv.includesTS(meta.second)) {
-                delta.decrement.put(id, Pair<Int, Timestamp>(meta.first, meta.second))
+                delta.decrement.put(uid, Pair(meta.first, meta.second))
             }
         }
         return delta
@@ -151,16 +151,16 @@ class PNCounter : DeltaCRDT<PNCounter> {
     override fun mergeProtected(delta: Delta<PNCounter>) {
         if (delta !is PNCounter) throw UnexpectedTypeException("PNCounter does not support merging with type:" + delta::class)
 
-        for ((id, meta) in delta.increment) {
-            val localMeta = this.increment.get(id)
+        for ((uid, meta) in delta.increment) {
+            val localMeta = this.increment.get(uid)
             if (localMeta == null || localMeta.first < meta.first) {
-                this.increment.put(id, Pair<Int, Timestamp>(meta.first, meta.second))
+                this.increment.put(uid, Pair(meta.first, meta.second))
             }
         }
-        for ((id, meta) in delta.decrement) {
-            val localMeta = this.decrement.get(id)
+        for ((uid, meta) in delta.decrement) {
+            val localMeta = this.decrement.get(uid)
             if (localMeta == null || localMeta.first < meta.first) {
-                this.decrement.put(id, Pair<Int, Timestamp>(meta.first, meta.second))
+                this.decrement.put(uid, Pair(meta.first, meta.second))
             }
         }
     }

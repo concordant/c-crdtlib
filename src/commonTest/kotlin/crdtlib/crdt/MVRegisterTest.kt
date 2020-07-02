@@ -20,7 +20,7 @@
 package crdtlib.test
 
 import crdtlib.crdt.MVRegister
-import crdtlib.utils.DCId
+import crdtlib.utils.DCUId
 import crdtlib.utils.SimpleEnvironment
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -48,8 +48,8 @@ class MVRegisterTest {
     */
     @Test
     fun createValueGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val value = "value"
         val reg = MVRegister<String>(value, ts)
@@ -63,8 +63,8 @@ class MVRegisterTest {
     */
     @Test
     fun createCopyGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val value = "value"
         val reg1 = MVRegister<String>(value, ts)
@@ -80,10 +80,10 @@ class MVRegisterTest {
     */
     @Test
     fun createCopySetGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val val1 = "value1"
@@ -103,8 +103,8 @@ class MVRegisterTest {
     */
     @Test
     fun assignAssignGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -123,8 +123,8 @@ class MVRegisterTest {
     */
     @Test
     fun assignAssignOldGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -143,8 +143,8 @@ class MVRegisterTest {
     */
     @Test
     fun assign_MergeGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val value = "value"
 
@@ -163,10 +163,10 @@ class MVRegisterTest {
     */
     @Test
     fun assign_MergeAssignGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val val1 = "value1"
@@ -186,10 +186,10 @@ class MVRegisterTest {
     */
     @Test
     fun assign_AssignMergeGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val val1 = "value1"
@@ -210,8 +210,8 @@ class MVRegisterTest {
     */
     @Test
     fun assignBeforeMerge1AssignBeforeMerge2_Merge1Merge2Get() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -235,10 +235,10 @@ class MVRegisterTest {
     */
     @Test
     fun assignBeforeMerge1AssignBeforeMerge2_AssignMerge1Merge2Get() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         dc1.updateStateTS(ts1)
@@ -264,12 +264,12 @@ class MVRegisterTest {
     */
     @Test
     fun assign_AssignMerge3_AssignMerge1Merge2Get() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val id3 = DCId("dcid3")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
-        val dc3 = SimpleEnvironment(id3)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
+        val dc3 = SimpleEnvironment(uid3)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val ts3 = dc3.getNewTimestamp()
@@ -296,12 +296,12 @@ class MVRegisterTest {
     */
     @Test
     fun assign_Merge3Assign_AssignMerge1Merge2Get() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val id3 = DCId("dcid3")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
-        val dc3 = SimpleEnvironment(id3)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
+        val dc3 = SimpleEnvironment(uid3)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val ts3 = dc3.getNewTimestamp()
@@ -326,8 +326,8 @@ class MVRegisterTest {
     */
     @Test
     fun assignOp() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val value = "value"
         val reg1 = MVRegister<String>()
@@ -348,10 +348,10 @@ class MVRegisterTest {
     */
     @Test
     fun generateDelta() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val vv = dc1.getCurrentState()
@@ -374,10 +374,10 @@ class MVRegisterTest {
     */
     @Test
     fun generateEmptyDelta() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         dc1.updateStateTS(ts1)
@@ -423,10 +423,10 @@ class MVRegisterTest {
     **/
     @Test
     fun toJsonSerialization() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val val1 = "value1"
@@ -438,7 +438,7 @@ class MVRegisterTest {
         reg2.merge(reg1)
         val regJson = reg2.toJson(String::class)
 
-        assertEquals("""{"_type":"MVRegister","_metadata":{"entries":[{"id":{"name":"dcid2"},"cnt":1},{"id":{"name":"dcid1"},"cnt":1}],"causalContext":{"entries":[{"name":"dcid2"},1,{"name":"dcid1"},1]}},"value":["value2","value1"]}""", regJson)
+        assertEquals("""{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"dcid2"},"cnt":1},{"uid":{"name":"dcid1"},"cnt":1}],"causalContext":{"entries":[{"name":"dcid2"},1,{"name":"dcid1"},1]}},"value":["value2","value1"]}""", regJson)
     }
 
     /**
@@ -446,7 +446,7 @@ class MVRegisterTest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val regJson = MVRegister.fromJson(String::class, """{"_type":"MVRegister","_metadata":{"entries":[{"id":{"name":"dcid2"},"cnt":1},{"id":{"name":"dcid1"},"cnt":1}],"causalContext":{"entries":[{"name":"dcid2"},1,{"name":"dcid1"},1]}},"value":["value2","value1"]}""")
+        val regJson = MVRegister.fromJson(String::class, """{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"dcid2"},"cnt":1},{"uid":{"name":"dcid1"},"cnt":1}],"causalContext":{"entries":[{"name":"dcid2"},1,{"name":"dcid1"},1]}},"value":["value2","value1"]}""")
 
         assertEquals(setOf("value1", "value2"), regJson.get())
     }

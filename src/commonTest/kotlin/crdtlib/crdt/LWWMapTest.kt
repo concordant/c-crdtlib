@@ -21,7 +21,7 @@ package crdtlib.test
 
 import crdtlib.crdt.Delta
 import crdtlib.crdt.LWWMap
-import crdtlib.utils.DCId
+import crdtlib.utils.DCUId
 import crdtlib.utils.SimpleEnvironment
 import crdtlib.utils.VersionVector
 import kotlin.test.Test
@@ -50,8 +50,8 @@ class LWWMapTest {
     */
     @Test
     fun putGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val key = "key"
         val value = "value"
@@ -68,8 +68,8 @@ class LWWMapTest {
     */
     @Test
     fun putDelGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -89,8 +89,8 @@ class LWWMapTest {
     */
     @Test
     fun delGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         val key = "key"
         val map = LWWMap()
@@ -106,8 +106,8 @@ class LWWMapTest {
     */
     @Test
     fun putPutGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -128,8 +128,8 @@ class LWWMapTest {
     */
     @Test
     fun putPutDelGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -153,8 +153,8 @@ class LWWMapTest {
     */
     @Test
     fun put_MergeGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val key = "key"
         val value = "value"
@@ -175,10 +175,10 @@ class LWWMapTest {
     */
     @Test
     fun put_MergePutLWWGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val key = "key"
@@ -200,10 +200,10 @@ class LWWMapTest {
     */
     @Test
     fun put_PutLWWMergeGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val key = "key"
@@ -225,10 +225,10 @@ class LWWMapTest {
     */
     @Test
     fun putLWW_PutMergeGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val key = "key"
@@ -250,10 +250,10 @@ class LWWMapTest {
     */
     @Test
     fun putDelLWW_PutMergeGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         dc2.updateStateTS(ts2)
@@ -278,10 +278,10 @@ class LWWMapTest {
     */
     @Test
     fun putDelLWW_PutMergeBeforeDelMergeAfterDelGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         dc2.updateStateTS(ts2)
@@ -307,10 +307,10 @@ class LWWMapTest {
     */
     @Test
     fun putDel_PutLWWMergeGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         dc1.updateStateTS(ts1)
@@ -337,10 +337,10 @@ class LWWMapTest {
     */
     @Test
     fun putDel_PutLWWMergeBeforeDelMergeAfterDelGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         dc1.updateStateTS(ts1)
@@ -368,12 +368,12 @@ class LWWMapTest {
     */
     @Test
     fun put_Put_Merge1DelLWWMerge2Get() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val id3 = DCId("dcid3")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
-        val dc3 = SimpleEnvironment(id3)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
+        val dc3 = SimpleEnvironment(uid3)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val ts3 = dc3.getNewTimestamp()
@@ -399,12 +399,12 @@ class LWWMapTest {
     */
     @Test
     fun put_PutLWW_Merge1DelMerge2Get() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val id3 = DCId("dcid3")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
-        val dc3 = SimpleEnvironment(id3)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
+        val dc3 = SimpleEnvironment(uid3)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val ts3 = dc3.getNewTimestamp()
@@ -430,8 +430,8 @@ class LWWMapTest {
     */
     @Test
     fun putOp() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val key = "key"
         val value = "value"
@@ -452,8 +452,8 @@ class LWWMapTest {
     */
     @Test
     fun putDelOp() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -479,8 +479,8 @@ class LWWMapTest {
     */
     @Test
     fun putOpFusion() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -510,8 +510,8 @@ class LWWMapTest {
     */
     @Test
     fun putDelOpFusion() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -541,8 +541,8 @@ class LWWMapTest {
     */
     @Test
     fun generateDelta() {
-        val id1 = DCId("dcid1")
-        val dc1 = SimpleEnvironment(id1)
+        val uid1 = DCUId("dcid1")
+        val dc1 = SimpleEnvironment(uid1)
         val ts1 = dc1.getNewTimestamp()
         dc1.updateStateTS(ts1)
         val ts2 = dc1.getNewTimestamp()
@@ -579,8 +579,8 @@ class LWWMapTest {
     */
     @Test
     fun generateDeltaWithDel() {
-        val id1 = DCId("dcid1")
-        val dc1 = SimpleEnvironment(id1)
+        val uid1 = DCUId("dcid1")
+        val dc1 = SimpleEnvironment(uid1)
         val ts1 = dc1.getNewTimestamp()
         dc1.updateStateTS(ts1)
         val ts2 = dc1.getNewTimestamp()
@@ -626,8 +626,8 @@ class LWWMapTest {
     **/
     @Test
     fun emptyFromJsonDeserialization() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
 
         val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{},"causalContext":{"entries":[]}}}""")
@@ -643,8 +643,8 @@ class LWWMapTest {
     **/
     @Test
     fun toJsonSerialization() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -666,7 +666,7 @@ class LWWMapTest {
         map.put(key3, value3, ts4)
         val mapJson = map.toJson()
 
-        assertEquals("""{"_type":"LWWMap","_metadata":{"entries":{"key1":{"id":{"name":"dcid"},"cnt":1},"key2":{"id":{"name":"dcid"},"cnt":3},"key3":{"id":{"name":"dcid"},"cnt":4}},"causalContext":{"entries":[{"name":"dcid"},4]}},"key1":"value1","key2":null,"key3":"value3"}""", mapJson)
+        assertEquals("""{"_type":"LWWMap","_metadata":{"entries":{"key1":{"uid":{"name":"dcid"},"cnt":1},"key2":{"uid":{"name":"dcid"},"cnt":3},"key3":{"uid":{"name":"dcid"},"cnt":4}},"causalContext":{"entries":[{"name":"dcid"},4]}},"key1":"value1","key2":null,"key3":"value3"}""", mapJson)
     }
 
     /**
@@ -674,7 +674,7 @@ class LWWMapTest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{"key1":{"id":{"name":"dcid"},"cnt":1},"key2":{"id":{"name":"dcid"},"cnt":3},"key3":{"id":{"name":"dcid"},"cnt":4}},"causalContext":{"entries":[{"name":"dcid"},4]}},"key1":"value1","key2":null,"key3":"value3"}""")
+        val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{"key1":{"uid":{"name":"dcid"},"cnt":1},"key2":{"uid":{"name":"dcid"},"cnt":3},"key3":{"uid":{"name":"dcid"},"cnt":4}},"causalContext":{"entries":[{"name":"dcid"},4]}},"key1":"value1","key2":null,"key3":"value3"}""")
 
         assertEquals("value1", mapJson.get("key1"))
         assertNull(mapJson.get("key2"))
