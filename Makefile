@@ -10,5 +10,5 @@ push commit: link
 	git push origin master
 
 link:
-	# ln -s ~/bin/svnadd ./add
-	ln -sf ~/bin/gitadd ./add
+	# # ln -s ~/bin/svnadd ./add
+	# ln -sf ~/bin/gitadd ./add
