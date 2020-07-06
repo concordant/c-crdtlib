@@ -19,7 +19,7 @@
 
 package crdtlib.test
 
-import crdtlib.utils.DCId
+import crdtlib.utils.DCUId
 import crdtlib.utils.Timestamp
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -32,15 +32,15 @@ import kotlin.test.assertTrue
 class TimestampTest {
 
     /**
-    * This test evaluates the comparison of a smaller timestamp and a greater one, with same dc id
-    * and different counts.
+    * This test evaluates the comparison of a smaller timestamp and a greater one, with same
+    * datacenter unique id and different counts.
     * Call to compareTo should return negative value.
     */
     @Test
-    fun negativeCompareToSameDCIdDifferentCount() {
-        val dc = DCId("dcid")
-        val ts1 = Timestamp(dc, 1)
-        val ts2 = Timestamp(dc, 2)
+    fun negativeCompareToSameDCUIdDifferentCount() {
+        val uid = DCUId("dcid")
+        val ts1 = Timestamp(uid, 1)
+        val ts2 = Timestamp(uid, 2)
 
         val cmp = ts1.compareTo(ts2)
 
@@ -48,16 +48,16 @@ class TimestampTest {
     }
 
     /**
-    * This test evaluates the comparison of a smaller timestamp and a greater one, with different dc
-    * ids and different counts.
+    * This test evaluates the comparison of a smaller timestamp and a greater one, with different
+    * datacenter unique ids and different counts.
     * Call to compareTo should return negative value.
     */
     @Test
-    fun negativeCompareToDifferentDCIdDifferentCount() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val ts1 = Timestamp(dc1, 1)
-        val ts2 = Timestamp(dc2, 2)
+    fun negativeCompareToDifferentDCUIdDifferentCount() {
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val ts1 = Timestamp(uid1, 1)
+        val ts2 = Timestamp(uid2, 2)
 
         val cmp = ts1.compareTo(ts2)
 
@@ -65,16 +65,16 @@ class TimestampTest {
     }
 
     /**
-    * This test evaluates the comparison of a smaller timestamp and a greater one, with different dc
-    * ids and same count.
+    * This test evaluates the comparison of a smaller timestamp and a greater one, with different
+    * datacenter unique ids and same count.
     * Call to compareTo should return negative value.
     */
     @Test
-    fun negativeCompareToDifferentDCIdSameCount() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val ts1 = Timestamp(dc1, 1)
-        val ts2 = Timestamp(dc2, 1)
+    fun negativeCompareToDifferentDCUIdSameCount() {
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val ts1 = Timestamp(uid1, 1)
+        val ts2 = Timestamp(uid2, 1)
 
         val cmp = ts2.compareTo(ts1)
 
@@ -82,15 +82,15 @@ class TimestampTest {
     }
 
     /**
-    * This test evaluates the comparison of a greater timestamp and a smaller one, with same dc id
-    * and different counts.
+    * This test evaluates the comparison of a greater timestamp and a smaller one, with same
+    * datacenter unique id and different counts.
     * Call to compareTo should return positive value.
     */
     @Test
-    fun positiveCompareToSameDCIdDifferentCount() {
-        val dc = DCId("dcid")
-        val ts1 = Timestamp(dc, 1)
-        val ts2 = Timestamp(dc, 2)
+    fun positiveCompareToSameDCUIdDifferentCount() {
+        val uid = DCUId("dcid")
+        val ts1 = Timestamp(uid, 1)
+        val ts2 = Timestamp(uid, 2)
 
         val cmp = ts2.compareTo(ts1)
 
@@ -98,16 +98,16 @@ class TimestampTest {
     }
 
     /**
-    * This test evaluates the comparison of a greater timestamp and a smaller one, with different dc
-    * ids and different counts.
+    * This test evaluates the comparison of a greater timestamp and a smaller one, with different
+    * datacenter unique ids and different counts.
     * Call to compareTo should return positive value.
     */
     @Test
-    fun positiveCompareToDifferentDCIdDifferentCount() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val ts1 = Timestamp(dc1, 1)
-        val ts2 = Timestamp(dc2, 2)
+    fun positiveCompareToDifferentDCUIdDifferentCount() {
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val ts1 = Timestamp(uid1, 1)
+        val ts2 = Timestamp(uid2, 2)
 
         val cmp = ts2.compareTo(ts1)
 
@@ -115,16 +115,16 @@ class TimestampTest {
     }
 
     /**
-    * This test evaluates the comparison of a greater timestamp and a smaller one, with different dc
-    * ids and same count.
+    * This test evaluates the comparison of a greater timestamp and a smaller one, with different
+    * datacenter unique ids and same count.
     * Call to compareTo should return positive value.
     */
     @Test
-    fun positiveCompareToDifferentDCIdSameCount() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val ts1 = Timestamp(dc1, 1)
-        val ts2 = Timestamp(dc2, 1)
+    fun positiveCompareToDifferentDCUIdSameCount() {
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val ts1 = Timestamp(uid1, 1)
+        val ts2 = Timestamp(uid2, 1)
 
         val cmp = ts1.compareTo(ts2)
 
@@ -137,9 +137,9 @@ class TimestampTest {
     */
     @Test
     fun zeroCompareTo() {
-        val dc = DCId("dcid")
-        val ts1 = Timestamp(dc, 1)
-        val ts2 = Timestamp(dc, 1)
+        val uid = DCUId("dcid")
+        val ts1 = Timestamp(uid, 1)
+        val ts2 = Timestamp(uid, 1)
 
         val cmp = ts1.compareTo(ts2)
 
@@ -148,13 +148,13 @@ class TimestampTest {
 
     /**
     * This test evaluates the comparison (using operators) of a smaller timestamp and a greater one,
-    * with same dc id and different counts.
+    * with same datacenter unique id and different counts.
     */
     @Test
-    fun negativeCompareToOperatorSameDCIdDifferentCount() {
-        val dc = DCId("dcid")
-        val ts1 = Timestamp(dc, 1)
-        val ts2 = Timestamp(dc, 2)
+    fun negativeCompareToOperatorSameDCUIdDifferentCount() {
+        val uid = DCUId("dcid")
+        val ts1 = Timestamp(uid, 1)
+        val ts2 = Timestamp(uid, 2)
 
         assertTrue(ts1 < ts2)
         assertTrue(ts1 <= ts2)
@@ -165,14 +165,14 @@ class TimestampTest {
 
     /**
     * This test evaluates the comparison (using operators) of a smaller timestamp and a greater one,
-    * with different dc ids and different counts.
+    * with different datacenter unique ids and different counts.
     */
     @Test
-    fun negativeCompareToOperatorDifferentDCIdDifferentCount() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val ts1 = Timestamp(dc1, 1)
-        val ts2 = Timestamp(dc2, 2)
+    fun negativeCompareToOperatorDifferentDCUIdDifferentCount() {
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val ts1 = Timestamp(uid1, 1)
+        val ts2 = Timestamp(uid2, 2)
 
         assertTrue(ts1 < ts2)
         assertTrue(ts1 <= ts2)
@@ -183,14 +183,14 @@ class TimestampTest {
 
     /**
     * This test evaluates the comparison (using operators) of a smaller timestamp and a greater one,
-    * with different dc ids and same count.
+    * with different datacenter unique ids and same count.
     */
     @Test
-    fun negativeCompareToOperatorDifferentDCIdSameCount() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val ts1 = Timestamp(dc1, 1)
-        val ts2 = Timestamp(dc2, 1)
+    fun negativeCompareToOperatorDifferentDCUIdSameCount() {
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val ts1 = Timestamp(uid1, 1)
+        val ts2 = Timestamp(uid2, 1)
 
         assertTrue(ts1 < ts2)
         assertTrue(ts1 <= ts2)
@@ -201,13 +201,13 @@ class TimestampTest {
 
     /**
     * This test evaluates the comparison (using operators) of a greater timestamp and a smaller one,
-    * with same dc id and different counts.
+    * with same datacenter unique id and different counts.
     */
     @Test
-    fun positiveCompareToOperatorSameDCIdDifferentCount() {
-        val dc = DCId("dcid")
-        val ts1 = Timestamp(dc, 1)
-        val ts2 = Timestamp(dc, 2)
+    fun positiveCompareToOperatorSameDCUIdDifferentCount() {
+        val uid = DCUId("dcid")
+        val ts1 = Timestamp(uid, 1)
+        val ts2 = Timestamp(uid, 2)
 
         assertFalse(ts2 < ts1)
         assertFalse(ts2 <= ts1)
@@ -218,14 +218,14 @@ class TimestampTest {
 
     /**
     * This test evaluates the comparison (using operators) of a greater timestamp and a smaller one,
-    * with different dc ids and different counts.
+    * with different datacenter unique  ids and different counts.
     */
     @Test
-    fun positiveCompareToOperatorDifferentDCIdDifferentCount() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val ts1 = Timestamp(dc1, 1)
-        val ts2 = Timestamp(dc2, 2)
+    fun positiveCompareToOperatorDifferentDCUIdDifferentCount() {
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val ts1 = Timestamp(uid1, 1)
+        val ts2 = Timestamp(uid2, 2)
 
         assertFalse(ts2 < ts1)
         assertFalse(ts2 <= ts1)
@@ -236,14 +236,14 @@ class TimestampTest {
 
     /**
     * This test evaluates the comparison (using operators) of a greater timestamp and a smaller one,
-    * with different dc ids and same count.
+    * with different datacenter unique ids and same count.
     */
     @Test
-    fun positiveCompareToOperatorDifferentDCIdSameCount() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val ts1 = Timestamp(dc1, 1)
-        val ts2 = Timestamp(dc2, 1)
+    fun positiveCompareToOperatorDifferentDCUIdSameCount() {
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val ts1 = Timestamp(uid1, 1)
+        val ts2 = Timestamp(uid2, 1)
 
         assertFalse(ts2 < ts1)
         assertFalse(ts2 <= ts1)
@@ -257,9 +257,9 @@ class TimestampTest {
     */
     @Test
     fun zeroCompareToOperator() {
-        val dc = DCId("dcid")
-        val ts1 = Timestamp(dc, 1)
-        val ts2 = Timestamp(dc, 1)
+        val uid = DCUId("dcid")
+        val ts1 = Timestamp(uid, 1)
+        val ts2 = Timestamp(uid, 1)
 
         assertFalse(ts1 < ts2)
         assertTrue(ts1 <= ts2)
@@ -273,11 +273,11 @@ class TimestampTest {
     **/
     @Test
     fun toJsonSerialization() {
-        val ts = Timestamp(DCId("dcid1"), 3)
+        val ts = Timestamp(DCUId("dcid1"), 3)
 
         val tsJson = ts.toJson()
 
-        assertEquals("""{"id":{"name":"dcid1"},"cnt":3}""", tsJson)
+        assertEquals("""{"uid":{"name":"dcid1"},"cnt":3}""", tsJson)
     }
 
     /**
@@ -285,9 +285,9 @@ class TimestampTest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val ts = Timestamp(DCId("dcid1"), 3)
+        val ts = Timestamp(DCUId("dcid1"), 3)
 
-        val tsJson = Timestamp.fromJson("""{"id":{"name":"dcid1"},"cnt":3}""")
+        val tsJson = Timestamp.fromJson("""{"uid":{"name":"dcid1"},"cnt":3}""")
 
         assertTrue(ts == tsJson)
     }

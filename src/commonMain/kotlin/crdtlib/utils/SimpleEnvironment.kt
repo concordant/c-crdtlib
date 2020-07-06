@@ -27,7 +27,7 @@ class SimpleEnvironment : Environment {
     /**
     * The datacenter unique identifier associated with this environment.
     */
-    private val id: DCId
+    private val uid: DCUId
 
     /**
     * A version vector storing this environment causal context.
@@ -43,8 +43,8 @@ class SimpleEnvironment : Environment {
     /**
     * Default constructor.
     */
-    constructor(id: DCId) {
-        this.id = id
+    constructor(uid: DCUId) {
+        this.uid = uid
         this.curState = VersionVector()
         this.lastTs = 0
     }
@@ -55,7 +55,7 @@ class SimpleEnvironment : Environment {
     */
     override fun getNewTimestampProtected(): Timestamp {
         lastTs = curState.maxVal() + 1
-        return Timestamp(id, lastTs)
+        return Timestamp(uid, lastTs)
     }
 
     /**

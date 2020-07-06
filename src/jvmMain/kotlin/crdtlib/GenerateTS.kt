@@ -27,7 +27,7 @@ import me.ntrrgc.tsGenerator.TypeScriptGenerator
 fun main(args: Array<String>) {
     println(TypeScriptGenerator(
         rootClasses = setOf(
-            DCId::class,
+            DCUId::class,
             Environment::class,
             SimpleEnvironment::class,
             Timestamp::class,

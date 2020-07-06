@@ -20,7 +20,7 @@
 package crdtlib.test
 
 import crdtlib.crdt.PNCounter
-import crdtlib.utils.DCId
+import crdtlib.utils.DCUId
 import crdtlib.utils.SimpleEnvironment
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -47,8 +47,8 @@ class PNCounterTest {
     */
     @Test
     fun increment() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val inc = 10
         val cnt = PNCounter()
@@ -65,8 +65,8 @@ class PNCounterTest {
     */
     @Test
     fun decrement() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val dec = 10
         val cnt = PNCounter()
@@ -82,8 +82,8 @@ class PNCounterTest {
     */
     @Test
     fun incrementNegativeAmount() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val inc = -10
         val cnt = PNCounter()
@@ -99,8 +99,8 @@ class PNCounterTest {
     */
     @Test
     fun decrementNegativeAmount() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val dec = -10
         val cnt = PNCounter()
@@ -116,8 +116,8 @@ class PNCounterTest {
     */
     @Test
     fun multiIncrement() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -141,8 +141,8 @@ class PNCounterTest {
     */
     @Test
     fun multiDecrement() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -166,8 +166,8 @@ class PNCounterTest {
     */
     @Test
     fun incrementDecrementPositive() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -195,8 +195,8 @@ class PNCounterTest {
     */
     @Test
     fun incrementDecrementNegative() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -224,8 +224,8 @@ class PNCounterTest {
     */
     @Test
     fun increment_MergeValue() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val inc = 11 
         val cnt1 = PNCounter()
@@ -245,8 +245,8 @@ class PNCounterTest {
     */
     @Test
     fun decrement_MergeValue() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val dec = 11 
         val cnt1 = PNCounter()
@@ -266,10 +266,10 @@ class PNCounterTest {
     */
     @Test
     fun increment_incrementMergeValue() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val inc1 = 10 
@@ -290,10 +290,10 @@ class PNCounterTest {
     */
     @Test
     fun increment_mergeIncrementValue() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val inc1 = 10 
@@ -314,10 +314,10 @@ class PNCounterTest {
     */
     @Test
     fun decrement_decrementMergeValue() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val dec1 = 10 
@@ -338,10 +338,10 @@ class PNCounterTest {
     */
     @Test
     fun decrement_mergeDecrementValue() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val dec1 = 10 
@@ -362,10 +362,10 @@ class PNCounterTest {
     */
     @Test
     fun multipleOperations_multipleOperationMergeValue() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         dc1.updateStateTS(ts1)
@@ -410,10 +410,10 @@ class PNCounterTest {
     */
     @Test
     fun multipleOperations_mergeMultipleOperationsValue() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         dc1.updateStateTS(ts1)
@@ -458,8 +458,8 @@ class PNCounterTest {
     */
     @Test
     fun incrementOp() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val inc = 11 
         val cnt1 = PNCounter()
@@ -479,8 +479,8 @@ class PNCounterTest {
     */
     @Test
     fun decrementOp() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val dec = 11 
         val cnt1 = PNCounter()
@@ -500,8 +500,8 @@ class PNCounterTest {
     */
     @Test
     fun multipleOp() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -528,8 +528,8 @@ class PNCounterTest {
     */
     @Test
     fun generateDelta() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -582,10 +582,10 @@ class PNCounterTest {
     **/
     @Test
     fun toJsonSerialization() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         dc1.updateStateTS(ts1)
@@ -605,7 +605,7 @@ class PNCounterTest {
         cnt2.increment(inc2, ts4)
         cnt2.merge(cnt1)
 
-        assertEquals("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"id":{"name":"dcid2"},"cnt":2}},{"name":"dcid1"},{"first":10,"second":{"id":{"name":"dcid1"},"cnt":2}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"id":{"name":"dcid2"},"cnt":1}},{"name":"dcid1"},{"first":10,"second":{"id":{"name":"dcid1"},"cnt":1}}]},"value":10}""", cnt2.toJson())
+        assertEquals("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"uid":{"name":"dcid2"},"cnt":2}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":2}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"uid":{"name":"dcid2"},"cnt":1}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":1}}]},"value":10}""", cnt2.toJson())
     }
 
     /**
@@ -613,7 +613,7 @@ class PNCounterTest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val cntJson = PNCounter.fromJson("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"id":{"name":"dcid2"},"cnt":2}},{"name":"dcid1"},{"first":10,"second":{"id":{"name":"dcid1"},"cnt":2}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"id":{"name":"dcid2"},"cnt":1}},{"name":"dcid1"},{"first":10,"second":{"id":{"name":"dcid1"},"cnt":1}}]},"value":10}""")
+        val cntJson = PNCounter.fromJson("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"uid":{"name":"dcid2"},"cnt":2}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":2}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"uid":{"name":"dcid2"},"cnt":1}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":1}}]},"value":10}""")
 
         assertEquals(10, cntJson.get())
     }

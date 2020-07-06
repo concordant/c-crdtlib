@@ -33,20 +33,20 @@ class VersionVector {
     /**
     * A mutable map storing for each datacenter the greatest timestamp value seen until now.
     */
-    private val entries: MutableMap<DCId, Int>
+    private val entries: MutableMap<DCUId, Int>
 
     /**
     * Default constructor.
     */
     constructor() {
-        this.entries = mutableMapOf<DCId, Int>()
+        this.entries = mutableMapOf<DCUId, Int>()
     }
 
     /**
     * Copy constructor.
     */
     constructor(vv: VersionVector) {
-        this.entries = mutableMapOf<DCId, Int>()
+        this.entries = mutableMapOf<DCUId, Int>()
         entries.putAll(vv.entries)
     }
 
@@ -65,9 +65,8 @@ class VersionVector {
     */
     @Name("addTS")
     fun addTS(ts: Timestamp) {
-        val curCnt = entries.getOrElse(ts.id, { 0 })
-        if(curCnt < ts.cnt)
-            entries[ts.id] = ts.cnt
+        val curCnt = entries.getOrElse(ts.uid, { 0 })
+        if(curCnt < ts.cnt) entries[ts.uid] = ts.cnt
     }
 
     /**
@@ -77,7 +76,7 @@ class VersionVector {
     */
     @Name("includesTS")
     fun includesTS(ts: Timestamp): Boolean {
-        val cnt = entries.getOrElse(ts.id, { 0 })
+        val cnt = entries.getOrElse(ts.uid, { 0 })
         return cnt >= ts.cnt
     }
 
