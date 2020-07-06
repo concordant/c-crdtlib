@@ -26,7 +26,7 @@ test: build
 
 VERSION=0.0.1
 LICENSE=MIT
-AUTHOR={\"name\": \"Ludovic Le Frioux\", \"email\": \"ludovic.lefrioux@concordant.io\}
+AUTHOR={\"name\": \"Ludovic Le Frioux\", \"email\": \"ludovic.lefrioux@concordant.io\"}
 REPOSITORY={\n    \"type\": \"git\",\n    \"url\": \"git+ssh:\/\/git@gitlab.inria.fr\/concordant\/software\/c-crdtlib.git\"\n  }
 ISSUES={\n    \"url\": \"https:\/\/gitlab.inria.fr\/concordant\/software\/c-crdtlib\/-\/issues\"\n  }
 
@@ -59,7 +59,7 @@ deploy: build
 	sed -i "/\"name\"/d" "deploy/npm/c-crdtlib/package.json"
 	sed -i "/\"version\"/d" "deploy/npm/c-crdtlib/package.json"
 	sed -i "s/\[\],/[]/g" "deploy/npm/c-crdtlib/package.json"
-	sed -i "s/^{$$/{\n  \"name\": \"c-crdtlib\",\n  \"version\": \"$(VERSION)\",\n  \"license\": \"$(LICENSE)\",\n  \"author\": \"$(AUTHOR)\",\n  \"repository\": $(REPOSITORY),\n  \"bugs\": $(ISSUES),\n  \"private\": true,/g" "deploy/npm/c-crdtlib/package.json"
+	sed -i "s/^{$$/{\n  \"name\": \"c-crdtlib\",\n  \"version\": \"$(VERSION)\",\n  \"license\": \"$(LICENSE)\",\n  \"author\": $(AUTHOR),\n  \"repository\": $(REPOSITORY),\n  \"bugs\": $(ISSUES),\n  \"private\": true,/g" "deploy/npm/c-crdtlib/package.json"
 
 doc:
 	gradle dokka
