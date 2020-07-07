@@ -1,11 +1,11 @@
-image: maven:latest
+image: gradle:latest
 
 build:
   stage: build
   script:
-    - mvn compile
+    - gradle assemble
 
 test:
   stage: test
   script:
-    - mvn test
+    - gradle allTests
