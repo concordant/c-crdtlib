@@ -14,7 +14,6 @@
 # NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 # DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 # OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 	
 all: build test doc deploy
 
@@ -63,6 +62,7 @@ deploy: build
 	
 	# Pack the npm package
 	cd deploy/npm/c-crdtlib; npm pack
+	mv deploy/npm/c-crdtlib/c-crdtlib*.tgz deploy/npm
 
 doc:
 	gradle dokka
