@@ -49,26 +49,23 @@ class LWWMap : DeltaCRDT<LWWMap> {
     /**
     * A mutable map storing metadata relative to each key.
     */
-    private val entries: MutableMap<String, Pair<String?, Timestamp>>
+    private val entries: MutableMap<String, Pair<String?, Timestamp>> = mutableMapOf()
 
     /**
     * A causal context summarizing executed operations.
     */
-    private val causalContext: VersionVector
+    private var causalContext: VersionVector = VersionVector()
 
     /**
     * Default constructor creating a empty causal context.
     */
     constructor() {
-        this.entries = mutableMapOf()
-        this.causalContext = VersionVector()
     }
 
     /**
     * Constructor initializing the causal context.
     */
     constructor(cc: VersionVector) {
-        this.entries = mutableMapOf<String, Pair<String?, Timestamp>>()
         this.causalContext = cc
     }
 
