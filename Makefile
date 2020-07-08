@@ -60,6 +60,9 @@ deploy: build
 	sed -i "s/\[\],/[]/g" deploy/npm/c-crdtlib/package.json
 	sed -i "s/^{$$/{\n  \"name\": \"c-crdtlib\",\n  \"version\": \"$(VERSION)\",\n  \"license\": \"$(LICENSE)\",\n  \"author\": $(AUTHOR),\n  \"repository\": $(REPOSITORY),\n  \"bugs\": $(ISSUES),\n  \"private\": true,/g" deploy/npm/c-crdtlib/package.json
 	
+	# Add license file to the npm package
+	cp LICENSE deploy/npm/c-crdtlib
+	
 	# Pack the npm package
 	cd deploy/npm/c-crdtlib; npm pack
 	mv deploy/npm/c-crdtlib/c-crdtlib*.tgz deploy/npm
