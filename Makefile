@@ -36,6 +36,7 @@ deploy: build
 	rm -rf deploy
 	mkdir deploy
 	mkdir deploy/npm
+	mkdir deploy/jvm
 	
 	# Rename the Node.js generated package
 	cp -r build/js/packages/c-crdtlib-nodeJs deploy/npm/c-crdtlib
@@ -68,6 +69,9 @@ deploy: build
 	# Pack the npm package
 	cd deploy/npm/c-crdtlib; npm pack
 	mv deploy/npm/c-crdtlib/c-crdtlib*.tgz deploy/npm
+	
+	# Deploy jvm jar
+	cp build/libs/c-crdtlib-jvm.jar deploy/jvm/c-crdtlib.jar
 
 doc:
 	gradle dokka
