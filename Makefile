@@ -19,6 +19,8 @@ all: build test doc deploy
 
 build:
 	gradle assemble
+	mkdir build/ts
+	java -jar build/libs/c-crdtlib-jvm.jar > build/ts/c-crdtlib.ts
 
 test: build
 	gradle allTests
