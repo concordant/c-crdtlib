@@ -21,22 +21,31 @@ package crdtlib.utils
 
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.property.Arb
-import io.kotest.property.arbitrary.string
+import io.kotest.property.arbitrary.*
 import io.kotest.property.forAll
 
-class DCIdPropTest: StringSpec({
-    "compare DCIds as the name" {
-        forAll(Arb.string(), Arb.string()){ a,b ->
-            when {
-                a == b -> DCId(a) == DCId(b)
-                a < b -> DCId(a) < DCId(b)
-                else -> DCId(a) > DCId(b)
-            }
-        }
-    }
+class VersionVectorPropTest: StringSpec({
     "deserialize is inverse to serialize" {
-        forAll(Arb.string()) { a ->
-            DCId(a) == DCId.fromJson(DCId(a).toJson())
+        forAll(versionVectorArb) { vv ->
+            vv.isSmallerOrEquals(VersionVector.fromJson(VersionVector(vv).toJson()))
+            VersionVector.fromJson(VersionVector(vv).toJson()).isSmallerOrEquals(vv)
         }
     }
 })
+
+
+val timestampArb = arb { rs ->
+    val dcids = dcidArb.values(rs)
+    val cnts = Arb.int().values(rs)
+    dcids.zip(cnts).map { (dcids, cnt) -> Timestamp(dcids.value, cnt.value) }
+}
+
+val dcidArb = arb { rs ->
+    val names = Arb.string().values(rs)
+    names.map { name -> DCId(name.value)}
+}
+
+val versionVectorArb = arb { rs ->
+    val maps = Arb.map(dcidArb, Arb.int(), maxSize = 10).values(rs)
+    maps.map { m -> m.value.entries.fold (VersionVector(), { vv, e -> vv.addTS(Timestamp(e.key, e.value))})}
+}
