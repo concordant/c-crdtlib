@@ -25,7 +25,7 @@ build:
 test: build
 	gradle allTests
 
-VERSION=0.0.1
+VERSION=0.0.5
 LICENSE=MIT
 AUTHOR={\"name\": \"Ludovic Le Frioux\", \"email\": \"ludovic.lefrioux@concordant.io\"}
 REPOSITORY={\n    \"type\": \"git\",\n    \"url\": \"git+ssh:\/\/git@gitlab.inria.fr\/concordant\/software\/c-crdtlib.git\"\n  }
