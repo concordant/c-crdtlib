@@ -64,11 +64,10 @@ class VersionVector {
     * @param ts the given timestamp.
     */
     @Name("addTS")
-    fun addTS(ts: Timestamp): VersionVector {
+    fun addTS(ts: Timestamp) {
         val curCnt = entries.getOrElse(ts.id, { 0 })
         if(curCnt < ts.cnt)
             entries[ts.id] = ts.cnt
-        return this
     }
 
     /**
@@ -88,11 +87,10 @@ class VersionVector {
     * @param vv the given version vector used for update.
     */
     @Name("pointWiseMax")
-    fun pointWiseMax(vv: VersionVector): VersionVector {
+    fun pointWiseMax(vv: VersionVector) {
         for((k, v) in vv.entries)
             if(entries.getOrElse(k, { 0 }) < v)
                 entries.put(k, v)
-        return this
     }
 
     /**

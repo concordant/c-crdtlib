@@ -35,8 +35,8 @@ class DCIdPropTest: StringSpec({
         }
     }
     "deserialize is inverse to serialize" {
-        forAll(Arb.string()) { a ->
-            DCId(a) == DCId.fromJson(DCId(a).toJson())
+        forAll(dcidArb) { dcid ->
+            dcid == DCId.fromJson(dcid.toJson())
         }
     }
 })

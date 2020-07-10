@@ -34,18 +34,4 @@ class VersionVectorPropTest: StringSpec({
 })
 
 
-val timestampArb = arb { rs ->
-    val dcids = dcidArb.values(rs)
-    val cnts = Arb.int().values(rs)
-    dcids.zip(cnts).map { (dcids, cnt) -> Timestamp(dcids.value, cnt.value) }
-}
 
-val dcidArb = arb { rs ->
-    val names = Arb.string().values(rs)
-    names.map { name -> DCId(name.value)}
-}
-
-val versionVectorArb = arb { rs ->
-    val maps = Arb.map(dcidArb, Arb.int(), maxSize = 10).values(rs)
-    maps.map { m -> m.value.entries.fold (VersionVector(), { vv, e -> vv.addTS(Timestamp(e.key, e.value))})}
-}
