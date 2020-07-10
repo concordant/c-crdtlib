@@ -20,7 +20,7 @@ all: build test doc deploy
 build:
 	gradle assemble
 	mkdir build/ts
-	java -jar build/libs/c-crdtlib-jvm.jar > build/ts/c-crdtlib.ts
+	java -jar build/libs/c-crdtlib-jvm.jar > build/ts/c-crdtlib.d.ts
 
 test: build
 	gradle allTests
@@ -40,36 +40,33 @@ deploy: build
 	
 	# Rename the Node.js generated package
 	cp -r build/js/packages/c-crdtlib-nodeJs deploy/npm/c-crdtlib
-	
 	# Remove useless files
 	rm deploy/npm/c-crdtlib/package.json.hash
 	rm deploy/npm/c-crdtlib/kotlin/c-crdtlib-nodeJs.meta.js
 	rm -rf deploy/npm/c-crdtlib/kotlin/c-crdtlib-nodeJs
-	
 	# Rename files
 	mv deploy/npm/c-crdtlib/kotlin/c-crdtlib-nodeJs.js deploy/npm/c-crdtlib/kotlin/c-crdtlib.js
 	mv deploy/npm/c-crdtlib/kotlin/c-crdtlib-nodeJs.js.map deploy/npm/c-crdtlib/kotlin/c-crdtlib.js.map
-	mv deploy/npm/c-crdtlib/kotlin deploy/npm/c-crdtlib/src
-	
+	mv deploy/npm/c-crdtlib/kotlin deploy/npm/c-crdtlib/lib
 	# Modify source with correct package name
-	sed -i "s/-nodeJs//g" deploy/npm/c-crdtlib/src/c-crdtlib.js
-	sed -i "s/-nodeJs//g" deploy/npm/c-crdtlib/src/c-crdtlib.js.map
-	
+	sed -i "s/-nodeJs//g" deploy/npm/c-crdtlib/lib/c-crdtlib.js
+	sed -i "s/-nodeJs//g" deploy/npm/c-crdtlib/lib/c-crdtlib.js.map
+	# Add @types for npm package
+	cp build/ts/c-crdtlib.d.ts deploy/npm/c-crdtlib/lib
 	# Modify package.json
 	sed -i "s/-nodeJs//g" deploy/npm/c-crdtlib/package.json
-	sed -i "s/kotlin\//src\//g" deploy/npm/c-crdtlib/package.json
+	sed -i "s/kotlin\//lib\//g" deploy/npm/c-crdtlib/package.json
 	sed -i "/\"name\"/d" deploy/npm/c-crdtlib/package.json
 	sed -i "/\"version\"/d" deploy/npm/c-crdtlib/package.json
 	sed -i "s/\[\],/[]/g" deploy/npm/c-crdtlib/package.json
 	sed -i "s/^{$$/{\n  \"name\": \"c-crdtlib\",\n  \"version\": \"$(VERSION)\",\n  \"license\": \"$(LICENSE)\",\n  \"author\": $(AUTHOR),\n  \"repository\": $(REPOSITORY),\n  \"bugs\": $(ISSUES),\n  \"private\": true,/g" deploy/npm/c-crdtlib/package.json
-	
+	sed -i "s/c-crdtlib\.js\",/c-crdtlib.js\",\n  \"types\": \"lib\/c-crdtlib.d.ts\",/g" deploy/npm/c-crdtlib/package.json
 	# Add license file to the npm package
 	cp LICENSE deploy/npm/c-crdtlib
-	
 	# Pack the npm package
 	cd deploy/npm/c-crdtlib; npm pack
 	mv deploy/npm/c-crdtlib/c-crdtlib*.tgz deploy/npm
-	
+
 	# Deploy jvm jar
 	cp build/libs/c-crdtlib-jvm.jar deploy/jvm/c-crdtlib.jar
 
