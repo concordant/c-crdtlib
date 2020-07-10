@@ -28,20 +28,21 @@ fun main(args: Array<String>) {
     println(TypeScriptGenerator(
         rootClasses = setOf(
             DCUId::class,
-            Environment::class,
-            SimpleEnvironment::class,
-            Timestamp::class,
-            UnexpectedTypeException::class,
-            VersionVector::class,
-            DeltaCRDT::class,
             Delta::class,
+            DeltaCRDT::class,
+            EmptyDelta::class,
+            Environment::class,
             Immutable::class,
             LWWMap::class,
             LWWRegister::class,
             MVRegister::class,
             PNCounter::class,
+            RGA::class,
+            SimpleEnvironment::class,
+            Timestamp::class,
+            UnexpectedTypeException::class,
             UpdateOperation::class,
-            EmptyDelta::class
+            VersionVector::class
         )/*,
         mappings = mapOf(
             LocalDateTime::class to "Date",
