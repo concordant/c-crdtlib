@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+
 plugins {
     kotlin("multiplatform") version "1.3.72"
     kotlin("plugin.serialization") version "1.3.72"
@@ -9,6 +12,7 @@ repositories {
 }
 
 kotlin {
+
     jvm()
     js("nodeJs") {
         nodejs {}
@@ -22,8 +26,8 @@ kotlin {
 
         val commonMain by getting {
             dependencies {
-                implementation(kotlin("stdlib")) 
-                implementation(kotlin("reflect")) 
+                implementation(kotlin("stdlib"))
+                implementation(kotlin("reflect"))
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.20.0")
             }
         }
@@ -45,7 +49,12 @@ kotlin {
 
         jvm().compilations["test"].defaultSourceSet {
             dependencies {
+                implementation(kotlin("stdlib-jdk8"))
                 implementation(kotlin("test-junit"))
+                implementation("io.kotest:kotest-property-jvm:4.1.1")
+                implementation("io.kotest:kotest-runner-junit5-jvm:4.1.1")
+                implementation("io.kotest:kotest-assertions-core-jvm:4.1.1")
+
             }
         }
 
@@ -58,8 +67,14 @@ kotlin {
 
         js("nodeJs").compilations["test"].defaultSourceSet {
             dependencies {
-                implementation(kotlin("test-js")) 
+                implementation(kotlin("test-js"))
             }
         }
     }
+}
+
+tasks.withType<Test> { useJUnitPlatform() }
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "1.8"
 }
