@@ -31,6 +31,51 @@ class VersionVectorPropTest: StringSpec({
             VersionVector.fromJson(VersionVector(vv).toJson()).isSmallerOrEquals(vv)
         }
     }
+    "copy generates equal version vector" {
+        forAll(versionVectorArb) { vv1 ->
+            val vv2 = vv1.copy()
+            vv2.isSmallerOrEquals(vv1)
+            vv1.isSmallerOrEquals(vv2)
+        }
+    }
+    "merge is idempotent" {
+        forAll(versionVectorArb) { vv1 ->
+            val vv2 = vv1.copy()
+            vv2.pointWiseMax(vv1)
+            vv2.isSmallerOrEquals(vv1)
+            vv1.isSmallerOrEquals(vv2)
+        }
+    }
+    "merge is commutative" {
+        forAll(versionVectorArb,versionVectorArb) { vv1, vv2 ->
+            val vv2copy = vv2.copy()
+            vv2.pointWiseMax(vv1)
+            vv1.pointWiseMax(vv2copy)
+            vv2.isSmallerOrEquals(vv1)
+            vv1.isSmallerOrEquals(vv2)
+        }
+    }
+    "added timestamp should be included" {
+        forAll(versionVectorArb, timestampArb) { vv1, ts ->
+            vv1.addTS(ts)
+            vv1.includesTS(ts)
+        }
+    }
+    "new version vector includes no timestamp" {
+        forAll(timestampArb) { ts ->
+            !(VersionVector().includesTS(ts))
+        }
+    }
+    "incrementing maxVal" {
+        forAll(versionVectorArb, dcidArb) { vv, dcid ->
+            val maxTS = vv.maxVal()
+            vv.addTS(Timestamp(dcid, maxTS+1))
+            maxTS + 1 == vv.maxVal()
+        }
+    }
+
+
+
 })
 
 
