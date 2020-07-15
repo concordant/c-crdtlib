@@ -17,15 +17,20 @@
 	
 all: build test doc deploy
 
-build:
+build: build-gradle build-ts
+
+build-gradle:
 	gradle assemble
-	mkdir build/ts
+
+build-ts: build-gradle
+	mkdir -p build/ts
 	java -jar build/libs/c-crdtlib-jvm.jar > build/ts/c-crdtlib.d.ts
 
 test: build
 	gradle allTests
 
 VERSION=0.0.5
+DESCRIPTION=Concordant Conflict-Free Replicated Datatypes (CRDT) library
 LICENSE=MIT
 AUTHOR={\"name\": \"Ludovic Le Frioux\", \"email\": \"ludovic.lefrioux@concordant.io\"}
 REPOSITORY={\n    \"type\": \"git\",\n    \"url\": \"git+ssh:\/\/git@gitlab.inria.fr\/concordant\/software\/c-crdtlib.git\"\n  }
@@ -59,7 +64,7 @@ deploy: build
 	sed -i "/\"name\"/d" deploy/npm/c-crdtlib/package.json
 	sed -i "/\"version\"/d" deploy/npm/c-crdtlib/package.json
 	sed -i "s/\[\],/[]/g" deploy/npm/c-crdtlib/package.json
-	sed -i "s/^{$$/{\n  \"name\": \"c-crdtlib\",\n  \"version\": \"$(VERSION)\",\n  \"license\": \"$(LICENSE)\",\n  \"author\": $(AUTHOR),\n  \"repository\": $(REPOSITORY),\n  \"bugs\": $(ISSUES),\n  \"private\": true,/g" deploy/npm/c-crdtlib/package.json
+	sed -i "s/^{$$/{\n  \"name\": \"c-crdtlib\",\n  \"version\": \"$(VERSION)\",\n  \"description\": \"$(DESCRIPTION)\",\n  \"license\": \"$(LICENSE)\",\n  \"author\": $(AUTHOR),\n  \"repository\": $(REPOSITORY),\n  \"bugs\": $(ISSUES),\n  \"private\": true,/g" deploy/npm/c-crdtlib/package.json
 	sed -i "s/c-crdtlib\.js\",/c-crdtlib.js\",\n  \"types\": \"lib\/c-crdtlib.d.ts\",/g" deploy/npm/c-crdtlib/package.json
 	# Add license file to the npm package
 	cp LICENSE deploy/npm/c-crdtlib
