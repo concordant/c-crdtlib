@@ -54,18 +54,18 @@ deploy: build
 	mv deploy/npm/c-crdtlib/kotlin/c-crdtlib-nodeJs.js.map deploy/npm/c-crdtlib/kotlin/c-crdtlib.js.map
 	mv deploy/npm/c-crdtlib/kotlin deploy/npm/c-crdtlib/lib
 	# Modify source with correct package name
-	perl -ipe "s/-nodeJs//g" deploy/npm/c-crdtlib/lib/c-crdtlib.js
-	perl -ipe "s/-nodeJs//g" deploy/npm/c-crdtlib/lib/c-crdtlib.js.map
+	perl -i -pe "s/-nodeJs//g" deploy/npm/c-crdtlib/lib/c-crdtlib.js
+	perl -i -pe "s/-nodeJs//g" deploy/npm/c-crdtlib/lib/c-crdtlib.js.map
 	# Add @types for npm package
 	cp build/ts/c-crdtlib.d.ts deploy/npm/c-crdtlib/lib
 	# Modify package.json
-	perl -ipe "s/-nodeJs//g" deploy/npm/c-crdtlib/package.json
-	perl -ipe "s/kotlin\//lib\//g" deploy/npm/c-crdtlib/package.json
-	perl -ine "print unless /\"name\"/" deploy/npm/c-crdtlib/package.json
-	perl -ine "print unless /\"version\"/" deploy/npm/c-crdtlib/package.json
-	perl -ipe "s/\[\],/[]/g" deploy/npm/c-crdtlib/package.json
-	perl -ipe "s/^{$$/{\n  \"name\": \"c-crdtlib\",\n  \"version\": \"$(VERSION)\",\n  \"description\": \"$(DESCRIPTION)\",\n  \"license\": \"$(LICENSE)\",\n  \"author\": $(AUTHOR),\n  \"repository\": $(REPOSITORY),\n  \"bugs\": $(ISSUES),\n  \"private\": true,/g" deploy/npm/c-crdtlib/package.json
-	perl -ipe "s/c-crdtlib\.js\",/c-crdtlib.js\",\n  \"types\": \"lib\/c-crdtlib.d.ts\",/g" deploy/npm/c-crdtlib/package.json
+	perl -i -pe "s/-nodeJs//g" deploy/npm/c-crdtlib/package.json
+	perl -i -pe "s/kotlin\//lib\//g" deploy/npm/c-crdtlib/package.json
+	perl -i -ne "print unless /\"name\"/" deploy/npm/c-crdtlib/package.json
+	perl -i -ne "print unless /\"version\"/" deploy/npm/c-crdtlib/package.json
+	perl -i -pe "s/\[\],/[]/g" deploy/npm/c-crdtlib/package.json
+	perl -i -pe "s/^{$$/{\n  \"name\": \"c-crdtlib\",\n  \"version\": \"$(VERSION)\",\n  \"description\": \"$(DESCRIPTION)\",\n  \"license\": \"$(LICENSE)\",\n  \"author\": $(AUTHOR),\n  \"repository\": $(REPOSITORY),\n  \"bugs\": $(ISSUES),\n  \"private\": true,/g" deploy/npm/c-crdtlib/package.json
+	perl -i -pe "s/c-crdtlib\.js\",/c-crdtlib.js\",\n  \"types\": \"lib\/c-crdtlib.d.ts\",/g" deploy/npm/c-crdtlib/package.json
 	# Add license file to the npm package
 	cp LICENSE deploy/npm/c-crdtlib
 	# Pack the npm package
