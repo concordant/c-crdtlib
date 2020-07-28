@@ -29,7 +29,7 @@ build-ts: build-gradle
 test: build
 	gradle allTests
 
-VERSION=0.0.5
+VERSION=0.0.6
 DESCRIPTION=Concordant Conflict-Free Replicated Datatypes (CRDT) library
 LICENSE=MIT
 AUTHOR={\"name\": \"Ludovic Le Frioux\", \"email\": \"ludovic.lefrioux@concordant.io\"}
