@@ -25,28 +25,42 @@ import me.ntrrgc.tsGenerator.TypeScriptGenerator
 
 
 fun main(args: Array<String>) {
+    println("declare module 'c-crdtlib' {");
+    println();
+    println("export var crdtlib;");
+    println("export namespace crdtlib {");
+    println();
+    println("export namespace utils {");
+    println();
     println(TypeScriptGenerator(
         rootClasses = setOf(
             DCUId::class,
-            Delta::class,
-            DeltaCRDT::class,
-            EmptyDelta::class,
             Environment::class,
-            Immutable::class,
-            LWWMap::class,
-            LWWRegister::class,
-            MVRegister::class,
-            PNCounter::class,
-            RGA::class,
             SimpleEnvironment::class,
             Timestamp::class,
             UnexpectedTypeException::class,
             UpdateOperation::class,
             VersionVector::class
-        )/*,
-        mappings = mapOf(
-            LocalDateTime::class to "Date",
-            LocalDate::class to "Date"
-        )*/
+        )
     ).definitionsText)
+    println("}");
+    println();
+    println("export namespace crdt {");
+    println();
+    println(TypeScriptGenerator(
+        rootClasses = setOf(
+            Delta::class,
+            DeltaCRDT::class,
+            EmptyDelta::class,
+            Immutable::class,
+            LWWMap::class,
+            LWWRegister::class,
+            MVRegister::class,
+            PNCounter::class,
+            RGA::class
+        )
+    ).definitionsText)
+    println("}");
+    println("}");
+    println("}");
 }
