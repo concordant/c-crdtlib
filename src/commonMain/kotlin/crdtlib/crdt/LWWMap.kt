@@ -57,7 +57,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     private var causalContext: VersionVector = VersionVector()
 
     /**
-    * Default constructor creating a empty causal context.
+    * Default constructor.
     */
     constructor() {
     }

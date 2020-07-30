@@ -21,33 +21,20 @@ package crdtlib.utils
 
 /**
 * This class represents a simple environment generating increasing monotonic timestamps.
+* @property uid the datacenter unique identifier associated with this environment.
 */
-class SimpleEnvironment : Environment {
-
-    /**
-    * The datacenter unique identifier associated with this environment.
-    */
-    private val uid: DCUId
+class SimpleEnvironment(private val uid: DCUId) : Environment() {
 
     /**
     * A version vector storing this environment causal context.
     */
-    private var curState: VersionVector
+    private var curState: VersionVector = VersionVector()
 
     /**
     * The value associated with the last generated timestamp.
     * This value is initialized to 0 meaning that the first generated timestamp has the value 1.
     */
-    private var lastTs: Int
-
-    /**
-    * Default constructor.
-    */
-    constructor(uid: DCUId) {
-        this.uid = uid
-        this.curState = VersionVector()
-        this.lastTs = 0
-    }
+    private var lastTs: Int = 0
 
     /**
     * Generates a monotonically increasing timestamp.

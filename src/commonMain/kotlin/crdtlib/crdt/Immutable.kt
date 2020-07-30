@@ -23,21 +23,9 @@ import crdtlib.utils.Name
 
 /**
 * This class store an immutable value
+* @property value the stored value.
 */
-class Immutable<DataT> {
-
-    /**
-    * The stored value.
-    */
-    private val value: DataT;
-
-    /**
-    * Constructor creating the immutable with a given value.
-    * @param value the desired value.
-    */
-    constructor(value: DataT) {
-        this.value = value
-    }
+class Immutable<DataT>(private val value: DataT) {
 
     /**
     * Gets the value stored in the immutable.

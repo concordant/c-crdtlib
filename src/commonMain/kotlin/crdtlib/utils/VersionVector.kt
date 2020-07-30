@@ -33,20 +33,18 @@ class VersionVector {
     /**
     * A mutable map storing for each datacenter the greatest timestamp value seen until now.
     */
-    private val entries: MutableMap<DCUId, Int>
+    private val entries: MutableMap<DCUId, Int> = mutableMapOf()
 
     /**
     * Default constructor.
     */
     constructor() {
-        this.entries = mutableMapOf<DCUId, Int>()
     }
 
     /**
     * Copy constructor.
     */
     constructor(vv: VersionVector) {
-        this.entries = mutableMapOf<DCUId, Int>()
         entries.putAll(vv.entries)
     }
 

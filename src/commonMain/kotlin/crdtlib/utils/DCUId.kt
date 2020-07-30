@@ -26,7 +26,7 @@ import kotlinx.serialization.*
 * @property name the name associated with the DC.
 **/
 @Serializable
-data class DCUId(val name: String) {
+data class DCUId(private val name: String) {
 
     /**
     * Compares this DC name to a given other datacenter name.
