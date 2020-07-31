@@ -71,7 +71,7 @@ deploy: build
 	# Pack the npm package
 	cd deploy/npm/c-crdtlib; npm pack
 	mv deploy/npm/c-crdtlib/c-crdtlib*.tgz deploy/npm
-
+	
 	# Deploy jvm jar
 	cp build/libs/c-crdtlib-jvm.jar deploy/jvm/c-crdtlib.jar
 
