@@ -20,7 +20,7 @@
 package crdtlib.test
 
 import crdtlib.crdt.RGA
-import crdtlib.utils.DCId
+import crdtlib.utils.DCUId
 import crdtlib.utils.Timestamp
 import crdtlib.utils.SimpleEnvironment
 import crdtlib.utils.VersionVector
@@ -48,8 +48,8 @@ class RGATest {
     */
     @Test
     fun add0Get() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val rga = RGA<Char>()
 
@@ -65,8 +65,8 @@ class RGATest {
     */
     @Test
     fun add0Add0Get() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -85,8 +85,8 @@ class RGATest {
     */
     @Test
     fun add0Add1Get() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -104,8 +104,8 @@ class RGATest {
     */
     @Test
     fun add0Remove0Get() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -123,8 +123,8 @@ class RGATest {
     */
     @Test
     fun add0Add0Remove0Remove0Get() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -149,8 +149,8 @@ class RGATest {
     */
     @Test
     fun add0Add1Remove0Add1Get() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -175,8 +175,8 @@ class RGATest {
     */
     @Test
     fun add0Add1Remove1Add1Get() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -200,8 +200,8 @@ class RGATest {
     */
     @Test
     fun add0_MergeGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
@@ -218,8 +218,8 @@ class RGATest {
     */
     @Test
     fun add0Add0_MergeGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -239,8 +239,8 @@ class RGATest {
     */
     @Test
     fun add0Add1Add2_MergeGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -265,10 +265,10 @@ class RGATest {
     */
     @Test
     fun add0_AddWin0MergeGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val rga1 = RGA<Char>()
@@ -289,10 +289,10 @@ class RGATest {
     */
     @Test
     fun addWin0_Add0MergeGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val rga1 = RGA<Char>()
@@ -312,10 +312,10 @@ class RGATest {
     */
     @Test
     fun add0Add0_Add0Add0MergeGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         dc1.updateStateTS(ts1)
@@ -342,10 +342,10 @@ class RGATest {
     */
     @Test
     fun addWin0Add1_Add0Add1MergeGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         dc1.updateStateTS(ts1)
@@ -372,10 +372,10 @@ class RGATest {
     */
     @Test
     fun add0Add1_AddWin0Add1MergeGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         dc1.updateStateTS(ts1)
@@ -402,10 +402,10 @@ class RGATest {
     */
     @Test
     fun add0Add1Add2Add3Remove1_MergeAfterAddsRemove2MergeGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         dc1.updateStateTS(ts1)
         val ts2 = dc1.getNewTimestamp()
@@ -441,12 +441,12 @@ class RGATest {
     */
     @Test
     fun addWin0Add1_AddSecond0Add1_Add0Add1Merge1Merge2Get() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val id3 = DCId("dcid3")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
-        val dc3 = SimpleEnvironment(id3)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
+        val dc3 = SimpleEnvironment(uid3)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val ts3 = dc3.getNewTimestamp()
@@ -482,12 +482,12 @@ class RGATest {
     */
     @Test
     fun addWin0Add1_Add0Add1_AddSecond0Add1Merge1Merge2Get() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val id3 = DCId("dcid3")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
-        val dc3 = SimpleEnvironment(id3)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
+        val dc3 = SimpleEnvironment(uid3)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val ts3 = dc3.getNewTimestamp()
@@ -523,12 +523,12 @@ class RGATest {
     */
     @Test
     fun addSecond0Add1_AddWin0Add1_Add0Add1Merge1Merge2Get() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val id3 = DCId("dcid3")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
-        val dc3 = SimpleEnvironment(id3)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
+        val dc3 = SimpleEnvironment(uid3)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val ts3 = dc3.getNewTimestamp()
@@ -564,12 +564,12 @@ class RGATest {
     */
     @Test
     fun add0Add1_AddWin0Add1_AddSecond0Add1Merge1Merge2Get() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val id3 = DCId("dcid3")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
-        val dc3 = SimpleEnvironment(id3)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
+        val dc3 = SimpleEnvironment(uid3)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val ts3 = dc3.getNewTimestamp()
@@ -605,12 +605,12 @@ class RGATest {
     */
     @Test
     fun add0Add1_AddSecond0Add1_AddWin0Add1Merge1Merge2Get() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val id3 = DCId("dcid3")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
-        val dc3 = SimpleEnvironment(id3)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
+        val dc3 = SimpleEnvironment(uid3)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val ts3 = dc3.getNewTimestamp()
@@ -646,12 +646,12 @@ class RGATest {
     */
     @Test
     fun addSecond0Add1_Add0Add1_AddWin0Add1Merge1Merge2Get() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val id3 = DCId("dcid3")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
-        val dc3 = SimpleEnvironment(id3)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
+        val dc3 = SimpleEnvironment(uid3)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val ts3 = dc3.getNewTimestamp()
@@ -683,8 +683,8 @@ class RGATest {
     */
     @Test
     fun insertOp() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
@@ -703,8 +703,8 @@ class RGATest {
     */
     @Test
     fun removeOp() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -727,8 +727,8 @@ class RGATest {
     */
     @Test
     fun insertRemoveOp() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -752,8 +752,8 @@ class RGATest {
     */
     @Test
     fun insertRemoveOpFusion() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -776,8 +776,8 @@ class RGATest {
     */
     @Test
     fun removeInsertOpFusion() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -801,8 +801,8 @@ class RGATest {
     */
     @Test
     fun generateDelta() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -852,8 +852,8 @@ class RGATest {
     **/
     @Test
     fun toJsonSerialization() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -869,7 +869,7 @@ class RGATest {
         rga.insertAt(1, 'C', ts4)
         val rgaJson = rga.toJson(Char::class)
 
-        assertEquals("""{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"id":{"name":"dcid"},"cnt":1},"ts":{"id":{"name":"dcid"},"cnt":1},"removed":false},{"anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":4},"ts":{"id":{"name":"dcid"},"cnt":4},"removed":false},{"atom":"B","anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":2},"ts":{"id":{"name":"dcid"},"cnt":3},"removed":true}],"value":["A","C"]}""", rgaJson)
+        assertEquals("""{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"dcid"},"cnt":1},"ts":{"uid":{"name":"dcid"},"cnt":1},"removed":false},{"anchor":{"uid":{"name":"dcid"},"cnt":1},"uid":{"uid":{"name":"dcid"},"cnt":4},"ts":{"uid":{"name":"dcid"},"cnt":4},"removed":false},{"atom":"B","anchor":{"uid":{"name":"dcid"},"cnt":1},"uid":{"uid":{"name":"dcid"},"cnt":2},"ts":{"uid":{"name":"dcid"},"cnt":3},"removed":true}],"value":["A","C"]}""", rgaJson)
     }
 
     /**
@@ -877,7 +877,7 @@ class RGATest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"id":{"name":"dcid"},"cnt":1},"ts":{"id":{"name":"dcid"},"cnt":1},"removed":false},{"anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":4},"ts":{"id":{"name":"dcid"},"cnt":4},"removed":false},{"atom":"B","anchor":{"id":{"name":"dcid"},"cnt":1},"uid":{"id":{"name":"dcid"},"cnt":2},"ts":{"id":{"name":"dcid"},"cnt":3},"removed":true}],"value":["A","C"]}""")
+        val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"dcid"},"cnt":1},"ts":{"uid":{"name":"dcid"},"cnt":1},"removed":false},{"anchor":{"uid":{"name":"dcid"},"cnt":1},"uid":{"uid":{"name":"dcid"},"cnt":4},"ts":{"uid":{"name":"dcid"},"cnt":4},"removed":false},{"atom":"B","anchor":{"uid":{"name":"dcid"},"cnt":1},"uid":{"uid":{"name":"dcid"},"cnt":2},"ts":{"uid":{"name":"dcid"},"cnt":3},"removed":true}],"value":["A","C"]}""")
 
         assertEquals(listOf('A', 'C'), rgaJson.get())
     }
