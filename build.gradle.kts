@@ -1,9 +1,13 @@
+import org.jetbrains.dokka.gradle.DokkaTask
+
 plugins {
     kotlin("multiplatform") version "1.3.72"
     kotlin("plugin.serialization") version "1.3.72"
+    id("org.jetbrains.dokka") version "0.10.0"
 }
 
 repositories {
+    jcenter()
     mavenCentral()
     maven(url = "https://jitpack.io")
 }
@@ -35,7 +39,7 @@ kotlin {
             }
         }
 
-        jvm().compilations["main"].defaultSourceSet {
+        val jvmMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
                 implementation("com.github.ntrrgc:ts-generator:1.1.1")
@@ -43,22 +47,34 @@ kotlin {
             }
         }
 
-        jvm().compilations["test"].defaultSourceSet {
+        val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
             }
         }
 
-        js("nodeJs").compilations["main"].defaultSourceSet  {
+        val nodeJsMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-js")) 
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.20.0")
             }
         }
 
-        js("nodeJs").compilations["test"].defaultSourceSet {
+        val nodeJsTest by getting {
             dependencies {
                 implementation(kotlin("test-js")) 
+            }
+        }
+    }
+
+    tasks {
+        val dokka by getting(DokkaTask::class) {
+
+            outputFormat = "html"
+            outputDirectory = "$buildDir/docs"
+
+            multiplatform {
+                register("common") {}
             }
         }
     }
