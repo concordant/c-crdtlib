@@ -27,7 +27,7 @@ The code is in the directory *src/*. This directory contains multiple directorie
 ## Build project
 
 The building is managed through the use of Gradle. Kotlin sources (code and tests) are compiled to
-JVM Bytecode and to Javascript in the form of a Node.js package.  To simplify stuffs, a *Makefile*
+JVM Bytecode and to Javascript in the form of a Node.js package. To simplify stuffs, a *Makefile*
 is provided.
 
 *make build*:
