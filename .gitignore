@@ -6,6 +6,7 @@
 /.project
 /.settings/
 /build/
+/deploy/
 /target/
 /bin/
 /node_modules/

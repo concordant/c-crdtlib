@@ -46,19 +46,17 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
     /**
     * A mutable set storing the different values with their associated timestamp.
     */
-    var entries: MutableSet<Pair<T, Timestamp>>
+    var entries: MutableSet<Pair<T, Timestamp>> = mutableSetOf();
 
     /**
     * A version vector summarizing the entries seen by all values.
     */
-    val causalContext: VersionVector
+    val causalContext: VersionVector = VersionVector();
 
     /**
     * Default constructor creating a empty register.
     */
     constructor() {
-        this.entries = mutableSetOf()
-        this.causalContext = VersionVector()
     }
 
     /**
@@ -68,7 +66,6 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
     */
     constructor(value: T, ts: Timestamp) {
         this.entries = mutableSetOf(Pair<T, Timestamp>(value, ts))
-        this.causalContext = VersionVector()
         this.causalContext.addTS(ts)
     }
 
@@ -78,13 +75,11 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
     */
     constructor(other: MVRegister<T>) {
         this.entries = other.entries.toMutableSet()
-        this.causalContext = VersionVector()
         this.causalContext.pointWiseMax(other.causalContext)
     }
 
     constructor(entries: Set<Pair<T, Timestamp>>, causalContext: VersionVector) {
         this.entries = entries.toMutableSet()
-        this.causalContext = VersionVector()
         this.causalContext.pointWiseMax(causalContext)
     }
 

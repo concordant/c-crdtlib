@@ -36,37 +36,17 @@ import kotlinx.serialization.json.*
     "_metadata": Timestamp.toJson(),
     "value": T.toJson()
 * }
+* @property value the value stored in the register.
+* @property value the timestamp associated to the value.
 */
 @Serializable(with = LWWRegisterSerializer::class)
-class LWWRegister<T : Any> : DeltaCRDT<LWWRegister<T>> {
-
-    /**
-    * The value stored in the register.
-    */
-    var value: T
-
-    /**
-    * The timestamp associated to the value.
-    */
-    var ts: Timestamp
-
-    /**
-    * Constructor creating a register initialized with a given value.
-    * @param value the value to be put in the registered.
-    * @param ts the timestamp associated with the value.
-    */
-    constructor(value: T, ts: Timestamp) {
-        this.value = value
-        this.ts = ts
-    }
+class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegister<T>>() {
 
     /**
     * Constructor creating a copy of a given register.
     * @param other the register that should be copy.
     */
-    constructor(other: LWWRegister<T>) {
-        this.value = other.value
-        this.ts = other.ts
+    constructor(other: LWWRegister<T>): this(other.value, other.ts) {
     }
 
     /**

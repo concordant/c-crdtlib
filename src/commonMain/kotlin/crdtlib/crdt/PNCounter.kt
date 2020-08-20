@@ -62,19 +62,17 @@ class PNCounter : DeltaCRDT<PNCounter> {
     /**
     * A mutable map storing for each datacenter metadata relative to increment operations.
     */
-    private val increment: MutableMap<DCUId, Pair<Int, Timestamp>>
+    private val increment: MutableMap<DCUId, Pair<Int, Timestamp>> = mutableMapOf();
 
     /**
     * A mutable map storing for each datacenter metadata relative to decrement operations.
     */
-    private val decrement: MutableMap<DCUId, Pair<Int, Timestamp>>
+    private val decrement: MutableMap<DCUId, Pair<Int, Timestamp>> = mutableMapOf();
 
     /**
     * Default constructor.
     */
     constructor() {
-        increment = mutableMapOf()
-        decrement = mutableMapOf()
     }
 
     /**
