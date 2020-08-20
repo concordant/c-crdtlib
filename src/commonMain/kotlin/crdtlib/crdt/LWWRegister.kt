@@ -29,8 +29,9 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 
 /**
-* This class is a delta-based CRDT last writer wins (LWW) register.
-* It is serializable to JSON and respect the following schema:
+* This class is a generic delta-based CRDT last writer wins (LWW) register.
+* A LWW register can only embed primitive types (i.e,, string, numbers, and boolean).
+* It is serializable to JSON and respects the following schema:
 * {
     "_type": "LWWRegister",
     "_metadata": Timestamp.toJson(),
@@ -41,6 +42,10 @@ import kotlinx.serialization.json.*
 */
 @Serializable(with = LWWRegisterSerializer::class)
 class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegister<T>>() {
+
+    init {
+        if (this.value !is String && this.value !is Boolean && this.value !is Number) throw UnexpectedTypeException("LWWRegister does not support type: " + this.value::class)
+    }
 
     /**
     * Constructor creating a copy of a given register.
@@ -105,8 +110,8 @@ class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegis
     */
     @OptIn(ImplicitReflectionSerializer::class)
     @Name("toJson")
-    fun toJson(kclass: KClass<T>): String {
-        val jsonSerializer = JsonLWWRegisterSerializer(LWWRegister.serializer(kclass.serializer()))
+    fun toJson(): String {
+        val jsonSerializer = JsonLWWRegisterSerializer(LWWRegister.serializer(this.value::class.serializer() as KSerializer<T>))
         return Json.stringify<LWWRegister<T>>(jsonSerializer, this)
     }
 
@@ -118,8 +123,8 @@ class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegis
         */
         @OptIn(ImplicitReflectionSerializer::class)
         @Name("fromJson")
-        fun <T : Any> fromJson(kclass: KClass<T>, json: String): LWWRegister<T> {
-            val jsonSerializer = JsonLWWRegisterSerializer(LWWRegister.serializer(kclass.serializer()))
+        inline fun <reified T : Any> fromJson(json: String): LWWRegister<T> {
+            val jsonSerializer = JsonLWWRegisterSerializer(LWWRegister.serializer(T::class.serializer()))
             return Json.parse(jsonSerializer, json)
         }
     }
