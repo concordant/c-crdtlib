@@ -1,19 +1,53 @@
+# Conflict-Free Replicated Datatypes (CRDT) library
+
 [![pipeline status](https://gitlab.inria.fr/concordant/software/crdtlib-kotlin/badges/master/pipeline.svg)](https://gitlab.inria.fr/concordant/software/crdtlib-kotlin/commits/master)
+[![License](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
-# CRDT lib
+CRDT library in Kotlin for the Concordant platform API. This project is based on [Kotlin
+multiplatform feature](https://kotlinlang.org/docs/reference/multiplatform.html). The Kotlin code is
+compiled to JVM Bytecode and to Javascript.
 
-CRDT library in kotlin for use in concordant.
+## Requirements
 
-## Javascript generator
+- Download and install Gradle from [Gradle website](https://gradle.org/install/);
+- Make sure you have the latest version of Node.js (required if you want to generate Javascript):
+  [see the official installation guide](https://nodejs.org/en/download/).
 
-You can also use the *kotlin_to_nodejs.sh* script that will configure everything to work using with
-Node.js. You can now use the crdtlib module with JavaScript as describe in the *test_nodejs.js*
-file.
+## Project overview
 
-If you want only to generate JavaScript code and tests you can run _mvn package_.
+The code is in the directory *src/*. This directory contains multiple directories:
 
-## Typescript generator
+- *commonMain*: contains source code that is common to all platform;
+- *commonTest*: contains source code that is common to all platform;
+- *jvmMain*: contains specific source code for JVM target;
+- *jvmTest*: contains specific source code for JVM target tests;
+- *jsMain*: contains specific source code for JavaScript target;
+- *jsTest*: contains specific source code for JavaScript target tests.
 
-For generating the TypeScript interface, just do: _mvn package_. Then copy/paste the output into a
-_crdtlib.d.ts_ file. To use it add _/// \<reference path="path/to/crdtlib.d.ts" />_ at the
-beginning of the TypeScript file in which you want to use the crdt library.
+## Build project
+
+The building is managed through the use of Gradle. Kotlin sources (code and tests) are compiled to
+JVM Bytecode and to Javascript in the form of a Node.js package. To simplify stuffs, a *Makefile*
+is provided.
+
+*make build*:
+- compiles code and tests to JVM Bytecode;
+- compiles code and tests to Javascript (Node.js package);
+- creates a TypeScript interface.
+
+*make test*:
+- runs JVM test suite;
+- runs Node.js test suite in a server like manner;
+- a report containing all tests results can be found in the file
+  *build/reports/tests/allTests/index.html*.
+
+*make deploy*:
+- creates a npm package ready to be used;
+- the package is in the *deploy/npm/* directory.
+
+*make doc*:
+- creates the documentation from code comments;
+- documentation is accessible at *build/docs/crdtlib-kotlin/index.html*.
+
+*make clean*:
+- cleans the project.

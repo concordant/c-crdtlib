@@ -1,11 +1,12 @@
 /.DS_Store
 /.gradle/
+/package-lock.json
 /.classpath
 /.idea/
 /.project
 /.settings/
 /build/
+/deploy/
 /target/
 /bin/
-/.idea/
 /node_modules/
