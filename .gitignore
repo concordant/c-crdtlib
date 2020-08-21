@@ -10,3 +10,4 @@
 /target/
 /bin/
 /node_modules/
+.*.swp
