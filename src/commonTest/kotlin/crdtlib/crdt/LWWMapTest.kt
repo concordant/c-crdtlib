@@ -41,7 +41,10 @@ class LWWMapTest {
         val key = "key"
         val map = LWWMap()
 
-        assertNull(map.get(key))
+        assertNull(map.getBoolean(key))
+        assertNull(map.getDouble(key))
+        assertNull(map.getInt(key))
+        assertNull(map.getString(key))
     }
     
     /**
@@ -54,12 +57,21 @@ class LWWMapTest {
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val key = "key"
-        val value = "value"
+        val valueBoolean = true
+        val valueDouble = 3.14159
+        val valueInt = 42
+        val valueString = "value"
         val map = LWWMap()
 
-        map.put(key, value, ts)
+        map.put(key, valueBoolean, ts)
+        map.put(key, valueDouble, ts)
+        map.put(key, valueInt, ts)
+        map.put(key, valueString, ts)
 
-        assertEquals(value, map.get(key))
+        assertEquals(valueBoolean, map.getBoolean(key))
+        assertEquals(valueDouble, map.getDouble(key))
+        assertEquals(valueInt, map.getInt(key))
+        assertEquals(valueString, map.getString(key))
     }
     
     /**
@@ -74,13 +86,25 @@ class LWWMapTest {
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
         val key = "key"
-        val value = "value"
+        val valueBoolean = true
+        val valueDouble = 3.14159
+        val valueInt = 42
+        val valueString = "value"
         val map = LWWMap()
 
-        map.put(key, value, ts1)
-        map.delete(key, ts2)
+        map.put(key, valueBoolean, ts1)
+        map.put(key, valueDouble, ts1)
+        map.put(key, valueInt, ts1)
+        map.put(key, valueString, ts1)
+        map.deleteBoolean(key, ts2)
+        map.deleteDouble(key, ts2)
+        map.deleteInt(key, ts2)
+        map.deleteString(key, ts2)
 
-        assertNull(map.get(key))
+        assertNull(map.getBoolean(key))
+        assertNull(map.getDouble(key))
+        assertNull(map.getInt(key))
+        assertNull(map.getString(key))
     }
  
     /**
@@ -95,9 +119,15 @@ class LWWMapTest {
         val key = "key"
         val map = LWWMap()
 
-        map.delete(key, ts1)
+        map.deleteBoolean(key, ts1)
+        map.deleteDouble(key, ts1)
+        map.deleteInt(key, ts1)
+        map.deleteString(key, ts1)
 
-        assertNull(map.get(key))
+        assertNull(map.getBoolean(key))
+        assertNull(map.getDouble(key))
+        assertNull(map.getInt(key))
+        assertNull(map.getString(key))
     }
 
     /**
@@ -112,14 +142,29 @@ class LWWMapTest {
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
         val key = "key"
-        val val1 = "value1"
-        val val2 = "value2"
+        val valBoolean1 = true
+        val valBoolean2 = false
+        val valDouble1 = 12.3456789
+        val valDouble2 = 3.14159
+        val valInt1 = 42
+        val valInt2 = -100
+        val valString1 = "value1"
+        val valString2 = "value2"
         val map = LWWMap()
 
-        map.put(key, val1, ts1)
-        map.put(key, val2, ts2)
+        map.put(key, valBoolean1, ts1)
+        map.put(key, valDouble1, ts1)
+        map.put(key, valInt1, ts1)
+        map.put(key, valString1, ts1)
+        map.put(key, valBoolean2, ts2)
+        map.put(key, valDouble2, ts2)
+        map.put(key, valInt2, ts2)
+        map.put(key, valString2, ts2)
 
-        assertEquals(val2, map.get(key))
+        assertEquals(valBoolean2, map.getBoolean(key))
+        assertEquals(valDouble2, map.getDouble(key))
+        assertEquals(valInt2, map.getInt(key))
+        assertEquals(valString2, map.getString(key))
     }
 
     /**
@@ -136,15 +181,33 @@ class LWWMapTest {
         dc.updateStateTS(ts2)
         val ts3 = dc.getNewTimestamp()
         val key = "key"
-        val val1 = "value1"
-        val val2 = "value2"
+        val valBoolean1 = true
+        val valBoolean2 = false
+        val valDouble1 = 12.3456789
+        val valDouble2 = 3.14159
+        val valInt1 = 42
+        val valInt2 = -100
+        val valString1 = "value1"
+        val valString2 = "value2"
         val map = LWWMap()
 
-        map.put(key, val1, ts1)
-        map.put(key, val2, ts2)
-        map.delete(key, ts3)
+        map.put(key, valBoolean1, ts1)
+        map.put(key, valDouble1, ts1)
+        map.put(key, valInt1, ts1)
+        map.put(key, valString1, ts1)
+        map.put(key, valBoolean2, ts2)
+        map.put(key, valDouble2, ts2)
+        map.put(key, valInt2, ts2)
+        map.put(key, valString2, ts2)
+        map.deleteBoolean(key, ts3)
+        map.deleteDouble(key, ts3)
+        map.deleteInt(key, ts3)
+        map.deleteString(key, ts3)
 
-        assertNull(map.get(key))
+        assertNull(map.getBoolean(key))
+        assertNull(map.getDouble(key))
+        assertNull(map.getInt(key))
+        assertNull(map.getString(key))
     }
 
     /**
@@ -157,16 +220,28 @@ class LWWMapTest {
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val key = "key"
-        val value = "value"
+        val valueBoolean = true
+        val valueDouble = 3.14159
+        val valueInt = 42
+        val valueString = "value"
         val map1 = LWWMap()
         val map2 = LWWMap()
 
-        map1.put(key, value, ts)
+        map1.put(key, valueBoolean, ts)
+        map1.put(key, valueDouble, ts)
+        map1.put(key, valueInt, ts)
+        map1.put(key, valueString, ts)
         map1.merge(map2)
         map2.merge(map1)
 
-        assertEquals(value, map1.get(key))
-        assertEquals(value, map2.get(key))
+        assertEquals(valueBoolean, map1.getBoolean(key))
+        assertEquals(valueDouble, map1.getDouble(key))
+        assertEquals(valueInt, map1.getInt(key))
+        assertEquals(valueString, map1.getString(key))
+        assertEquals(valueBoolean, map2.getBoolean(key))
+        assertEquals(valueDouble, map2.getDouble(key))
+        assertEquals(valueInt, map2.getInt(key))
+        assertEquals(valueString, map2.getString(key))
     }
 
     /**
@@ -182,16 +257,31 @@ class LWWMapTest {
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val key = "key"
-        val val1 = "value1"
-        val val2 = "value2"
+        val valBoolean1 = true
+        val valBoolean2 = false
+        val valDouble1 = 12.3456789
+        val valDouble2 = 3.14159
+        val valInt1 = 42
+        val valInt2 = -100
+        val valString1 = "value1"
+        val valString2 = "value2"
         val map1 = LWWMap()
         val map2 = LWWMap()
 
-        map1.put(key, val1, ts1)
+        map1.put(key, valBoolean1, ts1)
+        map1.put(key, valDouble1, ts1)
+        map1.put(key, valInt1, ts1)
+        map1.put(key, valString1, ts1)
         map2.merge(map1)
-        map2.put(key, val2, ts2)
+        map2.put(key, valBoolean2, ts2)
+        map2.put(key, valDouble2, ts2)
+        map2.put(key, valInt2, ts2)
+        map2.put(key, valString2, ts2)
 
-        assertEquals(val2, map2.get(key))
+        assertEquals(valBoolean2, map2.getBoolean(key))
+        assertEquals(valDouble2, map2.getDouble(key))
+        assertEquals(valInt2, map2.getInt(key))
+        assertEquals(valString2, map2.getString(key))
     }
 
     /**
@@ -207,16 +297,31 @@ class LWWMapTest {
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val key = "key"
-        val val1 = "value1"
-        val val2 = "value2"
+        val valBoolean1 = true
+        val valBoolean2 = false
+        val valDouble1 = 12.3456789
+        val valDouble2 = 3.14159
+        val valInt1 = 42
+        val valInt2 = -100
+        val valString1 = "value1"
+        val valString2 = "value2"
         val map1 = LWWMap()
         val map2 = LWWMap()
 
-        map1.put(key, val1, ts1)
-        map2.put(key, val2, ts2)
+        map1.put(key, valBoolean1, ts1)
+        map1.put(key, valDouble1, ts1)
+        map1.put(key, valInt1, ts1)
+        map1.put(key, valString1, ts1)
+        map2.put(key, valBoolean2, ts2)
+        map2.put(key, valDouble2, ts2)
+        map2.put(key, valInt2, ts2)
+        map2.put(key, valString2, ts2)
         map2.merge(map1)
 
-        assertEquals(val2, map2.get(key))
+        assertEquals(valBoolean2, map2.getBoolean(key))
+        assertEquals(valDouble2, map2.getDouble(key))
+        assertEquals(valInt2, map2.getInt(key))
+        assertEquals(valString2, map2.getString(key))
     }
     
     /**
@@ -232,16 +337,31 @@ class LWWMapTest {
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val key = "key"
-        val val1 = "value1"
-        val val2 = "value2"
+        val valBoolean1 = true
+        val valBoolean2 = false
+        val valDouble1 = 12.3456789
+        val valDouble2 = 3.14159
+        val valInt1 = 42
+        val valInt2 = -100
+        val valString1 = "value1"
+        val valString2 = "value2"
         val map1 = LWWMap()
         val map2 = LWWMap()
 
-        map2.put(key, val2, ts1)
-        map1.put(key, val1, ts2)
+        map2.put(key, valBoolean2, ts1)
+        map2.put(key, valDouble2, ts1)
+        map2.put(key, valInt2, ts1)
+        map2.put(key, valString2, ts1)
+        map1.put(key, valBoolean1, ts2)
+        map1.put(key, valDouble1, ts2)
+        map1.put(key, valInt1, ts2)
+        map1.put(key, valString1, ts2)
         map2.merge(map1)
 
-        assertEquals(val1, map2.get(key))
+        assertEquals(valBoolean1, map2.getBoolean(key))
+        assertEquals(valDouble1, map2.getDouble(key))
+        assertEquals(valInt1, map2.getInt(key))
+        assertEquals(valString1, map2.getString(key))
     }
 
     /**
@@ -259,17 +379,35 @@ class LWWMapTest {
         dc2.updateStateTS(ts2)
         val ts3 = dc2.getNewTimestamp()
         val key = "key"
-        val val1 = "value1"
-        val val2 = "value2"
+        val valBoolean1 = true
+        val valBoolean2 = false
+        val valDouble1 = 12.3456789
+        val valDouble2 = 3.14159
+        val valInt1 = 42
+        val valInt2 = -100
+        val valString1 = "value1"
+        val valString2 = "value2"
         val map1 = LWWMap()
         val map2 = LWWMap()
 
-        map2.put(key, val2, ts1)
-        map1.put(key, val1, ts2)
-        map1.delete(key, ts3)
+        map2.put(key, valBoolean2, ts1)
+        map2.put(key, valDouble2, ts1)
+        map2.put(key, valInt2, ts1)
+        map2.put(key, valString2, ts1)
+        map1.put(key, valBoolean1, ts2)
+        map1.put(key, valDouble1, ts2)
+        map1.put(key, valInt1, ts2)
+        map1.put(key, valString1, ts2)
+        map1.deleteBoolean(key, ts3)
+        map1.deleteDouble(key, ts3)
+        map1.deleteInt(key, ts3)
+        map1.deleteString(key, ts3)
         map2.merge(map1)
 
-        assertNull(map2.get(key))
+        assertNull(map2.getBoolean(key))
+        assertNull(map2.getDouble(key))
+        assertNull(map2.getInt(key))
+        assertNull(map2.getString(key))
     }
 
     /**
@@ -287,18 +425,36 @@ class LWWMapTest {
         dc2.updateStateTS(ts2)
         val ts3 = dc2.getNewTimestamp()
         val key = "key"
-        val val1 = "value1"
-        val val2 = "value2"
+        val valBoolean1 = true
+        val valBoolean2 = false
+        val valDouble1 = 12.3456789
+        val valDouble2 = 3.14159
+        val valInt1 = 42
+        val valInt2 = -100
+        val valString1 = "value1"
+        val valString2 = "value2"
         val map1 = LWWMap()
         val map2 = LWWMap()
 
-        map2.put(key, val2, ts1)
-        map1.put(key, val1, ts2)
+        map2.put(key, valBoolean2, ts1)
+        map2.put(key, valDouble2, ts1)
+        map2.put(key, valInt2, ts1)
+        map2.put(key, valString2, ts1)
+        map1.put(key, valBoolean1, ts2)
+        map1.put(key, valDouble1, ts2)
+        map1.put(key, valInt1, ts2)
+        map1.put(key, valString1, ts2)
         map2.merge(map1)
-        map1.delete(key, ts3)
+        map1.deleteBoolean(key, ts3)
+        map1.deleteDouble(key, ts3)
+        map1.deleteInt(key, ts3)
+        map1.deleteString(key, ts3)
         map2.merge(map1)
 
-        assertNull(map2.get(key))
+        assertNull(map2.getBoolean(key))
+        assertNull(map2.getDouble(key))
+        assertNull(map2.getInt(key))
+        assertNull(map2.getString(key))
     }
 
     /*
@@ -318,17 +474,35 @@ class LWWMapTest {
         dc2.updateStateTS(ts2)
         val ts4 = dc2.getNewTimestamp()
         val key = "key"
-        val val1 = "value1"
-        val val2 = "value2"
+        val valBoolean1 = true
+        val valBoolean2 = false
+        val valDouble1 = 12.3456789
+        val valDouble2 = 3.14159
+        val valInt1 = 42
+        val valInt2 = -100
+        val valString1 = "value1"
+        val valString2 = "value2"
         val map1 = LWWMap()
         val map2 = LWWMap()
 
-        map1.put(key, val1, ts1)
-        map1.delete(key, ts3)
-        map2.put(key, val2, ts4)
+        map1.put(key, valBoolean1, ts1)
+        map1.put(key, valDouble1, ts1)
+        map1.put(key, valInt1, ts1)
+        map1.put(key, valString1, ts1)
+        map1.deleteBoolean(key, ts3)
+        map1.deleteDouble(key, ts3)
+        map1.deleteInt(key, ts3)
+        map1.deleteString(key, ts3)
+        map2.put(key, valBoolean2, ts4)
+        map2.put(key, valDouble2, ts4)
+        map2.put(key, valInt2, ts4)
+        map2.put(key, valString2, ts4)
         map2.merge(map1)
 
-        assertEquals(val2, map2.get(key))
+        assertEquals(valBoolean2, map2.getBoolean(key))
+        assertEquals(valDouble2, map2.getDouble(key))
+        assertEquals(valInt2, map2.getInt(key))
+        assertEquals(valString2, map2.getString(key))
     }
 
     /*
@@ -348,18 +522,36 @@ class LWWMapTest {
         dc2.updateStateTS(ts2)
         val ts4 = dc2.getNewTimestamp()
         val key = "key"
-        val val1 = "value1"
-        val val2 = "value2"
+        val valBoolean1 = true
+        val valBoolean2 = false
+        val valDouble1 = 12.3456789
+        val valDouble2 = 3.14159
+        val valInt1 = 42
+        val valInt2 = -100
+        val valString1 = "value1"
+        val valString2 = "value2"
         val map1 = LWWMap()
         val map2 = LWWMap()
 
-        map1.put(key, val1, ts1)
-        map2.put(key, val2, ts4)
+        map1.put(key, valBoolean1, ts1)
+        map1.put(key, valDouble1, ts1)
+        map1.put(key, valInt1, ts1)
+        map1.put(key, valString1, ts1)
+        map2.put(key, valBoolean2, ts4)
+        map2.put(key, valDouble2, ts4)
+        map2.put(key, valInt2, ts4)
+        map2.put(key, valString2, ts4)
         map2.merge(map1)
-        map1.delete(key, ts3)
+        map1.deleteBoolean(key, ts3)
+        map1.deleteDouble(key, ts3)
+        map1.deleteInt(key, ts3)
+        map1.deleteString(key, ts3)
         map2.merge(map1)
 
-        assertEquals(val2, map2.get(key))
+        assertEquals(valBoolean2, map2.getBoolean(key))
+        assertEquals(valDouble2, map2.getDouble(key))
+        assertEquals(valInt2, map2.getInt(key))
+        assertEquals(valString2, map2.getString(key))
     }
 
     /*
@@ -378,19 +570,37 @@ class LWWMapTest {
         val ts2 = dc2.getNewTimestamp()
         val ts3 = dc3.getNewTimestamp()
         val key = "key"
-        val val1 = "value1"
-        val val2 = "value2"
+        val valBoolean1 = true
+        val valBoolean2 = false
+        val valDouble1 = 12.3456789
+        val valDouble2 = 3.14159
+        val valInt1 = 42
+        val valInt2 = -100
+        val valString1 = "value1"
+        val valString2 = "value2"
         val map1 = LWWMap()
         val map2 = LWWMap()
         val map3 = LWWMap()
 
-        map1.put(key, val1, ts1)
+        map1.put(key, valBoolean1, ts1)
+        map1.put(key, valDouble1, ts1)
+        map1.put(key, valInt1, ts1)
+        map1.put(key, valString1, ts1)
         map3.merge(map1)
-        map2.put(key, val2, ts2)
-        map3.delete(key, ts3)
+        map2.put(key, valBoolean2, ts2)
+        map2.put(key, valDouble2, ts2)
+        map2.put(key, valInt2, ts2)
+        map2.put(key, valString2, ts2)
+        map3.deleteBoolean(key, ts3)
+        map3.deleteDouble(key, ts3)
+        map3.deleteInt(key, ts3)
+        map3.deleteString(key, ts3)
         map3.merge(map2)
 
-        assertNull(map3.get(key))
+        assertNull(map3.getBoolean(key))
+        assertNull(map3.getDouble(key))
+        assertNull(map3.getInt(key))
+        assertNull(map3.getString(key))
     }
 
     /*
@@ -409,19 +619,37 @@ class LWWMapTest {
         val ts2 = dc2.getNewTimestamp()
         val ts3 = dc3.getNewTimestamp()
         val key = "key"
-        val val1 = "value1"
-        val val2 = "value2"
+        val valBoolean1 = true
+        val valBoolean2 = false
+        val valDouble1 = 12.3456789
+        val valDouble2 = 3.14159
+        val valInt1 = 42
+        val valInt2 = -100
+        val valString1 = "value1"
+        val valString2 = "value2"
         val map1 = LWWMap()
         val map2 = LWWMap()
         val map3 = LWWMap()
 
-        map1.put(key, val1, ts1)
+        map1.put(key, valBoolean1, ts1)
+        map1.put(key, valDouble1, ts1)
+        map1.put(key, valInt1, ts1)
+        map1.put(key, valString1, ts1)
         map3.merge(map1)
-        map3.delete(key, ts2)
-        map2.put(key, val2, ts3)
+        map3.deleteBoolean(key, ts2)
+        map3.deleteDouble(key, ts2)
+        map3.deleteInt(key, ts2)
+        map3.deleteString(key, ts2)
+        map2.put(key, valBoolean2, ts3)
+        map2.put(key, valDouble2, ts3)
+        map2.put(key, valInt2, ts3)
+        map2.put(key, valString2, ts3)
         map3.merge(map2)
 
-        assertEquals(val2, map3.get(key))
+        assertEquals(valBoolean2, map3.getBoolean(key))
+        assertEquals(valDouble2, map3.getDouble(key))
+        assertEquals(valInt2, map3.getInt(key))
+        assertEquals(valString2, map3.getString(key))
     }
 
     /*
@@ -434,16 +662,34 @@ class LWWMapTest {
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val key = "key"
-        val value = "value"
+        val valueBoolean = true
+        val valueDouble = 3.14159
+        val valueInt = 42
+        val valueString = "value"
         val map1 = LWWMap()
         val map2 = LWWMap()
 
-        val op = map1.put(key, value, ts)
-        map1.merge(op)
-        map2.merge(op)
+        val opBoolean = map1.put(key, valueBoolean, ts)
+        val opDouble = map1.put(key, valueDouble, ts)
+        val opInt = map1.put(key, valueInt, ts)
+        val opString = map1.put(key, valueString, ts)
+        map1.merge(opBoolean)
+        map1.merge(opDouble)
+        map1.merge(opInt)
+        map1.merge(opString)
+        map2.merge(opBoolean)
+        map2.merge(opDouble)
+        map2.merge(opInt)
+        map2.merge(opString)
 
-        assertEquals(value, map1.get(key))
-        assertEquals(value, map2.get(key))
+        assertEquals(valueBoolean, map1.getBoolean(key))
+        assertEquals(valueDouble, map1.getDouble(key))
+        assertEquals(valueInt, map1.getInt(key))
+        assertEquals(valueString, map1.getString(key))
+        assertEquals(valueBoolean, map2.getBoolean(key))
+        assertEquals(valueDouble, map2.getDouble(key))
+        assertEquals(valueInt, map2.getInt(key))
+        assertEquals(valueString, map2.getString(key))
     }
 
     /*
@@ -458,19 +704,46 @@ class LWWMapTest {
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
         val key = "key"
-        val value = "value"
+        val valueBoolean = true
+        val valueDouble = 3.14159
+        val valueInt = 42
+        val valueString = "value"
         val map1 = LWWMap()
         val map2 = LWWMap()
 
-        val putOp = map1.put(key, value, ts1)
-        val delOp = map1.delete(key, ts2)
-        map1.merge(putOp)
-        map1.merge(delOp)
-        map2.merge(putOp)
-        map2.merge(delOp)
+        val putOpBoolean = map1.put(key, valueBoolean, ts1)
+        val putOpDouble = map1.put(key, valueDouble, ts1)
+        val putOpInt = map1.put(key, valueInt, ts1)
+        val putOpString = map1.put(key, valueString, ts1)
+        val delOpBoolean = map1.deleteBoolean(key, ts2)
+        val delOpDouble = map1.deleteDouble(key, ts2)
+        val delOpInt = map1.deleteInt(key, ts2)
+        val delOpString = map1.deleteString(key, ts2)
+        map1.merge(putOpBoolean)
+        map1.merge(putOpDouble)
+        map1.merge(putOpInt)
+        map1.merge(putOpString)
+        map1.merge(delOpBoolean)
+        map1.merge(delOpDouble)
+        map1.merge(delOpInt)
+        map1.merge(delOpString)
+        map2.merge(putOpBoolean)
+        map2.merge(putOpDouble)
+        map2.merge(putOpInt)
+        map2.merge(putOpString)
+        map2.merge(delOpBoolean)
+        map2.merge(delOpDouble)
+        map2.merge(delOpInt)
+        map2.merge(delOpString)
 
-        assertNull(map1.get(key))
-        assertNull(map2.get(key))
+        assertNull(map1.getBoolean(key))
+        assertNull(map1.getDouble(key))
+        assertNull(map1.getInt(key))
+        assertNull(map1.getString(key))
+        assertNull(map2.getBoolean(key))
+        assertNull(map2.getDouble(key))
+        assertNull(map2.getInt(key))
+        assertNull(map2.getString(key))
     }
 
     /*
@@ -488,20 +761,51 @@ class LWWMapTest {
         val ts3 = dc.getNewTimestamp()
         val key1 = "key1"
         val key2 = "key2"
-        val val1 = "value1"
-        val val2 = "value2"
+        val valBoolean1 = true
+        val valBoolean2 = false
+        val valDouble1 = 12.3456789
+        val valDouble2 = 3.14159
+        val valInt1 = 42
+        val valInt2 = -100
+        val valString1 = "value1"
+        val valString2 = "value2"
         val map1 = LWWMap()
         val map2 = LWWMap()
 
-        val op1 = map1.put(key1, val1, ts1)
-        val op2 = map1.put(key1, val2, ts2)
-        val op3 = map1.put(key2, val1, ts3)
-        op2.merge(op3)
-        op1.merge(op2)
-        map2.merge(op1)
+        val opBoolean1 = map1.put(key1, valBoolean1, ts1)
+        val opDouble1 = map1.put(key1, valDouble1, ts1)
+        val opInt1 = map1.put(key1, valInt1, ts1)
+        val opString1 = map1.put(key1, valString1, ts1)
+        val opBoolean2 = map1.put(key1, valBoolean2, ts2)
+        val opDouble2 = map1.put(key1, valDouble2, ts2)
+        val opInt2 = map1.put(key1, valInt2, ts2)
+        val opString2 = map1.put(key1, valString2, ts2)
+        val opBoolean3 = map1.put(key2, valBoolean1, ts3)
+        val opDouble3 = map1.put(key2, valDouble1, ts3)
+        val opInt3 = map1.put(key2, valInt1, ts3)
+        val opString3 = map1.put(key2, valString1, ts3)
+        opDouble3.merge(opString3)
+        opBoolean3.merge(opDouble3)
+        opInt3.merge(opBoolean3)
+        opString3.merge(opInt3)
+        opDouble2.merge(opString3)
+        opBoolean2.merge(opDouble2)
+        opInt2.merge(opBoolean2)
+        opString2.merge(opInt2)
+        opDouble1.merge(opString2)
+        opBoolean1.merge(opDouble1)
+        opInt1.merge(opBoolean1)
+        opString1.merge(opInt1)
+        map2.merge(opString1)
 
-        assertEquals(val2, map2.get(key1))
-        assertEquals(val1, map2.get(key2))
+        assertEquals(valBoolean2, map2.getBoolean(key1))
+        assertEquals(valDouble2, map2.getDouble(key1))
+        assertEquals(valInt2, map2.getInt(key1))
+        assertEquals(valString2, map2.getString(key1))
+        assertEquals(valBoolean1, map2.getBoolean(key2))
+        assertEquals(valDouble1, map2.getDouble(key2))
+        assertEquals(valInt1, map2.getInt(key2))
+        assertEquals(valString1, map2.getString(key2))
     }
 
     /*
@@ -519,19 +823,47 @@ class LWWMapTest {
         val ts3 = dc.getNewTimestamp()
         val key1 = "key1"
         val key2 = "key2"
-        val value = "value"
+        val valueBoolean = true
+        val valueDouble = 3.14159
+        val valueInt = 42
+        val valueString = "value"
         val map1 = LWWMap()
         val map2 = LWWMap()
 
-        val op1 = map1.put(key1, value, ts1)
-        val op2 = map1.delete(key1, ts2)
-        val op3 = map1.put(key2, value, ts3)
-        op2.merge(op3)
-        op1.merge(op2)
-        map2.merge(op1)
+        val opBoolean1 = map1.put(key1, valueBoolean, ts1)
+        val opDouble1 = map1.put(key1, valueDouble, ts1)
+        val opInt1 = map1.put(key1, valueInt, ts1)
+        val opString1 = map1.put(key1, valueString, ts1)
+        val opBoolean2 = map1.deleteBoolean(key1, ts2)
+        val opDouble2 = map1.deleteDouble(key1, ts2)
+        val opInt2 = map1.deleteInt(key1, ts2)
+        val opString2 = map1.deleteString(key1, ts2)
+        val opBoolean3 = map1.put(key2, valueBoolean, ts3)
+        val opDouble3 = map1.put(key2, valueDouble, ts3)
+        val opInt3 = map1.put(key2, valueInt, ts3)
+        val opString3 = map1.put(key2, valueString, ts3)
+        opDouble3.merge(opString3)
+        opBoolean3.merge(opDouble3)
+        opInt3.merge(opBoolean3)
+        opString3.merge(opInt3)
+        opDouble2.merge(opString3)
+        opBoolean2.merge(opDouble2)
+        opInt2.merge(opBoolean2)
+        opString2.merge(opInt2)
+        opDouble1.merge(opString2)
+        opBoolean1.merge(opDouble1)
+        opInt1.merge(opBoolean1)
+        opString1.merge(opInt1)
+        map2.merge(opString1)
 
-        assertNull(map2.get(key1))
-        assertEquals(value, map2.get(key2))
+        assertNull(map2.getBoolean(key1))
+        assertNull(map2.getDouble(key1))
+        assertNull(map2.getInt(key1))
+        assertNull(map2.getString(key1))
+        assertEquals(valueBoolean, map2.getBoolean(key2))
+        assertEquals(valueDouble, map2.getDouble(key2))
+        assertEquals(valueInt, map2.getInt(key2))
+        assertEquals(valueString, map2.getString(key2))
     }
 
     /*
@@ -556,21 +888,48 @@ class LWWMapTest {
         val key2 = "key2"
         val key3 = "key3"
         val key4 = "key4"
-        val value = "value"
+        val valueBoolean = true
+        val valueDouble = 3.14159
+        val valueInt = 42
+        val valueString = "value"
         val map1 = LWWMap()
         val map2 = LWWMap()
 
-        map1.put(key1, value, ts1)
-        map1.put(key2, value, ts2)
-        map1.put(key3, value, ts3)
-        map1.put(key4, value, ts4)
+        map1.put(key1, valueBoolean, ts1)
+        map1.put(key1, valueDouble, ts1)
+        map1.put(key1, valueInt, ts1)
+        map1.put(key1, valueString, ts1)
+        map1.put(key2, valueBoolean, ts2)
+        map1.put(key2, valueDouble, ts2)
+        map1.put(key2, valueInt, ts2)
+        map1.put(key2, valueString, ts2)
+        map1.put(key3, valueBoolean, ts3)
+        map1.put(key3, valueDouble, ts3)
+        map1.put(key3, valueInt, ts3)
+        map1.put(key3, valueString, ts3)
+        map1.put(key4, valueBoolean, ts4)
+        map1.put(key4, valueDouble, ts4)
+        map1.put(key4, valueInt, ts4)
+        map1.put(key4, valueString, ts4)
         val delta = map1.generateDelta(vv)
         map2.merge(delta)
 
-        assertNull(map2.get(key1))
-        assertNull(map2.get(key2))
-        assertEquals(value, map2.get(key3))
-        assertEquals(value, map2.get(key4))
+        assertNull(map2.getBoolean(key1))
+        assertNull(map2.getDouble(key1))
+        assertNull(map2.getInt(key1))
+        assertNull(map2.getString(key1))
+        assertNull(map2.getBoolean(key2))
+        assertNull(map2.getDouble(key2))
+        assertNull(map2.getInt(key2))
+        assertNull(map2.getString(key2))
+        assertEquals(valueBoolean, map2.getBoolean(key3))
+        assertEquals(valueDouble, map2.getDouble(key3))
+        assertEquals(valueInt, map2.getInt(key3))
+        assertEquals(valueString, map2.getString(key3))
+        assertEquals(valueBoolean, map2.getBoolean(key4))
+        assertEquals(valueDouble, map2.getDouble(key4))
+        assertEquals(valueInt, map2.getInt(key4))
+        assertEquals(valueString, map2.getString(key4))
     }
 
     /*
@@ -593,20 +952,44 @@ class LWWMapTest {
         val key1 = "key1"
         val key2 = "key2"
         val key3 = "key3"
-        val value = "value"
+        val valueBoolean = true
+        val valueDouble = 3.14159
+        val valueInt = 42
+        val valueString = "value"
         val map1 = LWWMap()
         val map2 = LWWMap()
 
-        map1.put(key1, value, ts1)
-        map1.put(key2, value, ts2)
-        map1.delete(key2, ts3)
-        map1.put(key3, value, ts4)
+        map1.put(key1, valueBoolean, ts1)
+        map1.put(key1, valueDouble, ts1)
+        map1.put(key1, valueInt, ts1)
+        map1.put(key1, valueString, ts1)
+        map1.put(key2, valueBoolean, ts2)
+        map1.put(key2, valueDouble, ts2)
+        map1.put(key2, valueInt, ts2)
+        map1.put(key2, valueString, ts2)
+        map1.deleteBoolean(key2, ts3)
+        map1.deleteDouble(key2, ts3)
+        map1.deleteInt(key2, ts3)
+        map1.deleteString(key2, ts3)
+        map1.put(key3, valueBoolean, ts4)
+        map1.put(key3, valueDouble, ts4)
+        map1.put(key3, valueInt, ts4)
+        map1.put(key3, valueString, ts4)
         val delta = map1.generateDelta(vv)
         map2.merge(delta)
 
-        assertNull(map2.get(key1))
-        assertNull(map2.get(key2))
-        assertEquals(value, map2.get(key3))
+        assertNull(map2.getBoolean(key1))
+        assertNull(map2.getDouble(key1))
+        assertNull(map2.getInt(key1))
+        assertNull(map2.getString(key1))
+        assertNull(map2.getBoolean(key2))
+        assertNull(map2.getDouble(key2))
+        assertNull(map2.getInt(key2))
+        assertNull(map2.getString(key2))
+        assertEquals(valueBoolean, map2.getBoolean(key3))
+        assertEquals(valueDouble, map2.getDouble(key3))
+        assertEquals(valueInt, map2.getInt(key3))
+        assertEquals(valueString, map2.getString(key3))
     }
 
     /**
@@ -633,9 +1016,9 @@ class LWWMapTest {
         val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{},"causalContext":{"entries":[]}}}""")
         mapJson.put("key1", "value1", ts)
 
-        assertEquals("value1", mapJson.get("key1"))
-        assertNull(mapJson.get("key2"))
-        assertNull(mapJson.get("key3"))
+        assertEquals("value1", mapJson.getString("key1"))
+        assertNull(mapJson.getString("key2"))
+        assertNull(mapJson.getString("key3"))
     }
 
     /**
@@ -652,21 +1035,31 @@ class LWWMapTest {
         val ts3 = dc.getNewTimestamp()
         dc.updateStateTS(ts3)
         val ts4 = dc.getNewTimestamp()
+        dc.updateStateTS(ts4)
+        val ts5 = dc.getNewTimestamp()
+        dc.updateStateTS(ts5)
+        val ts6 = dc.getNewTimestamp()
         val key1 = "key1"
         val key2 = "key2"
         val key3 = "key3"
-        val value1 = "value1"
+        val key4 = "key4"
+        val key5 = "key5"
+        val value1 = 1
         val value2 = "value2"
         val value3 = "value3"
+        val value4 = true
+        val value5 = 3.14159
         val map = LWWMap()
 
         map.put(key1, value1, ts1)
         map.put(key2, value2, ts2)
-        map.delete(key2, ts3)
+        map.deleteString(key2, ts3)
         map.put(key3, value3, ts4)
+        map.put(key4, value4, ts5)
+        map.put(key5, value5, ts6)
         val mapJson = map.toJson()
 
-        assertEquals("""{"_type":"LWWMap","_metadata":{"entries":{"key1":{"uid":{"name":"dcid"},"cnt":1},"key2":{"uid":{"name":"dcid"},"cnt":3},"key3":{"uid":{"name":"dcid"},"cnt":4}},"causalContext":{"entries":[{"name":"dcid"},4]}},"key1":"value1","key2":null,"key3":"value3"}""", mapJson)
+        assertEquals("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"dcid"},"cnt":1},"key2%STRING":{"uid":{"name":"dcid"},"cnt":3},"key3%STRING":{"uid":{"name":"dcid"},"cnt":4},"key4%BOOLEAN":{"uid":{"name":"dcid"},"cnt":5},"key5%DOUBLE":{"uid":{"name":"dcid"},"cnt":6}},"causalContext":{"entries":[{"name":"dcid"},6]}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""", mapJson)
     }
 
     /**
@@ -674,10 +1067,12 @@ class LWWMapTest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{"key1":{"uid":{"name":"dcid"},"cnt":1},"key2":{"uid":{"name":"dcid"},"cnt":3},"key3":{"uid":{"name":"dcid"},"cnt":4}},"causalContext":{"entries":[{"name":"dcid"},4]}},"key1":"value1","key2":null,"key3":"value3"}""")
+        val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"dcid"},"cnt":1},"key2%STRING":{"uid":{"name":"dcid"},"cnt":3},"key3%STRING":{"uid":{"name":"dcid"},"cnt":4},"key4%BOOLEAN":{"uid":{"name":"dcid"},"cnt":5},"key5%DOUBLE":{"uid":{"name":"dcid"},"cnt":5}},"causalContext":{"entries":[{"name":"dcid"},6]}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""")
 
-        assertEquals("value1", mapJson.get("key1"))
-        assertNull(mapJson.get("key2"))
-        assertEquals("value3", mapJson.get("key3"))
+        assertEquals(1, mapJson.getInt("key1"))
+        assertNull(mapJson.getString("key2"))
+        assertEquals("value3", mapJson.getString("key3"))
+        assertEquals(true, mapJson.getBoolean("key4"))
+        assertEquals(3.14159, mapJson.getDouble("key5"))
     }
 }

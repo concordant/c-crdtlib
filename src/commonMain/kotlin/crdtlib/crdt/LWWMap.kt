@@ -39,7 +39,7 @@ import kotlinx.serialization.json.*
         },
         "causalContext": VersionVector.toJson()
     }
-    // $key and $value are strings
+    // $key is a string and $value can be Boolean, double, integer or string
     ( , "$key": "$value" )*
 * }
 */
@@ -70,44 +70,174 @@ class LWWMap : DeltaCRDT<LWWMap> {
     }
 
     /**
-    * Gets the value corresponding to a given key.
+    * Gets the Boolean value corresponding to a given key.
     * @param key the key that should be looked for.
-    * @return the value associated to the key, or null if the key is not present in the map or last
-    * operation is a delete.
+    * @return the Boolean value associated to the key, or null if the key is not present in the map
+    * or last operation is a delete.
     */
-    @Name("get")
-    fun get(key: String): String? {
-        return this.entries.get(key)?.first
+    @Name("getBoolean")
+    fun getBoolean(key: String): Boolean? {
+        return this.entries.get(key + BOOLEAN)?.first?.toBoolean()
     }
 
     /**
-    * Puts a key value pair into the map.
+    * Gets the Boolean value corresponding to a given key.
+    * @param key the key that should be looked for.
+    * @return the Boolean value associated to the key, or null if the key is not present in the map
+    * or last operation is a delete.
+    */
+    @Name("getDouble")
+    fun getDouble(key: String): Double? {
+        return this.entries.get(key + DOUBLE)?.first?.toDoubleOrNull()
+    }
+
+    /**
+    * Gets the integer value corresponding to a given key.
+    * @param key the key that should be looked for.
+    * @return the integer value associated to the key, or null if the key is not present in the map
+    * or last operation is a delete.
+    */
+    @Name("getInt")
+    fun getInt(key: String): Int? {
+        return this.entries.get(key + INTEGER)?.first?.toIntOrNull()
+    }
+
+    /**
+    * Gets the string value corresponding to a given key.
+    * @param key the key that should be looked for.
+    * @return the string value associated to the key, or null if the key is not present in the map
+    * or last operation is a delete.
+    */
+    @Name("getString")
+    fun getString(key: String): String? {
+        return this.entries.get(key + STRING)?.first
+    }
+
+    /**
+    * Puts a key / Boolean value pair into the map.
     * @param key the key that is targeted.
-    * @param value the value that should be assigned to the key.
+    * @param value the Boolean value that should be assigned to the key.
     * @param ts the timestamp of this operation.
     * @return the delta corresponding to this operation.
     */
-    @Name("set")
+    @Name("setBoolean")
+    fun put(key: String, value: Boolean?, ts: Timestamp): LWWMap {
+        val op = LWWMap()
+        val currentTs = this.entries.get(key + BOOLEAN)?.second
+        if (currentTs == null || currentTs < ts) {
+            this.entries.put(key + BOOLEAN, Pair(value?.toString(), ts))
+            op.entries.put(key + BOOLEAN, Pair(value?.toString(), ts))
+        }
+        this.causalContext.addTS(ts)
+        return op
+    }
+
+
+    /**
+    * Puts a key / double value pair into the map.
+    * @param key the key that is targeted.
+    * @param value the double value that should be assigned to the key.
+    * @param ts the timestamp of this operation.
+    * @return the delta corresponding to this operation.
+    */
+    @Name("setDouble")
+    fun put(key: String, value: Double?, ts: Timestamp): LWWMap {
+        val op = LWWMap()
+        val currentTs = this.entries.get(key + DOUBLE)?.second
+        if (currentTs == null || currentTs < ts) {
+            this.entries.put(key + DOUBLE, Pair(value?.toString(), ts))
+            op.entries.put(key + DOUBLE, Pair(value?.toString(), ts))
+        }
+        this.causalContext.addTS(ts)
+        return op
+    }
+
+
+    /**
+    * Puts a key / integer value pair into the map.
+    * @param key the key that is targeted.
+    * @param value the integer value that should be assigned to the key.
+    * @param ts the timestamp of this operation.
+    * @return the delta corresponding to this operation.
+    */
+    @Name("setInt")
+    fun put(key: String, value: Int?, ts: Timestamp): LWWMap {
+        val op = LWWMap()
+        val currentTs = this.entries.get(key + INTEGER)?.second
+        if (currentTs == null || currentTs < ts) {
+            this.entries.put(key + INTEGER, Pair(value?.toString(), ts))
+            op.entries.put(key + INTEGER, Pair(value?.toString(), ts))
+        }
+        this.causalContext.addTS(ts)
+        return op
+    }
+
+
+    /**
+    * Puts a key / string value pair into the map.
+    * @param key the key that is targeted.
+    * @param value the string value that should be assigned to the key.
+    * @param ts the timestamp of this operation.
+    * @return the delta corresponding to this operation.
+    */
+    @Name("setString")
     fun put(key: String, value: String?, ts: Timestamp): LWWMap {
         val op = LWWMap()
-        val currentTs = this.entries.get(key)?.second
+        val currentTs = this.entries.get(key + STRING)?.second
         if (currentTs == null || currentTs < ts) {
-            this.entries.put(key, Pair<String?, Timestamp>(value, ts))
-            op.entries.put(key, Pair<String?, Timestamp>(value, ts))
+            this.entries.put(key + STRING, Pair(value, ts))
+            op.entries.put(key + STRING, Pair(value, ts))
         }
         this.causalContext.addTS(ts)
         return op
     }
 
     /**
-    * Deletes a given key if it is present in the map and has not yet been deleted.
+    * Deletes a given key / Boolean value pair if it is present in the map and has not yet been
+    * deleted.
     * @param key the key that should be deleted.
     * @param ts the timestamp linked to this operation.
     * @return the delta corresponding to this operation.
     */
-    @Name("delete")
-    fun delete(key: String, ts: Timestamp): LWWMap {
-        return put(key, null, ts)
+    @Name("deleteBoolean")
+    fun deleteBoolean(key: String, ts: Timestamp): LWWMap {
+        return put(key, null as Boolean?, ts)
+    }
+
+    /**
+    * Deletes a given key / double value pair if it is present in the map and has not yet been
+    * deleted.
+    * @param key the key that should be deleted.
+    * @param ts the timestamp linked to this operation.
+    * @return the delta corresponding to this operation.
+    */
+    @Name("deleteDouble")
+    fun deleteDouble(key: String, ts: Timestamp): LWWMap {
+        return put(key, null as Double?, ts)
+    }
+
+    /**
+    * Deletes a given key / integer value pair if it is present in the map and has not yet been
+    * deleted.
+    * @param key the key that should be deleted.
+    * @param ts the timestamp linked to this operation.
+    * @return the delta corresponding to this operation.
+    */
+    @Name("deleteInt")
+    fun deleteInt(key: String, ts: Timestamp): LWWMap {
+        return put(key, null as Int?, ts)
+    }
+
+    /**
+    * Deletes a given key / string value pair if it is present in the map and has not yet been
+    * deleted.
+    * @param key the key that should be deleted.
+    * @param ts the timestamp linked to this operation.
+    * @return the delta corresponding to this operation.
+    */
+    @Name("deleteString")
+    fun deleteString(key: String, ts: Timestamp): LWWMap {
+        return put(key, null as String?, ts)
     }
 
     /**
@@ -121,7 +251,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
             val value = meta.first
             val ts = meta.second
             if (!vv.includesTS(ts)) {
-                delta.entries.put(key, Pair<String?, Timestamp>(value, ts))
+                delta.entries.put(key, Pair(value, ts))
             }
         }
         return delta
@@ -143,22 +273,10 @@ class LWWMap : DeltaCRDT<LWWMap> {
             val ts = meta.second
             val localTs = this.entries.get(key)?.second
             if (localTs == null || localTs < ts) {
-                this.entries.put(key, Pair<String?, Timestamp>(value, ts))
+                this.entries.put(key, Pair(value, ts))
             }
             this.causalContext.addTS(ts)
         }
-    }
-
-    /**
-    * Creates a string containing the state of the map.
-    * @return a string containing the state of the map.
-    */
-    override fun toString(): String {
-        var str = "LWWMap{\n"
-        for ((key, pair) in this.entries) {
-            str += "key:${key}, value:${pair.first}, ts:${pair.second}\n"
-        }
-        return str + "}\n"
     }
 
     /**
@@ -172,6 +290,31 @@ class LWWMap : DeltaCRDT<LWWMap> {
     }
 
     companion object {
+        /**
+        * Constant value for key fields' separator.
+        */
+        const val SEPARATOR = "%"
+
+        /**
+        * Constant prefix value for key associated to a value of type Boolean.
+        */
+        const val BOOLEAN = SEPARATOR + "BOOLEAN"
+
+        /**
+        * Constant prefix value for key associated to a value of type double.
+        */
+        const val DOUBLE = SEPARATOR + "DOUBLE"
+
+        /**
+        * Constant prefix value for key associated to a value of type integer.
+        */
+        const val INTEGER = SEPARATOR + "INTEGER"
+
+        /**
+        * Constant prefix value for key associated to a value of type string.
+        */
+        const val STRING = SEPARATOR + "STRING"
+
         /**
         * Deserializes a given json string in a crdt map.
         * @param json the given json string.
@@ -192,15 +335,23 @@ class JsonLWWMapSerializer(private val serializer: KSerializer<LWWMap>) :
         JsonTransformingSerializer<LWWMap>(serializer, "JsonLWWMapSerializer") {
 
     override fun writeTransform(element: JsonElement): JsonElement {
-        val value = mutableMapOf<String, JsonElement>()
+        val values = mutableMapOf<String, JsonElement>()
         val entries = mutableMapOf<String, JsonElement>()
         val causalContext = element.jsonObject.getObject("causalContext")
         for ((key, entry) in element.jsonObject.getObject("entries")) {
-            value.put(key, entry.jsonObject.getPrimitive("first"))
+            var value = entry.jsonObject.getPrimitive("first")
+            if (key.endsWith(LWWMap.BOOLEAN)) {
+                value = JsonPrimitive(value.booleanOrNull)
+            } else if (key.endsWith(LWWMap.DOUBLE)) {
+                value = JsonPrimitive(value.doubleOrNull)
+            } else if (key.endsWith(LWWMap.INTEGER)) {
+                value = JsonPrimitive(value.intOrNull)
+            }
+            values.put(key, value as JsonElement)
             entries.put(key, entry.jsonObject.getObject("second"))
         }
         val metadata = JsonObject(mapOf("entries" to JsonObject(entries.toMap()), "causalContext" to causalContext))
-        return JsonObject(mapOf("_type" to JsonPrimitive("LWWMap"), "_metadata" to metadata).plus(value))
+        return JsonObject(mapOf("_type" to JsonPrimitive("LWWMap"), "_metadata" to metadata).plus(values))
     }
 
     override fun readTransform(element: JsonElement): JsonElement {
@@ -208,7 +359,11 @@ class JsonLWWMapSerializer(private val serializer: KSerializer<LWWMap>) :
         val causalContext = metadata.getObject("causalContext")
         val entries = mutableMapOf<String, JsonElement>()
         for ((key, entry) in metadata.getObject("entries")) {
-            val tmpEntry = JsonObject(mapOf("first" to element.jsonObject.getPrimitive(key), "second" to entry))
+            var value = element.jsonObject.getPrimitive(key)
+            if (value !is JsonNull && !key.endsWith(LWWMap.STRING)) {
+                value = JsonPrimitive(value.toString())
+            }
+            val tmpEntry = JsonObject(mapOf("first" to value as JsonElement, "second" to entry))
             entries.put(key, tmpEntry)
         }
         return JsonObject(mapOf("entries" to JsonObject(entries), "causalContext" to causalContext))
