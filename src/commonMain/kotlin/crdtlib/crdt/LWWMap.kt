@@ -36,8 +36,7 @@ import kotlinx.serialization.json.*
         "entries": {
             // $key is a string
             (( "$key": Timestamp.toJson(), )*( "$key": Timestamp.toJson() ))?
-        },
-        "causalContext": VersionVector.toJson()
+        }
     }
     // $key is a string and $value can be Boolean, double, integer or string
     ( , "$key": "$value" )*
@@ -52,21 +51,9 @@ class LWWMap : DeltaCRDT<LWWMap> {
     private val entries: MutableMap<String, Pair<String?, Timestamp>> = mutableMapOf()
 
     /**
-    * A causal context summarizing executed operations.
-    */
-    private var causalContext: VersionVector = VersionVector()
-
-    /**
     * Default constructor.
     */
     constructor() {
-    }
-
-    /**
-    * Constructor initializing the causal context.
-    */
-    constructor(cc: VersionVector) {
-        this.causalContext = cc
     }
 
     /**
@@ -128,7 +115,6 @@ class LWWMap : DeltaCRDT<LWWMap> {
             this.entries.put(key + BOOLEAN, Pair(value?.toString(), ts))
             op.entries.put(key + BOOLEAN, Pair(value?.toString(), ts))
         }
-        this.causalContext.addTS(ts)
         return op
     }
 
@@ -148,7 +134,6 @@ class LWWMap : DeltaCRDT<LWWMap> {
             this.entries.put(key + DOUBLE, Pair(value?.toString(), ts))
             op.entries.put(key + DOUBLE, Pair(value?.toString(), ts))
         }
-        this.causalContext.addTS(ts)
         return op
     }
 
@@ -168,7 +153,6 @@ class LWWMap : DeltaCRDT<LWWMap> {
             this.entries.put(key + INTEGER, Pair(value?.toString(), ts))
             op.entries.put(key + INTEGER, Pair(value?.toString(), ts))
         }
-        this.causalContext.addTS(ts)
         return op
     }
 
@@ -188,7 +172,6 @@ class LWWMap : DeltaCRDT<LWWMap> {
             this.entries.put(key + STRING, Pair(value, ts))
             op.entries.put(key + STRING, Pair(value, ts))
         }
-        this.causalContext.addTS(ts)
         return op
     }
 
@@ -275,7 +258,6 @@ class LWWMap : DeltaCRDT<LWWMap> {
             if (localTs == null || localTs < ts) {
                 this.entries.put(key, Pair(value, ts))
             }
-            this.causalContext.addTS(ts)
         }
     }
 
@@ -337,7 +319,6 @@ class JsonLWWMapSerializer(private val serializer: KSerializer<LWWMap>) :
     override fun writeTransform(element: JsonElement): JsonElement {
         val values = mutableMapOf<String, JsonElement>()
         val entries = mutableMapOf<String, JsonElement>()
-        val causalContext = element.jsonObject.getObject("causalContext")
         for ((key, entry) in element.jsonObject.getObject("entries")) {
             var value = entry.jsonObject.getPrimitive("first")
             if (key.endsWith(LWWMap.BOOLEAN)) {
@@ -350,13 +331,12 @@ class JsonLWWMapSerializer(private val serializer: KSerializer<LWWMap>) :
             values.put(key, value as JsonElement)
             entries.put(key, entry.jsonObject.getObject("second"))
         }
-        val metadata = JsonObject(mapOf("entries" to JsonObject(entries.toMap()), "causalContext" to causalContext))
+        val metadata = JsonObject(mapOf("entries" to JsonObject(entries.toMap())))
         return JsonObject(mapOf("_type" to JsonPrimitive("LWWMap"), "_metadata" to metadata).plus(values))
     }
 
     override fun readTransform(element: JsonElement): JsonElement {
         val metadata = element.jsonObject.getObject("_metadata")
-        val causalContext = metadata.getObject("causalContext")
         val entries = mutableMapOf<String, JsonElement>()
         for ((key, entry) in metadata.getObject("entries")) {
             var value = element.jsonObject.getPrimitive(key)
@@ -366,6 +346,6 @@ class JsonLWWMapSerializer(private val serializer: KSerializer<LWWMap>) :
             val tmpEntry = JsonObject(mapOf("first" to value as JsonElement, "second" to entry))
             entries.put(key, tmpEntry)
         }
-        return JsonObject(mapOf("entries" to JsonObject(entries), "causalContext" to causalContext))
+        return JsonObject(mapOf("entries" to JsonObject(entries)))
     }
 }

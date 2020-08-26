@@ -19,7 +19,6 @@
 
 package crdtlib.test
 
-import crdtlib.crdt.Delta
 import crdtlib.crdt.LWWMap
 import crdtlib.utils.DCUId
 import crdtlib.utils.SimpleEnvironment
@@ -1001,7 +1000,7 @@ class LWWMapTest {
 
         val mapJson = map.toJson()
 
-        assertEquals("""{"_type":"LWWMap","_metadata":{"entries":{},"causalContext":{"entries":[]}}}""", mapJson)
+        assertEquals("""{"_type":"LWWMap","_metadata":{"entries":{}}}""", mapJson)
     }
 
     /**
@@ -1013,7 +1012,7 @@ class LWWMapTest {
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
 
-        val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{},"causalContext":{"entries":[]}}}""")
+        val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{}}}""")
         mapJson.put("key1", "value1", ts)
 
         assertEquals("value1", mapJson.getString("key1"))
@@ -1059,7 +1058,7 @@ class LWWMapTest {
         map.put(key5, value5, ts6)
         val mapJson = map.toJson()
 
-        assertEquals("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"dcid"},"cnt":1},"key2%STRING":{"uid":{"name":"dcid"},"cnt":3},"key3%STRING":{"uid":{"name":"dcid"},"cnt":4},"key4%BOOLEAN":{"uid":{"name":"dcid"},"cnt":5},"key5%DOUBLE":{"uid":{"name":"dcid"},"cnt":6}},"causalContext":{"entries":[{"name":"dcid"},6]}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""", mapJson)
+        assertEquals("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"dcid"},"cnt":1},"key2%STRING":{"uid":{"name":"dcid"},"cnt":3},"key3%STRING":{"uid":{"name":"dcid"},"cnt":4},"key4%BOOLEAN":{"uid":{"name":"dcid"},"cnt":5},"key5%DOUBLE":{"uid":{"name":"dcid"},"cnt":6}}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""", mapJson)
     }
 
     /**
@@ -1067,7 +1066,7 @@ class LWWMapTest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"dcid"},"cnt":1},"key2%STRING":{"uid":{"name":"dcid"},"cnt":3},"key3%STRING":{"uid":{"name":"dcid"},"cnt":4},"key4%BOOLEAN":{"uid":{"name":"dcid"},"cnt":5},"key5%DOUBLE":{"uid":{"name":"dcid"},"cnt":5}},"causalContext":{"entries":[{"name":"dcid"},6]}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""")
+        val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"dcid"},"cnt":1},"key2%STRING":{"uid":{"name":"dcid"},"cnt":3},"key3%STRING":{"uid":{"name":"dcid"},"cnt":4},"key4%BOOLEAN":{"uid":{"name":"dcid"},"cnt":5},"key5%DOUBLE":{"uid":{"name":"dcid"},"cnt":5}}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""")
 
         assertEquals(1, mapJson.getInt("key1"))
         assertNull(mapJson.getString("key2"))
