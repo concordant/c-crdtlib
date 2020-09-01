@@ -467,10 +467,10 @@ class MVMapTest {
         map1.deleteString(key, ts12)
         map2.merge(map1)
 
-        assertEquals(setOf(valBoolean2), map2.getBoolean(key))
-        assertEquals(setOf(valDouble2), map2.getDouble(key))
-        assertEquals(setOf(valInt2), map2.getInt(key))
-        assertEquals(setOf(valString2), map2.getString(key))
+        assertEquals(setOf(valBoolean2, null), map2.getBoolean(key))
+        assertEquals(setOf(valDouble2, null), map2.getDouble(key))
+        assertEquals(setOf(valInt2, null), map2.getInt(key))
+        assertEquals(setOf(valString2, null), map2.getString(key))
     }
 
     /**
@@ -533,10 +533,10 @@ class MVMapTest {
         map1.deleteString(key, ts12)
         map2.merge(map1)
 
-        assertEquals(setOf(valBoolean2), map2.getBoolean(key))
-        assertEquals(setOf(valDouble2), map2.getDouble(key))
-        assertEquals(setOf(valInt2), map2.getInt(key))
-        assertEquals(setOf(valString2), map2.getString(key))
+        assertEquals(setOf(valBoolean2, null), map2.getBoolean(key))
+        assertEquals(setOf(valDouble2, null), map2.getDouble(key))
+        assertEquals(setOf(valInt2, null), map2.getInt(key))
+        assertEquals(setOf(valString2, null), map2.getString(key))
     }
 
     /*
@@ -605,10 +605,10 @@ class MVMapTest {
         map2.put(key, valString2, ts16)
         map2.merge(map1)
 
-        assertEquals(setOf(valBoolean2), map2.getBoolean(key))
-        assertEquals(setOf(valDouble2), map2.getDouble(key))
-        assertEquals(setOf(valInt2), map2.getInt(key))
-        assertEquals(setOf(valString2), map2.getString(key))
+        assertEquals(setOf(valBoolean2, null), map2.getBoolean(key))
+        assertEquals(setOf(valDouble2, null), map2.getDouble(key))
+        assertEquals(setOf(valInt2, null), map2.getInt(key))
+        assertEquals(setOf(valString2, null), map2.getString(key))
     }
 
     /*
@@ -679,10 +679,10 @@ class MVMapTest {
         map1.deleteString(key, ts15)
         map2.merge(map1)
 
-        assertEquals(setOf(valBoolean2), map2.getBoolean(key))
-        assertEquals(setOf(valDouble2), map2.getDouble(key))
-        assertEquals(setOf(valInt2), map2.getInt(key))
-        assertEquals(setOf(valString2), map2.getString(key))
+        assertEquals(setOf(valBoolean2, null), map2.getBoolean(key))
+        assertEquals(setOf(valDouble2, null), map2.getDouble(key))
+        assertEquals(setOf(valInt2, null), map2.getInt(key))
+        assertEquals(setOf(valString2, null), map2.getString(key))
     }
 
     /*
@@ -746,10 +746,10 @@ class MVMapTest {
         map3.deleteString(key, ts12)
         map3.merge(map2)
 
-        assertEquals(setOf(valBoolean2), map3.getBoolean(key))
-        assertEquals(setOf(valDouble2), map3.getDouble(key))
-        assertEquals(setOf(valInt2), map3.getInt(key))
-        assertEquals(setOf(valString2), map3.getString(key))
+        assertEquals(setOf(valBoolean2, null), map3.getBoolean(key))
+        assertEquals(setOf(valDouble2, null), map3.getDouble(key))
+        assertEquals(setOf(valInt2, null), map3.getInt(key))
+        assertEquals(setOf(valString2, null), map3.getString(key))
     }
 
     /*

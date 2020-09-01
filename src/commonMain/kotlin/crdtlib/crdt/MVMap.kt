@@ -74,73 +74,53 @@ class MVMap : DeltaCRDT<MVMap> {
     /**
     * Gets the set of Boolean values corresponding to a given key.
     * @param key the key that should be looked for.
-    * @return the Boolean value associated to the key, or null if the key is not present in the map
-    * or last operation is a delete.
+    * @return the set of Boolean values associated to the key, or null if the key is not present in
+    * the map or last operation is a delete.
     */
     @Name("getBoolean")
-    fun getBoolean(key: String): Set<Boolean>? {
-        val setOfValues = mutableSetOf<Boolean>()
-        val tmpEntries = this.entries.get(key + BOOLEAN)
-        if (tmpEntries == null) return null
-        for ((value, _) in tmpEntries) {
-            if (value != null) setOfValues.add(value.toBoolean())
-        }
-        if (setOfValues == mutableSetOf<Boolean>()) return null
-        return setOfValues.toSet()
+    fun getBoolean(key: String): Set<Boolean?>? {
+        val setOfValues = this.entries.get(key + BOOLEAN)?.map { it.first?.toBoolean() }?.toSet()
+        if (setOfValues == mutableSetOf(null)) return null
+        return setOfValues
     }
 
     /**
     * Gets the set of double values corresponding to a given key.
     * @param key the key that should be looked for.
-    * @return the Boolean value associated to the key, or null if the key is not present in the map
-    * or last operation is a delete.
+    * @return the set of double values associated to the key, or null if the key is not present in
+    * the map or last operation is a delete.
     */
     @Name("getDouble")
-    fun getDouble(key: String): Set<Double>? {
-        val setOfValues = mutableSetOf<Double>()
-        val tmpEntries = this.entries.get(key + DOUBLE)
-        if (tmpEntries == null) return null
-        for ((value, _) in tmpEntries) {
-            if (value != null) setOfValues.add(value.toDouble())
-        }
-        if (setOfValues == mutableSetOf<Double>()) return null
-        return setOfValues.toSet()
+    fun getDouble(key: String): Set<Double?>? {
+        val setOfValues = this.entries.get(key + DOUBLE)?.map { it.first?.toDouble() }?.toSet()
+        if (setOfValues == mutableSetOf(null)) return null
+        return setOfValues
     }
 
     /**
     * Gets the set of integer values corresponding to a given key.
     * @param key the key that should be looked for.
-    * @return the integer value associated to the key, or null if the key is not present in the map
-    * or last operation is a delete.
+    * @return the set of integer values associated to the key, or null if the key is not present in
+    * the map or last operation is a delete.
     */
     @Name("getInt")
-    fun getInt(key: String): Set<Int>? {
-        val setOfValues = mutableSetOf<Int>()
-        val tmpEntries = this.entries.get(key + INTEGER)
-        if (tmpEntries == null) return null
-        for ((value, _) in tmpEntries) {
-            if (value != null) setOfValues.add(value.toInt())
-        }
-        if (setOfValues == mutableSetOf<Int>()) return null
-        return setOfValues.toSet()
+    fun getInt(key: String): Set<Int?>? {
+        val setOfValues = this.entries.get(key + INTEGER)?.map { it.first?.toInt() }?.toSet()
+        if (setOfValues == mutableSetOf(null)) return null
+        return setOfValues
     }
 
     /**
     * Gets the set of string of values corresponding to a given key.
     * @param key the key that should be looked for.
-    * @return the string value associated to the key, or null if the key is not present in the map
-    * or last operation is a delete.
+    * @return the set of string values associated to the key, or null if the key is not present in
+    * the map or last operation is a delete.
     */
     @Name("getString")
-    fun getString(key: String): Set<String>? {
-        val setOfValues = mutableSetOf<String>()
-        val tmpEntries = this.entries.get(key + STRING)
-        if (tmpEntries == null) return null
-        for ((value, _) in tmpEntries) {
-            if (value != null) setOfValues.add(value)
-        }
-        if (setOfValues == mutableSetOf<String>()) return null
-        return setOfValues.toSet()
+    fun getString(key: String): Set<String?>? {
+        val setOfValues = this.entries.get(key + STRING)?.map { it.first }?.toSet()
+        if (setOfValues == mutableSetOf(null)) return null
+        return setOfValues
     }
 
     /**
