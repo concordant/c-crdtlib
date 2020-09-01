@@ -173,7 +173,6 @@ class LWWRegisterTest {
     * This test evaluates the generation of delta plus its merging into another replica.
     * Call to get should return the values set in the second replica.
     */
-
     @Test
     fun generateDelta() {
         val uid1 = DCUId("dcid1")
