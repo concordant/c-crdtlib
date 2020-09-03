@@ -339,22 +339,22 @@ class MVMap : DeltaCRDT<MVMap> {
         const val SEPARATOR = "%"
 
         /**
-        * Constant prefix value for key associated to a value of type Boolean.
+        * Constant suffix value for key associated to a value of type Boolean.
         */
         const val BOOLEAN = SEPARATOR + "BOOLEAN"
 
         /**
-        * Constant prefix value for key associated to a value of type double.
+        * Constant suffix value for key associated to a value of type double.
         */
         const val DOUBLE = SEPARATOR + "DOUBLE"
 
         /**
-        * Constant prefix value for key associated to a value of type integer.
+        * Constant suffix value for key associated to a value of type integer.
         */
         const val INTEGER = SEPARATOR + "INTEGER"
 
         /**
-        * Constant prefix value for key associated to a value of type string.
+        * Constant suffix value for key associated to a value of type string.
         */
         const val STRING = SEPARATOR + "STRING"
 
