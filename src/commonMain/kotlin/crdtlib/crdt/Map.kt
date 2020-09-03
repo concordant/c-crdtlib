@@ -33,12 +33,22 @@ import kotlinx.serialization.json.*
 * {
     "_type": "Map",
     "_metadata": {
-        "entries": {
+        "lwwMap": {
             // $key is a string
-            (( "$key": Timestamp.toJson(), )*( "$key": Timestamp.toJson() ))?
+            ( "$key": Timestamp.toJson() )*( , "$key": Timestamp.toJson() )?
+        },
+        "mvMap": {
+            "entries": {
+                // $key is a string
+                (( "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] )*( , "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] ))?
+            },
+            "causalContext": VersionVector.toJson()
+        },
+        "cntMap": {
+            ( "$key": PNCounter.toJson() )*( , "$key": PNCounter.toJson() )?
         }
     }
-    // $key is a string and $value can be Boolean, double, integer or string
+    // $key is a string and $value can be Boolean, double, integer, string or array
     ( , "$key": "$value" )*
 * }
 */
@@ -417,8 +427,15 @@ class Map : DeltaCRDT<Map> {
     */
     override fun generateDeltaProtected(vv: VersionVector): Delta<Map> {
         var delta = Map()
+
         delta.lwwMap.merge(this.lwwMap.generateDelta(vv))
         delta.mvMap.merge(this.mvMap.generateDelta(vv))
+
+        for ((key, cnt) in this.cntMap) {
+            val deltaCnt = PNCounter()
+            deltaCnt.merge(cnt.generateDelta(vv))
+            delta.cntMap.put(key, deltaCnt)
+        }
         return delta
     }
 
@@ -435,6 +452,13 @@ class Map : DeltaCRDT<Map> {
 
         this.lwwMap.merge(delta.lwwMap)
         this.mvMap.merge(delta.mvMap)
+
+        for ((key, cnt) in delta.cntMap) {
+            var localCnt = this.cntMap.get(key)
+            if (localCnt == null) localCnt = PNCounter()
+            localCnt.merge(cnt)
+            this.cntMap.put(key, localCnt)
+        }
     }
 
     /**
@@ -448,6 +472,26 @@ class Map : DeltaCRDT<Map> {
     }
 
     companion object {
+        /**
+        * Constant value for key fields' separator.
+        */
+        const val SEPARATOR = "%"
+
+        /**
+        * Constant suffix value for key associated to a last writer wins value.
+        */
+        const val LWWREGISTER = SEPARATOR + "LWW"
+
+        /**
+        * Constant suffix value for key associated to a multi-value.
+        */
+        const val MVREGISTER = SEPARATOR + "MV"
+
+        /**
+        * Constant suffix value for key associated to a counter value.
+        */
+        const val PNCOUNTER = SEPARATOR + "CNT"
+
         /**
         * Deserializes a given json string in a crdt map.
         * @param json the given json string.
@@ -468,10 +512,95 @@ class JsonMapSerializer(private val serializer: KSerializer<Map>) :
         JsonTransformingSerializer<Map>(serializer, "JsonMapSerializer") {
 
     override fun writeTransform(element: JsonElement): JsonElement {
-        return element
+        val values = mutableMapOf<String, JsonElement>()
+
+        val lww = element.jsonObject.getObject("lwwMap")
+        val lwwEntries = mutableMapOf<String, JsonElement>()
+        for ((key, entry) in lww.getObject("entries")) {
+            var value = entry.jsonObject.getPrimitive("first")
+            if (key.endsWith(LWWMap.BOOLEAN)) {
+                value = JsonPrimitive(value.booleanOrNull)
+            } else if (key.endsWith(LWWMap.DOUBLE)) {
+                value = JsonPrimitive(value.doubleOrNull)
+            } else if (key.endsWith(LWWMap.INTEGER)) {
+                value = JsonPrimitive(value.intOrNull)
+            }
+            values.put(key + Map.LWWREGISTER, value as JsonElement)
+            lwwEntries.put(key, entry.jsonObject.getObject("second"))
+        }
+        val lwwMetadata = JsonObject(mapOf("entries" to JsonObject(lwwEntries.toMap())))
+
+        val mv = element.jsonObject.getObject("mvMap")
+        val mvEntries = mutableMapOf<String, JsonElement>()
+        val causalContext = mv.getObject("causalContext")
+        for ((key, entry) in mv.getObject("entries")) {
+            val value = mutableListOf<JsonElement>()
+            val meta = mutableListOf<JsonElement>()
+            for (tmpPair in entry.jsonArray) {
+                if (key.endsWith(MVMap.BOOLEAN)) {
+                    value.add(JsonPrimitive(tmpPair.jsonObject.getPrimitive("first").booleanOrNull) as JsonElement)
+                } else if (key.endsWith(MVMap.DOUBLE)) {
+                    value.add(JsonPrimitive(tmpPair.jsonObject.getPrimitive("first").doubleOrNull) as JsonElement)
+                } else if (key.endsWith(MVMap.INTEGER)) {
+                    value.add(JsonPrimitive(tmpPair.jsonObject.getPrimitive("first").intOrNull) as JsonElement)
+                } else {
+                  value.add(tmpPair.jsonObject.get("first") as JsonElement)
+                }
+                meta.add(tmpPair.jsonObject.getObject("second"))
+            }
+            values.put(key + Map.MVREGISTER, JsonArray(value))
+            mvEntries.put(key, JsonArray(meta))
+        }
+        val mvMetadata = JsonObject(mapOf("entries" to JsonObject(mvEntries.toMap()), "causalContext" to causalContext))
+
+        val cnt = element.jsonObject.getObject("cntMap")
+        val cntMetadata = mutableMapOf<String, JsonElement>()
+        for ((key, meta) in cnt) {
+            val incValue = meta.jsonObject.getArray("increment").filter { it.jsonObject.containsKey("first") }.sumBy{ it.jsonObject.getPrimitive("first").int }
+            val decValue = meta.jsonObject.getArray("decrement").filter { it.jsonObject.containsKey("first") }.sumBy{ it.jsonObject.getPrimitive("first").int }
+            cntMetadata.put(key, meta)
+            values.put(key + Map.PNCOUNTER, JsonPrimitive(incValue - decValue))
+        }
+
+        val metadata = JsonObject(mapOf("lwwMap" to lwwMetadata, "mvMap" to mvMetadata, "cntMap" to JsonObject(cntMetadata)))
+        return JsonObject(mapOf("_type" to JsonPrimitive("Map"), "_metadata" to metadata).plus(values))
     }
 
     override fun readTransform(element: JsonElement): JsonElement {
-        return element
+        val metadata = element.jsonObject.getObject("_metadata")
+
+        val lwwMetadata = metadata.getObject("lwwMap")
+        val lwwEntries = mutableMapOf<String, JsonElement>()
+        for ((key, entry) in lwwMetadata.getObject("entries")) {
+            var value = element.jsonObject.getPrimitive(key + Map.LWWREGISTER)
+            if (value !is JsonNull && !key.endsWith(LWWMap.STRING)) {
+                value = JsonPrimitive(value.toString())
+            }
+            val tmpEntry = JsonObject(mapOf("first" to value as JsonElement, "second" to entry))
+            lwwEntries.put(key, tmpEntry)
+        }
+        val lww = JsonObject(mapOf("entries" to JsonObject(lwwEntries)))
+
+        val mvMetadata = metadata.getObject("mvMap")
+        val causalContext = mvMetadata.getObject("causalContext")
+        val mvEntries = mutableMapOf<String, JsonElement>()
+        for ((key, meta) in mvMetadata.getObject("entries")) {
+            val values = element.jsonObject.getArray(key + Map.MVREGISTER)
+            val tmpEntries = mutableListOf<JsonElement>()
+            var idx = 0
+            for (ts in meta.jsonArray) {
+                var value = values[idx]
+                if (value !is JsonNull && !key.endsWith(MVMap.STRING)) {
+                    value = JsonPrimitive(value.toString())
+                }
+                val tmpEntry = JsonObject(mapOf("first" to value, "second" to ts))
+                tmpEntries.add(tmpEntry)
+                idx++
+            }
+            mvEntries.put(key, JsonArray(tmpEntries))
+        }
+        val mv = JsonObject(mapOf("entries" to JsonObject(mvEntries), "causalContext" to causalContext))
+
+        return JsonObject(mapOf("lwwMap" to lww, "mvMap" to mv, "cntMap" to metadata.getObject("cntMap")))
     }
 }
