@@ -25,6 +25,7 @@ import crdtlib.utils.Timestamp
 import crdtlib.utils.VersionVector
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -94,6 +95,39 @@ class SimpleEnvironmentTest {
         val ts = dc.getNewTimestamp()
 
         assertEquals(Timestamp(uid1, 5), ts)
+    }
+
+    /**
+    * This test evaluates that after updating the environment with a local timestamp having a
+    * MAX_VALUE counter, the next generation of timestamp throws an exception.
+    **/
+    @Test
+    fun updateTSLocalIdGenerateTSOverflow() {
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
+
+        dc.updateStateTS(Timestamp(uid, Int.MAX_VALUE))
+
+        assertFailsWith(RuntimeException::class) {
+            dc.getNewTimestamp()
+        }
+    }
+
+    /**
+    * This test evaluates that after updating the environment with a foreign timestamp having a
+    * MAX_VALUE counter, the next generation of timestamp throws an exception.
+    **/
+    @Test
+    fun updateTSForeignIdGenerateTSOverflow() {
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc = SimpleEnvironment(uid1)
+
+        dc.updateStateTS(Timestamp(uid2, Int.MAX_VALUE))
+
+        assertFailsWith(RuntimeException::class) {
+            dc.getNewTimestamp()
+        }
     }
 
     /**

@@ -41,8 +41,11 @@ class SimpleEnvironment(private val uid: DCUId) : Environment() {
     * @return the generated timestamp.
     */
     override fun getNewTimestampProtected(): Timestamp {
-        lastTs = curState.maxVal() + 1
-        return Timestamp(uid, lastTs)
+        lastTs = curState.maxVal()
+        if (lastTs == Int.MAX_VALUE) {
+            throw RuntimeException("Timestamp counter has reached Int.MAX_VALUE")
+        }
+        return Timestamp(uid, lastTs + 1)
     }
 
     /**
