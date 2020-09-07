@@ -96,6 +96,9 @@ class PNCounter : DeltaCRDT<PNCounter> {
         if (amount < 0) return this.decrement(-amount, ts)
 
         val count = this.increment.get(ts.uid)?.first ?: 0
+        if (Int.MAX_VALUE - count < amount - 1) {
+            throw RuntimeException("PNCounter has reached Int.MAX_VALUE")
+        }
         this.increment.put(ts.uid, Pair(count + amount, ts))
         op.increment.put(ts.uid, Pair(count + amount, ts))
         return op
@@ -113,6 +116,9 @@ class PNCounter : DeltaCRDT<PNCounter> {
         if (amount < 0) return this.increment(-amount, ts)
       
         val count = this.decrement.get(ts.uid)?.first ?: 0
+        if (Int.MAX_VALUE - count < amount - 1) {
+            throw RuntimeException("PNCounter has reached Int.MAX_VALUE")
+        }
         this.decrement.put(ts.uid, Pair(count + amount, ts))
         op.decrement.put(ts.uid, Pair(count + amount, ts))
         return op
