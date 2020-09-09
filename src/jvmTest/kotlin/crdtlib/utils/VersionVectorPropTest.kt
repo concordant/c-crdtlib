@@ -25,8 +25,9 @@ import io.kotest.property.forAll
 class VersionVectorPropTest: StringSpec({
     "deserialize is inverse to serialize" {
         forAll(versionVectorArb) { vv ->
-            vv.isSmallerOrEquals(VersionVector.fromJson(VersionVector(vv).toJson()))
-            VersionVector.fromJson(VersionVector(vv).toJson()).isSmallerOrEquals(vv)
+            val vv2 = VersionVector.fromJson(VersionVector(vv).toJson())
+            vv.isSmallerOrEquals(vv2)
+            vv2.isSmallerOrEquals(vv)
         }
     }
     "copy generates equal version vector" {
