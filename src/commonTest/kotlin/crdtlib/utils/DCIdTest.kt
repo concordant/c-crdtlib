@@ -19,25 +19,25 @@
 
 package crdtlib.test
 
-import crdtlib.utils.DCId
+import crdtlib.utils.DCUId
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
-* Represents a test suite for DCId.
+* Represents a test suite for DCUId.
 **/
-class DCIdTest {
+class DCUIdTest {
 
     /**
-    * This test evaluates the comparison of a smaller DCId and a greater one.
+    * This test evaluates the comparison of a smaller DCUId and a greater one.
     * Call to compareTo should return negative value.
     */
     @Test
     fun negativeCompareTo() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
+        val dc1 = DCUId("dcid1")
+        val dc2 = DCUId("dcid2")
 
         val cmp = dc1.compareTo(dc2)
 
@@ -45,13 +45,13 @@ class DCIdTest {
     }
 
     /**
-    * This test evaluates the comparison of a greater DCId and a smaller one.
+    * This test evaluates the comparison of a greater DCUId and a smaller one.
     * Call to compareTo should return positive value.
     */
     @Test
     fun positiveCompareTo() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
+        val dc1 = DCUId("dcid1")
+        val dc2 = DCUId("dcid2")
 
         val cmp = dc2.compareTo(dc1)
 
@@ -59,13 +59,13 @@ class DCIdTest {
     }
 
     /**
-    * This test evaluates the comparison of two equal DCIds.
+    * This test evaluates the comparison of two equal DCUIds.
     * Call to compareTo should return 0.
     */
     @Test
     fun zeroCompareTo() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid1")
+        val dc1 = DCUId("dcid1")
+        val dc2 = DCUId("dcid1")
 
         val cmp = dc1.compareTo(dc2)
 
@@ -73,12 +73,12 @@ class DCIdTest {
     }
 
     /**
-    * This test evaluates the comparison (using operators) of a smaller DCId and a greater one.
+    * This test evaluates the comparison (using operators) of a smaller DCUId and a greater one.
     */
     @Test
     fun negativeCompareToOperator() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
+        val dc1 = DCUId("dcid1")
+        val dc2 = DCUId("dcid2")
 
         assertTrue(dc1 < dc2)
         assertTrue(dc1 <= dc2)
@@ -88,12 +88,12 @@ class DCIdTest {
     }
 
     /**
-    * This test evaluates the comparison (using operators) of a greater DCId and a smaller one.
+    * This test evaluates the comparison (using operators) of a greater DCUId and a smaller one.
     */
     @Test
     fun positiveCompareToOperator() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
+        val dc1 = DCUId("dcid1")
+        val dc2 = DCUId("dcid2")
 
         assertFalse(dc2 < dc1)
         assertFalse(dc2 <= dc1)
@@ -103,12 +103,12 @@ class DCIdTest {
     }
 
     /**
-    * This test evaluates the comparison (using operators) of two equal DCIds.
+    * This test evaluates the comparison (using operators) of two equal DCUIds.
     */
     @Test
     fun zeroCompareToOperator() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid1")
+        val dc1 = DCUId("dcid1")
+        val dc2 = DCUId("dcid1")
 
         assertFalse(dc1 < dc2)
         assertTrue(dc1 <= dc2)
@@ -122,7 +122,7 @@ class DCIdTest {
     **/
     @Test
     fun toJsonSerialization() {
-        val dc = DCId("dcid1")
+        val dc = DCUId("dcid1")
 
         val dcJson = dc.toJson()
 
@@ -134,9 +134,9 @@ class DCIdTest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val dc = DCId("dcid1")
+        val dc = DCUId("dcid1")
 
-        val dcJson = DCId.fromJson("""{"name":"dcid1"}""")
+        val dcJson = DCUId.fromJson("""{"name":"dcid1"}""")
 
         assertTrue(dc == dcJson)
     }

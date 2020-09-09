@@ -23,15 +23,15 @@ import kotlinx.serialization.*
 
 /**
 * This class represents a timestamp.
-* @property id the datacenter id.
+* @property uid the datacenter unique id.
 * @property cnt the value associated to the timestamp.
 **/
 @Serializable
-data class Timestamp(val id: DCId, val cnt: Int) {
+data class Timestamp(val uid: DCUId, val cnt: Int) {
 
     /**
     * Compares this timestamp to a given other timestamp.
-    * First comparison is made on their values and if equal on their datacenter ids.
+    * First comparison is made on their values and if equal on their datacenter unique ids.
     * @param other the other instance of timestamp.
     * @return the results of the comparison between the two timestamp.
     **/
@@ -39,7 +39,7 @@ data class Timestamp(val id: DCId, val cnt: Int) {
     operator fun compareTo(other: Timestamp): Int {
         if(this.cnt != other.cnt)
             return this.cnt - other.cnt
-        return this.id.compareTo(other.id)
+        return this.uid.compareTo(other.uid)
     }
 
     /**

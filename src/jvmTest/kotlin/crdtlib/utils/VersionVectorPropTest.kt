@@ -20,8 +20,6 @@
 package crdtlib.utils
 
 import io.kotest.core.spec.style.StringSpec
-import io.kotest.property.Arb
-import io.kotest.property.arbitrary.*
 import io.kotest.property.forAll
 
 class VersionVectorPropTest: StringSpec({
@@ -34,16 +32,14 @@ class VersionVectorPropTest: StringSpec({
     "copy generates equal version vector" {
         forAll(versionVectorArb) { vv1 ->
             val vv2 = vv1.copy()
-            vv2.isSmallerOrEquals(vv1)
-            vv1.isSmallerOrEquals(vv2)
+            vv2.isSmallerOrEquals(vv1) && vv1.isSmallerOrEquals(vv2)
         }
     }
     "merge is idempotent" {
         forAll(versionVectorArb) { vv1 ->
             val vv2 = vv1.copy()
             vv2.pointWiseMax(vv1)
-            vv2.isSmallerOrEquals(vv1)
-            vv1.isSmallerOrEquals(vv2)
+            vv2.isSmallerOrEquals(vv1) && vv1.isSmallerOrEquals(vv2)
         }
     }
     "merge is commutative" {
@@ -51,8 +47,7 @@ class VersionVectorPropTest: StringSpec({
             val vv2copy = vv2.copy()
             vv2.pointWiseMax(vv1)
             vv1.pointWiseMax(vv2copy)
-            vv2.isSmallerOrEquals(vv1)
-            vv1.isSmallerOrEquals(vv2)
+            vv2.isSmallerOrEquals(vv1) && vv1.isSmallerOrEquals(vv2)
         }
     }
     "added timestamp should be included" {
@@ -67,15 +62,12 @@ class VersionVectorPropTest: StringSpec({
         }
     }
     "incrementing maxVal" {
-        forAll(versionVectorArb, dcidArb) { vv, dcid ->
+        forAll(versionVectorArb, dcuidArb) { vv, dcuid ->
             val maxTS = vv.maxVal()
-            vv.addTS(Timestamp(dcid, maxTS+1))
+            vv.addTS(Timestamp(dcuid, maxTS+1))
             maxTS + 1 == vv.maxVal()
         }
     }
-
-
-
 })
 
 

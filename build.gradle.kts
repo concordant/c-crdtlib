@@ -1,19 +1,48 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+// Copyright © 2020, Concordant and contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute,
+// sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+// OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("multiplatform") version "1.3.72"
     kotlin("plugin.serialization") version "1.3.72"
+    id("org.jetbrains.dokka") version "0.10.0"
 }
 
 repositories {
+    jcenter()
     mavenCentral()
     maven(url = "https://jitpack.io")
 }
 
 kotlin {
+    jvm() {
+        withJava()
+        val jvmJar by tasks.getting(org.gradle.jvm.tasks.Jar::class) {
+            doFirst {
+                manifest {
+                    attributes["Main-Class"] = "crdtlib.GenerateTSKt"
+                }
+                from(configurations.getByName("runtimeClasspath").map { if (it.isDirectory) it else zipTree(it) })
+            }
+        }
+    }
 
-    jvm()
     js("nodeJs") {
         nodejs {}
     }
@@ -39,7 +68,7 @@ kotlin {
             }
         }
 
-        jvm().compilations["main"].defaultSourceSet {
+        val jvmMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
                 implementation("com.github.ntrrgc:ts-generator:1.1.1")
@@ -47,7 +76,7 @@ kotlin {
             }
         }
 
-        jvm().compilations["test"].defaultSourceSet {
+        val jvmTest by getting {
             dependencies {
                 implementation(kotlin("stdlib-jdk8"))
                 implementation(kotlin("test-junit"))
@@ -58,16 +87,28 @@ kotlin {
             }
         }
 
-        js("nodeJs").compilations["main"].defaultSourceSet  {
+        val nodeJsMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-js")) 
+                implementation(kotlin("stdlib-js"))
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.20.0")
             }
         }
 
-        js("nodeJs").compilations["test"].defaultSourceSet {
+        val nodeJsTest by getting {
             dependencies {
                 implementation(kotlin("test-js"))
+            }
+        }
+    }
+
+    tasks {
+        val dokka by getting(DokkaTask::class) {
+
+            outputFormat = "html"
+            outputDirectory = "$buildDir/docs"
+
+            multiplatform {
+                register("common") {}
             }
         }
     }

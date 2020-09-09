@@ -24,19 +24,19 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.string
 import io.kotest.property.forAll
 
-class DCIdPropTest: StringSpec({
+class DCUIdPropTest: StringSpec({
     "compare DCIds as the name" {
         forAll(Arb.string(), Arb.string()){ a,b ->
             when {
-                a == b -> DCId(a) == DCId(b)
-                a < b -> DCId(a) < DCId(b)
-                else -> DCId(a) > DCId(b)
+                a == b -> DCUId(a) == DCUId(b)
+                a < b -> DCUId(a) < DCUId(b)
+                else -> DCUId(a) > DCUId(b)
             }
         }
     }
     "deserialize is inverse to serialize" {
-        forAll(dcidArb) { dcid ->
-            dcid == DCId.fromJson(dcid.toJson())
+        forAll(dcuidArb) { dcuid ->
+            dcuid == DCUId.fromJson(dcuid.toJson())
         }
     }
 })

@@ -19,7 +19,7 @@
 
 package crdtlib.test
 
-import crdtlib.utils.DCId
+import crdtlib.utils.DCUId
 import crdtlib.utils.Timestamp
 import crdtlib.utils.VersionVector
 import kotlin.test.Test
@@ -48,12 +48,12 @@ class VersionVectorTest {
     **/
     @Test
     fun multipleValuesMaxVal() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 3)
-        val ts2 = Timestamp(dc2, 2)
-        val ts3 = Timestamp(dc3, 1)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 3)
+        val ts2 = Timestamp(uid2, 2)
+        val ts3 = Timestamp(uid3, 1)
         val vv = VersionVector()
 
         vv.addTS(ts1)
@@ -69,9 +69,9 @@ class VersionVectorTest {
     **/
     @Test
     fun createIncludeTS() {
-        val dc = DCId("dcid")
-        val ts1 = Timestamp(dc, 1)
-        val ts2 = Timestamp(dc, 3)
+        val uid = DCUId("dcid")
+        val ts1 = Timestamp(uid, 1)
+        val ts2 = Timestamp(uid, 3)
         val vv = VersionVector()
 
         assertFalse(vv.includesTS(ts1))
@@ -81,17 +81,17 @@ class VersionVectorTest {
     /**
     * This test evaluates the inclusion of timestamps in a version vector where one timestamp has
     * been added.
-    * Calls to includeTS should return true for all timestamps with same datacenter id and a count
-    * less or equals to the added timestamp, and false otherwise.
+    * Calls to includeTS should return true for all timestamps with same datacenter unique id and a
+    * count less or equals to the added timestamp, and false otherwise.
     **/
     @Test
     fun addTSIncludeTS() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val ts1 = Timestamp(dc1, 1)
-        val ts2 = Timestamp(dc1, 2)
-        val ts3 = Timestamp(dc1, 3)
-        val ts4 = Timestamp(dc2, 1)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val ts1 = Timestamp(uid1, 1)
+        val ts2 = Timestamp(uid1, 2)
+        val ts3 = Timestamp(uid1, 3)
+        val ts4 = Timestamp(uid2, 1)
         val vv = VersionVector()
 
         vv.addTS(ts2)
@@ -109,12 +109,12 @@ class VersionVectorTest {
     **/
     @Test
     fun toEmptyPointWiseMax() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 2)
-        val ts2 = Timestamp(dc2, 3)
-        val ts3 = Timestamp(dc3, 1)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 2)
+        val ts2 = Timestamp(uid2, 3)
+        val ts3 = Timestamp(uid3, 1)
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
@@ -135,12 +135,12 @@ class VersionVectorTest {
     **/
     @Test
     fun fromEmptyPointWiseMax() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 2)
-        val ts2 = Timestamp(dc2, 3)
-        val ts3 = Timestamp(dc3, 1)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 2)
+        val ts2 = Timestamp(uid2, 3)
+        val ts3 = Timestamp(uid3, 1)
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
@@ -161,13 +161,13 @@ class VersionVectorTest {
     **/
     @Test
     fun toSmallerPointWiseMax() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 2)
-        val ts2 = Timestamp(dc2, 3)
-        val ts3 = Timestamp(dc3, 1)
-        val ts4 = Timestamp(dc3, 2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 2)
+        val ts2 = Timestamp(uid2, 3)
+        val ts3 = Timestamp(uid3, 1)
+        val ts4 = Timestamp(uid3, 2)
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
@@ -191,13 +191,13 @@ class VersionVectorTest {
     **/
     @Test
     fun fromSmallerPointWiseMax() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 2)
-        val ts2 = Timestamp(dc2, 3)
-        val ts3 = Timestamp(dc3, 1)
-        val ts4 = Timestamp(dc3, 2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 2)
+        val ts2 = Timestamp(uid2, 3)
+        val ts3 = Timestamp(uid3, 1)
+        val ts4 = Timestamp(uid3, 2)
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
@@ -221,12 +221,12 @@ class VersionVectorTest {
     **/
     @Test
     fun equalPointWiseMax() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 2)
-        val ts2 = Timestamp(dc2, 3)
-        val ts3 = Timestamp(dc3, 1)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 2)
+        val ts2 = Timestamp(uid2, 3)
+        val ts3 = Timestamp(uid3, 1)
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
@@ -250,16 +250,16 @@ class VersionVectorTest {
     **/
     @Test
     fun concurrentPointWiseMax() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val dc4 = DCId("dcid4")
-        val ts1 = Timestamp(dc1, 2)
-        val ts2 = Timestamp(dc2, 3)
-        val ts3 = Timestamp(dc2, 4)
-        val ts4 = Timestamp(dc3, 1)
-        val ts5 = Timestamp(dc3, 2)
-        val ts6 = Timestamp(dc4, 3)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val uid4 = DCUId("dcid4")
+        val ts1 = Timestamp(uid1, 2)
+        val ts2 = Timestamp(uid2, 3)
+        val ts3 = Timestamp(uid2, 4)
+        val ts4 = Timestamp(uid3, 1)
+        val ts5 = Timestamp(uid3, 2)
+        val ts6 = Timestamp(uid4, 3)
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
@@ -286,13 +286,13 @@ class VersionVectorTest {
     **/
     @Test
     fun sameEntriesSmaller() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 3)
-        val ts2 = Timestamp(dc2, 2)
-        val ts3 = Timestamp(dc2, 4)
-        val ts4 = Timestamp(dc3, 2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 3)
+        val ts2 = Timestamp(uid2, 2)
+        val ts3 = Timestamp(uid2, 4)
+        val ts4 = Timestamp(uid3, 2)
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
@@ -313,13 +313,13 @@ class VersionVectorTest {
     **/
     @Test
     fun lessEntriesSmaller() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 3)
-        val ts2 = Timestamp(dc2, 2)
-        val ts3 = Timestamp(dc2, 4)
-        val ts4 = Timestamp(dc3, 2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 3)
+        val ts2 = Timestamp(uid2, 2)
+        val ts3 = Timestamp(uid2, 4)
+        val ts4 = Timestamp(uid3, 2)
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
@@ -338,12 +338,12 @@ class VersionVectorTest {
     **/
     @Test
     fun sameEntriesEqual() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 3)
-        val ts2 = Timestamp(dc2, 4)
-        val ts3 = Timestamp(dc3, 2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 3)
+        val ts2 = Timestamp(uid2, 4)
+        val ts3 = Timestamp(uid3, 2)
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
@@ -364,13 +364,13 @@ class VersionVectorTest {
     **/
     @Test
     fun sameEntriesGreater() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 3)
-        val ts2 = Timestamp(dc2, 2)
-        val ts3 = Timestamp(dc2, 4)
-        val ts4 = Timestamp(dc3, 2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 3)
+        val ts2 = Timestamp(uid2, 2)
+        val ts3 = Timestamp(uid2, 4)
+        val ts4 = Timestamp(uid3, 2)
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
@@ -391,14 +391,14 @@ class VersionVectorTest {
     **/
     @Test
     fun sameEntriesConcurrent() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 3)
-        val ts2 = Timestamp(dc2, 2)
-        val ts3 = Timestamp(dc2, 4)
-        val ts4 = Timestamp(dc3, 2)
-        val ts5 = Timestamp(dc3, 3)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 3)
+        val ts2 = Timestamp(uid2, 2)
+        val ts3 = Timestamp(uid2, 4)
+        val ts4 = Timestamp(uid3, 2)
+        val ts5 = Timestamp(uid3, 3)
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
@@ -419,13 +419,13 @@ class VersionVectorTest {
     **/
     @Test
     fun lessEntriesConcurrent() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 3)
-        val ts2 = Timestamp(dc2, 2)
-        val ts3 = Timestamp(dc2, 4)
-        val ts4 = Timestamp(dc3, 2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 3)
+        val ts2 = Timestamp(uid2, 2)
+        val ts3 = Timestamp(uid2, 4)
+        val ts4 = Timestamp(uid3, 2)
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
@@ -445,13 +445,13 @@ class VersionVectorTest {
     **/
     @Test
     fun moreEntriesGreater() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 3)
-        val ts2 = Timestamp(dc2, 2)
-        val ts3 = Timestamp(dc2, 4)
-        val ts4 = Timestamp(dc3, 2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 3)
+        val ts2 = Timestamp(uid2, 2)
+        val ts3 = Timestamp(uid2, 4)
+        val ts4 = Timestamp(uid3, 2)
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
@@ -471,13 +471,13 @@ class VersionVectorTest {
     **/
     @Test
     fun moreEntriesConcurrent() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 3)
-        val ts2 = Timestamp(dc2, 2)
-        val ts3 = Timestamp(dc2, 4)
-        val ts4 = Timestamp(dc3, 2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 3)
+        val ts2 = Timestamp(uid2, 2)
+        val ts3 = Timestamp(uid2, 4)
+        val ts4 = Timestamp(uid3, 2)
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
@@ -497,13 +497,13 @@ class VersionVectorTest {
     **/
     @Test
     fun moreAndLessEntriesConcurrent() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 3)
-        val ts2 = Timestamp(dc2, 2)
-        val ts3 = Timestamp(dc2, 4)
-        val ts4 = Timestamp(dc3, 2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 3)
+        val ts2 = Timestamp(uid2, 2)
+        val ts3 = Timestamp(uid2, 4)
+        val ts4 = Timestamp(uid3, 2)
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
@@ -522,12 +522,12 @@ class VersionVectorTest {
     **/
     @Test
     fun copyMethod() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 3)
-        val ts2 = Timestamp(dc2, 4)
-        val ts3 = Timestamp(dc3, 2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 3)
+        val ts2 = Timestamp(uid2, 4)
+        val ts3 = Timestamp(uid3, 2)
         val vv1 = VersionVector()
 
         vv1.addTS(ts1)
@@ -546,12 +546,12 @@ class VersionVectorTest {
     **/
     @Test
     fun copyConstructor() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 3)
-        val ts2 = Timestamp(dc2, 4)
-        val ts3 = Timestamp(dc3, 2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 3)
+        val ts2 = Timestamp(uid2, 4)
+        val ts3 = Timestamp(uid3, 2)
         val vv1 = VersionVector()
 
         vv1.addTS(ts1)
@@ -593,12 +593,12 @@ class VersionVectorTest {
     **/
     @Test
     fun toJsonSerialization() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 3)
-        val ts2 = Timestamp(dc2, 4)
-        val ts3 = Timestamp(dc3, 2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 3)
+        val ts2 = Timestamp(uid2, 4)
+        val ts3 = Timestamp(uid3, 2)
         val vv = VersionVector()
 
         vv.addTS(ts1)
@@ -614,12 +614,12 @@ class VersionVectorTest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val dc1 = DCId("dcid1")
-        val dc2 = DCId("dcid2")
-        val dc3 = DCId("dcid3")
-        val ts1 = Timestamp(dc1, 3)
-        val ts2 = Timestamp(dc2, 4)
-        val ts3 = Timestamp(dc3, 2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val uid3 = DCUId("dcid3")
+        val ts1 = Timestamp(uid1, 3)
+        val ts2 = Timestamp(uid2, 4)
+        val ts3 = Timestamp(uid3, 2)
         val vv = VersionVector()
 
         vv.addTS(ts1)

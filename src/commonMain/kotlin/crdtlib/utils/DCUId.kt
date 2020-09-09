@@ -22,29 +22,29 @@ package crdtlib.utils
 import kotlinx.serialization.*
 
 /**
-* This class represents a datacenter (DC) identifier (id).
+* This class represents a datacenter (DC) unique identifier (UId).
 * @property name the name associated with the DC.
 **/
 @Serializable
-data class DCId(val name: String) {
+data class DCUId(private val name: String) {
 
     /**
     * Compares this DC name to a given other datacenter name.
-    * @param other the other instance of datacenter id.
+    * @param other the other instance of datacenter unique id.
     * @return the results of the comparison between the two DC name.
     **/
     @Name("compareTo")
-    operator fun compareTo(other: DCId): Int {
+    operator fun compareTo(other: DCUId): Int {
         return this.name.compareTo(other.name)
     }
 
     /**
-    * Serializes this datacenter id to a json string.
+    * Serializes this datacenter unique id to a json string.
     * @return the resulted json string.
     */
     @Name("toJson")
     fun toJson(): String {
-        return Json.stringify(DCId.serializer(), this)
+        return Json.stringify(DCUId.serializer(), this)
     }
 
     companion object {
@@ -54,8 +54,8 @@ data class DCId(val name: String) {
         * @return the resulted datacenter id.
         */
         @Name("fromJson")
-        fun fromJson(json: String): DCId {
-            return Json.parse(DCId.serializer(), json)
+        fun fromJson(json: String): DCUId {
+            return Json.parse(DCUId.serializer(), json)
         }
     }
 }

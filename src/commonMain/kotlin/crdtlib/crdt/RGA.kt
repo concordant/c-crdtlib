@@ -73,17 +73,15 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
     /**
     * An array list storing the different elements.
     */
-    val nodes: ArrayList<RGANode<T>>
+    val nodes: ArrayList<RGANode<T>> = arrayListOf<RGANode<T>>()
 
     /**
     * Default constructor.
     */
     constructor() {
-        this.nodes = arrayListOf<RGANode<T>>()
     }
 
     constructor(nodes: List<RGANode<T>>) {
-        this.nodes = arrayListOf<RGANode<T>>()
         for (node in nodes) {
             this.nodes.add(node)
         }

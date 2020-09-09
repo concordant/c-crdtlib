@@ -20,7 +20,7 @@
 package crdtlib.test
 
 import crdtlib.crdt.LWWRegister
-import crdtlib.utils.DCId
+import crdtlib.utils.DCUId
 import crdtlib.utils.SimpleEnvironment
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -36,8 +36,8 @@ class LWWRegisterTest {
     */
     @Test
     fun createGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val value = "value"
 
@@ -52,8 +52,8 @@ class LWWRegisterTest {
     */
     @Test
     fun assignGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -72,8 +72,8 @@ class LWWRegisterTest {
     */
     @Test
     fun assignOldGet() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
         dc.updateStateTS(ts1)
         val ts2 = dc.getNewTimestamp()
@@ -92,10 +92,10 @@ class LWWRegisterTest {
     */
     @Test
     fun assign_assignMergeGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         val val1 = "value1"
@@ -116,10 +116,10 @@ class LWWRegisterTest {
     */
     @Test
     fun assign_mergeAssignGet() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         dc2.updateStateTS(ts2)
@@ -142,10 +142,10 @@ class LWWRegisterTest {
     */
     @Test
     fun assignOp() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         dc1.updateStateTS(ts1)
@@ -173,13 +173,12 @@ class LWWRegisterTest {
     * This test evaluates the generation of delta plus its merging into another replica.
     * Call to get should return the values set in the second replica.
     */
-
     @Test
     fun generateDelta() {
-        val id1 = DCId("dcid1")
-        val id2 = DCId("dcid2")
-        val dc1 = SimpleEnvironment(id1)
-        val dc2 = SimpleEnvironment(id2)
+        val uid1 = DCUId("dcid1")
+        val uid2 = DCUId("dcid2")
+        val dc1 = SimpleEnvironment(uid1)
+        val dc2 = SimpleEnvironment(uid2)
         val ts1 = dc1.getNewTimestamp()
         val ts2 = dc2.getNewTimestamp()
         dc1.updateStateTS(ts1)
@@ -207,14 +206,14 @@ class LWWRegisterTest {
     **/
     @Test
     fun toJsonSerialization() {
-        val id = DCId("dcid")
-        val dc = SimpleEnvironment(id)
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val value = "value"
 
         val reg = LWWRegister<String>(value, ts)
 
-        assertEquals("""{"_type":"LWWRegister","_metadata":{"id":{"name":"dcid"},"cnt":1},"value":"value"}""", reg.toJson(String::class))
+        assertEquals("""{"_type":"LWWRegister","_metadata":{"uid":{"name":"dcid"},"cnt":1},"value":"value"}""", reg.toJson(String::class))
     }
 
     /**
@@ -222,7 +221,7 @@ class LWWRegisterTest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val regJson = LWWRegister.fromJson(String::class, """{"_type":"LWWRegister","_metadata":{"id":{"name":"dcid"},"cnt":1},"value":"value"}""")
+        val regJson = LWWRegister.fromJson(String::class, """{"_type":"LWWRegister","_metadata":{"uid":{"name":"dcid"},"cnt":1},"value":"value"}""")
 
         assertEquals("value", regJson.get())
     }

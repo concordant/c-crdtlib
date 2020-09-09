@@ -21,41 +21,31 @@ package crdtlib.utils
 
 /**
 * This class represents a simple environment generating increasing monotonic timestamps.
+* @property uid the datacenter unique identifier associated with this environment.
 */
-class SimpleEnvironment : Environment {
-
-    /**
-    * The datacenter unique identifier associated with this environment.
-    */
-    private val id: DCId
+class SimpleEnvironment(private val uid: DCUId) : Environment() {
 
     /**
     * A version vector storing this environment causal context.
     */
-    private var curState: VersionVector
+    private var curState: VersionVector = VersionVector()
 
     /**
     * The value associated with the last generated timestamp.
     * This value is initialized to 0 meaning that the first generated timestamp has the value 1.
     */
-    private var lastTs: Int
-
-    /**
-    * Default constructor.
-    */
-    constructor(id: DCId) {
-        this.id = id
-        this.curState = VersionVector()
-        this.lastTs = 0
-    }
+    private var lastTs: Int = 0
 
     /**
     * Generates a monotonically increasing timestamp.
     * @return the generated timestamp.
     */
     override fun getNewTimestampProtected(): Timestamp {
-        lastTs = curState.maxVal() + 1
-        return Timestamp(id, lastTs)
+        lastTs = curState.maxVal()
+        if (lastTs == Int.MAX_VALUE) {
+            throw RuntimeException("Timestamp counter has reached Int.MAX_VALUE")
+        }
+        return Timestamp(uid, lastTs + 1)
     }
 
     /**

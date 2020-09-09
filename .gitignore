@@ -6,6 +6,11 @@
 /.project
 /.settings/
 /build/
+/deploy/
 /target/
 /bin/
 /node_modules/
+gradle/wrapper/gradle-wrapper.properties
+gradlew
+gradlew.bat
+gradle/wrapper/gradle-wrapper.jar
