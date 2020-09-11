@@ -98,11 +98,6 @@ class VersionVector {
     */
     @Name("isSmallerOrEquals")
     fun isSmallerOrEquals(vv: VersionVector): Boolean {
-        for((k, v) in vv.entries) {
-            val localV = this.entries.get(k)
-            if(localV != null && localV > v) return false
-        }
-
         for ((k, localV) in this.entries) {
             val v = vv.entries.get(k)
             if(v == null || localV > v) return false
