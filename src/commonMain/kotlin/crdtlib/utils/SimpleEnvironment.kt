@@ -36,6 +36,7 @@ class SimpleEnvironment(private val uid: DCUId) : Environment() {
     */
     override fun getNewTimestampProtected(): Timestamp {
         val lastTs = curState.maxVal()
+        // Create a first timestamp with the smallest counter possible.
         if (lastTs == null) return Timestamp(uid, Timestamp.CNT_MIN_VALUE)
         if (lastTs == Timestamp.CNT_MAX_VALUE) {
             throw RuntimeException("Timestamp counter has reached Timestamp.CNT_MAX_VALUE")
