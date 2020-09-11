@@ -31,19 +31,15 @@ class SimpleEnvironment(private val uid: DCUId) : Environment() {
     private var curState: VersionVector = VersionVector()
 
     /**
-    * The value associated with the last generated timestamp.
-    * This value is initialized to 0 meaning that the first generated timestamp has the value 1.
-    */
-    private var lastTs: Int = 0
-
-    /**
     * Generates a monotonically increasing timestamp.
     * @return the generated timestamp.
     */
     override fun getNewTimestampProtected(): Timestamp {
-        lastTs = curState.maxVal()
-        if (lastTs == Int.MAX_VALUE) {
-            throw RuntimeException("Timestamp counter has reached Int.MAX_VALUE")
+        val lastTs = curState.maxVal()
+        // Create a first timestamp with the smallest counter possible.
+        if (lastTs == null) return Timestamp(uid, Timestamp.CNT_MIN_VALUE)
+        if (lastTs == Timestamp.CNT_MAX_VALUE) {
+            throw RuntimeException("Timestamp counter has reached Timestamp.CNT_MAX_VALUE")
         }
         return Timestamp(uid, lastTs + 1)
     }

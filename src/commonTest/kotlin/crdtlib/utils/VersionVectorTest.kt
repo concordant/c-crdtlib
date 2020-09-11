@@ -39,7 +39,7 @@ class VersionVectorTest {
     fun createMaxVal() {
         val vv = VersionVector()
 
-        assertEquals(0, vv.maxVal())
+        assertEquals(null, vv.maxVal())
     }
 
     /**
@@ -76,6 +76,23 @@ class VersionVectorTest {
 
         assertFalse(vv.includesTS(ts1))
         assertFalse(vv.includesTS(ts2))
+    }
+
+    /**
+    * This test evaluates the inclusion of timestamps having negative counter in a newly created version vector.
+    * Calls to includeTS should return false.
+    **/
+    @Test
+    fun createIncludeNegativeTS() {
+        val uid = DCUId("dcid")
+        val ts1 = Timestamp(uid, Int.MIN_VALUE)
+        val ts2 = Timestamp(uid, Timestamp.CNT_MIN_VALUE)
+        val ts3 = Timestamp(uid, -8000)
+        val vv = VersionVector()
+
+        assertFalse(vv.includesTS(ts1))
+        assertFalse(vv.includesTS(ts2))
+        assertFalse(vv.includesTS(ts3))
     }
 
     /**

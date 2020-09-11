@@ -436,9 +436,8 @@ class MVRegisterTest {
         val reg2 = MVRegister<String>()
         reg2.assign(val2, ts2)
         reg2.merge(reg1)
-        val regJson = reg2.toJson(String::class)
 
-        assertEquals("""{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"dcid2"},"cnt":1},{"uid":{"name":"dcid1"},"cnt":1}],"causalContext":{"entries":[{"name":"dcid2"},1,{"name":"dcid1"},1]}},"value":["value2","value1"]}""", regJson)
+        assertEquals("""{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"dcid2"},"cnt":-2147483648},{"uid":{"name":"dcid1"},"cnt":-2147483648}],"causalContext":{"entries":[{"name":"dcid2"},-2147483648,{"name":"dcid1"},-2147483648]}},"value":["value2","value1"]}""", reg2.toJson(String::class))
     }
 
     /**
@@ -446,7 +445,7 @@ class MVRegisterTest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val regJson = MVRegister.fromJson(String::class, """{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"dcid2"},"cnt":1},{"uid":{"name":"dcid1"},"cnt":1}],"causalContext":{"entries":[{"name":"dcid2"},1,{"name":"dcid1"},1]}},"value":["value2","value1"]}""")
+        val regJson = MVRegister.fromJson(String::class, """{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"dcid2"},"cnt":-2147483648},{"uid":{"name":"dcid1"},"cnt":-2147483648}],"causalContext":{"entries":[{"name":"dcid2"},-2147483648,{"name":"dcid1"},-2147483648]}},"value":["value2","value1"]}""")
 
         assertEquals(setOf("value1", "value2"), regJson.get())
     }
