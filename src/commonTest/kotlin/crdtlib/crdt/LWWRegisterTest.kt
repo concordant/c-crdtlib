@@ -213,7 +213,7 @@ class LWWRegisterTest {
 
         val reg = LWWRegister<String>(value, ts)
 
-        assertEquals("""{"_type":"LWWRegister","_metadata":{"uid":{"name":"dcid"},"cnt":1},"value":"value"}""", reg.toJson(String::class))
+        assertEquals("""{"_type":"LWWRegister","_metadata":{"uid":{"name":"dcid"},"cnt":-2147483648},"value":"value"}""", reg.toJson(String::class))
     }
 
     /**
@@ -221,7 +221,7 @@ class LWWRegisterTest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val regJson = LWWRegister.fromJson(String::class, """{"_type":"LWWRegister","_metadata":{"uid":{"name":"dcid"},"cnt":1},"value":"value"}""")
+        val regJson = LWWRegister.fromJson(String::class, """{"_type":"LWWRegister","_metadata":{"uid":{"name":"dcid"},"cnt":-2147483648},"value":"value"}""")
 
         assertEquals("value", regJson.get())
     }

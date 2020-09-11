@@ -605,7 +605,7 @@ class PNCounterTest {
         cnt2.increment(inc2, ts4)
         cnt2.merge(cnt1)
 
-        assertEquals("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"uid":{"name":"dcid2"},"cnt":2}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":2}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"uid":{"name":"dcid2"},"cnt":1}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":1}}]},"value":10}""", cnt2.toJson())
+        assertEquals("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"uid":{"name":"dcid2"},"cnt":-2147483647}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483647}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"uid":{"name":"dcid2"},"cnt":-2147483648}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483648}}]},"value":10}""", cnt2.toJson())
     }
 
     /**
@@ -613,7 +613,7 @@ class PNCounterTest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val cntJson = PNCounter.fromJson("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"uid":{"name":"dcid2"},"cnt":2}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":2}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"uid":{"name":"dcid2"},"cnt":1}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":1}}]},"value":10}""")
+        val cntJson = PNCounter.fromJson("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"uid":{"name":"dcid2"},"cnt":-2147483647}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483647}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"uid":{"name":"dcid2"},"cnt":-2147483648}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483648}}]},"value":10}""")
 
         assertEquals(10, cntJson.get())
     }
