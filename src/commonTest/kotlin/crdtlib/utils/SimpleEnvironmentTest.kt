@@ -45,7 +45,7 @@ class SimpleEnvironmentTest {
 
         val ts = dc.getNewTimestamp()
 
-        assertEquals(Timestamp(uid, 1), ts)
+        assertEquals(Timestamp(uid, Timestamp.CNT_MIN_VALUE), ts)
     }
 
     /**
