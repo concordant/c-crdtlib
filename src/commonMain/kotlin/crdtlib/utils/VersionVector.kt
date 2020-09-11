@@ -50,7 +50,7 @@ class VersionVector {
 
     /**
     * Gets the maximal value stored in this version vector.
-    * @return the maximal value.
+    * @return the maximal value or null if there are no values.
     */
     @Name("maxVal")
     fun maxVal(): Int? {
