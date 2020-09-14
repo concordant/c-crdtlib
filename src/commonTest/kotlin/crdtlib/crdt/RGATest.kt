@@ -26,6 +26,7 @@ import crdtlib.utils.SimpleEnvironment
 import crdtlib.utils.VersionVector
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
 * Represents a suite test for RGA.
@@ -429,6 +430,252 @@ class RGATest {
         rga2.merge(rga1)
 
         assertEquals(listOf('A', 'D'), rga2.get())
+    }
+
+    /**
+     * This test evaluates the scenario of issue #35
+     *                                  Expected      Faulty ordering
+     * Replica A        Replica B       (ok on A)       on B of #35
+     *  1362             13452           134562           134526
+     *     1                 1               1               1
+     *    / \               / \             / \             / \
+     *   3   2             3   2           3   2           3   2
+     *    \               /               / \             / \___
+     *     6             4               4   6           4   6
+     *                   |               |               |
+     *                   5               5               5
+     *
+     * (assuming element 6 has a smaller timestamp than element 4)
+     * - 1, 2 and 3 are added and synchronized
+     * - 6 is added on A, 4 and 5 on B (concurrently)
+     * - A to B are merged
+     */
+    @Test
+    fun mergeA1362_B13452() {
+	val uidA = DCUId("dcidA")
+	val uidB = DCUId("dcidB")
+	val envA = SimpleEnvironment(uidA)
+	val envB = SimpleEnvironment(uidB)
+	val rgaA = RGA<Int>()
+	val rgaB = RGA<Int>()
+	var tsA: Timestamp
+	var tsB: Timestamp
+
+	// add 132 to A
+	tsA = envA.getNewTimestamp()
+	envA.updateStateTS(tsA)
+	rgaA.insertAt(0, 1, tsA)
+
+	tsA = envA.getNewTimestamp()
+	envA.updateStateTS(tsA)
+	rgaA.insertAt(1, 2, tsA)
+
+	tsA = envA.getNewTimestamp()
+	envA.updateStateTS(tsA)
+	rgaA.insertAt(1, 3, tsA)
+
+	// merge A → B
+	rgaB.merge(rgaA)
+	envB.updateStateVV(envA.getCurrentState())
+
+	// add 6 to A (1362)
+	tsA = envA.getNewTimestamp()
+	envA.updateStateTS(tsA)
+	rgaA.insertAt(2, 6, tsA)
+
+	assertEquals(listOf(1, 3, 6, 2), rgaA.get())
+
+	// add 4,5 to B (13452)
+	tsB = envB.getNewTimestamp()
+	envB.updateStateTS(tsB)
+	rgaB.insertAt(2, 4, tsB)
+
+	tsB = envB.getNewTimestamp()
+	envB.updateStateTS(tsB)
+	rgaB.insertAt(3, 5, tsB)
+
+	assertEquals(listOf(1, 3, 4, 5, 2), rgaB.get())
+
+	// merge A and B
+	rgaB.merge(rgaA)
+	envB.updateStateVV(envA.getCurrentState())
+	rgaA.merge(rgaB)
+	envA.updateStateVV(envB.getCurrentState())
+
+	assertEquals(rgaA.get(), rgaB.get())
+    }
+
+    /**
+     * A similar scenario with a deeper tree
+     *
+     * Replica A        Replica B       Expected
+     *  1346572         13465982        134659872
+     *        1               1               1
+     *       / \             / \             / \
+     *      3   2           3   2           3   2
+     *     /               /               /
+     *    4               4               4
+     *   / \             / \             / \
+     *  6   5           6   5           6   5
+     *      |              / \             /|\
+     *      7             9   8           9 8 7
+     *
+     * (assuming element 7 has a smaller timestamp than element 8)
+     * - 1 to 5 are added and synchronized
+     * - 7 is added on A, 8 and 9 on B (concurrently)
+     * - A to B are merged
+     */
+    @Test
+    fun mergeA1346572_B13465982() {
+	val uidA = DCUId("dcidA")
+	val uidB = DCUId("dcidB")
+	val envA = SimpleEnvironment(uidA)
+	val envB = SimpleEnvironment(uidB)
+	val rgaA = RGA<Char>()
+	val rgaB = RGA<Char>()
+	var tsA: Timestamp
+	var tsB: Timestamp
+
+	// add 134652 to A
+	tsA = envA.getNewTimestamp()
+	envA.updateStateTS(tsA)
+	rgaA.insertAt(0, '1', tsA)
+
+	tsA = envA.getNewTimestamp()
+	envA.updateStateTS(tsA)
+	rgaA.insertAt(1, '2', tsA)
+
+	tsA = envA.getNewTimestamp()
+	envA.updateStateTS(tsA)
+	rgaA.insertAt(1, '3', tsA)
+
+	tsA = envA.getNewTimestamp()
+	envA.updateStateTS(tsA)
+	rgaA.insertAt(2, '4', tsA)
+
+	tsA = envA.getNewTimestamp()
+	envA.updateStateTS(tsA)
+	rgaA.insertAt(3, '5', tsA)
+
+	tsA = envA.getNewTimestamp()
+	envA.updateStateTS(tsA)
+	rgaA.insertAt(3, '6', tsA)
+
+	// merge A → B
+	rgaB.merge(rgaA)
+	envB.updateStateVV(envA.getCurrentState())
+
+	// add 7 to A (1346572)
+	tsA = envA.getNewTimestamp()
+	envA.updateStateTS(tsA)
+	rgaA.insertAt(5, '7', tsA)
+
+	assertEquals(listOf('1', '3', '4', '6', '5', '7', '2'), rgaA.get())
+
+	// add 8,9 to B (13465982)
+	tsB = envB.getNewTimestamp()
+	envB.updateStateTS(tsB)
+	rgaB.insertAt(5, '8', tsB)
+
+	tsB = envB.getNewTimestamp()
+	envB.updateStateTS(tsB)
+	rgaB.insertAt(5, '9', tsB)
+
+	assertEquals(listOf('1', '3', '4', '6', '5', '9', '8', '2'),
+		     rgaB.get())
+
+	// merge A and B
+	rgaB.merge(rgaA)
+	envB.updateStateVV(envA.getCurrentState())
+	rgaA.merge(rgaB)
+	envA.updateStateVV(envB.getCurrentState())
+
+	assertEquals(rgaA.get(), rgaB.get())
+    }
+
+    /**
+     * Same scenario without the 2 (up to the root)
+     *
+     * Replica A        Replica B       Expected
+     *  134657          1346598         13465987
+     *        1               1               1
+     *       /               /               /
+     *      3               3               3
+     *     /               /               /
+     *    4               4               4
+     *   / \             / \             / \
+     *  6   5           6   5           6   5
+     *      |              / \             /|\
+     *      7             9   8           9 8 7
+     *
+     * (assuming element 7 has a smaller timestamp than element 8)
+     * - 1 to 5 are added and synchronized
+     * - 7 is added on A, 8 and 9 on B (concurrently)
+     * - A to B are merged
+     */
+
+    @Test
+    fun mergeA134657_B1346598() {
+	val uidA = DCUId("dcidA")
+	val uidB = DCUId("dcidB")
+	val envA = SimpleEnvironment(uidA)
+	val envB = SimpleEnvironment(uidB)
+	val rgaA = RGA<Char>()
+	val rgaB = RGA<Char>()
+	var tsA: Timestamp
+	var tsB: Timestamp
+
+	// add 13465 to A
+	tsA = envA.getNewTimestamp()
+	envA.updateStateTS(tsA)
+	rgaA.insertAt(0, '1', tsA)
+
+	tsA = envA.getNewTimestamp()
+	envA.updateStateTS(tsA)
+	rgaA.insertAt(1, '3', tsA)
+
+	tsA = envA.getNewTimestamp()
+	envA.updateStateTS(tsA)
+	rgaA.insertAt(2, '4', tsA)
+
+	tsA = envA.getNewTimestamp()
+	envA.updateStateTS(tsA)
+	rgaA.insertAt(3, '5', tsA)
+
+	tsA = envA.getNewTimestamp()
+	envA.updateStateTS(tsA)
+	rgaA.insertAt(3, '6', tsA)
+
+	// merge A → B
+	rgaB.merge(rgaA)
+	envB.updateStateVV(envA.getCurrentState())
+
+	// add 7 to A (134657)
+	tsA = envA.getNewTimestamp()
+	envA.updateStateTS(tsA)
+	rgaA.insertAt(5, '7', tsA)
+
+	assertEquals(listOf('1', '3', '4', '6', '5', '7'), rgaA.get())
+
+	// add 8,9 to B (1346598)
+	tsB = envB.getNewTimestamp()
+	envB.updateStateTS(tsB)
+	rgaB.insertAt(5, '8', tsB)
+
+	tsB = envB.getNewTimestamp()
+	envB.updateStateTS(tsB)
+	rgaB.insertAt(5, '9', tsB)
+
+	assertEquals(listOf('1', '3', '4', '6', '5', '9', '8'),
+		     rgaB.get())
+
+	// merge A and B
+	rgaB.merge(rgaA)
+	envB.updateStateVV(envA.getCurrentState())
+	rgaA.merge(rgaB)
+	envA.updateStateVV(envB.getCurrentState())
+
+	assertEquals(rgaA.get(), rgaB.get())
     }
 
     /**

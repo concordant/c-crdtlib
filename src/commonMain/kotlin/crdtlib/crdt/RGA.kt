@@ -179,34 +179,61 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
     * @param delta the delta that should be merge with the local replica.
     */
     override fun mergeProtected(delta: Delta<RGA<T>>) {
-        if (delta !is RGA) throw UnexpectedTypeException("RGA does not support merging with type:" + delta::class)
+        if (delta !is RGA) throw UnexpectedTypeException(
+	    "RGA does not support merging with type:" + delta::class)
 
         for (node in delta.nodes) {
             val localNode = this.nodes.find { it.uid == node.uid }
             if (localNode == null) { // First time this node is seen.
                 var index = 0
-                val anchorNode = this.nodes.find { it.uid == node.anchor }
-                if (anchorNode != null) {
-                    index = this.nodes.indexOf(anchorNode) + 1
-                }
-
-                val sameAnchorNodes = this.nodes.filter { it.anchor == node.anchor }
-                if (sameAnchorNodes.size > 0) { // There exist nodes with the same anchor.
-                    var foundWeaker = false
-                    for (tmpNode in sameAnchorNodes) {
-                        if (tmpNode.uid < node.uid) { // A weaker node has been found.
-                            index = this.nodes.indexOf(tmpNode)
-                            foundWeaker = true
-                            break
-                        }
+		var siblings = this.nodes.filter { it.anchor == node.anchor }
+                if (siblings.size > 0) {
+		    // There exist nodes with the same anchor.
+                    var firstWeakerSiblingNode = siblings.find {
+			it.uid < node.uid }
+		    if (firstWeakerSiblingNode != null){
+			// insert before first weaker sibling
+			index = this.nodes.indexOf(firstWeakerSiblingNode)
+		    } else {
+			// no weaker sibling: find next element up the tree
+			var currNode: RGANode<T> = node
+			while (currNode.anchor != null){
+			    val currAnchor = this.nodes.find {
+				it.uid == currNode.anchor }
+			    if (currAnchor == null) {
+				throw IllegalArgumentException(
+				    "RGA can not merge a node with unknown anchor")
+			    }
+			    currNode = currAnchor
+			    siblings = this.nodes.filter {
+				it.anchor == currNode.anchor }
+			    firstWeakerSiblingNode = siblings.find {
+				it.uid < currNode.uid }
+			    if (firstWeakerSiblingNode != null){
+				index = this.nodes.indexOf(firstWeakerSiblingNode)
+				break
+			    }
+			}
+			if (currNode.anchor == null){
+			    // reached the root of the tree: append
+			    index = this.nodes.size
+			}
                     }
-                    if (foundWeaker == false) { // No weaker node exist.
-                        index = this.nodes.size
-                    }
-                }
-
+		} else if (node.anchor != null){
+		    // fast case: no sibling, add right after anchor
+                    index = this.nodes.indexOfFirst { it.uid == node.anchor } + 1
+                    if (index == 0) {
+			throw IllegalArgumentException(
+			    "RGA can not merge a node with unknown anchor")
+		    }
+		} else {
+		    // no sibling, no anchor: this is the first node
+		    index = 0
+		}
                 this.nodes.add(index, node.copy())
-            } else if (node.removed) { // This node already exists and foreign node is a tombstone.
+
+            } else if (node.removed) {
+		// This node already exists and foreign node is a tombstone.
                 if (localNode.removed == false) { // Remove-wins.
                     var index = this.nodes.indexOf(localNode)
                     this.nodes.set(index, node.copy())
