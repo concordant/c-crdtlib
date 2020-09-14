@@ -202,7 +202,7 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
 				it.uid == currNode.anchor }
 			    if (currAnchor == null) {
 				throw IllegalArgumentException(
-				    "Unknown anchor node")
+				    "RGA can not merge a node with unknown anchor")
 			    }
 			    currNode = currAnchor
 			    siblings = this.nodes.filter {
@@ -223,7 +223,8 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
 		    // fast case: no sibling, add right after anchor
                     index = this.nodes.indexOfFirst { it.uid == node.anchor } + 1
                     if (index == 0) {
-			throw IllegalArgumentException("Unknown anchor node")
+			throw IllegalArgumentException(
+			    "RGA can not merge a node with unknown anchor")
 		    }
 		} else {
 		    // no sibling, no anchor: this is the first node
