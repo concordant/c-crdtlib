@@ -19,7 +19,6 @@
 
 package crdtlib.utils
 
-import kotlin.math.absoluteValue
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 
@@ -54,7 +53,7 @@ class VersionVector {
     */
     @Name("maxVal")
     fun maxVal(): Int? {
-        return this.entries.values.maxBy { it.absoluteValue }
+        return this.entries.values.max()
     }
 
     /**
