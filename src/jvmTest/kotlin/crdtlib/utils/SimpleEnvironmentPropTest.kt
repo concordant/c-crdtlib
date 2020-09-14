@@ -33,7 +33,7 @@ class SimpleEnvironmentPropTest: StringSpec( {
 
     // AB: This seems rather special for this particular environment
     "initial environment has counter smaller than any other timestamp" {
-        forAll(dcuidArb, Arb.int()) { uid, i ->
+        forAll(dcuidArb, Arb.int(Int.MIN_VALUE + 1, Int.MAX_VALUE)) { uid, i ->
             val se = SimpleEnvironment(uid)
             se.getNewTimestamp().compareTo(Timestamp(uid, i)) < 0
         }
