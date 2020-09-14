@@ -43,7 +43,7 @@ class LWWMapTest {
 
         assertNull(map.get(key))
     }
-    
+
     /**
     * This test evaluates the scenario: put get.
     * Call to get should return the value set by the put.
@@ -61,7 +61,7 @@ class LWWMapTest {
 
         assertEquals(value, map.get(key))
     }
-    
+
     /**
     * This test evaluates the scenario: put del get.
     * Call to get should return null.
@@ -82,7 +82,7 @@ class LWWMapTest {
 
         assertNull(map.get(key))
     }
- 
+
     /**
     * This test evaluates the scenario: del get.
     * Call to get should return null.
@@ -218,7 +218,7 @@ class LWWMapTest {
 
         assertEquals(val2, map2.get(key))
     }
-    
+
     /**
     * This test evaluates the scenario: putLWW || put merge get.
     * Call to get should return the value set by put registered in the first replica.
