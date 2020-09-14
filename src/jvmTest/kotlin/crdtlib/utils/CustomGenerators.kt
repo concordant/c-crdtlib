@@ -9,6 +9,13 @@ val timestampArb = arb { rs ->
     dcuids.zip(cnts).map { (dcuids, cnt) -> Timestamp(dcuids.value, cnt.value) }
 }
 
+val timestampNonMaxArb = arb { rs ->
+    val dcuids = dcuidArb.values(rs)
+    val cnts = Arb.int(Integer.MIN_VALUE, Integer.MAX_VALUE-1).values(rs)
+    dcuids.zip(cnts).map { (dcuids, cnt) -> Timestamp(dcuids.value, cnt.value) }
+}
+
+
 val dcuidArb = arb { rs ->
     val names = Arb.string().values(rs)
     names.map { name -> DCUId(name.value)}
@@ -22,6 +29,16 @@ val versionVectorArb = arb { rs ->
         vv
     }
 }
+
+val versionVectorNonMaxArb = arb { rs ->
+    val tss = Arb.list(timestampNonMaxArb, range = 0..10).values(rs)
+    tss.map { ts ->
+        val vv = VersionVector()
+        ts.value.map {t -> vv.addTS(t)}
+        vv
+    }
+}
+
 
 val simpleEnvironmentArb = arb { rs ->
     val dcuids = dcuidArb.values(rs)

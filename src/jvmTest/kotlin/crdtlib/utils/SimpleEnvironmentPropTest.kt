@@ -52,7 +52,7 @@ class SimpleEnvironmentPropTest: StringSpec( {
             ts.cnt > cnt
         }
     }
-    "including other timestamps does not modify local one" {
+    "timestamps are monotonically increasing" {
         forAll(dcuidArb, dcuidArb, Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1), Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1)){ uid1, uid2, cnt1, cnt2 ->
             val se = SimpleEnvironment(uid1)
             se.updateStateTS(Timestamp(uid1, cnt1))
