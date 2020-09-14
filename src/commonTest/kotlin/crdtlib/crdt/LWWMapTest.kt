@@ -43,7 +43,7 @@ class LWWMapTest {
 
         assertNull(map.get(key))
     }
-    
+
     /**
     * This test evaluates the scenario: put get.
     * Call to get should return the value set by the put.
@@ -61,7 +61,7 @@ class LWWMapTest {
 
         assertEquals(value, map.get(key))
     }
-    
+
     /**
     * This test evaluates the scenario: put del get.
     * Call to get should return null.
@@ -82,7 +82,7 @@ class LWWMapTest {
 
         assertNull(map.get(key))
     }
- 
+
     /**
     * This test evaluates the scenario: del get.
     * Call to get should return null.
@@ -218,7 +218,7 @@ class LWWMapTest {
 
         assertEquals(val2, map2.get(key))
     }
-    
+
     /**
     * This test evaluates the scenario: putLWW || put merge get.
     * Call to get should return the value set by put registered in the first replica.
@@ -664,9 +664,8 @@ class LWWMapTest {
         map.put(key2, value2, ts2)
         map.delete(key2, ts3)
         map.put(key3, value3, ts4)
-        val mapJson = map.toJson()
 
-        assertEquals("""{"_type":"LWWMap","_metadata":{"entries":{"key1":{"uid":{"name":"dcid"},"cnt":1},"key2":{"uid":{"name":"dcid"},"cnt":3},"key3":{"uid":{"name":"dcid"},"cnt":4}},"causalContext":{"entries":[{"name":"dcid"},4]}},"key1":"value1","key2":null,"key3":"value3"}""", mapJson)
+        assertEquals("""{"_type":"LWWMap","_metadata":{"entries":{"key1":{"uid":{"name":"dcid"},"cnt":-2147483648},"key2":{"uid":{"name":"dcid"},"cnt":-2147483646},"key3":{"uid":{"name":"dcid"},"cnt":-2147483645}},"causalContext":{"entries":[{"name":"dcid"},-2147483645]}},"key1":"value1","key2":null,"key3":"value3"}""", map.toJson())
     }
 
     /**
@@ -674,7 +673,7 @@ class LWWMapTest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{"key1":{"uid":{"name":"dcid"},"cnt":1},"key2":{"uid":{"name":"dcid"},"cnt":3},"key3":{"uid":{"name":"dcid"},"cnt":4}},"causalContext":{"entries":[{"name":"dcid"},4]}},"key1":"value1","key2":null,"key3":"value3"}""")
+        val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{"key1":{"uid":{"name":"dcid"},"cnt":-2147483648},"key2":{"uid":{"name":"dcid"},"cnt":-2147483646},"key3":{"uid":{"name":"dcid"},"cnt":-2147483645}},"causalContext":{"entries":[{"name":"dcid"},-2147483645]}},"key1":"value1","key2":null,"key3":"value3"}""")
 
         assertEquals("value1", mapJson.get("key1"))
         assertNull(mapJson.get("key2"))

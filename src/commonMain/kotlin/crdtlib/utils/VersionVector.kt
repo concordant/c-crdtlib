@@ -45,16 +45,16 @@ class VersionVector {
     * Copy constructor.
     */
     constructor(vv: VersionVector) {
-        entries.putAll(vv.entries)
+        this.entries.putAll(vv.entries)
     }
 
     /**
     * Gets the maximal value stored in this version vector.
-    * @return the maximal value.
+    * @return the maximal value or null if there are no values.
     */
     @Name("maxVal")
-    fun maxVal(): Int {
-        return entries.values.maxBy { it.absoluteValue } ?: 0
+    fun maxVal(): Int? {
+        return this.entries.values.maxBy { it.absoluteValue }
     }
 
     /**
@@ -63,8 +63,8 @@ class VersionVector {
     */
     @Name("addTS")
     fun addTS(ts: Timestamp) {
-        val curCnt = entries.getOrElse(ts.uid, { 0 })
-        if(curCnt < ts.cnt) entries[ts.uid] = ts.cnt
+        val curCnt = this.entries.get(ts.uid)
+        if(curCnt == null || curCnt < ts.cnt) this.entries.put(ts.uid, ts.cnt)
     }
 
     /**
@@ -74,8 +74,8 @@ class VersionVector {
     */
     @Name("includesTS")
     fun includesTS(ts: Timestamp): Boolean {
-        val cnt = entries.getOrElse(ts.uid, { 0 })
-        return cnt >= ts.cnt
+        val cnt = this.entries.get(ts.uid)
+        return cnt != null && cnt >= ts.cnt
     }
 
     /**
@@ -85,9 +85,10 @@ class VersionVector {
     */
     @Name("pointWiseMax")
     fun pointWiseMax(vv: VersionVector) {
-        for((k, v) in vv.entries)
-            if(entries.getOrElse(k, { 0 }) < v)
-                entries.put(k, v)
+        for((k, v) in vv.entries) {
+            val curCnt = this.entries.get(k)
+            if (curCnt == null || curCnt < v) this.entries.put(k, v)
+        }
     }
 
     /**
@@ -97,14 +98,9 @@ class VersionVector {
     */
     @Name("isSmallerOrEquals")
     fun isSmallerOrEquals(vv: VersionVector): Boolean {
-        for((k, v) in vv.entries) {
-            val localV = entries.getOrElse(k, { 0 })
-            if(localV > v) return false
-        }
-
         for ((k, localV) in this.entries) {
-            val v = vv.entries.getOrElse(k, { 0 })
-            if(localV > v) return false
+            val v = vv.entries.get(k)
+            if(v == null || localV > v) return false
         }
 
         return true

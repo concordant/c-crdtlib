@@ -867,9 +867,8 @@ class RGATest {
         rga.insertAt(1, 'B', ts2)
         rga.removeAt(1, ts3)
         rga.insertAt(1, 'C', ts4)
-        val rgaJson = rga.toJson(Char::class)
 
-        assertEquals("""{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"dcid"},"cnt":1},"ts":{"uid":{"name":"dcid"},"cnt":1},"removed":false},{"anchor":{"uid":{"name":"dcid"},"cnt":1},"uid":{"uid":{"name":"dcid"},"cnt":4},"ts":{"uid":{"name":"dcid"},"cnt":4},"removed":false},{"atom":"B","anchor":{"uid":{"name":"dcid"},"cnt":1},"uid":{"uid":{"name":"dcid"},"cnt":2},"ts":{"uid":{"name":"dcid"},"cnt":3},"removed":true}],"value":["A","C"]}""", rgaJson)
+        assertEquals("""{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"dcid"},"cnt":-2147483648},"ts":{"uid":{"name":"dcid"},"cnt":-2147483648},"removed":false},{"anchor":{"uid":{"name":"dcid"},"cnt":-2147483648},"uid":{"uid":{"name":"dcid"},"cnt":-2147483645},"ts":{"uid":{"name":"dcid"},"cnt":-2147483645},"removed":false},{"atom":"B","anchor":{"uid":{"name":"dcid"},"cnt":-2147483648},"uid":{"uid":{"name":"dcid"},"cnt":-2147483647},"ts":{"uid":{"name":"dcid"},"cnt":-2147483646},"removed":true}],"value":["A","C"]}""", rga.toJson(Char::class))
     }
 
     /**
@@ -877,7 +876,7 @@ class RGATest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"dcid"},"cnt":1},"ts":{"uid":{"name":"dcid"},"cnt":1},"removed":false},{"anchor":{"uid":{"name":"dcid"},"cnt":1},"uid":{"uid":{"name":"dcid"},"cnt":4},"ts":{"uid":{"name":"dcid"},"cnt":4},"removed":false},{"atom":"B","anchor":{"uid":{"name":"dcid"},"cnt":1},"uid":{"uid":{"name":"dcid"},"cnt":2},"ts":{"uid":{"name":"dcid"},"cnt":3},"removed":true}],"value":["A","C"]}""")
+        val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"dcid"},"cnt":-2147483648},"ts":{"uid":{"name":"dcid"},"cnt":-2147483648},"removed":false},{"anchor":{"uid":{"name":"dcid"},"cnt":-2147483648},"uid":{"uid":{"name":"dcid"},"cnt":-2147483645},"ts":{"uid":{"name":"dcid"},"cnt":-2147483645},"removed":false},{"atom":"B","anchor":{"uid":{"name":"dcid"},"cnt":-2147483648},"uid":{"uid":{"name":"dcid"},"cnt":-2147483647},"ts":{"uid":{"name":"dcid"},"cnt":-2147483646},"removed":true}],"value":["A","C"]}""")
 
         assertEquals(listOf('A', 'C'), rgaJson.get())
     }
