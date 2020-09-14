@@ -32,10 +32,10 @@ import kotlin.test.assertFailsWith
 class SimpleEnvironmentPropTest: StringSpec( {
 
     // AB: This seems rather special for this particular environment
-    "initial environment has counter 1" {
-        forAll(dcuidArb) { uid ->
+    "initial environment has counter smaller than any other timestamp" {
+        forAll(dcuidArb, Arb.int()) { uid, i ->
             val se = SimpleEnvironment(uid)
-            Timestamp(uid, 1) == se.getNewTimestamp()
+            se.getNewTimestamp().compareTo(Timestamp(uid, i)) < 0
         }
     }
     "empty environment has empty version vector" {
@@ -53,7 +53,7 @@ class SimpleEnvironmentPropTest: StringSpec( {
         }
     }
     "including other timestamps does not modify local one" {
-        forAll(dcuidArb, dcuidArb, Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1), Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1)){ uid1, uid2, cnt1, cnt2->
+        forAll(dcuidArb, dcuidArb, Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1), Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1)){ uid1, uid2, cnt1, cnt2 ->
             val se = SimpleEnvironment(uid1)
             se.updateStateTS(Timestamp(uid1, cnt1))
             se.updateStateTS(Timestamp(uid2, cnt2))

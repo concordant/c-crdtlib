@@ -112,18 +112,6 @@ kotlin {
             }
         }
     }
-
-    tasks {
-        val dokka by getting(DokkaTask::class) {
-
-            outputFormat = "html"
-            outputDirectory = "$buildDir/docs"
-
-            multiplatform {
-                register("common") {}
-            }
-        }
-    }
 }
 
 tasks.withType<Test> { useJUnitPlatform() }

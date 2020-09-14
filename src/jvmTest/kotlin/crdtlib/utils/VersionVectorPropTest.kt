@@ -20,6 +20,8 @@
 package crdtlib.utils
 
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.int
 import io.kotest.property.forAll
 
 class VersionVectorPropTest: StringSpec({
@@ -63,10 +65,11 @@ class VersionVectorPropTest: StringSpec({
         }
     }
     "incrementing maxVal" {
-        forAll(versionVectorArb, dcuidArb) { vv, dcuid ->
+        forAll(versionVectorArb, dcuidArb, Arb.int()) { vv, dcuid, i ->
             val maxTS = vv.maxVal()
-            vv.addTS(Timestamp(dcuid, maxTS+1))
-            maxTS + 1 == vv.maxVal()
+            val incrTS = 1 + (maxTS ?: i)
+            vv.addTS(Timestamp(dcuid, incrTS))
+            incrTS == vv.maxVal()
         }
     }
 })
