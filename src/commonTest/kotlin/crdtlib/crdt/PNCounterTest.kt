@@ -24,6 +24,7 @@ import crdtlib.utils.DCUId
 import crdtlib.utils.SimpleEnvironment
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 /**
 * Represents a suite test for PNCounter.
@@ -74,6 +75,53 @@ class PNCounterTest {
         cnt.decrement(dec, ts)
 
         assertEquals(-dec, cnt.get())
+    }
+
+    /**
+    * This test evaluates the scenario where increment overflows.
+    */
+    @Test
+    fun incrementOverflow() {
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
+        val ts1 = dc.getNewTimestamp()
+        dc.updateStateTS(ts1)
+        val ts2 = dc.getNewTimestamp()
+        dc.updateStateTS(ts2)
+        val ts3 = dc.getNewTimestamp()
+        val inc = 42
+        val cnt = PNCounter()
+
+        cnt.increment(Int.MAX_VALUE - inc, ts1)
+        cnt.increment(inc, ts2)
+
+        assertFailsWith(RuntimeException::class) {
+            cnt.increment(inc, ts3)
+        }
+    }
+
+
+    /**
+    * This test evaluates the scenario where decrement overflows.
+    */
+    @Test
+    fun decrementOverflow() {
+        val uid = DCUId("dcid")
+        val dc = SimpleEnvironment(uid)
+        val ts1 = dc.getNewTimestamp()
+        dc.updateStateTS(ts1)
+        val ts2 = dc.getNewTimestamp()
+        dc.updateStateTS(ts2)
+        val ts3 = dc.getNewTimestamp()
+        val dec = 10
+        val cnt = PNCounter()
+
+        cnt.decrement(Int.MAX_VALUE - dec, ts1)
+        cnt.decrement(dec, ts2)
+
+        assertFailsWith(RuntimeException::class) {
+            cnt.decrement(dec, ts3)
+        }
     }
 
     /**
