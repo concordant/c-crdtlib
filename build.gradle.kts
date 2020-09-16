@@ -31,6 +31,7 @@ repositories {
 }
 
 kotlin {
+
     jvm() {
         withJava()
         val jvmJar by tasks.getting(org.gradle.jvm.tasks.Jar::class) {
@@ -65,6 +66,8 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
+                implementation("io.kotest:kotest-property:4.1.1")
+                implementation("io.kotest:kotest-assertions-core:4.1.1")
             }
         }
 
@@ -97,6 +100,9 @@ kotlin {
         val nodeJsTest by getting {
             dependencies {
                 implementation(kotlin("test-js"))
+                implementation("io.kotest:kotest-property-js:4.1.1")
+                implementation("io.kotest:kotest-core-js:4.1.1")
+                implementation("io.kotest:kotest-assertions-core-js:4.1.1")
             }
         }
     }

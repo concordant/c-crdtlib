@@ -11,7 +11,7 @@ val timestampArb = arb { rs ->
 
 val timestampNonMaxArb = arb { rs ->
     val dcuids = dcuidArb.values(rs)
-    val cnts = Arb.int(Integer.MIN_VALUE, Integer.MAX_VALUE-1).values(rs)
+    val cnts = Arb.int(Int.MIN_VALUE, Int.MAX_VALUE-1).values(rs)
     dcuids.zip(cnts).map { (dcuids, cnt) -> Timestamp(dcuids.value, cnt.value) }
 }
 
