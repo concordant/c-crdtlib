@@ -91,9 +91,9 @@ class VersionVector {
     }
 
     /**
-    * Checks that this version vector is smaller or equals than a given version vector.
+    * Checks that this version vector is smaller than or equal a given version vector.
     * @param vv the given version vector used for comparison.
-    * @return true if this version vector is smaller or equals than the other one, false otherwise.
+    * @return true if this version vector is smaller than or equal the other one, false otherwise.
     */
     @Name("isSmallerOrEquals")
     fun isSmallerOrEquals(vv: VersionVector): Boolean {
@@ -117,6 +117,35 @@ class VersionVector {
         }
         return true
     }
+
+    /**
+     * Checks that this version vector is greater than or equal a given version vector.
+     * @param vv the given version vector used for comparison.
+     * @return true if this version vector is greater than or equal the other one, false otherwise.
+     */
+    @Name("isGreaterOrEquals")
+    fun isGreaterOrEquals(vv: VersionVector): Boolean {
+        for ((k, v) in vv.entries) {
+            val localV = this.entries.get(k)
+            if(localV == null || localV < v) return false
+        }
+        return true
+    }
+
+    /**
+     * Checks that this version vector is strictly greater than a given version vector.
+     * @param vv the given version vector used for comparison.
+     * @return true if this version vector is greater than the other one, false otherwise.
+     */
+    @Name("isGreater")
+    fun isGreater(vv: VersionVector): Boolean {
+        for ((k, v) in vv.entries) {
+            val localV = this.entries.get(k)
+            if(localV == null || localV <= v) return false
+        }
+        return true
+    }
+
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
