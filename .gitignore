@@ -10,6 +10,7 @@
 /target/
 /bin/
 /node_modules/
+.*.swp
 gradle/wrapper/gradle-wrapper.properties
 gradlew
 gradlew.bat
