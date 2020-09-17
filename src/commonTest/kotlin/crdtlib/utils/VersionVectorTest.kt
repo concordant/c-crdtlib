@@ -348,7 +348,7 @@ class VersionVectorTest {
         vv2.addTS(ts4)
 
         assertTrue(vv1.isSmallerOrEquals(vv2))
-        assertTrue(vv1.isConcurrent(vv2))
+        assertFalse(vv1.isConcurrent(vv2))
     }
 
     /**

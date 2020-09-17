@@ -146,7 +146,12 @@ class VersionVector {
         return true
     }
 
-
+    /**
+     * Overrides the equals function of object
+     * @param other object to compare with
+     * @return true if both objects are version vectors with equal entries
+     */
+    @Name("equals")
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (!(other is VersionVector)) return false
@@ -157,10 +162,20 @@ class VersionVector {
         return true
     }
 
+    /**
+     * Overrides the hashCode function of object
+     * @return a hash code value for this object.
+     */
+    @Name("hashCode")
     override fun hashCode(): Int {
         return entries.hashCode()
     }
 
+    /**
+     * Overrides the toString function of object
+     * @return a string representation of the object.
+     */
+    @Name("toString")
     override fun toString(): String {
         return "VersionVector(entries='$entries')"
     }
@@ -187,12 +202,8 @@ class VersionVector {
         }
 
         // there are entries in the vv that this one does not have
-        if (!this.entries.keys.containsAll(vv.entries.keys))
+        if (isLarger && !this.entries.keys.containsAll(vv.entries.keys))
             return true;
-
-        // empty case
-        if (this.entries.keys.isEmpty() && vv.entries.keys.isEmpty())
-            return false
 
         // all entries are either (smaller or equal) or (larger or equal)
         return false
