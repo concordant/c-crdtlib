@@ -52,12 +52,12 @@ fun main(args: Array<String>) {
             Delta::class,
             DeltaCRDT::class,
             EmptyDelta::class,
-            JSMRegister::class,
             LWWMap::class,
             LWWRegister::class,
             MVRegister::class,
             PNCounter::class,
-            RGA::class
+            RGA::class,
+            Ratchet::class
         )
     ).definitionsText)
     println("}");

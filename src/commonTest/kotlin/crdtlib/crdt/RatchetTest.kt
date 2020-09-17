@@ -24,32 +24,32 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.*
 
 /**
-* Represents a suite test for JSMRegister.
+* Represents a suite test for Ratchet.
 **/
-class JSMRegisterTest : StringSpec({
+class RatchetTest : StringSpec({
 
     /**
     * This test evaluates the scenario: create string value get.
     * Call to get should return the value set by the constructor.
     */
-    "create string register then get" {
+    "create string ratchet then get" {
         val value = "value"
 
-        val reg = JSMRegister<String>(value)
+        val rat = Ratchet<String>(value)
 
-        reg.get().shouldBe(value)
+        rat.get().shouldBe(value)
     }
 
     /**
     * This test evaluates the scenario: create int value get.
     * Call to get should return the value set by the constructor.
     */
-    "create integer register then get" {
+    "create integer ratchet then get" {
         val value = 42
 
-        val reg = JSMRegister<Int>(value)
+        val rat = Ratchet<Int>(value)
 
-        reg.get().shouldBe(value)
+        rat.get().shouldBe(value)
     }
 
     /**
@@ -60,10 +60,10 @@ class JSMRegisterTest : StringSpec({
         val val1 = 42
         val val2 = 100
 
-        val reg = JSMRegister<Int>(val1)
-        reg.assign(val2)
+        val rat = Ratchet<Int>(val1)
+        rat.assign(val2)
 
-        reg.get().shouldBe(val2)
+        rat.get().shouldBe(val2)
     }
 
     /**
@@ -74,10 +74,10 @@ class JSMRegisterTest : StringSpec({
         val val1 = 42
         val val2 = 3
 
-        val reg = JSMRegister<Int>(val1)
-        reg.assign(val2)
+        val rat = Ratchet<Int>(val1)
+        rat.assign(val2)
 
-        reg.get().shouldBe(val1)
+        rat.get().shouldBe(val1)
     }
 
     /**
@@ -88,11 +88,11 @@ class JSMRegisterTest : StringSpec({
         val val1 = 42
         val val2 = 101
 
-        val reg1 = JSMRegister<Int>(val1)
-        val reg2 = JSMRegister<Int>(val2)
-        reg2.merge(reg1)
+        val rat1 = Ratchet<Int>(val1)
+        val rat2 = Ratchet<Int>(val2)
+        rat2.merge(rat1)
 
-        reg2.get().shouldBe(val2)
+        rat2.get().shouldBe(val2)
     }
 
     /**
@@ -103,11 +103,11 @@ class JSMRegisterTest : StringSpec({
         val val1 = 42
         val val2 = 41
 
-        val reg1 = JSMRegister<Int>(val1)
-        val reg2 = JSMRegister<Int>(val2)
-        reg2.merge(reg1)
+        val rat1 = Ratchet<Int>(val1)
+        val rat2 = Ratchet<Int>(val2)
+        rat2.merge(rat1)
 
-        reg2.get().shouldBe(val1)
+        rat2.get().shouldBe(val1)
     }
 
     /**
@@ -120,12 +120,12 @@ class JSMRegisterTest : StringSpec({
         val val2 = "CCC"
         val val3 = "AAA"
 
-        val reg1 = JSMRegister<String>(val1)
-        reg1.assign(val2)
-        val reg2 = JSMRegister<String>(val3)
-        reg2.merge(reg1)
+        val rat1 = Ratchet<String>(val1)
+        rat1.assign(val2)
+        val rat2 = Ratchet<String>(val3)
+        rat2.merge(rat1)
 
-        reg2.get().shouldBe(val2)
+        rat2.get().shouldBe(val2)
     }
 
     /**
@@ -138,12 +138,12 @@ class JSMRegisterTest : StringSpec({
         val val2 = "BBB"
         val val3 = "CCC"
 
-        val reg1 = JSMRegister<String>(val1)
-        reg1.assign(val2)
-        val reg2 = JSMRegister<String>(val3)
-        reg2.merge(reg1)
+        val rat1 = Ratchet<String>(val1)
+        rat1.assign(val2)
+        val rat2 = Ratchet<String>(val3)
+        rat2.merge(rat1)
 
-        reg2.get().shouldBe(val3)
+        rat2.get().shouldBe(val3)
     }
 
     /**
@@ -156,12 +156,12 @@ class JSMRegisterTest : StringSpec({
         val val2 = "AAA"
         val val3 = "BBB"
 
-        val reg1 = JSMRegister<String>(val1)
-        reg1.assign(val2)
-        val reg2 = JSMRegister<String>(val3)
-        reg2.merge(reg1)
+        val rat1 = Ratchet<String>(val1)
+        rat1.assign(val2)
+        val rat2 = Ratchet<String>(val3)
+        rat2.merge(rat1)
 
-        reg2.get().shouldBe(val1)
+        rat2.get().shouldBe(val1)
     }
 
     /**
@@ -174,13 +174,13 @@ class JSMRegisterTest : StringSpec({
         val val2 = 5
         val val3 = 2
 
-        val reg1 = JSMRegister<Int>(val1)
-        val reg2 = JSMRegister<Int>(val2)
-        reg1.merge(reg2)
-        reg2.assign(val3)
-        reg2.merge(reg1)
+        val rat1 = Ratchet<Int>(val1)
+        val rat2 = Ratchet<Int>(val2)
+        rat1.merge(rat2)
+        rat2.assign(val3)
+        rat2.merge(rat1)
 
-        reg2.get().shouldBe(val2)
+        rat2.get().shouldBe(val2)
     }
 
     /**
@@ -192,12 +192,12 @@ class JSMRegisterTest : StringSpec({
         val val2 = 6
         val val3 = 5
 
-        val reg1 = JSMRegister<Int>(val1)
-        val assignOp = reg1.assign(val2)
-        val reg2 = JSMRegister<Int>(val3)
-        reg2.merge(assignOp)
+        val rat1 = Ratchet<Int>(val1)
+        val assignOp = rat1.assign(val2)
+        val rat2 = Ratchet<Int>(val3)
+        rat2.merge(assignOp)
 
-        reg2.get().shouldBe(val1)
+        rat2.get().shouldBe(val1)
     }
 
     /*
@@ -210,33 +210,33 @@ class JSMRegisterTest : StringSpec({
         val val2 = 6
         val val3 = 5
 
-        val reg1 = JSMRegister<Int>(val1)
-        reg1.assign(val2)
-        val reg2 = JSMRegister<Int>(val3)
-        val delta = reg1.generateDelta(vv)
-        reg2.merge(delta)
+        val rat1 = Ratchet<Int>(val1)
+        rat1.assign(val2)
+        val rat2 = Ratchet<Int>(val3)
+        val delta = rat1.generateDelta(vv)
+        rat2.merge(delta)
 
-        reg2.get().shouldBe(val1)
+        rat2.get().shouldBe(val1)
     }
 
     /**
-    * This test evaluates JSON serialization of a JSM register.
+    * This test evaluates JSON serialization of a ratchet.
     **/
     "JSON serialization" {
         val value = "VALUE"
 
-        val reg = JSMRegister<String>(value)
-        val regJson = reg.toJson()
+        val rat = Ratchet<String>(value)
+        val ratJson = rat.toJson()
 
-        regJson.shouldBe("""{"_type":"JSMRegister","value":"VALUE"}""")
+        ratJson.shouldBe("""{"_type":"Ratchet","value":"VALUE"}""")
     }
 
     /**
-    * This test evaluates JSON deserialization of a JSM register.
+    * This test evaluates JSON deserialization of a ratchet.
     **/
     "JSON deserialization" {
-        val regJson = JSMRegister.fromJson<String>("""{"_type":"JSMRegister","value":"VALUE"}""")
+        val ratJson = Ratchet.fromJson<String>("""{"_type":"Ratchet","value":"VALUE"}""")
 
-        regJson.get().shouldBe("VALUE")
+        ratJson.get().shouldBe("VALUE")
     }
 })
