@@ -27,9 +27,9 @@ import io.kotest.property.forAll
 import java.lang.Integer.max
 
 
-val JSMRegisterIntArb = arb { rs ->
+val RatchetIntArb = arb { rs ->
     val vs = Arb.int().values(rs)
-    vs.map { v -> JSMRegister(v.value)}
+    vs.map { v -> Ratchet(v.value)}
 }
 
 enum class OpType {
@@ -42,18 +42,18 @@ val OperationArb = arb { rs ->
     typs.zip(vs).map { (t, v) -> Pair(t.value, v.value)}
 }
 
-class JSMRegisterPropTest: StringSpec({
+class RatchetPropTest: StringSpec({
 
     "deserialize is inverse to serialize" {
-        forAll(JSMRegisterIntArb) { r ->
-            r.get() == JSMRegister.fromJson<Int>(r.toJson()).get()
+        forAll(RatchetIntArb) { r ->
+            r.get() == Ratchet.fromJson<Int>(r.toJson()).get()
             //TODO: After fixing equality, this should also work:
-            // r == JSMRegister.fromJson<Int>(r.toJson())
+            // r == Ratchet.fromJson<Int>(r.toJson())
         }
     }
     "get initial value" {
         forAll(Arb.string()){ s ->
-            s == JSMRegister(s).get()
+            s == Ratchet(s).get()
         }
     }
     "arbitrary set and merge always yields largest element" {
@@ -61,11 +61,11 @@ class JSMRegisterPropTest: StringSpec({
             val maybeMaximum = ops.maxBy { it.second }
             val maximum = maybeMaximum?.second ?: Int.MIN_VALUE
 
-            val r = JSMRegister(Int.MIN_VALUE)
+            val r = Ratchet(Int.MIN_VALUE)
             ops.map { op ->
                 when(op.first){
                     OpType.ASSIGN -> r.assign(op.second)
-                    OpType.MERGE -> r.merge(JSMRegister(op.second))
+                    OpType.MERGE -> r.merge(Ratchet(op.second))
                 }}
             r.get() == maximum
         }
@@ -76,8 +76,8 @@ class JSMRegisterPropTest: StringSpec({
             val m1 = ops1.max() ?: Int.MIN_VALUE
             val m2 = ops2.max() ?: Int.MIN_VALUE
 
-            val r1 = JSMRegister(Int.MIN_VALUE)
-            val r2 = JSMRegister(Int.MIN_VALUE)
+            val r1 = Ratchet(Int.MIN_VALUE)
+            val r2 = Ratchet(Int.MIN_VALUE)
             ops1.map { op -> r1.assign(op) }
             ops2.map { op -> r2.assign(op) }
 
