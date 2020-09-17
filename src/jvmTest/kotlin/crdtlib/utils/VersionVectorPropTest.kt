@@ -32,6 +32,15 @@ class VersionVectorPropTest: StringSpec({
             vv2.isSmallerOrEquals(vv)
         }
     }
+
+    "two vvs are either concurrent or comparable, and concurrent is commutative" {
+        forAll(versionVectorArb, versionVectorArb) { vv1, vv2 ->
+            val isComparable = vv1.isSmallerOrEquals(vv2) || vv2.isSmallerOrEquals(vv2)
+            val isConcurrent = vv2.isConcurrent(vv1) && vv1.isConcurrent(vv2)
+            isComparable xor isConcurrent
+        }
+    }
+
     "copy generates equal version vector" {
         forAll(versionVectorArb) { vv1 ->
             val vv2 = vv1.copy()

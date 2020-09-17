@@ -106,6 +106,35 @@ class VersionVector {
     }
 
     /**
+     * Checks that this version vector is concurrent to a given version vector.
+     * @param vv the given version vector used for comparison.
+     * @return true if this version vector is concurrent to the other one, false otherwise.
+     */
+    @Name("isConcurrent")
+    fun isConcurrent(vv: VersionVector): Boolean {
+        var isSmaller = false
+        var isLarger = false
+        for ((k, localV) in this.entries) {
+            val v = vv.entries.get(k)
+            if(v == null || localV > v)
+                // one entry in this object is larger
+                isLarger = true
+            else if(localV < v)
+                // one entry in the other vv is larger
+                isSmaller = true
+            if (isSmaller && isLarger)
+                return true
+        }
+
+
+        if (!this.entries.keys.containsAll(vv.entries.keys))
+            return false
+
+        // all entries are either (smaller or equal) or (larger or equal)
+        return false
+    }
+
+    /**
     * Copies this version vector.
     * @return a copy of this version vector.
     */
