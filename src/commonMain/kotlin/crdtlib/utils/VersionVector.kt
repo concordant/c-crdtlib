@@ -126,8 +126,12 @@ class VersionVector {
                 return true
         }
 
-
+        // there are entries in the vv that this one does not have
         if (!this.entries.keys.containsAll(vv.entries.keys))
+            return true;
+
+        // empty case
+        if (this.entries.keys.isEmpty() && vv.entries.keys.isEmpty())
             return false
 
         // all entries are either (smaller or equal) or (larger or equal)
