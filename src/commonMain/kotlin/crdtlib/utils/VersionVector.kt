@@ -176,12 +176,12 @@ class VersionVector {
     }
 
     /**
-     * Checks that this version vector is concurrent to a given version vector.
-     * @param vv the given version vector used for comparison.
-     * @return true if this version vector is concurrent to the other one, false otherwise.
+     * Checks that this version vector is not comparable to a given version vector.
+     * @param vv the given version vector to compare with.
+     * @return true if this version vector is not comparable to the other one, false otherwise.
      */
-    @Name("isConcurrent")
-    fun isConcurrent(vv: VersionVector): Boolean {
+    @Name("isNotComparable")
+    fun isNotComparable(vv: VersionVector): Boolean {
         var isSmaller = false
         var isLarger = false
         for ((k, localV) in this.entries) {

@@ -321,7 +321,7 @@ class VersionVectorTest {
         vv2.addTS(ts4)
 
         assertTrue(vv1.isSmallerOrEquals(vv2))
-        assertFalse(vv1.isConcurrent(vv2))
+        assertFalse(vv1.isNotComparable(vv2))
     }
 
     /**
@@ -348,7 +348,7 @@ class VersionVectorTest {
         vv2.addTS(ts4)
 
         assertTrue(vv1.isSmallerOrEquals(vv2))
-        assertFalse(vv1.isConcurrent(vv2))
+        assertFalse(vv1.isNotComparable(vv2))
     }
 
     /**
@@ -374,7 +374,7 @@ class VersionVectorTest {
         vv2.addTS(ts3)
 
         assertTrue(vv1.isSmallerOrEquals(vv2))
-        assertFalse(vv1.isConcurrent(vv2))
+        assertFalse(vv1.isNotComparable(vv2))
     }
 
     /**
@@ -402,7 +402,7 @@ class VersionVectorTest {
         vv2.addTS(ts4)
 
         assertFalse(vv1.isSmallerOrEquals(vv2))
-        assertFalse(vv1.isConcurrent(vv2))
+        assertFalse(vv1.isNotComparable(vv2))
     }
 
     /**
@@ -431,7 +431,7 @@ class VersionVectorTest {
         vv2.addTS(ts4)
 
         assertFalse(vv1.isSmallerOrEquals(vv2))
-        assertTrue(vv1.isConcurrent(vv2))
+        assertTrue(vv1.isNotComparable(vv2))
     }
 
     /**
@@ -458,7 +458,7 @@ class VersionVectorTest {
         vv2.addTS(ts4)
 
         assertFalse(vv1.isSmallerOrEquals(vv2))
-        assertTrue(vv1.isConcurrent(vv2))
+        assertTrue(vv1.isNotComparable(vv2))
     }
 
     /**
@@ -485,7 +485,7 @@ class VersionVectorTest {
         vv2.addTS(ts4)
 
         assertFalse(vv1.isSmallerOrEquals(vv2))
-        assertFalse(vv1.isConcurrent(vv2))
+        assertFalse(vv1.isNotComparable(vv2))
     }
 
     /**
@@ -512,7 +512,7 @@ class VersionVectorTest {
         vv2.addTS(ts3)
 
         assertFalse(vv1.isSmallerOrEquals(vv2))
-        assertTrue(vv1.isConcurrent(vv2))
+        assertTrue(vv1.isNotComparable(vv2))
     }
 
     /**
@@ -538,7 +538,7 @@ class VersionVectorTest {
         vv2.addTS(ts3)
 
         assertFalse(vv1.isSmallerOrEquals(vv2))
-        assertTrue(vv1.isConcurrent(vv2))
+        assertTrue(vv1.isNotComparable(vv2))
     }
 
     /**
@@ -563,7 +563,7 @@ class VersionVectorTest {
 
         assertTrue(vv1.isSmallerOrEquals(vv2))
         assertTrue(vv2.isSmallerOrEquals(vv1))
-        assertFalse(vv1.isConcurrent(vv2))
+        assertFalse(vv1.isNotComparable(vv2))
     }
 
     /**
@@ -588,7 +588,7 @@ class VersionVectorTest {
 
         assertTrue(vv1.isSmallerOrEquals(vv2))
         assertTrue(vv2.isSmallerOrEquals(vv1))
-        assertFalse(vv1.isConcurrent(vv2))
+        assertFalse(vv1.isNotComparable(vv2))
     }
 
     /**
