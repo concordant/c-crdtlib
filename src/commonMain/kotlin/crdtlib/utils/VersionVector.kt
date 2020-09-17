@@ -101,8 +101,39 @@ class VersionVector {
             val v = vv.entries.get(k)
             if(v == null || localV > v) return false
         }
-
         return true
+    }
+
+    /**
+     * Checks that this version vector is strictly smaller than a given version vector.
+     * @param vv the given version vector used for comparison.
+     * @return true if this version vector is smaller than the other one, false otherwise.
+     */
+    @Name("isSmaller")
+    fun isSmaller(vv: VersionVector): Boolean {
+        for ((k, localV) in this.entries) {
+            val v = vv.entries.get(k)
+            if(v == null || localV >= v) return false
+        }
+        return true
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (!(other is VersionVector)) return false
+
+        other as VersionVector
+
+        if (entries != other.entries) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return entries.hashCode()
+    }
+
+    override fun toString(): String {
+        return "VersionVector(entries='$entries')"
     }
 
     /**
