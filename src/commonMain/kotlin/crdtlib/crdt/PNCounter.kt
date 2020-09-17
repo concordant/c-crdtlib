@@ -51,7 +51,7 @@ import kotlinx.serialization.json.*
                 "first": $value, // $value is an integer
                 "second": Timestamp.toJson() 
             } ))?
-        ],
+        ]
     },
     "value": $value // $value is an integer
 * }
