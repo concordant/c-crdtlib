@@ -111,11 +111,13 @@ class VersionVector {
      */
     @Name("isSmaller")
     fun isSmaller(vv: VersionVector): Boolean {
+        var isEqual = this.entries.isNotEmpty()
         for ((k, localV) in this.entries) {
             val v = vv.entries.get(k)
-            if(v == null || localV >= v) return false
+            if(v == null || localV > v) return false
+            isEqual = isEqual && (localV == v)
         }
-        return true
+        return !isEqual
     }
 
     /**
@@ -139,11 +141,13 @@ class VersionVector {
      */
     @Name("isGreater")
     fun isGreater(vv: VersionVector): Boolean {
+        var isEqual = vv.entries.isNotEmpty()
         for ((k, v) in vv.entries) {
             val localV = this.entries.get(k)
-            if(localV == null || localV <= v) return false
+            if(localV == null || localV < v) return false
+            isEqual = isEqual && (localV == v)
         }
-        return true
+        return !isEqual
     }
 
     /**
