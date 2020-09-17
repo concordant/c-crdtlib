@@ -1265,10 +1265,9 @@ class MVMapTest {
         map1.put(key5, value5, ts7)
         map2.put(key3, value2, ts2)
         map1.merge(map2)
-        assertEquals(setOf(value2, value3), map1.getString(key3))
         val mapJson = map1.toJson()
 
-        assertEquals("""{"_type":"MVMap","_metadata":{"entries":{"key1%INTEGER":[{"uid":{"name":"dcid1"},"cnt":1}],"key2%STRING":[{"uid":{"name":"dcid1"},"cnt":3}],"key3%STRING":[{"uid":{"name":"dcid1"},"cnt":4},{"uid":{"name":"dcid2"},"cnt":1}],"key4%BOOLEAN":[{"uid":{"name":"dcid1"},"cnt":5}],"key5%DOUBLE":[{"uid":{"name":"dcid1"},"cnt":6}]},"causalContext":{"entries":[{"name":"dcid1"},6,{"name":"dcid2"},1]}},"key1%INTEGER":[1],"key2%STRING":[null],"key3%STRING":["value3","value2"],"key4%BOOLEAN":[true],"key5%DOUBLE":[3.14159]}""", mapJson)
+        assertEquals("""{"_type":"MVMap","_metadata":{"entries":{"key1%INTEGER":[{"uid":{"name":"dcid1"},"cnt":-2147483648}],"key2%STRING":[{"uid":{"name":"dcid1"},"cnt":-2147483646}],"key3%STRING":[{"uid":{"name":"dcid1"},"cnt":-2147483645},{"uid":{"name":"dcid2"},"cnt":-2147483648}],"key4%BOOLEAN":[{"uid":{"name":"dcid1"},"cnt":-2147483644}],"key5%DOUBLE":[{"uid":{"name":"dcid1"},"cnt":-2147483643}]},"causalContext":{"entries":[{"name":"dcid1"},-2147483643,{"name":"dcid2"},-2147483648]}},"key1%INTEGER":[1],"key2%STRING":[null],"key3%STRING":["value3","value2"],"key4%BOOLEAN":[true],"key5%DOUBLE":[3.14159]}""", mapJson)
     }
 
     /**
@@ -1276,7 +1275,7 @@ class MVMapTest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val mapJson = MVMap.fromJson("""{"_type":"MVMap","_metadata":{"entries":{"key1%INTEGER":[{"uid":{"name":"dcid1"},"cnt":1}],"key2%STRING":[{"uid":{"name":"dcid1"},"cnt":3}],"key3%STRING":[{"uid":{"name":"dcid1"},"cnt":4},{"uid":{"name":"dcid2"},"cnt":1}],"key4%BOOLEAN":[{"uid":{"name":"dcid1"},"cnt":5}],"key5%DOUBLE":[{"uid":{"name":"dcid1"},"cnt":6}]},"causalContext":{"entries":[{"name":"dcid1"},6,{"name":"dcid2"},1]}},"key1%INTEGER":[1],"key2%STRING":[null],"key3%STRING":["value3","value2"],"key4%BOOLEAN":[true],"key5%DOUBLE":[3.14159]}""")
+        val mapJson = MVMap.fromJson("""{"_type":"MVMap","_metadata":{"entries":{"key1%INTEGER":[{"uid":{"name":"dcid1"},"cnt":-2147483648}],"key2%STRING":[{"uid":{"name":"dcid1"},"cnt":-2147483646}],"key3%STRING":[{"uid":{"name":"dcid1"},"cnt":-2147483645},{"uid":{"name":"dcid2"},"cnt":-2147483648}],"key4%BOOLEAN":[{"uid":{"name":"dcid1"},"cnt":-2147483644}],"key5%DOUBLE":[{"uid":{"name":"dcid1"},"cnt":-2147483643}]},"causalContext":{"entries":[{"name":"dcid1"},-2147483643,{"name":"dcid2"},-2147483648]}},"key1%INTEGER":[1],"key2%STRING":[null],"key3%STRING":["value3","value2"],"key4%BOOLEAN":[true],"key5%DOUBLE":[3.14159]}""")
 
         assertEquals(setOf(1), mapJson.getInt("key1"))
         assertNull(mapJson.getString("key2"))

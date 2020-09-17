@@ -1876,7 +1876,6 @@ class MapTest {
         assertEquals(setOf(valDouble2, null), map2.getMVDouble(key))
         assertEquals(setOf(valInt2, null), map2.getMVInt(key))
         assertEquals(setOf(valString2, null), map2.getMVString(key))
-        println(map2.toJson())
     }
 
     /*
@@ -3073,17 +3072,16 @@ class MapTest {
         map.putMV("key", "value", ts8)
         map.increment("key", 42, ts9)
         map.decrement("key", 11, ts10)
-
         val mapJson = map.toJson()
 
-        assertEquals("""{"_type":"Map","_metadata":{"lwwMap":{"entries":{"key%BOOLEAN":{"uid":{"name":"dcid"},"cnt":1},"key%DOUBLE":{"uid":{"name":"dcid"},"cnt":2},"key%INTEGER":{"uid":{"name":"dcid"},"cnt":3},"key%STRING":{"uid":{"name":"dcid"},"cnt":3}}},"mvMap":{"entries":{"key%BOOLEAN":[{"uid":{"name":"dcid"},"cnt":4}],"key%DOUBLE":[{"uid":{"name":"dcid"},"cnt":5}],"key%INTEGER":[{"uid":{"name":"dcid"},"cnt":6}],"key%STRING":[{"uid":{"name":"dcid"},"cnt":7}]},"causalContext":{"entries":[{"name":"dcid"},7]}},"cntMap":{"key":{"increment":[{"name":"dcid"},{"first":42,"second":{"uid":{"name":"dcid"},"cnt":8}}],"decrement":[{"name":"dcid"},{"first":11,"second":{"uid":{"name":"dcid"},"cnt":9}}]}}},"key%BOOLEAN%LWW":true,"key%DOUBLE%LWW":3.14,"key%INTEGER%LWW":42,"key%STRING%LWW":"value","key%BOOLEAN%MV":[true],"key%DOUBLE%MV":[3.14],"key%INTEGER%MV":[42],"key%STRING%MV":["value"],"key%CNT":31}""", mapJson)
+        assertEquals("""{"_type":"Map","_metadata":{"lwwMap":{"entries":{"key%BOOLEAN":{"uid":{"name":"dcid"},"cnt":-2147483648},"key%DOUBLE":{"uid":{"name":"dcid"},"cnt":-2147483647},"key%INTEGER":{"uid":{"name":"dcid"},"cnt":-2147483646},"key%STRING":{"uid":{"name":"dcid"},"cnt":-2147483646}}},"mvMap":{"entries":{"key%BOOLEAN":[{"uid":{"name":"dcid"},"cnt":-2147483645}],"key%DOUBLE":[{"uid":{"name":"dcid"},"cnt":-2147483644}],"key%INTEGER":[{"uid":{"name":"dcid"},"cnt":-2147483643}],"key%STRING":[{"uid":{"name":"dcid"},"cnt":-2147483642}]},"causalContext":{"entries":[{"name":"dcid"},-2147483642]}},"cntMap":{"key":{"increment":[{"name":"dcid"},{"first":42,"second":{"uid":{"name":"dcid"},"cnt":-2147483641}}],"decrement":[{"name":"dcid"},{"first":11,"second":{"uid":{"name":"dcid"},"cnt":-2147483640}}]}}},"key%BOOLEAN%LWW":true,"key%DOUBLE%LWW":3.14,"key%INTEGER%LWW":42,"key%STRING%LWW":"value","key%BOOLEAN%MV":[true],"key%DOUBLE%MV":[3.14],"key%INTEGER%MV":[42],"key%STRING%MV":["value"],"key%CNT":31}""", mapJson)
     }
 
     /**
     * This test evaluates JSON deserialization of a map.
     **/
     fun fromJsonDeserialization() {
-        val mapJson = Map.fromJson("""{"_type":"Map","_metadata":{"lwwMap":{"entries":{"key%BOOLEAN":{"uid":{"name":"dcid"},"cnt":1},"key%DOUBLE":{"uid":{"name":"dcid"},"cnt":2},"key%INTEGER":{"uid":{"name":"dcid"},"cnt":3},"key%STRING":{"uid":{"name":"dcid"},"cnt":3}}},"mvMap":{"entries":{"key%BOOLEAN":[{"uid":{"name":"dcid"},"cnt":4}],"key%DOUBLE":[{"uid":{"name":"dcid"},"cnt":5}],"key%INTEGER":[{"uid":{"name":"dcid"},"cnt":6}],"key%STRING":[{"uid":{"name":"dcid"},"cnt":7}]},"causalContext":{"entries":[{"name":"dcid"},7]}},"cntMap":{"key":{"increment":[{"name":"dcid"},{"first":42,"second":{"uid":{"name":"dcid"},"cnt":8}}],"decrement":[{"name":"dcid"},{"first":11,"second":{"uid":{"name":"dcid"},"cnt":9}}]}}},"key%BOOLEAN%LWW":true,"key%DOUBLE%LWW":3.14,"key%INTEGER%LWW":42,"key%STRING%LWW":"value","key%BOOLEAN%MV":[true],"key%DOUBLE%MV":[3.14],"key%INTEGER%MV":[42],"key%STRING%MV":["value"],"key%CNT":31}""")
+        val mapJson = Map.fromJson("""{"_type":"Map","_metadata":{"lwwMap":{"entries":{"key%BOOLEAN":{"uid":{"name":"dcid"},"cnt":-2147483648},"key%DOUBLE":{"uid":{"name":"dcid"},"cnt":-2147483647},"key%INTEGER":{"uid":{"name":"dcid"},"cnt":-2147483646},"key%STRING":{"uid":{"name":"dcid"},"cnt":-2147483646}}},"mvMap":{"entries":{"key%BOOLEAN":[{"uid":{"name":"dcid"},"cnt":-2147483645}],"key%DOUBLE":[{"uid":{"name":"dcid"},"cnt":-2147483644}],"key%INTEGER":[{"uid":{"name":"dcid"},"cnt":-2147483643}],"key%STRING":[{"uid":{"name":"dcid"},"cnt":-2147483642}]},"causalContext":{"entries":[{"name":"dcid"},-2147483642]}},"cntMap":{"key":{"increment":[{"name":"dcid"},{"first":42,"second":{"uid":{"name":"dcid"},"cnt":-2147483641}}],"decrement":[{"name":"dcid"},{"first":11,"second":{"uid":{"name":"dcid"},"cnt":-2147483640}}]}}},"key%BOOLEAN%LWW":true,"key%DOUBLE%LWW":3.14,"key%INTEGER%LWW":42,"key%STRING%LWW":"value","key%BOOLEAN%MV":[true],"key%DOUBLE%MV":[3.14],"key%INTEGER%MV":[42],"key%STRING%MV":["value"],"key%CNT":31}""")
 
         assertEquals(true, mapJson.getLWWBoolean("key"))
         assertEquals(3.14, mapJson.getLWWDouble("key"))

@@ -52,7 +52,7 @@ fun main(args: Array<String>) {
             Delta::class,
             DeltaCRDT::class,
             EmptyDelta::class,
-            Immutable::class,
+            JSMRegister::class,
             LWWMap::class,
             LWWRegister::class,
             MVRegister::class,

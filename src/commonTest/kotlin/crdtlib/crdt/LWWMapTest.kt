@@ -45,7 +45,7 @@ class LWWMapTest {
         assertNull(map.getInt(key))
         assertNull(map.getString(key))
     }
-    
+
     /**
     * This test evaluates the scenario: put get.
     * Call to get should return the value set by the put.
@@ -78,7 +78,7 @@ class LWWMapTest {
         assertEquals(valueInt, map.getInt(key))
         assertEquals(valueString, map.getString(key))
     }
-    
+
     /**
     * This test evaluates the scenario: put del get.
     * Call to get should return null.
@@ -123,7 +123,7 @@ class LWWMapTest {
         assertNull(map.getInt(key))
         assertNull(map.getString(key))
     }
- 
+
     /**
     * This test evaluates the scenario: del get.
     * Call to get should return null.
@@ -407,7 +407,7 @@ class LWWMapTest {
         assertEquals(valInt2, map2.getInt(key))
         assertEquals(valString2, map2.getString(key))
     }
-    
+
     /**
     * This test evaluates the scenario: putLWW || put merge get.
     * Call to get should return the value set by put registered in the first replica.
@@ -1377,7 +1377,7 @@ class LWWMapTest {
         map.put(key5, value5, ts6)
         val mapJson = map.toJson()
 
-        assertEquals("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"dcid"},"cnt":1},"key2%STRING":{"uid":{"name":"dcid"},"cnt":3},"key3%STRING":{"uid":{"name":"dcid"},"cnt":4},"key4%BOOLEAN":{"uid":{"name":"dcid"},"cnt":5},"key5%DOUBLE":{"uid":{"name":"dcid"},"cnt":6}}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""", mapJson)
+        assertEquals("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"dcid"},"cnt":-2147483648},"key2%STRING":{"uid":{"name":"dcid"},"cnt":-2147483646},"key3%STRING":{"uid":{"name":"dcid"},"cnt":-2147483645},"key4%BOOLEAN":{"uid":{"name":"dcid"},"cnt":-2147483644},"key5%DOUBLE":{"uid":{"name":"dcid"},"cnt":-2147483643}}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""", mapJson)
     }
 
     /**
@@ -1385,7 +1385,7 @@ class LWWMapTest {
     **/
     @Test
     fun fromJsonDeserialization() {
-        val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"dcid"},"cnt":1},"key2%STRING":{"uid":{"name":"dcid"},"cnt":3},"key3%STRING":{"uid":{"name":"dcid"},"cnt":4},"key4%BOOLEAN":{"uid":{"name":"dcid"},"cnt":5},"key5%DOUBLE":{"uid":{"name":"dcid"},"cnt":5}}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""")
+        val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"dcid"},"cnt":-2147483648},"key2%STRING":{"uid":{"name":"dcid"},"cnt":-2147483646},"key3%STRING":{"uid":{"name":"dcid"},"cnt":-2147483645},"key4%BOOLEAN":{"uid":{"name":"dcid"},"cnt":-2147483644},"key5%DOUBLE":{"uid":{"name":"dcid"},"cnt":-2147483643}}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""")
 
         assertEquals(1, mapJson.getInt("key1"))
         assertNull(mapJson.getString("key2"))

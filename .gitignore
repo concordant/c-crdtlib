@@ -11,3 +11,7 @@
 /bin/
 /node_modules/
 .*.swp
+gradle/wrapper/gradle-wrapper.properties
+gradlew
+gradlew.bat
+gradle/wrapper/gradle-wrapper.jar

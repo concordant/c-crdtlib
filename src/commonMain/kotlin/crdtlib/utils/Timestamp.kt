@@ -38,7 +38,7 @@ data class Timestamp(val uid: DCUId, val cnt: Int) {
     @Name("compareTo")
     operator fun compareTo(other: Timestamp): Int {
         if(this.cnt != other.cnt)
-            return this.cnt - other.cnt
+            return this.cnt.compareTo(other.cnt)
         return this.uid.compareTo(other.uid)
     }
 
@@ -52,6 +52,17 @@ data class Timestamp(val uid: DCUId, val cnt: Int) {
     }
 
     companion object {
+
+        /**
+        * Constant for timestamp counter minimum value
+        */
+        const val CNT_MIN_VALUE = Int.MIN_VALUE
+
+        /**
+        * Constant for timestamp counter maximum value
+        */
+        const val CNT_MAX_VALUE = Int.MAX_VALUE
+
         /**
         * Deserializes a given json string in a timestamp object.
         * @param json the given json string.

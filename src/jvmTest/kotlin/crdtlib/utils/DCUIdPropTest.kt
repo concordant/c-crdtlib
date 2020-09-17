@@ -17,22 +17,26 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package crdtlib.crdt
+package crdtlib.utils
 
-import crdtlib.utils.Name
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.property.Arb
+import io.kotest.property.arbitrary.string
+import io.kotest.property.forAll
 
-/**
-* This class store an immutable value
-* @property value the stored value.
-*/
-class Immutable<DataT>(private val value: DataT) {
-
-    /**
-    * Gets the value stored in the immutable.
-    * @return the value stored in the immutable.
-    */
-    @Name("get")
-    fun get(): DataT {
-        return this.value
+class DCUIdPropTest: StringSpec({
+    "compare DCIds as the name" {
+        forAll(Arb.string(), Arb.string()){ a,b ->
+            when {
+                a == b -> DCUId(a) == DCUId(b)
+                a < b -> DCUId(a) < DCUId(b)
+                else -> DCUId(a) > DCUId(b)
+            }
+        }
     }
-}
+    "deserialize is inverse to serialize" {
+        forAll(dcuidArb) { dcuid ->
+            dcuid == DCUId.fromJson(dcuid.toJson())
+        }
+    }
+})
