@@ -480,17 +480,17 @@ class Map : DeltaCRDT<Map> {
         /**
         * Constant suffix value for key associated to a last writer wins value.
         */
-        const val LWWREGISTER = SEPARATOR + "LWW"
+        const val LWWREGISTER = Map.SEPARATOR + "LWW"
 
         /**
         * Constant suffix value for key associated to a multi-value.
         */
-        const val MVREGISTER = SEPARATOR + "MV"
+        const val MVREGISTER = Map.SEPARATOR + "MV"
 
         /**
         * Constant suffix value for key associated to a counter value.
         */
-        const val PNCOUNTER = SEPARATOR + "CNT"
+        const val PNCOUNTER = Map.SEPARATOR + "CNT"
 
         /**
         * Deserializes a given json string in a crdt map.

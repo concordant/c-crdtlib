@@ -64,7 +64,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     */
     @Name("getBoolean")
     fun getBoolean(key: String): Boolean? {
-        return this.entries.get(key + BOOLEAN)?.first?.toBoolean()
+        return this.entries.get(key + LWWMap.BOOLEAN)?.first?.toBoolean()
     }
 
     /**
@@ -75,7 +75,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     */
     @Name("getDouble")
     fun getDouble(key: String): Double? {
-        return this.entries.get(key + DOUBLE)?.first?.toDoubleOrNull()
+        return this.entries.get(key + LWWMap.DOUBLE)?.first?.toDoubleOrNull()
     }
 
     /**
@@ -86,7 +86,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     */
     @Name("getInt")
     fun getInt(key: String): Int? {
-        return this.entries.get(key + INTEGER)?.first?.toIntOrNull()
+        return this.entries.get(key + LWWMap.INTEGER)?.first?.toIntOrNull()
     }
 
     /**
@@ -97,7 +97,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     */
     @Name("getString")
     fun getString(key: String): String? {
-        return this.entries.get(key + STRING)?.first
+        return this.entries.get(key + LWWMap.STRING)?.first
     }
 
     /**
@@ -110,10 +110,10 @@ class LWWMap : DeltaCRDT<LWWMap> {
     @Name("setBoolean")
     fun put(key: String, value: Boolean?, ts: Timestamp): LWWMap {
         val op = LWWMap()
-        val currentTs = this.entries.get(key + BOOLEAN)?.second
+        val currentTs = this.entries.get(key + LWWMap.BOOLEAN)?.second
         if (currentTs == null || currentTs < ts) {
-            this.entries.put(key + BOOLEAN, Pair(value?.toString(), ts))
-            op.entries.put(key + BOOLEAN, Pair(value?.toString(), ts))
+            this.entries.put(key + LWWMap.BOOLEAN, Pair(value?.toString(), ts))
+            op.entries.put(key + LWWMap.BOOLEAN, Pair(value?.toString(), ts))
         }
         return op
     }
@@ -129,10 +129,10 @@ class LWWMap : DeltaCRDT<LWWMap> {
     @Name("setDouble")
     fun put(key: String, value: Double?, ts: Timestamp): LWWMap {
         val op = LWWMap()
-        val currentTs = this.entries.get(key + DOUBLE)?.second
+        val currentTs = this.entries.get(key + LWWMap.DOUBLE)?.second
         if (currentTs == null || currentTs < ts) {
-            this.entries.put(key + DOUBLE, Pair(value?.toString(), ts))
-            op.entries.put(key + DOUBLE, Pair(value?.toString(), ts))
+            this.entries.put(key + LWWMap.DOUBLE, Pair(value?.toString(), ts))
+            op.entries.put(key + LWWMap.DOUBLE, Pair(value?.toString(), ts))
         }
         return op
     }
@@ -148,10 +148,10 @@ class LWWMap : DeltaCRDT<LWWMap> {
     @Name("setInt")
     fun put(key: String, value: Int?, ts: Timestamp): LWWMap {
         val op = LWWMap()
-        val currentTs = this.entries.get(key + INTEGER)?.second
+        val currentTs = this.entries.get(key + LWWMap.INTEGER)?.second
         if (currentTs == null || currentTs < ts) {
-            this.entries.put(key + INTEGER, Pair(value?.toString(), ts))
-            op.entries.put(key + INTEGER, Pair(value?.toString(), ts))
+            this.entries.put(key + LWWMap.INTEGER, Pair(value?.toString(), ts))
+            op.entries.put(key + LWWMap.INTEGER, Pair(value?.toString(), ts))
         }
         return op
     }
@@ -167,10 +167,10 @@ class LWWMap : DeltaCRDT<LWWMap> {
     @Name("setString")
     fun put(key: String, value: String?, ts: Timestamp): LWWMap {
         val op = LWWMap()
-        val currentTs = this.entries.get(key + STRING)?.second
+        val currentTs = this.entries.get(key + LWWMap.STRING)?.second
         if (currentTs == null || currentTs < ts) {
-            this.entries.put(key + STRING, Pair(value, ts))
-            op.entries.put(key + STRING, Pair(value, ts))
+            this.entries.put(key + LWWMap.STRING, Pair(value, ts))
+            op.entries.put(key + LWWMap.STRING, Pair(value, ts))
         }
         return op
     }
@@ -280,22 +280,22 @@ class LWWMap : DeltaCRDT<LWWMap> {
         /**
         * Constant suffix value for key associated to a value of type Boolean.
         */
-        const val BOOLEAN = SEPARATOR + "BOOLEAN"
+        const val BOOLEAN = LWWMap.SEPARATOR + "BOOLEAN"
 
         /**
         * Constant suffix value for key associated to a value of type double.
         */
-        const val DOUBLE = SEPARATOR + "DOUBLE"
+        const val DOUBLE = LWWMap.SEPARATOR + "DOUBLE"
 
         /**
         * Constant suffix value for key associated to a value of type integer.
         */
-        const val INTEGER = SEPARATOR + "INTEGER"
+        const val INTEGER = LWWMap.SEPARATOR + "INTEGER"
 
         /**
         * Constant suffix value for key associated to a value of type string.
         */
-        const val STRING = SEPARATOR + "STRING"
+        const val STRING = LWWMap.SEPARATOR + "STRING"
 
         /**
         * Deserializes a given json string in a crdt map.
