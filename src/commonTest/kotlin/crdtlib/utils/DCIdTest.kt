@@ -17,127 +17,118 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package crdtlib.test
+package crdtlib.utils
 
-import crdtlib.utils.DCUId
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.*
+import io.kotest.matchers.booleans.*
+import io.kotest.matchers.comparables.*
 
 /**
 * Represents a test suite for DCUId.
 **/
-class DCUIdTest {
+class DCUIdTest : StringSpec({
 
     /**
     * This test evaluates the comparison of a smaller DCUId and a greater one.
     * Call to compareTo should return negative value.
     */
-    @Test
-    fun negativeCompareTo() {
+    "negative compareTo" {
         val dc1 = DCUId("dcid1")
         val dc2 = DCUId("dcid2")
 
         val cmp = dc1.compareTo(dc2)
 
-        assertTrue(cmp < 0)
+        cmp.shouldBeLessThan(0)
     }
 
     /**
     * This test evaluates the comparison of a greater DCUId and a smaller one.
     * Call to compareTo should return positive value.
     */
-    @Test
-    fun positiveCompareTo() {
+    "positive compareTo" {
         val dc1 = DCUId("dcid1")
         val dc2 = DCUId("dcid2")
 
         val cmp = dc2.compareTo(dc1)
 
-        assertTrue(cmp > 0)
+        cmp.shouldBeGreaterThan(0)
     }
 
     /**
     * This test evaluates the comparison of two equal DCUIds.
     * Call to compareTo should return 0.
     */
-    @Test
-    fun zeroCompareTo() {
+    "zero compareTo" {
         val dc1 = DCUId("dcid1")
         val dc2 = DCUId("dcid1")
 
         val cmp = dc1.compareTo(dc2)
 
-        assertEquals(0, cmp)
+        cmp.shouldBe(0)
     }
 
     /**
     * This test evaluates the comparison (using operators) of a smaller DCUId and a greater one.
     */
-    @Test
-    fun negativeCompareToOperator() {
+    "negative compareTo using operators" {
         val dc1 = DCUId("dcid1")
         val dc2 = DCUId("dcid2")
 
-        assertTrue(dc1 < dc2)
-        assertTrue(dc1 <= dc2)
-        assertFalse(dc1 > dc2)
-        assertFalse(dc1 >= dc2)
-        assertFalse(dc1 == dc2)
+        (dc1 < dc2).shouldBeTrue()
+        (dc1 <= dc2).shouldBeTrue()
+        (dc1 > dc2).shouldBeFalse()
+        (dc1 >= dc2).shouldBeFalse()
+        (dc1 == dc2).shouldBeFalse()
     }
 
     /**
     * This test evaluates the comparison (using operators) of a greater DCUId and a smaller one.
     */
-    @Test
-    fun positiveCompareToOperator() {
+    "positive compareTo using operators" {
         val dc1 = DCUId("dcid1")
         val dc2 = DCUId("dcid2")
 
-        assertFalse(dc2 < dc1)
-        assertFalse(dc2 <= dc1)
-        assertTrue(dc2 > dc1)
-        assertTrue(dc2 >= dc1)
-        assertFalse(dc2 == dc1)
+        (dc2 < dc1).shouldBeFalse()
+        (dc2 <= dc1).shouldBeFalse()
+        (dc2 > dc1).shouldBeTrue()
+        (dc2 >= dc1).shouldBeTrue()
+        (dc2 == dc1).shouldBeFalse()
     }
 
     /**
     * This test evaluates the comparison (using operators) of two equal DCUIds.
     */
-    @Test
-    fun zeroCompareToOperator() {
+    "zero compareTo using operators" {
         val dc1 = DCUId("dcid1")
         val dc2 = DCUId("dcid1")
 
-        assertFalse(dc1 < dc2)
-        assertTrue(dc1 <= dc2)
-        assertFalse(dc1 > dc2)
-        assertTrue(dc1 >= dc2)
-        assertTrue(dc1 == dc2)
+        (dc1 < dc2).shouldBeFalse()
+        (dc1 <= dc2).shouldBeTrue()
+        (dc1 > dc2).shouldBeFalse()
+        (dc1 >= dc2).shouldBeTrue()
+        (dc1 == dc2).shouldBeTrue()
     }
 
     /**
     * This test evaluates JSON serialization.
     **/
-    @Test
-    fun toJsonSerialization() {
+    "JSON serialization" {
         val dc = DCUId("dcid1")
 
         val dcJson = dc.toJson()
 
-        assertEquals("""{"name":"dcid1"}""", dcJson)
+        dcJson.shouldBe("""{"name":"dcid1"}""")
     }
 
     /**
     * This test evaluates JSON deserialization.
     **/
-    @Test
-    fun fromJsonDeserialization() {
+    "JSON deserialization" {
         val dc = DCUId("dcid1")
 
         val dcJson = DCUId.fromJson("""{"name":"dcid1"}""")
 
-        assertTrue(dc == dcJson)
+        dcJson.shouldBe(dc)
     }
-}
+})

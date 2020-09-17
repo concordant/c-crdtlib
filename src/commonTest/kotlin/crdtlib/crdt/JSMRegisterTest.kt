@@ -17,81 +17,74 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package crdtlib.test
+package crdtlib.crdt
 
-import crdtlib.crdt.JSMRegister
 import crdtlib.utils.VersionVector
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.*
 
 /**
 * Represents a suite test for JSMRegister.
 **/
-class JSMRegisterTest {
+class JSMRegisterTest : StringSpec({
 
     /**
     * This test evaluates the scenario: create string value get.
     * Call to get should return the value set by the constructor.
     */
-    @Test
-    fun createStringGet() {
+    "create string register then get" {
         val value = "value"
 
         val reg = JSMRegister<String>(value)
 
-        assertEquals(value, reg.get())
+        reg.get().shouldBe(value)
     }
 
     /**
     * This test evaluates the scenario: create int value get.
     * Call to get should return the value set by the constructor.
     */
-    @Test
-    fun createIntGet() {
+    "create integer register then get" {
         val value = 42
 
         val reg = JSMRegister<Int>(value)
 
-        assertEquals(value, reg.get())
+        reg.get().shouldBe(value)
     }
 
     /**
     * This test evaluates the scenario: create assign (with greater value) get.
     * Call to get should return the value set by assign.
     */
-    @Test
-    fun createAssignGreaterGet() {
+    "create, assign greater value, get" {
         val val1 = 42
         val val2 = 100
 
         val reg = JSMRegister<Int>(val1)
         reg.assign(val2)
 
-        assertEquals(val2, reg.get())
+        reg.get().shouldBe(val2)
     }
 
     /**
     * This test evaluates the scenario: create assign (with lower value) get.
     * Call to get should return the value set by the constructor.
     */
-    @Test
-    fun createAssignLowerGet() {
+    "create, assign lower value, get" {
         val val1 = 42
         val val2 = 3
 
         val reg = JSMRegister<Int>(val1)
         reg.assign(val2)
 
-        assertEquals(val1, reg.get())
+        reg.get().shouldBe(val1)
     }
 
     /**
     * This test evaluates the scenario: create || create (with greater value) merge get.
     * Call to get should return the value set by the second replica.
     */
-    @Test
-    fun create_createGreaterMergeGet() {
+    "R1: create; R2: create with greater value, merge, get" {
         val val1 = 42
         val val2 = 101
 
@@ -99,15 +92,14 @@ class JSMRegisterTest {
         val reg2 = JSMRegister<Int>(val2)
         reg2.merge(reg1)
 
-        assertEquals(val2, reg2.get())
+        reg2.get().shouldBe(val2)
     }
 
     /**
     * This test evaluates the scenario: create || create (with lower value) merge get.
     * Call to get should return the value set by the first replica.
     */
-    @Test
-    fun create_createLowerMergeGet() {
+    "R1: create; R2: create with lower value, merge, get" {
         val val1 = 42
         val val2 = 41
 
@@ -115,7 +107,7 @@ class JSMRegisterTest {
         val reg2 = JSMRegister<Int>(val2)
         reg2.merge(reg1)
 
-        assertEquals(val1, reg2.get())
+        reg2.get().shouldBe(val1)
     }
 
     /**
@@ -123,7 +115,7 @@ class JSMRegisterTest {
     * || create (with lower value) merge get.
     * Call to get should return the value set by assign in the first replica.
     */
-    fun createAssignGreatest_createMergeGet() {
+    "R1: create, assign with the greatest value; R2: create, merge, get" {
         val val1 = "BBB"
         val val2 = "CCC"
         val val3 = "AAA"
@@ -133,7 +125,7 @@ class JSMRegisterTest {
         val reg2 = JSMRegister<String>(val3)
         reg2.merge(reg1)
 
-        assertEquals(val2, reg2.get())
+        reg2.get().shouldBe(val2)
     }
 
     /**
@@ -141,7 +133,7 @@ class JSMRegisterTest {
     * create (with the greatest value) merge get.
     * Call to get should return the value set in the second replica.
     */
-    fun createAssign_createGreatestMergeGet() {
+    "R1: create, assign; R2: create with greatest value, merge, get" {
         val val1 = "AAA"
         val val2 = "BBB"
         val val3 = "CCC"
@@ -151,7 +143,7 @@ class JSMRegisterTest {
         val reg2 = JSMRegister<String>(val3)
         reg2.merge(reg1)
 
-        assertEquals(val3, reg2.get())
+        reg2.get().shouldBe(val3)
     }
 
     /**
@@ -159,7 +151,7 @@ class JSMRegisterTest {
     * || create (with lower value) merge get.
     * Call to get should return the value set at initialization in the first replica.
     */
-    fun createGreatestAssign_createMergeGet() {
+    "R1: create with greatest value, assign; R2: create, merge, get" {
         val val1 = "CCC"
         val val2 = "AAA"
         val val3 = "BBB"
@@ -169,7 +161,7 @@ class JSMRegisterTest {
         val reg2 = JSMRegister<String>(val3)
         reg2.merge(reg1)
 
-        assertEquals(val1, reg2.get())
+        reg2.get().shouldBe(val1)
     }
 
     /**
@@ -177,7 +169,7 @@ class JSMRegisterTest {
     * || create (with the greatest value) assign (with lower value) merge get.
     * Call to get should return the value set at initialization in the second replica.
     */
-    fun createMergeBeforeAssign_createGreatestAssignMerge() {
+    "R1: create, merge before assign; r2: create with greatest value, assign, merge" {
         val val1 = 4
         val val2 = 5
         val val3 = 2
@@ -188,15 +180,14 @@ class JSMRegisterTest {
         reg2.assign(val3)
         reg2.merge(reg1)
 
-        assertEquals(val2, reg2.get())
+        reg2.get().shouldBe(val2)
     }
 
     /**
     * This test evaluates the use of delta return by call to assign method.
     * Call to get should return value set at initialization in the first replica.
     */
-    @Test
-    fun assignOp() {
+    "use delta returned by assign" {
         val val1 = 8
         val val2 = 6
         val val3 = 5
@@ -206,15 +197,14 @@ class JSMRegisterTest {
         val reg2 = JSMRegister<Int>(val3)
         reg2.merge(assignOp)
 
-        assertEquals(val1, reg2.get())
+        reg2.get().shouldBe(val1)
     }
 
     /*
     * This test evaluates the generation of delta plus its merging into another replica.
     * Call to get should return the value set at initialization in the first replica.
     */
-    @Test
-    fun generateDelta() {
+    "generate delta then merge" {
         val vv = VersionVector()
         val val1 = 8
         val val2 = 6
@@ -226,28 +216,27 @@ class JSMRegisterTest {
         val delta = reg1.generateDelta(vv)
         reg2.merge(delta)
 
-        assertEquals(val1, reg2.get())
+        reg2.get().shouldBe(val1)
     }
 
     /**
     * This test evaluates JSON serialization of a JSM register.
     **/
-    @Test
-    fun toJsonSerialization() {
+    "JSON serialization" {
         val value = "VALUE"
 
         val reg = JSMRegister<String>(value)
+        val regJson = reg.toJson()
 
-        assertEquals("""{"_type":"JSMRegister","value":"VALUE"}""", reg.toJson())
+        regJson.shouldBe("""{"_type":"JSMRegister","value":"VALUE"}""")
     }
 
     /**
     * This test evaluates JSON deserialization of a JSM register.
     **/
-    @Test
-    fun fromJsonDeserialization() {
+    "JSON deserialization" {
         val regJson = JSMRegister.fromJson<String>("""{"_type":"JSMRegister","value":"VALUE"}""")
 
-        assertEquals("VALUE", regJson.get())
+        regJson.get().shouldBe("VALUE")
     }
-}
+})

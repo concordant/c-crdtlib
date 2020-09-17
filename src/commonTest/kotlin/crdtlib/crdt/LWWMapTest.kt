@@ -17,10 +17,8 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package crdtlib.test
+package crdtlib.crdt
 
-import crdtlib.crdt.Delta
-import crdtlib.crdt.LWWMap
 import crdtlib.utils.DCUId
 import crdtlib.utils.SimpleEnvironment
 import crdtlib.utils.VersionVector

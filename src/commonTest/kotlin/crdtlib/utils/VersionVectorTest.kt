@@ -17,37 +17,33 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package crdtlib.test
+package crdtlib.utils
 
-import crdtlib.utils.DCUId
-import crdtlib.utils.Timestamp
-import crdtlib.utils.VersionVector
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.*
+import io.kotest.matchers.booleans.*
+import io.kotest.matchers.comparables.*
+import io.kotest.matchers.nulls.*
 
 /**
 * Represents a test suite for VersionVector.
 **/
-class VersionVectorTest {
+class VersionVectorTest : StringSpec({
     
     /**
-    * This test evaluates that the maximum value of newly created version vector is equal to 0.
+    * This test evaluates that the maximum value of newly created version vector is null.
     **/
-    @Test
-    fun createMaxVal() {
+    "empty version vector get max value" {
         val vv = VersionVector()
 
-        assertEquals(null, vv.maxVal())
+        vv.maxVal().shouldBeNull()
     }
 
     /**
     * This test evaluates that the value returned by the maxVal method after adding multiple
     * timestamps is correct.
     **/
-    @Test
-    fun multipleValuesMaxVal() {
+    "multiple values get max value" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -60,39 +56,37 @@ class VersionVectorTest {
         vv.addTS(ts2)
         vv.addTS(ts3)
 
-        assertEquals(3, vv.maxVal())
+        vv.maxVal().shouldBe(3)
     }
 
     /**
     * This test evaluates the inclusion of timestamps in a newly created version vector.
     * Calls to includeTS should return false.
     **/
-    @Test
-    fun createIncludeTS() {
+    "empty version vector include no timestamp" {
         val uid = DCUId("dcid")
         val ts1 = Timestamp(uid, 1)
         val ts2 = Timestamp(uid, 3)
         val vv = VersionVector()
 
-        assertFalse(vv.includesTS(ts1))
-        assertFalse(vv.includesTS(ts2))
+        vv.includesTS(ts1).shouldBeFalse()
+        vv.includesTS(ts2).shouldBeFalse()
     }
 
     /**
     * This test evaluates the inclusion of timestamps having negative counter in a newly created version vector.
     * Calls to includeTS should return false.
     **/
-    @Test
-    fun createIncludeNegativeTS() {
+    "empty version vector include no negative timestamp" {
         val uid = DCUId("dcid")
         val ts1 = Timestamp(uid, Int.MIN_VALUE)
         val ts2 = Timestamp(uid, Timestamp.CNT_MIN_VALUE)
         val ts3 = Timestamp(uid, -8000)
         val vv = VersionVector()
 
-        assertFalse(vv.includesTS(ts1))
-        assertFalse(vv.includesTS(ts2))
-        assertFalse(vv.includesTS(ts3))
+        vv.includesTS(ts1).shouldBeFalse()
+        vv.includesTS(ts2).shouldBeFalse()
+        vv.includesTS(ts3).shouldBeFalse()
     }
 
     /**
@@ -101,8 +95,7 @@ class VersionVectorTest {
     * Calls to includeTS should return true for all timestamps with same datacenter unique id and a
     * count less or equals to the added timestamp, and false otherwise.
     **/
-    @Test
-    fun addTSIncludeTS() {
+    "add timstamp then check inclusion" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val ts1 = Timestamp(uid1, 1)
@@ -113,10 +106,10 @@ class VersionVectorTest {
 
         vv.addTS(ts2)
 
-        assertTrue(vv.includesTS(ts1))
-        assertTrue(vv.includesTS(ts2))
-        assertFalse(vv.includesTS(ts3))
-        assertFalse(vv.includesTS(ts4))
+        vv.includesTS(ts1).shouldBeTrue()
+        vv.includesTS(ts2).shouldBeTrue()
+        vv.includesTS(ts3).shouldBeFalse()
+        vv.includesTS(ts4).shouldBeFalse()
     }
 
     /**
@@ -124,8 +117,7 @@ class VersionVectorTest {
     * Calls to includeTS at second version vector should return true for all timestamps that were
     * added to the first one.
     **/
-    @Test
-    fun toEmptyPointWiseMax() {
+    "point wise max to an empty version vector" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -140,9 +132,9 @@ class VersionVectorTest {
         vv1.addTS(ts3)
         vv2.pointWiseMax(vv1)
 
-        assertTrue(vv2.includesTS(ts1))
-        assertTrue(vv2.includesTS(ts2))
-        assertTrue(vv2.includesTS(ts3))
+        vv2.includesTS(ts1).shouldBeTrue()
+        vv2.includesTS(ts2).shouldBeTrue()
+        vv2.includesTS(ts3).shouldBeTrue()
     }
 
     /**
@@ -150,8 +142,7 @@ class VersionVectorTest {
     * Calls to includeTS at second version vector should return true for all timestamps that were
     * added to it before merging.
     **/
-    @Test
-    fun fromEmptyPointWiseMax() {
+    "point wise max from an empty version vector" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -166,9 +157,9 @@ class VersionVectorTest {
         vv1.addTS(ts3)
         vv1.pointWiseMax(vv2)
 
-        assertTrue(vv1.includesTS(ts1))
-        assertTrue(vv1.includesTS(ts2))
-        assertTrue(vv1.includesTS(ts3))
+        vv1.includesTS(ts1).shouldBeTrue()
+        vv1.includesTS(ts2).shouldBeTrue()
+        vv1.includesTS(ts3).shouldBeTrue()
     }
 
     /**
@@ -176,8 +167,7 @@ class VersionVectorTest {
     * Calls to includeTS at second version vector should return true for all timestamps that were
     * added to the first version vector.
     **/
-    @Test
-    fun toSmallerPointWiseMax() {
+    "point wise max to a smaller version vector" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -195,10 +185,10 @@ class VersionVectorTest {
         vv2.addTS(ts3)
         vv2.pointWiseMax(vv1)
 
-        assertTrue(vv2.includesTS(ts1))
-        assertTrue(vv2.includesTS(ts2))
-        assertTrue(vv2.includesTS(ts3))
-        assertTrue(vv2.includesTS(ts4))
+        vv2.includesTS(ts1).shouldBeTrue()
+        vv2.includesTS(ts2).shouldBeTrue()
+        vv2.includesTS(ts3).shouldBeTrue()
+        vv2.includesTS(ts4).shouldBeTrue()
     }
 
     /**
@@ -206,8 +196,7 @@ class VersionVectorTest {
     * Calls to includeTS at second version vector should return true for all timestamps that were
     * added to it before merging.
     **/
-    @Test
-    fun fromSmallerPointWiseMax() {
+    "point wise max from a smaller version vector" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -225,10 +214,10 @@ class VersionVectorTest {
         vv2.addTS(ts3)
         vv1.pointWiseMax(vv2)
 
-        assertTrue(vv1.includesTS(ts1))
-        assertTrue(vv1.includesTS(ts2))
-        assertTrue(vv1.includesTS(ts3))
-        assertTrue(vv1.includesTS(ts4))
+        vv1.includesTS(ts1).shouldBeTrue()
+        vv1.includesTS(ts2).shouldBeTrue()
+        vv1.includesTS(ts3).shouldBeTrue()
+        vv1.includesTS(ts4).shouldBeTrue()
     }
 
     /**
@@ -236,8 +225,7 @@ class VersionVectorTest {
     * Calls to includeTS at second version vector should return true for all timestamps that were
     * added to it before merging.
     **/
-    @Test
-    fun equalPointWiseMax() {
+    "point wise max between two equaled version vectors" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -255,9 +243,9 @@ class VersionVectorTest {
         vv2.addTS(ts3)
         vv1.pointWiseMax(vv2)
 
-        assertTrue(vv1.includesTS(ts1))
-        assertTrue(vv1.includesTS(ts2))
-        assertTrue(vv1.includesTS(ts3))
+        vv1.includesTS(ts1).shouldBeTrue()
+        vv1.includesTS(ts2).shouldBeTrue()
+        vv1.includesTS(ts3).shouldBeTrue()
     }
 
     /**
@@ -265,8 +253,7 @@ class VersionVectorTest {
     * Calls to includeTS at second version vector should return true for all timestamps that were
     * added to itself and to the first version vector.
     **/
-    @Test
-    fun concurrentPointWiseMax() {
+    "point wise max between two concurrent version vectors" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -288,12 +275,12 @@ class VersionVectorTest {
         vv2.addTS(ts6)
         vv2.pointWiseMax(vv1)
 
-        assertTrue(vv2.includesTS(ts1))
-        assertTrue(vv2.includesTS(ts2))
-        assertTrue(vv2.includesTS(ts3))
-        assertTrue(vv2.includesTS(ts4))
-        assertTrue(vv2.includesTS(ts5))
-        assertTrue(vv2.includesTS(ts6))
+        vv2.includesTS(ts1).shouldBeTrue()
+        vv2.includesTS(ts2).shouldBeTrue()
+        vv2.includesTS(ts3).shouldBeTrue()
+        vv2.includesTS(ts4).shouldBeTrue()
+        vv2.includesTS(ts5).shouldBeTrue()
+        vv2.includesTS(ts6).shouldBeTrue()
     }
 
     /**
@@ -301,8 +288,7 @@ class VersionVectorTest {
     * second one with the same entries.
     * Calls to smallerOrEquals should return true.
     **/
-    @Test
-    fun sameEntriesSmaller() {
+    "is smaller or equals with a smaller version vector with same entries" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -320,7 +306,7 @@ class VersionVectorTest {
         vv2.addTS(ts3)
         vv2.addTS(ts4)
 
-        assertTrue(vv1.isSmallerOrEquals(vv2))
+        vv1.isSmallerOrEquals(vv2).shouldBeTrue()
     }
 
     /**
@@ -328,8 +314,7 @@ class VersionVectorTest {
     * second one with more entries.
     * Calls to smallerOrEquals should return true.
     **/
-    @Test
-    fun lessEntriesSmaller() {
+    "is smaller or equals with a smaller version vector with less entries" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -346,15 +331,14 @@ class VersionVectorTest {
         vv2.addTS(ts3)
         vv2.addTS(ts4)
 
-        assertTrue(vv1.isSmallerOrEquals(vv2))
+        vv1.isSmallerOrEquals(vv2).shouldBeTrue()
     }
 
     /**
     * This test evaluates smaller or equals comparison between two equal version vectors.
     * Calls to smallerOrEquals should return true.
     **/
-    @Test
-    fun sameEntriesEqual() {
+    "is smaller or equals with an equaled version vector" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -371,7 +355,7 @@ class VersionVectorTest {
         vv2.addTS(ts2)
         vv2.addTS(ts3)
 
-        assertTrue(vv1.isSmallerOrEquals(vv2))
+        vv1.isSmallerOrEquals(vv2).shouldBeTrue()
     }
 
     /**
@@ -379,8 +363,7 @@ class VersionVectorTest {
     * second with the same entries.
     * Calls to smallerOrEquals should return false.
     **/
-    @Test
-    fun sameEntriesGreater() {
+    "is smaller or equals with a greater version vector with same entries" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -398,7 +381,7 @@ class VersionVectorTest {
         vv2.addTS(ts2)
         vv2.addTS(ts4)
 
-        assertFalse(vv1.isSmallerOrEquals(vv2))
+        vv1.isSmallerOrEquals(vv2).shouldBeFalse()
     }
 
     /**
@@ -406,8 +389,7 @@ class VersionVectorTest {
     * the same entries.
     * Calls to smallerOrEquals should return false.
     **/
-    @Test
-    fun sameEntriesConcurrent() {
+    "is smaller or equals with a concurrent version vector with same entries" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -426,7 +408,7 @@ class VersionVectorTest {
         vv2.addTS(ts3)
         vv2.addTS(ts4)
 
-        assertFalse(vv1.isSmallerOrEquals(vv2))
+        vv1.isSmallerOrEquals(vv2).shouldBeFalse()
     }
 
     /**
@@ -434,8 +416,7 @@ class VersionVectorTest {
     * concurrent second one with more entries.
     * Calls to smallerOrEquals should return false.
     **/
-    @Test
-    fun lessEntriesConcurrent() {
+    "is smaller or equals with a concurrent version vector with less entries" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -452,7 +433,7 @@ class VersionVectorTest {
         vv2.addTS(ts2)
         vv2.addTS(ts4)
 
-        assertFalse(vv1.isSmallerOrEquals(vv2))
+        vv1.isSmallerOrEquals(vv2).shouldBeFalse()
     }
 
     /**
@@ -460,8 +441,7 @@ class VersionVectorTest {
     * second one with less entries.
     * Calls to smallerOrEquals should return false.
     **/
-    @Test
-    fun moreEntriesGreater() {
+    "is smaller or equals with a greater version vector with more entries" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -478,7 +458,7 @@ class VersionVectorTest {
         vv2.addTS(ts2)
         vv2.addTS(ts4)
 
-        assertFalse(vv1.isSmallerOrEquals(vv2))
+        vv1.isSmallerOrEquals(vv2).shouldBeFalse()
     }
 
     /**
@@ -486,8 +466,7 @@ class VersionVectorTest {
     * concurrent one with less entries.
     * Calls to smallerOrEquals should return false.
     **/
-    @Test
-    fun moreEntriesConcurrent() {
+    "is smaller or equals with a concurrent version vector with more entries" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -504,7 +483,7 @@ class VersionVectorTest {
         vv2.addTS(ts1)
         vv2.addTS(ts3)
 
-        assertFalse(vv1.isSmallerOrEquals(vv2))
+        vv1.isSmallerOrEquals(vv2).shouldBeFalse()
     }
 
     /**
@@ -512,8 +491,7 @@ class VersionVectorTest {
     * concurrent one, where both have an entry not present in the other one.
     * Calls to smallerOrEquals should return false.
     **/
-    @Test
-    fun moreAndLessEntriesConcurrent() {
+    "is smaller or equals with a concurrent version vector having different entries" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -529,7 +507,7 @@ class VersionVectorTest {
         vv2.addTS(ts1)
         vv2.addTS(ts3)
 
-        assertFalse(vv1.isSmallerOrEquals(vv2))
+        vv1.isSmallerOrEquals(vv2).shouldBeFalse()
     }
 
     /**
@@ -537,8 +515,7 @@ class VersionVectorTest {
     * Calls to includeTS at second version vector should return true for all timestamps that were
     * added to the first one.
     **/
-    @Test
-    fun copyMethod() {
+    "copy with copy method" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -552,8 +529,8 @@ class VersionVectorTest {
         vv1.addTS(ts3)
         val vv2 = vv1.copy()
 
-        assertTrue(vv1.isSmallerOrEquals(vv2))
-        assertTrue(vv2.isSmallerOrEquals(vv1))
+        vv1.isSmallerOrEquals(vv2).shouldBeTrue()
+        vv2.isSmallerOrEquals(vv1).shouldBeTrue()
     }
 
     /**
@@ -561,8 +538,7 @@ class VersionVectorTest {
     * Calls to includeTS at second version vector should return true for all timestamps that were
     * added to the first one.
     **/
-    @Test
-    fun copyConstructor() {
+    "copy with copy constructor" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -576,40 +552,37 @@ class VersionVectorTest {
         vv1.addTS(ts3)
         val vv2 = VersionVector(vv1)
 
-        assertTrue(vv1.isSmallerOrEquals(vv2))
-        assertTrue(vv2.isSmallerOrEquals(vv1))
+        vv1.isSmallerOrEquals(vv2).shouldBeTrue()
+        vv2.isSmallerOrEquals(vv1).shouldBeTrue()
     }
 
     /**
     * This test evaluates JSON serialization of an empty version vector.
     **/
-    @Test
-    fun emptyToJsonSerialization() {
+    "empty JSON serialization" {
         val vv = VersionVector()
 
         val vvJson = vv.toJson()
 
-        assertEquals("""{"entries":[]}""", vvJson)
+        vvJson.shouldBe("""{"entries":[]}""")
     }
 
     /**
     * This test evaluates JSON deserialization of an empty version vector.
     **/
-    @Test
-    fun emptyFromJsonDeserialization() {
+    "empty JSON deserialization" {
         val vv = VersionVector()
 
         val vvJson = VersionVector.fromJson("""{"entries":[]}""")
 
-        assertTrue(vv.isSmallerOrEquals(vvJson))
-        assertTrue(vvJson.isSmallerOrEquals(vv))
+        vv.isSmallerOrEquals(vvJson).shouldBeTrue()
+        vvJson.isSmallerOrEquals(vv).shouldBeTrue()
     }
 
     /**
     * This test evaluates JSON serialization of a version vector.
     **/
-    @Test
-    fun toJsonSerialization() {
+    "JSON serialization" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -623,14 +596,13 @@ class VersionVectorTest {
         vv.addTS(ts3)
         val vvJson = vv.toJson()
 
-        assertEquals("""{"entries":[{"name":"dcid1"},3,{"name":"dcid2"},4,{"name":"dcid3"},2]}""", vvJson)
+        vvJson.shouldBe("""{"entries":[{"name":"dcid1"},3,{"name":"dcid2"},4,{"name":"dcid3"},2]}""")
     }
 
     /**
     * This test evaluates JSON deserialization of a version vector.
     **/
-    @Test
-    fun fromJsonDeserialization() {
+    "JSON deserialization" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -644,7 +616,7 @@ class VersionVectorTest {
         vv.addTS(ts3)
         val vvJson = VersionVector.fromJson("""{"entries":[{"name":"dcid1"},3,{"name":"dcid2"},4,{"name":"dcid3"},2]}""")
 
-        assertTrue(vv.isSmallerOrEquals(vvJson))
-        assertTrue(vvJson.isSmallerOrEquals(vv))
+        vv.isSmallerOrEquals(vvJson).shouldBeTrue()
+        vvJson.isSmallerOrEquals(vv).shouldBeTrue()
     }
-}
+})
