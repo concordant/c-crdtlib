@@ -22,35 +22,33 @@ package crdtlib.crdt
 import crdtlib.utils.DCUId
 import crdtlib.utils.SimpleEnvironment
 import crdtlib.utils.VersionVector
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.*
+import io.kotest.matchers.nulls.*
 
 /**
 * Represents a suite test for LWWMap.
 **/
-class LWWMapTest {
+class LWWMapTest : StringSpec({
     /**
     * This test evaluates the scenario: get.
     * Call to get should return null
     */
-    @Test
-    fun emptyGet() {
+    "create and get" {
         val key = "key"
         val map = LWWMap()
 
-        assertNull(map.getBoolean(key))
-        assertNull(map.getDouble(key))
-        assertNull(map.getInt(key))
-        assertNull(map.getString(key))
+        map.getBoolean(key).shouldBeNull()
+        map.getDouble(key).shouldBeNull()
+        map.getInt(key).shouldBeNull()
+        map.getString(key).shouldBeNull()
     }
 
     /**
     * This test evaluates the scenario: put get.
     * Call to get should return the value set by the put.
     */
-    @Test
-    fun putGet() {
+    "put and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -72,18 +70,17 @@ class LWWMapTest {
         map.put(key, valueInt, ts3)
         map.put(key, valueString, ts4)
 
-        assertEquals(valueBoolean, map.getBoolean(key))
-        assertEquals(valueDouble, map.getDouble(key))
-        assertEquals(valueInt, map.getInt(key))
-        assertEquals(valueString, map.getString(key))
+        map.getBoolean(key).shouldBe(valueBoolean)
+        map.getDouble(key).shouldBe(valueDouble)
+        map.getInt(key).shouldBe(valueInt)
+        map.getString(key).shouldBe(valueString)
     }
 
     /**
     * This test evaluates the scenario: put del get.
     * Call to get should return null.
     */
-    @Test
-    fun putDelGet() {
+    "put, delete, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -117,18 +114,17 @@ class LWWMapTest {
         map.deleteInt(key, ts7)
         map.deleteString(key, ts8)
 
-        assertNull(map.getBoolean(key))
-        assertNull(map.getDouble(key))
-        assertNull(map.getInt(key))
-        assertNull(map.getString(key))
+        map.getBoolean(key).shouldBeNull()
+        map.getDouble(key).shouldBeNull()
+        map.getInt(key).shouldBeNull()
+        map.getString(key).shouldBeNull()
     }
 
     /**
     * This test evaluates the scenario: del get.
     * Call to get should return null.
     */
-    @Test
-    fun delGet() {
+    "delete and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -147,18 +143,17 @@ class LWWMapTest {
         map.deleteInt(key, ts3)
         map.deleteString(key, ts4)
 
-        assertNull(map.getBoolean(key))
-        assertNull(map.getDouble(key))
-        assertNull(map.getInt(key))
-        assertNull(map.getString(key))
+        map.getBoolean(key).shouldBeNull()
+        map.getDouble(key).shouldBeNull()
+        map.getInt(key).shouldBeNull()
+        map.getString(key).shouldBeNull()
     }
 
     /**
     * This test evaluates the scenario: put put get
     * Call to get should return the value set by the second put.
     */
-    @Test
-    fun putPutGet() {
+    "put, put, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -196,18 +191,17 @@ class LWWMapTest {
         map.put(key, valInt2, ts7)
         map.put(key, valString2, ts8)
 
-        assertEquals(valBoolean2, map.getBoolean(key))
-        assertEquals(valDouble2, map.getDouble(key))
-        assertEquals(valInt2, map.getInt(key))
-        assertEquals(valString2, map.getString(key))
+        map.getBoolean(key).shouldBe(valBoolean2)
+        map.getDouble(key).shouldBe(valDouble2)
+        map.getInt(key).shouldBe(valInt2)
+        map.getString(key).shouldBe(valString2)
     }
 
     /**
     * This test evaluates the scenario: put put del get.
     * Call to get should return null.
     */
-    @Test
-    fun putPutDelGet() {
+    "put, put, del, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -257,18 +251,17 @@ class LWWMapTest {
         map.deleteInt(key, ts11)
         map.deleteString(key, ts12)
 
-        assertNull(map.getBoolean(key))
-        assertNull(map.getDouble(key))
-        assertNull(map.getInt(key))
-        assertNull(map.getString(key))
+        map.getBoolean(key).shouldBeNull()
+        map.getDouble(key).shouldBeNull()
+        map.getInt(key).shouldBeNull()
+        map.getString(key).shouldBeNull()
     }
 
     /**
     * This test evaluates the scenario: put || merge get.
     * Call to get should return the value set by the put registered in the first replica.
     */
-    @Test
-    fun put_MergeGet() {
+    "R1: put; R2: merge and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -293,22 +286,21 @@ class LWWMapTest {
         map1.merge(map2)
         map2.merge(map1)
 
-        assertEquals(valueBoolean, map1.getBoolean(key))
-        assertEquals(valueDouble, map1.getDouble(key))
-        assertEquals(valueInt, map1.getInt(key))
-        assertEquals(valueString, map1.getString(key))
-        assertEquals(valueBoolean, map2.getBoolean(key))
-        assertEquals(valueDouble, map2.getDouble(key))
-        assertEquals(valueInt, map2.getInt(key))
-        assertEquals(valueString, map2.getString(key))
+        map1.getBoolean(key).shouldBe(valueBoolean)
+        map1.getDouble(key).shouldBe(valueDouble)
+        map1.getInt(key).shouldBe(valueInt)
+        map1.getString(key).shouldBe(valueString)
+        map2.getBoolean(key).shouldBe(valueBoolean)
+        map2.getDouble(key).shouldBe(valueDouble)
+        map2.getInt(key).shouldBe(valueInt)
+        map2.getString(key).shouldBe(valueString)
     }
 
     /**
     * This test evaluates the scenario: put || merge putLWW get.
     * Call to get should return the value set by put registered in the second replica.
     */
-    @Test
-    fun put_MergePutLWWGet() {
+    "R1: put; R2: merge, put LWW, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -349,18 +341,17 @@ class LWWMapTest {
         map2.put(key, valInt2, ts6)
         map2.put(key, valString2, ts8)
 
-        assertEquals(valBoolean2, map2.getBoolean(key))
-        assertEquals(valDouble2, map2.getDouble(key))
-        assertEquals(valInt2, map2.getInt(key))
-        assertEquals(valString2, map2.getString(key))
+        map2.getBoolean(key).shouldBe(valBoolean2)
+        map2.getDouble(key).shouldBe(valDouble2)
+        map2.getInt(key).shouldBe(valInt2)
+        map2.getString(key).shouldBe(valString2)
     }
 
     /**
     * This test evaluates the scenario: put || putLWW merge get
     * Call to get should return the value set by put registered in the second replica.
     */
-    @Test
-    fun put_PutLWWMergeGet() {
+    "R1: put; R2: put LWW, merge, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -401,18 +392,17 @@ class LWWMapTest {
         map2.put(key, valString2, ts8)
         map2.merge(map1)
 
-        assertEquals(valBoolean2, map2.getBoolean(key))
-        assertEquals(valDouble2, map2.getDouble(key))
-        assertEquals(valInt2, map2.getInt(key))
-        assertEquals(valString2, map2.getString(key))
+        map2.getBoolean(key).shouldBe(valBoolean2)
+        map2.getDouble(key).shouldBe(valDouble2)
+        map2.getInt(key).shouldBe(valInt2)
+        map2.getString(key).shouldBe(valString2)
     }
 
     /**
     * This test evaluates the scenario: putLWW || put merge get.
     * Call to get should return the value set by put registered in the first replica.
     */
-    @Test
-    fun putLWW_PutMergeGet() {
+    "R1: put LWW; R2: put, merge, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -453,18 +443,17 @@ class LWWMapTest {
         map1.put(key, valString1, ts8)
         map2.merge(map1)
 
-        assertEquals(valBoolean1, map2.getBoolean(key))
-        assertEquals(valDouble1, map2.getDouble(key))
-        assertEquals(valInt1, map2.getInt(key))
-        assertEquals(valString1, map2.getString(key))
+        map2.getBoolean(key).shouldBe(valBoolean1)
+        map2.getDouble(key).shouldBe(valDouble1)
+        map2.getInt(key).shouldBe(valInt1)
+        map2.getString(key).shouldBe(valString1)
     }
 
     /**
     * This test evaluates the scenario: put delLWW || put merge get.
     * Call to get should return null.
     */
-    @Test
-    fun putDelLWW_PutMergeGet() {
+    "R1: put, delete LWW; R2: put, merge, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -517,18 +506,17 @@ class LWWMapTest {
         map1.deleteString(key, ts12)
         map2.merge(map1)
 
-        assertNull(map2.getBoolean(key))
-        assertNull(map2.getDouble(key))
-        assertNull(map2.getInt(key))
-        assertNull(map2.getString(key))
+        map2.getBoolean(key).shouldBeNull()
+        map2.getDouble(key).shouldBeNull()
+        map2.getInt(key).shouldBeNull()
+        map2.getString(key).shouldBeNull()
     }
 
     /**
     * This test evaluates the scenario: put delLWW || put merge(before del) merge(after del) get.
     * Call to get should return null.
     */
-    @Test
-    fun putDelLWW_PutMergeBeforeDelMergeAfterDelGet() {
+    "R1: put, delete LWW; R2: put, merge before delete, merge after delelte, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -582,18 +570,17 @@ class LWWMapTest {
         map1.deleteString(key, ts12)
         map2.merge(map1)
 
-        assertNull(map2.getBoolean(key))
-        assertNull(map2.getDouble(key))
-        assertNull(map2.getInt(key))
-        assertNull(map2.getString(key))
+        map2.getBoolean(key).shouldBeNull()
+        map2.getDouble(key).shouldBeNull()
+        map2.getInt(key).shouldBeNull()
+        map2.getString(key).shouldBeNull()
     }
 
     /*
     * This test evaluates the scenario: put del || putLWW merge get.
     * Call to get should return the value set by put registered in the second replica.
     */
-    @Test
-    fun putDel_PutLWWMergeGet() {
+    "R1: put, delete; R2: put LWW, merge, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -654,18 +641,17 @@ class LWWMapTest {
         map2.put(key, valString2, ts16)
         map2.merge(map1)
 
-        assertEquals(valBoolean2, map2.getBoolean(key))
-        assertEquals(valDouble2, map2.getDouble(key))
-        assertEquals(valInt2, map2.getInt(key))
-        assertEquals(valString2, map2.getString(key))
+        map2.getBoolean(key).shouldBe(valBoolean2)
+        map2.getDouble(key).shouldBe(valDouble2)
+        map2.getInt(key).shouldBe(valInt2)
+        map2.getString(key).shouldBe(valString2)
     }
 
     /*
     * This test evaluates the scenario: put del || putLWW merge(before del) merge(after del) get.
     * Call to get should return the value set by put registered in the second replica.
     */
-    @Test
-    fun putDel_PutLWWMergeBeforeDelMergeAfterDelGet() {
+    "R1: put, delete; R2: put LWW, merge before delete, merge after delete, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -727,18 +713,17 @@ class LWWMapTest {
         map1.deleteString(key, ts15)
         map2.merge(map1)
 
-        assertEquals(valBoolean2, map2.getBoolean(key))
-        assertEquals(valDouble2, map2.getDouble(key))
-        assertEquals(valInt2, map2.getInt(key))
-        assertEquals(valString2, map2.getString(key))
+        map2.getBoolean(key).shouldBe(valBoolean2)
+        map2.getDouble(key).shouldBe(valDouble2)
+        map2.getInt(key).shouldBe(valInt2)
+        map2.getString(key).shouldBe(valString2)
     }
 
     /*
     * This test evaluates the scenario: put || put || merge1 delLWW merge2 get.
     * Call to get should return null.
     */
-    @Test
-    fun put_Put_Merge1DelLWWMerge2Get() {
+    "R1: put; R2: put; R3: merge R1, delete LWW, merge R2, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -794,18 +779,17 @@ class LWWMapTest {
         map3.deleteString(key, ts12)
         map3.merge(map2)
 
-        assertNull(map3.getBoolean(key))
-        assertNull(map3.getDouble(key))
-        assertNull(map3.getInt(key))
-        assertNull(map3.getString(key))
+        map3.getBoolean(key).shouldBeNull()
+        map3.getDouble(key).shouldBeNull()
+        map3.getInt(key).shouldBeNull()
+        map3.getString(key).shouldBeNull()
     }
 
     /*
-    * This test evaluates the scenario: putLWW || put || merge1 del merge2 get.
+    * This test evaluates the scenario: put || putLWW || merge1 del merge2 get.
     * Call to get should return the value set by put registered in the second replica.
     */
-    @Test
-    fun put_PutLWW_Merge1DelMerge2Get() {
+    "R1: put; R2: put LWW; R3: merge R1, delete, merge R2, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -861,18 +845,17 @@ class LWWMapTest {
         map2.put(key, valString2, ts12)
         map3.merge(map2)
 
-        assertEquals(valBoolean2, map3.getBoolean(key))
-        assertEquals(valDouble2, map3.getDouble(key))
-        assertEquals(valInt2, map3.getInt(key))
-        assertEquals(valString2, map3.getString(key))
+        map3.getBoolean(key).shouldBe(valBoolean2)
+        map3.getDouble(key).shouldBe(valDouble2)
+        map3.getInt(key).shouldBe(valInt2)
+        map3.getString(key).shouldBe(valString2)
     }
 
     /*
     * This test evaluates the use of deltas return by call to put method.
     * Call to get should return the value set by put registered in the first replica.
     */
-    @Test
-    fun putOp() {
+    "use deltas returned by put" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -903,22 +886,21 @@ class LWWMapTest {
         map2.merge(opInt)
         map2.merge(opString)
 
-        assertEquals(valueBoolean, map1.getBoolean(key))
-        assertEquals(valueDouble, map1.getDouble(key))
-        assertEquals(valueInt, map1.getInt(key))
-        assertEquals(valueString, map1.getString(key))
-        assertEquals(valueBoolean, map2.getBoolean(key))
-        assertEquals(valueDouble, map2.getDouble(key))
-        assertEquals(valueInt, map2.getInt(key))
-        assertEquals(valueString, map2.getString(key))
+        map1.getBoolean(key).shouldBe(valueBoolean)
+        map1.getDouble(key).shouldBe(valueDouble)
+        map1.getInt(key).shouldBe(valueInt)
+        map1.getString(key).shouldBe(valueString)
+        map2.getBoolean(key).shouldBe(valueBoolean)
+        map2.getDouble(key).shouldBe(valueDouble)
+        map2.getInt(key).shouldBe(valueInt)
+        map2.getString(key).shouldBe(valueString)
     }
 
     /*
     * This test evaluates the use of deltas return by call to put and delete methods.
     * Call to get should return null.
     */
-    @Test
-    fun putDelOp() {
+    "use deltas returned by put and delete" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -969,22 +951,21 @@ class LWWMapTest {
         map2.merge(delOpInt)
         map2.merge(delOpString)
 
-        assertNull(map1.getBoolean(key))
-        assertNull(map1.getDouble(key))
-        assertNull(map1.getInt(key))
-        assertNull(map1.getString(key))
-        assertNull(map2.getBoolean(key))
-        assertNull(map2.getDouble(key))
-        assertNull(map2.getInt(key))
-        assertNull(map2.getString(key))
+        map1.getBoolean(key).shouldBeNull()
+        map1.getDouble(key).shouldBeNull()
+        map1.getInt(key).shouldBeNull()
+        map1.getString(key).shouldBeNull()
+        map2.getBoolean(key).shouldBeNull()
+        map2.getDouble(key).shouldBeNull()
+        map2.getInt(key).shouldBeNull()
+        map2.getString(key).shouldBeNull()
     }
 
     /*
     * This test evaluates the merge of deltas return by call to put method.
     * Call to get should return the values set by puts registered in the first replica.
     */
-    @Test
-    fun putOpFusion() {
+    "merge deltas returned by put operations" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -1049,22 +1030,21 @@ class LWWMapTest {
         opString1.merge(opInt1)
         map2.merge(opString1)
 
-        assertEquals(valBoolean2, map2.getBoolean(key1))
-        assertEquals(valDouble2, map2.getDouble(key1))
-        assertEquals(valInt2, map2.getInt(key1))
-        assertEquals(valString2, map2.getString(key1))
-        assertEquals(valBoolean1, map2.getBoolean(key2))
-        assertEquals(valDouble1, map2.getDouble(key2))
-        assertEquals(valInt1, map2.getInt(key2))
-        assertEquals(valString1, map2.getString(key2))
+        map2.getBoolean(key1).shouldBe(valBoolean2)
+        map2.getDouble(key1).shouldBe(valDouble2)
+        map2.getInt(key1).shouldBe(valInt2)
+        map2.getString(key1).shouldBe(valString2)
+        map2.getBoolean(key2).shouldBe(valBoolean1)
+        map2.getDouble(key2).shouldBe(valDouble1)
+        map2.getInt(key2).shouldBe(valInt1)
+        map2.getString(key2).shouldBe(valString1)
     }
 
     /*
     * This test evaluates the merge of deltas return by call to put and delete methods.
     * Call to get should return the value set by put or null if it has been deleted.
     */
-    @Test
-    fun putDelOpFusion() {
+    "merge deltas returned by put and delete operations" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -1125,14 +1105,14 @@ class LWWMapTest {
         opString1.merge(opInt1)
         map2.merge(opString1)
 
-        assertNull(map2.getBoolean(key1))
-        assertNull(map2.getDouble(key1))
-        assertNull(map2.getInt(key1))
-        assertNull(map2.getString(key1))
-        assertEquals(valueBoolean, map2.getBoolean(key2))
-        assertEquals(valueDouble, map2.getDouble(key2))
-        assertEquals(valueInt, map2.getInt(key2))
-        assertEquals(valueString, map2.getString(key2))
+        map2.getBoolean(key1).shouldBeNull()
+        map2.getDouble(key1).shouldBeNull()
+        map2.getInt(key1).shouldBeNull()
+        map2.getString(key1).shouldBeNull()
+        map2.getBoolean(key2).shouldBe(valueBoolean)
+        map2.getDouble(key2).shouldBe(valueDouble)
+        map2.getInt(key2).shouldBe(valueInt)
+        map2.getString(key2).shouldBe(valueString)
     }
 
     /*
@@ -1140,8 +1120,7 @@ class LWWMapTest {
     * Call to get should return the values set by puts registered in the first replica after w.r.t
     * the given context.
     */
-    @Test
-    fun generateDelta() {
+    "generate delta" {
         val uid = DCUId("dcid1")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -1207,30 +1186,29 @@ class LWWMapTest {
         val delta = map1.generateDelta(vv)
         map2.merge(delta)
 
-        assertNull(map2.getBoolean(key1))
-        assertNull(map2.getDouble(key1))
-        assertNull(map2.getInt(key1))
-        assertNull(map2.getString(key1))
-        assertNull(map2.getBoolean(key2))
-        assertNull(map2.getDouble(key2))
-        assertNull(map2.getInt(key2))
-        assertNull(map2.getString(key2))
-        assertEquals(valueBoolean, map2.getBoolean(key3))
-        assertEquals(valueDouble, map2.getDouble(key3))
-        assertEquals(valueInt, map2.getInt(key3))
-        assertEquals(valueString, map2.getString(key3))
-        assertEquals(valueBoolean, map2.getBoolean(key4))
-        assertEquals(valueDouble, map2.getDouble(key4))
-        assertEquals(valueInt, map2.getInt(key4))
-        assertEquals(valueString, map2.getString(key4))
+        map2.getBoolean(key1).shouldBeNull()
+        map2.getDouble(key1).shouldBeNull()
+        map2.getInt(key1).shouldBeNull()
+        map2.getString(key1).shouldBeNull()
+        map2.getBoolean(key2).shouldBeNull()
+        map2.getDouble(key2).shouldBeNull()
+        map2.getInt(key2).shouldBeNull()
+        map2.getString(key2).shouldBeNull()
+        map2.getBoolean(key3).shouldBe(valueBoolean)
+        map2.getDouble(key3).shouldBe(valueDouble)
+        map2.getInt(key3).shouldBe(valueInt)
+        map2.getString(key3).shouldBe(valueString)
+        map2.getBoolean(key4).shouldBe(valueBoolean)
+        map2.getDouble(key4).shouldBe(valueDouble)
+        map2.getInt(key4).shouldBe(valueInt)
+        map2.getString(key4).shouldBe(valueString)
     }
 
     /*
     * This test evaluates the generation of delta (including delete) plus its merging into another replica.
     * Call to get should return the values set by puts or null set by delete w.r.t the given context.
     */
-    @Test
-    fun generateDeltaWithDel() {
+    "generate delta with delete" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -1295,37 +1273,35 @@ class LWWMapTest {
         val delta = map1.generateDelta(vv)
         map2.merge(delta)
 
-        assertNull(map2.getBoolean(key1))
-        assertNull(map2.getDouble(key1))
-        assertNull(map2.getInt(key1))
-        assertNull(map2.getString(key1))
-        assertNull(map2.getBoolean(key2))
-        assertNull(map2.getDouble(key2))
-        assertNull(map2.getInt(key2))
-        assertNull(map2.getString(key2))
-        assertEquals(valueBoolean, map2.getBoolean(key3))
-        assertEquals(valueDouble, map2.getDouble(key3))
-        assertEquals(valueInt, map2.getInt(key3))
-        assertEquals(valueString, map2.getString(key3))
+        map2.getBoolean(key1).shouldBeNull()
+        map2.getDouble(key1).shouldBeNull()
+        map2.getInt(key1).shouldBeNull()
+        map2.getString(key1).shouldBeNull()
+        map2.getBoolean(key2).shouldBeNull()
+        map2.getDouble(key2).shouldBeNull()
+        map2.getInt(key2).shouldBeNull()
+        map2.getString(key2).shouldBeNull()
+        map2.getBoolean(key3).shouldBe(valueBoolean)
+        map2.getDouble(key3).shouldBe(valueDouble)
+        map2.getInt(key3).shouldBe(valueInt)
+        map2.getString(key3).shouldBe(valueString)
     }
 
     /**
-    * This test evaluates JSON serialization an empty lww map.
+    * This test evaluates JSON serialization an empty LWW map.
     **/
-    @Test
-    fun emptyToJsonSerialization() {
+    "empty JSON serialization" {
         val map = LWWMap()
 
         val mapJson = map.toJson()
 
-        assertEquals("""{"_type":"LWWMap","_metadata":{"entries":{}}}""", mapJson)
+        mapJson.shouldBe("""{"_type":"LWWMap","_metadata":{"entries":{}}}""")
     }
 
     /**
-    * This test evaluates JSON deserialization of an empty lww map.
+    * This test evaluates JSON deserialization of an empty LWW map.
     **/
-    @Test
-    fun emptyFromJsonDeserialization() {
+    "empty JSON deserialization" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
@@ -1333,16 +1309,15 @@ class LWWMapTest {
         val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{}}}""")
         mapJson.put("key1", "value1", ts)
 
-        assertEquals("value1", mapJson.getString("key1"))
-        assertNull(mapJson.getString("key2"))
-        assertNull(mapJson.getString("key3"))
+        mapJson.getString("key1").shouldBe("value1")
+        mapJson.getString("key2").shouldBeNull()
+        mapJson.getString("key3").shouldBeNull()
     }
 
     /**
-    * This test evaluates JSON serialization of a lww map.
+    * This test evaluates JSON serialization of a LWW map.
     **/
-    @Test
-    fun toJsonSerialization() {
+    "JSON serialization" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -1376,20 +1351,19 @@ class LWWMapTest {
         map.put(key5, value5, ts6)
         val mapJson = map.toJson()
 
-        assertEquals("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"dcid"},"cnt":-2147483648},"key2%STRING":{"uid":{"name":"dcid"},"cnt":-2147483646},"key3%STRING":{"uid":{"name":"dcid"},"cnt":-2147483645},"key4%BOOLEAN":{"uid":{"name":"dcid"},"cnt":-2147483644},"key5%DOUBLE":{"uid":{"name":"dcid"},"cnt":-2147483643}}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""", mapJson)
+        mapJson.shouldBe("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"dcid"},"cnt":-2147483648},"key2%STRING":{"uid":{"name":"dcid"},"cnt":-2147483646},"key3%STRING":{"uid":{"name":"dcid"},"cnt":-2147483645},"key4%BOOLEAN":{"uid":{"name":"dcid"},"cnt":-2147483644},"key5%DOUBLE":{"uid":{"name":"dcid"},"cnt":-2147483643}}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""")
     }
 
     /**
-    * This test evaluates JSON deserialization of a lww map.
+    * This test evaluates JSON deserialization of a LWW map.
     **/
-    @Test
-    fun fromJsonDeserialization() {
+    "JSON deserialization" {
         val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"dcid"},"cnt":-2147483648},"key2%STRING":{"uid":{"name":"dcid"},"cnt":-2147483646},"key3%STRING":{"uid":{"name":"dcid"},"cnt":-2147483645},"key4%BOOLEAN":{"uid":{"name":"dcid"},"cnt":-2147483644},"key5%DOUBLE":{"uid":{"name":"dcid"},"cnt":-2147483643}}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""")
 
-        assertEquals(1, mapJson.getInt("key1"))
-        assertNull(mapJson.getString("key2"))
-        assertEquals("value3", mapJson.getString("key3"))
-        assertEquals(true, mapJson.getBoolean("key4"))
-        assertEquals(3.14159, mapJson.getDouble("key5"))
+        mapJson.getInt("key1").shouldBe(1)
+        mapJson.getString("key2").shouldBeNull()
+        mapJson.getString("key3").shouldBe("value3")
+        mapJson.getBoolean("key4").shouldBe(true)
+        mapJson.getDouble("key5").shouldBe(3.14159) 
     }
-}
+})
