@@ -91,9 +91,9 @@ class VersionVector {
     }
 
     /**
-    * Checks that this version vector is smaller or equals than a given version vector.
+    * Checks that this version vector is smaller than or equal a given version vector.
     * @param vv the given version vector used for comparison.
-    * @return true if this version vector is smaller or equals than the other one, false otherwise.
+    * @return true if this version vector is smaller than or equal the other one, false otherwise.
     */
     @Name("isSmallerOrEquals")
     fun isSmallerOrEquals(vv: VersionVector): Boolean {
@@ -101,8 +101,111 @@ class VersionVector {
             val v = vv.entries.get(k)
             if(v == null || localV > v) return false
         }
-
         return true
+    }
+
+    /**
+     * Checks that this version vector is strictly smaller than a given version vector.
+     * @param vv the given version vector used for comparison.
+     * @return true if this version vector is smaller than the other one, false otherwise.
+     */
+    @Name("isSmaller")
+    fun isSmaller(vv: VersionVector): Boolean {
+        var isEqual = this.entries.isNotEmpty()
+        for ((k, localV) in this.entries) {
+            val v = vv.entries.get(k)
+            if(v == null || localV > v) return false
+            isEqual = isEqual && (localV == v)
+        }
+        return !isEqual
+    }
+
+    /**
+     * Checks that this version vector is greater than or equal a given version vector.
+     * @param vv the given version vector used for comparison.
+     * @return true if this version vector is greater than or equal the other one, false otherwise.
+     */
+    @Name("isGreaterOrEquals")
+    fun isGreaterOrEquals(vv: VersionVector): Boolean {
+        for ((k, v) in vv.entries) {
+            val localV = this.entries.get(k)
+            if(localV == null || localV < v) return false
+        }
+        return true
+    }
+
+    /**
+     * Checks that this version vector is strictly greater than a given version vector.
+     * @param vv the given version vector used for comparison.
+     * @return true if this version vector is greater than the other one, false otherwise.
+     */
+    @Name("isGreater")
+    fun isGreater(vv: VersionVector): Boolean {
+        var isEqual = vv.entries.isNotEmpty()
+        for ((k, v) in vv.entries) {
+            val localV = this.entries.get(k)
+            if(localV == null || localV < v) return false
+            isEqual = isEqual && (localV == v)
+        }
+        return !isEqual
+    }
+
+    /**
+     * Overrides the equals function of object
+     * @param other object to compare with
+     * @return true if both objects are version vectors with equal entries
+     */
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (!(other is VersionVector)) return false
+
+        if (entries != other.entries) return false
+        return true
+    }
+
+    /**
+     * Overrides the hashCode function of object
+     * @return a hash code value for this object.
+     */
+    override fun hashCode(): Int {
+        return entries.hashCode()
+    }
+
+    /**
+     * Overrides the toString function of object
+     * @return a string representation of the object.
+     */
+    override fun toString(): String {
+        return "VersionVector(entries='$entries')"
+    }
+
+    /**
+     * Checks that this version vector is not comparable to a given version vector.
+     * @param vv the given version vector to compare with.
+     * @return true if this version vector is not comparable to the other one, false otherwise.
+     */
+    @Name("isNotComparable")
+    fun isNotComparable(vv: VersionVector): Boolean {
+        var isSmaller = false
+        var isLarger = false
+        for ((k, localV) in this.entries) {
+            val v = vv.entries.get(k)
+            if(v == null || localV > v)
+                // one entry in this object is larger
+                isLarger = true
+            else if(localV < v)
+                // one entry in the other vv is larger
+                isSmaller = true
+            if (isSmaller && isLarger)
+                return true
+        }
+
+        // there are entries in the vv that this one does not have
+        if (isLarger && !this.entries.keys.containsAll(vv.entries.keys))
+            return true;
+
+        // all entries are either (smaller or equal) or (larger or equal)
+        return false
     }
 
     /**

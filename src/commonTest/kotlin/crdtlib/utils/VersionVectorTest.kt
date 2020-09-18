@@ -307,6 +307,11 @@ class VersionVectorTest : StringSpec({
         vv2.addTS(ts4)
 
         vv1.isSmallerOrEquals(vv2).shouldBeTrue()
+        vv1.isSmaller(vv2).shouldBeTrue()
+        vv1.isGreaterOrEquals(vv2).shouldBeFalse()
+        vv1.isGreater(vv2).shouldBeFalse()
+        vv1.equals(vv2).shouldBeFalse()
+        vv1.isNotComparable(vv2).shouldBeFalse()
     }
 
     /**
@@ -332,6 +337,11 @@ class VersionVectorTest : StringSpec({
         vv2.addTS(ts4)
 
         vv1.isSmallerOrEquals(vv2).shouldBeTrue()
+        vv1.isSmaller(vv2).shouldBeTrue()
+        vv1.isGreaterOrEquals(vv2).shouldBeFalse()
+        vv1.isGreater(vv2).shouldBeFalse()
+        vv1.equals(vv2).shouldBeFalse()
+        vv1.isNotComparable(vv2).shouldBeFalse()
     }
 
     /**
@@ -356,6 +366,11 @@ class VersionVectorTest : StringSpec({
         vv2.addTS(ts3)
 
         vv1.isSmallerOrEquals(vv2).shouldBeTrue()
+        vv1.isSmaller(vv2).shouldBeFalse()
+        vv1.isGreaterOrEquals(vv2).shouldBeTrue()
+        vv1.isGreater(vv2).shouldBeFalse()
+        vv1.equals(vv2).shouldBeTrue()
+        vv1.isNotComparable(vv2).shouldBeFalse()
     }
 
     /**
@@ -382,6 +397,11 @@ class VersionVectorTest : StringSpec({
         vv2.addTS(ts4)
 
         vv1.isSmallerOrEquals(vv2).shouldBeFalse()
+        vv1.isSmaller(vv2).shouldBeFalse()
+        vv1.isGreaterOrEquals(vv2).shouldBeTrue()
+        vv1.isGreater(vv2).shouldBeTrue()
+        vv1.equals(vv2).shouldBeFalse()
+        vv1.isNotComparable(vv2).shouldBeFalse()
     }
 
     /**
@@ -409,6 +429,11 @@ class VersionVectorTest : StringSpec({
         vv2.addTS(ts4)
 
         vv1.isSmallerOrEquals(vv2).shouldBeFalse()
+        vv1.isSmaller(vv2).shouldBeFalse()
+        vv1.isGreaterOrEquals(vv2).shouldBeFalse()
+        vv1.isGreater(vv2).shouldBeFalse()
+        vv1.equals(vv2).shouldBeFalse()
+        vv1.isNotComparable(vv2).shouldBeTrue()
     }
 
     /**
@@ -434,6 +459,11 @@ class VersionVectorTest : StringSpec({
         vv2.addTS(ts4)
 
         vv1.isSmallerOrEquals(vv2).shouldBeFalse()
+        vv1.isSmaller(vv2).shouldBeFalse()
+        vv1.isGreaterOrEquals(vv2).shouldBeFalse()
+        vv1.isGreater(vv2).shouldBeFalse()
+        vv1.equals(vv2).shouldBeFalse()
+        vv1.isNotComparable(vv2).shouldBeTrue()
     }
 
     /**
@@ -459,6 +489,11 @@ class VersionVectorTest : StringSpec({
         vv2.addTS(ts4)
 
         vv1.isSmallerOrEquals(vv2).shouldBeFalse()
+        vv1.isSmaller(vv2).shouldBeFalse()
+        vv1.isGreaterOrEquals(vv2).shouldBeTrue()
+        vv1.isGreater(vv2).shouldBeTrue()
+        vv1.equals(vv2).shouldBeFalse()
+        vv1.isNotComparable(vv2).shouldBeFalse()
     }
 
     /**
@@ -484,6 +519,11 @@ class VersionVectorTest : StringSpec({
         vv2.addTS(ts3)
 
         vv1.isSmallerOrEquals(vv2).shouldBeFalse()
+        vv1.isSmaller(vv2).shouldBeFalse()
+        vv1.isGreaterOrEquals(vv2).shouldBeFalse()
+        vv1.isGreater(vv2).shouldBeFalse()
+        vv1.equals(vv2).shouldBeFalse()
+        vv1.isNotComparable(vv2).shouldBeTrue()
     }
 
     /**
@@ -508,6 +548,11 @@ class VersionVectorTest : StringSpec({
         vv2.addTS(ts3)
 
         vv1.isSmallerOrEquals(vv2).shouldBeFalse()
+        vv1.isSmaller(vv2).shouldBeFalse()
+        vv1.isGreaterOrEquals(vv2).shouldBeFalse()
+        vv1.isGreater(vv2).shouldBeFalse()
+        vv1.equals(vv2).shouldBeFalse()
+        vv1.isNotComparable(vv2).shouldBeTrue()
     }
 
     /**
@@ -531,6 +576,7 @@ class VersionVectorTest : StringSpec({
 
         vv1.isSmallerOrEquals(vv2).shouldBeTrue()
         vv2.isSmallerOrEquals(vv1).shouldBeTrue()
+        vv1.isNotComparable(vv2).shouldBeFalse()
     }
 
     /**
@@ -554,6 +600,7 @@ class VersionVectorTest : StringSpec({
 
         vv1.isSmallerOrEquals(vv2).shouldBeTrue()
         vv2.isSmallerOrEquals(vv1).shouldBeTrue()
+        vv1.isNotComparable(vv2).shouldBeFalse()
     }
 
     /**
