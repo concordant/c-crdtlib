@@ -17,7 +17,7 @@ val timestampNonMaxArb = arb { rs ->
 
 
 val dcuidArb = arb { rs ->
-    val names = Arb.string().values(rs)
+    val names = Arb.string(1..2).values(rs)
     names.map { name -> DCUId(name.value)}
 }
 
