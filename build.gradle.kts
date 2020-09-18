@@ -64,8 +64,6 @@ kotlin {
 
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
                 implementation("io.kotest:kotest-property:4.1.1")
                 implementation("io.kotest:kotest-assertions-core:4.1.1")
             }
@@ -81,8 +79,6 @@ kotlin {
 
         val jvmTest by getting {
             dependencies {
-                implementation(kotlin("stdlib-jdk8"))
-                implementation(kotlin("test-junit"))
                 implementation("io.kotest:kotest-property-jvm:4.1.1")
                 implementation("io.kotest:kotest-runner-junit5-jvm:4.1.1")
                 implementation("io.kotest:kotest-assertions-core-jvm:4.1.1")
@@ -99,7 +95,6 @@ kotlin {
 
         val nodeJsTest by getting {
             dependencies {
-                implementation(kotlin("test-js"))
                 implementation("io.kotest:kotest-property-js:4.1.1")
                 implementation("io.kotest:kotest-core-js:4.1.1")
                 implementation("io.kotest:kotest-assertions-core-js:4.1.1")
