@@ -19,16 +19,16 @@
 
 package crdtlib.test
 
-import crdtlib.crdt.JSMRegister
+import crdtlib.crdt.Ratchet
 import crdtlib.utils.VersionVector
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 /**
-* Represents a suite test for JSMRegister.
+* Represents a suite test for Ratchet.
 **/
-class JSMRegisterTest {
+class RatchetTest {
 
     /**
     * This test evaluates the scenario: create string value get.
@@ -38,9 +38,9 @@ class JSMRegisterTest {
     fun createStringGet() {
         val value = "value"
 
-        val reg = JSMRegister<String>(value)
+        val rat = Ratchet<String>(value)
 
-        assertEquals(value, reg.get())
+        assertEquals(value, rat.get())
     }
 
     /**
@@ -51,9 +51,9 @@ class JSMRegisterTest {
     fun createIntGet() {
         val value = 42
 
-        val reg = JSMRegister<Int>(value)
+        val rat = Ratchet<Int>(value)
 
-        assertEquals(value, reg.get())
+        assertEquals(value, rat.get())
     }
 
     /**
@@ -65,10 +65,10 @@ class JSMRegisterTest {
         val val1 = 42
         val val2 = 100
 
-        val reg = JSMRegister<Int>(val1)
-        reg.assign(val2)
+        val rat = Ratchet<Int>(val1)
+        rat.assign(val2)
 
-        assertEquals(val2, reg.get())
+        assertEquals(val2, rat.get())
     }
 
     /**
@@ -80,10 +80,10 @@ class JSMRegisterTest {
         val val1 = 42
         val val2 = 3
 
-        val reg = JSMRegister<Int>(val1)
-        reg.assign(val2)
+        val rat = Ratchet<Int>(val1)
+        rat.assign(val2)
 
-        assertEquals(val1, reg.get())
+        assertEquals(val1, rat.get())
     }
 
     /**
@@ -95,11 +95,11 @@ class JSMRegisterTest {
         val val1 = 42
         val val2 = 101
 
-        val reg1 = JSMRegister<Int>(val1)
-        val reg2 = JSMRegister<Int>(val2)
-        reg2.merge(reg1)
+        val rat1 = Ratchet<Int>(val1)
+        val rat2 = Ratchet<Int>(val2)
+        rat2.merge(rat1)
 
-        assertEquals(val2, reg2.get())
+        assertEquals(val2, rat2.get())
     }
 
     /**
@@ -111,11 +111,11 @@ class JSMRegisterTest {
         val val1 = 42
         val val2 = 41
 
-        val reg1 = JSMRegister<Int>(val1)
-        val reg2 = JSMRegister<Int>(val2)
-        reg2.merge(reg1)
+        val rat1 = Ratchet<Int>(val1)
+        val rat2 = Ratchet<Int>(val2)
+        rat2.merge(rat1)
 
-        assertEquals(val1, reg2.get())
+        assertEquals(val1, rat2.get())
     }
 
     /**
@@ -128,12 +128,12 @@ class JSMRegisterTest {
         val val2 = "CCC"
         val val3 = "AAA"
 
-        val reg1 = JSMRegister<String>(val1)
-        reg1.assign(val2)
-        val reg2 = JSMRegister<String>(val3)
-        reg2.merge(reg1)
+        val rat1 = Ratchet<String>(val1)
+        rat1.assign(val2)
+        val rat2 = Ratchet<String>(val3)
+        rat2.merge(rat1)
 
-        assertEquals(val2, reg2.get())
+        assertEquals(val2, rat2.get())
     }
 
     /**
@@ -146,12 +146,12 @@ class JSMRegisterTest {
         val val2 = "BBB"
         val val3 = "CCC"
 
-        val reg1 = JSMRegister<String>(val1)
-        reg1.assign(val2)
-        val reg2 = JSMRegister<String>(val3)
-        reg2.merge(reg1)
+        val rat1 = Ratchet<String>(val1)
+        rat1.assign(val2)
+        val rat2 = Ratchet<String>(val3)
+        rat2.merge(rat1)
 
-        assertEquals(val3, reg2.get())
+        assertEquals(val3, rat2.get())
     }
 
     /**
@@ -164,12 +164,12 @@ class JSMRegisterTest {
         val val2 = "AAA"
         val val3 = "BBB"
 
-        val reg1 = JSMRegister<String>(val1)
-        reg1.assign(val2)
-        val reg2 = JSMRegister<String>(val3)
-        reg2.merge(reg1)
+        val rat1 = Ratchet<String>(val1)
+        rat1.assign(val2)
+        val rat2 = Ratchet<String>(val3)
+        rat2.merge(rat1)
 
-        assertEquals(val1, reg2.get())
+        assertEquals(val1, rat2.get())
     }
 
     /**
@@ -182,13 +182,13 @@ class JSMRegisterTest {
         val val2 = 5
         val val3 = 2
 
-        val reg1 = JSMRegister<Int>(val1)
-        val reg2 = JSMRegister<Int>(val2)
-        reg1.merge(reg2)
-        reg2.assign(val3)
-        reg2.merge(reg1)
+        val rat1 = Ratchet<Int>(val1)
+        val rat2 = Ratchet<Int>(val2)
+        rat1.merge(rat2)
+        rat2.assign(val3)
+        rat2.merge(rat1)
 
-        assertEquals(val2, reg2.get())
+        assertEquals(val2, rat2.get())
     }
 
     /**
@@ -201,12 +201,12 @@ class JSMRegisterTest {
         val val2 = 6
         val val3 = 5
 
-        val reg1 = JSMRegister<Int>(val1)
-        val assignOp = reg1.assign(val2)
-        val reg2 = JSMRegister<Int>(val3)
-        reg2.merge(assignOp)
+        val rat1 = Ratchet<Int>(val1)
+        val assignOp = rat1.assign(val2)
+        val rat2 = Ratchet<Int>(val3)
+        rat2.merge(assignOp)
 
-        assertEquals(val1, reg2.get())
+        assertEquals(val1, rat2.get())
     }
 
     /*
@@ -220,34 +220,34 @@ class JSMRegisterTest {
         val val2 = 6
         val val3 = 5
 
-        val reg1 = JSMRegister<Int>(val1)
-        reg1.assign(val2)
-        val reg2 = JSMRegister<Int>(val3)
-        val delta = reg1.generateDelta(vv)
-        reg2.merge(delta)
+        val rat1 = Ratchet<Int>(val1)
+        rat1.assign(val2)
+        val rat2 = Ratchet<Int>(val3)
+        val delta = rat1.generateDelta(vv)
+        rat2.merge(delta)
 
-        assertEquals(val1, reg2.get())
+        assertEquals(val1, rat2.get())
     }
 
     /**
-    * This test evaluates JSON serialization of a JSM register.
+    * This test evaluates JSON serialization of a ratchet.
     **/
     @Test
     fun toJsonSerialization() {
         val value = "VALUE"
 
-        val reg = JSMRegister<String>(value)
+        val rat = Ratchet<String>(value)
 
-        assertEquals("""{"_type":"JSMRegister","value":"VALUE"}""", reg.toJson())
+        assertEquals("""{"_type":"Ratchet","value":"VALUE"}""", rat.toJson())
     }
 
     /**
-    * This test evaluates JSON deserialization of a JSM register.
+    * This test evaluates JSON deserialization of a ratchet.
     **/
     @Test
     fun fromJsonDeserialization() {
-        val regJson = JSMRegister.fromJson<String>("""{"_type":"JSMRegister","value":"VALUE"}""")
+        val ratJson = Ratchet.fromJson<String>("""{"_type":"Ratchet","value":"VALUE"}""")
 
-        assertEquals("VALUE", regJson.get())
+        assertEquals("VALUE", ratJson.get())
     }
 }

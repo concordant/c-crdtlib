@@ -28,23 +28,23 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 
 /**
-* This class is a delta-based CRDT join semi-lattice (JSM) register.
+* This class is a delta-based CRDT join semi-lattice ratchet.
 * A join (or upper) semi-lattice is a set of values on which a partial order is defined such that
 * the result of a merge operation for any two elements is the greatest upper bound of the elements
 * with respect to this partial order.
 * It is serializable to JSON and respect the following schema:
 * {
-    "_type": "JSMRegister",
+    "_type": "Ratchet",
     "value": T.toJson()
 * }
 * @property value the stored value.
 */
-@Serializable(with = JSMRegisterSerializer::class)
-class JSMRegister<T : Comparable<T>>(var value: T) : DeltaCRDT<JSMRegister<T>>() {
+@Serializable(with = RatchetSerializer::class)
+class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
 
     /**
-    * Gets the value stored in the register.
-    * @return the value stored in the register.
+    * Gets the value stored in the ratchet.
+    * @return the value stored in the ratchet.
     */
     @Name("get")
     fun get(): T {
@@ -52,15 +52,15 @@ class JSMRegister<T : Comparable<T>>(var value: T) : DeltaCRDT<JSMRegister<T>>()
     }
 
     /**
-    * Assigns a given value to the register.
+    * Assigns a given value to the ratchet.
     * This passed value overload the already present one iff it is greater.
     * @param value the value that should be assigned.
     * @return the delta corresponding to this operation.
     */
     @Name("set")
-    fun assign(value: T): Delta<JSMRegister<T>> {
+    fun assign(value: T): Delta<Ratchet<T>> {
         if (this.value < value) this.value = value
-        return JSMRegister(this.value)
+        return Ratchet(this.value)
     }
 
     /**
@@ -68,8 +68,8 @@ class JSMRegister<T : Comparable<T>>(var value: T) : DeltaCRDT<JSMRegister<T>>()
     * @param vv the context used as starting point to generate the delta.
     * @return the corresponding delta of operations.
     */
-    override fun generateDeltaProtected(vv: VersionVector): Delta<JSMRegister<T>> {
-        return JSMRegister(this.value)
+    override fun generateDeltaProtected(vv: VersionVector): Delta<Ratchet<T>> {
+        return Ratchet(this.value)
     }
 
     /**
@@ -78,56 +78,56 @@ class JSMRegister<T : Comparable<T>>(var value: T) : DeltaCRDT<JSMRegister<T>>()
     * A foreign value is kept iff it is greater than the local one.
     * @param delta the delta that should be merge with the local replica.
     */
-    override fun mergeProtected(delta: Delta<JSMRegister<T>>) {
-        if (delta !is JSMRegister) throw UnexpectedTypeException("JSMRegister does not support merging with type: " + delta::class)
+    override fun mergeProtected(delta: Delta<Ratchet<T>>) {
+        if (delta !is Ratchet) throw UnexpectedTypeException("Ratchet does not support merging with type: " + delta::class)
         if (this.value < delta.value) this.value = delta.value
     }
 
     /**
-    * Serializes this crdt JSM register to a json string.
+    * Serializes this crdt ratchet to a json string.
     * @return the resulted json string.
     */
     @OptIn(ImplicitReflectionSerializer::class)
     @Name("toJson")
     fun toJson(): String {
         val jsonSerializer =
-        JsonJSMRegisterSerializer(JSMRegister.serializer(this.value::class.serializer() as KSerializer<T>))
-        return Json.stringify<JSMRegister<T>>(jsonSerializer, this)
+        JsonRatchetSerializer(Ratchet.serializer(this.value::class.serializer() as KSerializer<T>))
+        return Json.stringify<Ratchet<T>>(jsonSerializer, this)
     }
 
     companion object {
         /**
-        * Deserializes a given json string in a crdt JSM register.
+        * Deserializes a given json string in a crdt ratchet.
         * @param json the given json string.
-        * @return the resulted MV register.
+        * @return the resulted ratchet.
         */
         @OptIn(ImplicitReflectionSerializer::class)
         @Name("fromJson")
-        inline fun <reified T : Comparable<T>> fromJson(json: String): JSMRegister<T> {
-            val jsonSerializer = JsonJSMRegisterSerializer(JSMRegister.serializer(T::class.serializer()))
+        inline fun <reified T : Comparable<T>> fromJson(json: String): Ratchet<T> {
+            val jsonSerializer = JsonRatchetSerializer(Ratchet.serializer(T::class.serializer()))
             return Json.parse(jsonSerializer, json)
         }
     }
 }
 
 /**
-* This class is a serializer for generic JSMRegister.
+* This class is a serializer for generic Ratchet.
 */
-@Serializer(forClass = JSMRegister::class)
-class JSMRegisterSerializer<T : Comparable<T>>(private val dataSerializer: KSerializer<T>) :
-        KSerializer<JSMRegister<T>> {
+@Serializer(forClass = Ratchet::class)
+class RatchetSerializer<T : Comparable<T>>(private val dataSerializer: KSerializer<T>) :
+        KSerializer<Ratchet<T>> {
 
-    override val descriptor: SerialDescriptor = SerialDescriptor("JSMRegisterSerializer") {
+    override val descriptor: SerialDescriptor = SerialDescriptor("RatchetSerializer") {
         element("value", dataSerializer.descriptor)
     }
 
-    override fun serialize(encoder: Encoder, value: JSMRegister<T>) {
+    override fun serialize(encoder: Encoder, value: Ratchet<T>) {
         val output = encoder.beginStructure(descriptor)
         output.encodeSerializableElement(descriptor, 0, dataSerializer, value.value)
         output.endStructure(descriptor)
     }
 
-    override fun deserialize(decoder: Decoder): JSMRegister<T> {
+    override fun deserialize(decoder: Decoder): Ratchet<T> {
         val input = decoder.beginStructure(descriptor)
         lateinit var value: T
         loop@ while (true) {
@@ -138,18 +138,18 @@ class JSMRegisterSerializer<T : Comparable<T>>(private val dataSerializer: KSeri
             }
         }
         input.endStructure(descriptor)
-        return JSMRegister<T>(value)
+        return Ratchet<T>(value)
     }
 }
 
 /**
-* This class is a json transformer for JSMRegister, it allows the separation between data and metadata.
+* This class is a json transformer for Ratchet, it allows the separation between data and metadata.
 */
-class JsonJSMRegisterSerializer<T : Comparable<T>>(private val serializer: KSerializer<JSMRegister<T>>) :
-        JsonTransformingSerializer<JSMRegister<T>>(serializer, "JsonJSMRegisterSerializer") {
+class JsonRatchetSerializer<T : Comparable<T>>(private val serializer: KSerializer<Ratchet<T>>) :
+        JsonTransformingSerializer<Ratchet<T>>(serializer, "JsonRatchetSerializer") {
 
     override fun writeTransform(element: JsonElement): JsonElement {
-        return JsonObject(mapOf("_type" to JsonPrimitive("JSMRegister"), "value" to element.jsonObject.get("value") as JsonElement))
+        return JsonObject(mapOf("_type" to JsonPrimitive("Ratchet"), "value" to element.jsonObject.get("value") as JsonElement))
     }
 
     override fun readTransform(element: JsonElement): JsonElement {
