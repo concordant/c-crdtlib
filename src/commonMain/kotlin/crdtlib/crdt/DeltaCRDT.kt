@@ -25,20 +25,20 @@ import crdtlib.utils.VersionVector
 /**
 * Interface for delta based CRDT
 */
-abstract class DeltaCRDT<CrdtT> : Delta<CrdtT> {
+abstract class DeltaCRDT<CrdtT> {
 
     /**
     * Protected abstract method generating the delta from a given version vector.
     * @param vv the given version vector.
     * @return the delta from the version vector.
     */
-    protected abstract fun generateDeltaProtected(vv: VersionVector): Delta<CrdtT>
+    protected abstract fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<CrdtT>
 
     /**
     * Protected abstract methods merging a given delta into this CRDT.
     * @param delta the delta to be merge.
     */
-    protected abstract fun mergeProtected(delta: Delta<CrdtT>)
+    protected abstract fun mergeProtected(delta: DeltaCRDT<CrdtT>)
 
     /**
     * Generates the delta from a given version vector by calling the protected abstract method.
@@ -47,7 +47,7 @@ abstract class DeltaCRDT<CrdtT> : Delta<CrdtT> {
     * @return the delta from the version vector.
     */
     @Name("generateDelta")
-    fun generateDelta(vv: VersionVector): Delta<CrdtT> {
+    fun generateDelta(vv: VersionVector): DeltaCRDT<CrdtT> {
         return generateDeltaProtected(vv)
     }
 
@@ -57,7 +57,7 @@ abstract class DeltaCRDT<CrdtT> : Delta<CrdtT> {
     * @param delta the delta to be merge.
     */
     @Name("merge")
-    fun merge(delta: Delta<CrdtT>) {
+    fun merge(delta: DeltaCRDT<CrdtT>) {
         mergeProtected(delta)
     }
 }

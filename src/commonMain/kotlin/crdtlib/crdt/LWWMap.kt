@@ -228,7 +228,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     * @param vv the context used as starting point to generate the delta.
     * @return the corresponding delta of operations.
     */
-    override fun generateDeltaProtected(vv: VersionVector): Delta<LWWMap> {
+    override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<LWWMap> {
         var delta = LWWMap()
         for ((key, meta) in this.entries) {
             val value = meta.first
@@ -247,7 +247,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     * smaller timestamp compared to the foreign one, or there is no local operation recorded.
     * @param delta the delta that should be merged with the local replica.
     */
-    override fun mergeProtected(delta: Delta<LWWMap>) {
+    override fun mergeProtected(delta: DeltaCRDT<LWWMap>) {
         if (delta !is LWWMap)
             throw UnexpectedTypeException("LWWMap does not support merging with type: " + delta::class)
 

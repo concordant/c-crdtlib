@@ -39,7 +39,6 @@ fun main(args: Array<String>) {
             SimpleEnvironment::class,
             Timestamp::class,
             UnexpectedTypeException::class,
-            UpdateOperation::class,
             VersionVector::class
         )
     ).definitionsText)
@@ -49,9 +48,7 @@ fun main(args: Array<String>) {
     println();
     println(TypeScriptGenerator(
         rootClasses = setOf(
-            Delta::class,
             DeltaCRDT::class,
-            EmptyDelta::class,
             LWWMap::class,
             LWWRegister::class,
             MVRegister::class,

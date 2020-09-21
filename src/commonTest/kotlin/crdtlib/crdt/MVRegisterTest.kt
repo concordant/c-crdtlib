@@ -352,33 +352,6 @@ class MVRegisterTest : StringSpec({
         reg3.get().shouldContainExactlyInAnyOrder(val1, val2)
     }
 
-    /*
-    * This test evaluates the generation of an empty delta plus its merging into another replica.
-    * Call to value should return an empty set.
-    */
-    "generate empty delta then merge" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
-        dc1.updateStateTS(ts1)
-        dc1.updateStateTS(ts2)
-        val vv = dc1.getCurrentState()
-        val val1 = "value1"
-        val val2 = "value2"
-        val reg1 = MVRegister<String>(val1, ts1)
-        val reg2 = MVRegister<String>(val2, ts2)
-        val reg3 = MVRegister<String>()
-
-        reg2.merge(reg1)
-        val delta = reg2.generateDelta(vv)
-        reg3.merge(delta)
-
-        reg3.get().shouldBeEmpty()
-    }
-
     /**
     * This test evaluates JSON serialization of an empty mv register.
     **/

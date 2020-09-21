@@ -158,7 +158,7 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
     * @param vv the context used as starting point to generate the delta.
     * @return the corresponding delta of operations.
     */
-    override fun generateDeltaProtected(vv: VersionVector): Delta<RGA<T>> {
+    override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<RGA<T>> {
         val delta = RGA<T>()
         for (node in this.nodes) {
             if (!vv.includesTS(node.ts)) {
@@ -178,7 +178,7 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
     * smaller timestamp) node found, or at the end of the array if no weaker node exists.
     * @param delta the delta that should be merge with the local replica.
     */
-    override fun mergeProtected(delta: Delta<RGA<T>>) {
+    override fun mergeProtected(delta: DeltaCRDT<RGA<T>>) {
         if (delta !is RGA) throw UnexpectedTypeException(
 	    "RGA does not support merging with type:" + delta::class)
 
