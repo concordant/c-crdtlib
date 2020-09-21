@@ -24,7 +24,6 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.*
 import io.kotest.property.forAll
-import java.lang.Integer.max
 
 
 val RatchetIntArb = arb { rs ->
@@ -83,7 +82,7 @@ class RatchetPropTest: StringSpec({
 
             val d = r1.generateDelta(VersionVector())
             r2.merge(d)
-            r2.get() == max(m1, m2)
+            r2.get() == maxOf(m1, m2)
         }
     }
 })

@@ -17,38 +17,35 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package crdtlib.test
+package crdtlib.crdt
 
-import crdtlib.crdt.RGA
 import crdtlib.utils.DCUId
 import crdtlib.utils.Timestamp
 import crdtlib.utils.SimpleEnvironment
 import crdtlib.utils.VersionVector
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.*
+import io.kotest.matchers.collections.*
 
 /**
 * Represents a suite test for RGA.
 **/
-class RGATest {
+class RGATest : StringSpec({
 
     /**
     * This test evaluates the scenario: create, get.
     * Call to get should return an empty array.
     */
-    @Test
-    fun createGet() {
+    "create and get" {
         val rga = RGA<Char>()
-        assertEquals(listOf(), rga.get())
+        rga.get().shouldBeEmpty()
     }
 
     /**
     * This test evaluates the scenario: insert at 0, get.
     * Call to get should return an array containing the inserted value.
     */
-    @Test
-    fun add0Get() {
+    "insert at 0 and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
@@ -56,7 +53,7 @@ class RGATest {
 
         rga.insertAt(0, 'A', ts)
 
-        assertEquals(listOf('A'), rga.get())
+        rga.get().shouldHaveSingleElement('A')
     }
 
     /**
@@ -64,8 +61,7 @@ class RGATest {
     * Call to get should return an array containing the two inserted values.
     * Second value should be at index 0 and first value at index 1.
     */
-    @Test
-    fun add0Add0Get() {
+    "insert at 0, insert at 0, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -76,7 +72,7 @@ class RGATest {
         rga.insertAt(0, 'B', ts1)
         rga.insertAt(0, 'A', ts2)
 
-        assertEquals(listOf('A', 'B'), rga.get())
+        rga.get().shouldContainExactly('A', 'B')
     }
 
     /**
@@ -84,8 +80,7 @@ class RGATest {
     * Call to get should return an array containing the two inserted values.
     * First value should be at index 0 and second value at index 1.
     */
-    @Test
-    fun add0Add1Get() {
+    "insert at 0, insert at 1, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -96,15 +91,14 @@ class RGATest {
         rga.insertAt(0, 'A', ts1)
         rga.insertAt(1, 'B', ts2)
 
-        assertEquals(listOf('A', 'B'), rga.get())
+        rga.get().shouldContainExactly('A', 'B')
     }
 
     /**
     * This test evaluates the scenario: insert at 0, remove at 0, get.
     * Call to get should return an empty array.
     */
-    @Test
-    fun add0Remove0Get() {
+    "inser at 0, remove at 0, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -115,15 +109,14 @@ class RGATest {
         rga.insertAt(0, 'A', ts1)
         rga.removeAt(0, ts2)
 
-        assertEquals(listOf(), rga.get())
+        rga.get().shouldBeEmpty()
     }
 
     /**
     * This test evaluates the scenario: insert at 0 twice, remove at 0 twice, get.
     * Call to get should return an empty array.
     */
-    @Test
-    fun add0Add0Remove0Remove0Get() {
+    "insert at 0, insert at 0, remove at 0, remove at 0, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -140,7 +133,7 @@ class RGATest {
         rga.removeAt(0, ts3)
         rga.removeAt(0, ts4)
 
-        assertEquals(listOf(), rga.get())
+        rga.get().shouldBeEmpty()
     }
 
     /**
@@ -148,8 +141,7 @@ class RGATest {
     * Call to get should return an array containing the two last inserted values.
     * Second inserted value should be at index 0 and third inserted value at index 1.
     */
-    @Test
-    fun add0Add1Remove0Add1Get() {
+    "insert at 0, insert at 1, remove at 0, insert at 1, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -166,7 +158,7 @@ class RGATest {
         rga.removeAt(0, ts3)
         rga.insertAt(1, 'C', ts4)
 
-        assertEquals(listOf('B', 'C'), rga.get())
+        rga.get().shouldContainExactly('B', 'C')
     }
 
     /**
@@ -174,8 +166,7 @@ class RGATest {
     * Call to get should return an array containing the first and third inserted values.
     * First inserted value should be at index 0 and thrid inserted value at index 1.
     */
-    @Test
-    fun add0Add1Remove1Add1Get() {
+    "insert at 0, insert at 1, remove at 1, insert at 1, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -192,15 +183,14 @@ class RGATest {
         rga.removeAt(1, ts3)
         rga.insertAt(1, 'C', ts4)
 
-        assertEquals(listOf('A', 'C'), rga.get())
+        rga.get().shouldContainExactly('A', 'C')
     }
 
     /**
     * This test evaluates the scenario: insert at 0 || merge, get.
     * Call to get should return an array containing the value inserted in replica 1.
     */
-    @Test
-    fun add0_MergeGet() {
+    "R1: insert at 1; R2: merge, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
@@ -210,15 +200,14 @@ class RGATest {
         rga1.insertAt(0, 'A', ts)
         rga2.merge(rga1)
 
-        assertEquals(listOf('A'), rga2.get())
+        rga2.get().shouldHaveSingleElement('A')
     }
 
     /**
     * This test evaluates the scenario: insert at 0 twice || merge, get.
     * Call to get should return an array containing the two values inserted in replica 1.
     */
-    @Test
-    fun add0Add0_MergeGet() {
+    "R1: insert at 0, insert at 0; R2: merge, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -231,15 +220,14 @@ class RGATest {
         rga1.insertAt(0, 'A', ts2)
         rga2.merge(rga1)
 
-        assertEquals(listOf('A', 'B'), rga2.get())
+        rga2.get().shouldContainExactly('A', 'B')
     }
 
     /**
     * This test evaluates the scenario: insert at 0, insert at 1, insert at 2 || merge, get.
     * Call to get should return an array containing the three values inserted in replica 1.
     */
-    @Test
-    fun add0Add1Add2_MergeGet() {
+    "R1: insert at 0, insert at 1, insert at 2; R2: merge, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -255,7 +243,7 @@ class RGATest {
         rga1.insertAt(2, 'C', ts3)
         rga2.merge(rga1)
 
-        assertEquals(listOf('A', 'B', 'C'), rga2.get())
+        rga2.get().shouldContainExactly('A', 'B', 'C')
     }
 
     /**
@@ -264,8 +252,7 @@ class RGATest {
     * Call to get should return an array containing the two values. Value inserted in replica 2
     * should be at index 0 and the one inserted at replica 1 at index 1.
     */
-    @Test
-    fun add0_AddWin0MergeGet() {
+    "R1: insert at 0; R2: insert at 0 with greater timestamp, merge, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -279,7 +266,7 @@ class RGATest {
         rga2.insertAt(0, 'A', ts2)
         rga2.merge(rga1)
 
-        assertEquals(listOf('A', 'B'), rga2.get())
+        rga2.get().shouldContainExactly('A', 'B')
     }
 
     /**
@@ -288,8 +275,7 @@ class RGATest {
     * Call to get should return an array containing the two values. Value inserted in replica
     * 1 should be at index 0 and the one inserted at replica 2 at index 1.
     */
-    @Test
-    fun addWin0_Add0MergeGet() {
+    "R1: insert at 0 with greater timestamp; R2: insert at 0, merge, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -303,7 +289,7 @@ class RGATest {
         rga2.insertAt(0, 'B', ts1)
         rga2.merge(rga1)
 
-        assertEquals(listOf('A', 'B'), rga2.get())
+        rga2.get().shouldContainExactly('A', 'B')
     }
  
     /**
@@ -311,8 +297,7 @@ class RGATest {
     * Call to get should return an array containing the four values. Values should be ordered
     * according to decreasing order of their associated timestamp.
     */
-    @Test
-    fun add0Add0_Add0Add0MergeGet() {
+    "R1: insert at 0, insert at 0; R2: insert at 0, insert at 0, merge, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -332,7 +317,7 @@ class RGATest {
         rga2.insertAt(0, 'A', ts4)
         rga2.merge(rga1)
 
-        assertEquals(listOf('A', 'B', 'C', 'D'), rga2.get())
+        rga2.get().shouldContainExactly('A', 'B', 'C', 'D')
     }
 
     /**
@@ -341,8 +326,7 @@ class RGATest {
     * Call to get should return an array containing the four values. Values inserted in replica 1
     * should be before the one inserted in replica 2.
     */
-    @Test
-    fun addWin0Add1_Add0Add1MergeGet() {
+    "insert at 0 with greater timestamp, insert at 1; R2: insert at 0, insert at 1, merge, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -362,7 +346,7 @@ class RGATest {
         rga2.insertAt(1, 'B', ts4)
         rga1.merge(rga2)
 
-        assertEquals(listOf('A', 'B', 'C', 'D'), rga1.get())
+        rga1.get().shouldContainExactly('A', 'B', 'C', 'D')
     }
 
     /**
@@ -371,8 +355,7 @@ class RGATest {
     * Call to get should return an array containing the four values. Values inserted in replica 2
     * should be before the one inserted in replica 1.
     */
-    @Test
-    fun add0Add1_AddWin0Add1MergeGet() {
+    "R1: insert at 0, insert at 1; R2: insert at 0 with greater timestamp, insert at 1, merge, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -392,17 +375,16 @@ class RGATest {
         rga2.insertAt(1, 'B', ts4)
         rga2.merge(rga1)
 
-        assertEquals(listOf('A', 'B', 'C', 'D'), rga2.get())
+        rga2.get().shouldContainExactly('A', 'B', 'C', 'D')
     }
 
     /**
-    * This test evaluates the scenario: insert four gets, remove at 1 || merge (after adds in
+    * This test evaluates the scenario: insert four times, remove at 1 || merge (after adds in
     * replica 1), remove at 2, merge, get.
     * Call to get should return an array containing the two values that have not been remove (the
     * first and the fourth one).
     */
-    @Test
-    fun add0Add1Add2Add3Remove1_MergeAfterAddsRemove2MergeGet() {
+    "R1: insert four times, remove at 1; R2: merge after inserts, remove at 2, merge, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -429,253 +411,7 @@ class RGATest {
         rga2.removeAt(2, ts6)
         rga2.merge(rga1)
 
-        assertEquals(listOf('A', 'D'), rga2.get())
-    }
-
-    /**
-     * This test evaluates the scenario of issue #35
-     *                                  Expected      Faulty ordering
-     * Replica A        Replica B       (ok on A)       on B of #35
-     *  1362             13452           134562           134526
-     *     1                 1               1               1
-     *    / \               / \             / \             / \
-     *   3   2             3   2           3   2           3   2
-     *    \               /               / \             / \___
-     *     6             4               4   6           4   6
-     *                   |               |               |
-     *                   5               5               5
-     *
-     * (assuming element 6 has a smaller timestamp than element 4)
-     * - 1, 2 and 3 are added and synchronized
-     * - 6 is added on A, 4 and 5 on B (concurrently)
-     * - A to B are merged
-     */
-    @Test
-    fun mergeA1362_B13452() {
-	val uidA = DCUId("dcidA")
-	val uidB = DCUId("dcidB")
-	val envA = SimpleEnvironment(uidA)
-	val envB = SimpleEnvironment(uidB)
-	val rgaA = RGA<Int>()
-	val rgaB = RGA<Int>()
-	var tsA: Timestamp
-	var tsB: Timestamp
-
-	// add 132 to A
-	tsA = envA.getNewTimestamp()
-	envA.updateStateTS(tsA)
-	rgaA.insertAt(0, 1, tsA)
-
-	tsA = envA.getNewTimestamp()
-	envA.updateStateTS(tsA)
-	rgaA.insertAt(1, 2, tsA)
-
-	tsA = envA.getNewTimestamp()
-	envA.updateStateTS(tsA)
-	rgaA.insertAt(1, 3, tsA)
-
-	// merge A → B
-	rgaB.merge(rgaA)
-	envB.updateStateVV(envA.getCurrentState())
-
-	// add 6 to A (1362)
-	tsA = envA.getNewTimestamp()
-	envA.updateStateTS(tsA)
-	rgaA.insertAt(2, 6, tsA)
-
-	assertEquals(listOf(1, 3, 6, 2), rgaA.get())
-
-	// add 4,5 to B (13452)
-	tsB = envB.getNewTimestamp()
-	envB.updateStateTS(tsB)
-	rgaB.insertAt(2, 4, tsB)
-
-	tsB = envB.getNewTimestamp()
-	envB.updateStateTS(tsB)
-	rgaB.insertAt(3, 5, tsB)
-
-	assertEquals(listOf(1, 3, 4, 5, 2), rgaB.get())
-
-	// merge A and B
-	rgaB.merge(rgaA)
-	envB.updateStateVV(envA.getCurrentState())
-	rgaA.merge(rgaB)
-	envA.updateStateVV(envB.getCurrentState())
-
-	assertEquals(rgaA.get(), rgaB.get())
-    }
-
-    /**
-     * A similar scenario with a deeper tree
-     *
-     * Replica A        Replica B       Expected
-     *  1346572         13465982        134659872
-     *        1               1               1
-     *       / \             / \             / \
-     *      3   2           3   2           3   2
-     *     /               /               /
-     *    4               4               4
-     *   / \             / \             / \
-     *  6   5           6   5           6   5
-     *      |              / \             /|\
-     *      7             9   8           9 8 7
-     *
-     * (assuming element 7 has a smaller timestamp than element 8)
-     * - 1 to 5 are added and synchronized
-     * - 7 is added on A, 8 and 9 on B (concurrently)
-     * - A to B are merged
-     */
-    @Test
-    fun mergeA1346572_B13465982() {
-	val uidA = DCUId("dcidA")
-	val uidB = DCUId("dcidB")
-	val envA = SimpleEnvironment(uidA)
-	val envB = SimpleEnvironment(uidB)
-	val rgaA = RGA<Char>()
-	val rgaB = RGA<Char>()
-	var tsA: Timestamp
-	var tsB: Timestamp
-
-	// add 134652 to A
-	tsA = envA.getNewTimestamp()
-	envA.updateStateTS(tsA)
-	rgaA.insertAt(0, '1', tsA)
-
-	tsA = envA.getNewTimestamp()
-	envA.updateStateTS(tsA)
-	rgaA.insertAt(1, '2', tsA)
-
-	tsA = envA.getNewTimestamp()
-	envA.updateStateTS(tsA)
-	rgaA.insertAt(1, '3', tsA)
-
-	tsA = envA.getNewTimestamp()
-	envA.updateStateTS(tsA)
-	rgaA.insertAt(2, '4', tsA)
-
-	tsA = envA.getNewTimestamp()
-	envA.updateStateTS(tsA)
-	rgaA.insertAt(3, '5', tsA)
-
-	tsA = envA.getNewTimestamp()
-	envA.updateStateTS(tsA)
-	rgaA.insertAt(3, '6', tsA)
-
-	// merge A → B
-	rgaB.merge(rgaA)
-	envB.updateStateVV(envA.getCurrentState())
-
-	// add 7 to A (1346572)
-	tsA = envA.getNewTimestamp()
-	envA.updateStateTS(tsA)
-	rgaA.insertAt(5, '7', tsA)
-
-	assertEquals(listOf('1', '3', '4', '6', '5', '7', '2'), rgaA.get())
-
-	// add 8,9 to B (13465982)
-	tsB = envB.getNewTimestamp()
-	envB.updateStateTS(tsB)
-	rgaB.insertAt(5, '8', tsB)
-
-	tsB = envB.getNewTimestamp()
-	envB.updateStateTS(tsB)
-	rgaB.insertAt(5, '9', tsB)
-
-	assertEquals(listOf('1', '3', '4', '6', '5', '9', '8', '2'),
-		     rgaB.get())
-
-	// merge A and B
-	rgaB.merge(rgaA)
-	envB.updateStateVV(envA.getCurrentState())
-	rgaA.merge(rgaB)
-	envA.updateStateVV(envB.getCurrentState())
-
-	assertEquals(rgaA.get(), rgaB.get())
-    }
-
-    /**
-     * Same scenario without the 2 (up to the root)
-     *
-     * Replica A        Replica B       Expected
-     *  134657          1346598         13465987
-     *        1               1               1
-     *       /               /               /
-     *      3               3               3
-     *     /               /               /
-     *    4               4               4
-     *   / \             / \             / \
-     *  6   5           6   5           6   5
-     *      |              / \             /|\
-     *      7             9   8           9 8 7
-     *
-     * (assuming element 7 has a smaller timestamp than element 8)
-     * - 1 to 5 are added and synchronized
-     * - 7 is added on A, 8 and 9 on B (concurrently)
-     * - A to B are merged
-     */
-
-    @Test
-    fun mergeA134657_B1346598() {
-	val uidA = DCUId("dcidA")
-	val uidB = DCUId("dcidB")
-	val envA = SimpleEnvironment(uidA)
-	val envB = SimpleEnvironment(uidB)
-	val rgaA = RGA<Char>()
-	val rgaB = RGA<Char>()
-	var tsA: Timestamp
-	var tsB: Timestamp
-
-	// add 13465 to A
-	tsA = envA.getNewTimestamp()
-	envA.updateStateTS(tsA)
-	rgaA.insertAt(0, '1', tsA)
-
-	tsA = envA.getNewTimestamp()
-	envA.updateStateTS(tsA)
-	rgaA.insertAt(1, '3', tsA)
-
-	tsA = envA.getNewTimestamp()
-	envA.updateStateTS(tsA)
-	rgaA.insertAt(2, '4', tsA)
-
-	tsA = envA.getNewTimestamp()
-	envA.updateStateTS(tsA)
-	rgaA.insertAt(3, '5', tsA)
-
-	tsA = envA.getNewTimestamp()
-	envA.updateStateTS(tsA)
-	rgaA.insertAt(3, '6', tsA)
-
-	// merge A → B
-	rgaB.merge(rgaA)
-	envB.updateStateVV(envA.getCurrentState())
-
-	// add 7 to A (134657)
-	tsA = envA.getNewTimestamp()
-	envA.updateStateTS(tsA)
-	rgaA.insertAt(5, '7', tsA)
-
-	assertEquals(listOf('1', '3', '4', '6', '5', '7'), rgaA.get())
-
-	// add 8,9 to B (1346598)
-	tsB = envB.getNewTimestamp()
-	envB.updateStateTS(tsB)
-	rgaB.insertAt(5, '8', tsB)
-
-	tsB = envB.getNewTimestamp()
-	envB.updateStateTS(tsB)
-	rgaB.insertAt(5, '9', tsB)
-
-	assertEquals(listOf('1', '3', '4', '6', '5', '9', '8'),
-		     rgaB.get())
-
-	// merge A and B
-	rgaB.merge(rgaA)
-	envB.updateStateVV(envA.getCurrentState())
-	rgaA.merge(rgaB)
-	envA.updateStateVV(envB.getCurrentState())
-
-	assertEquals(rgaA.get(), rgaB.get())
+        rga2.get().shouldContainExactly('A', 'D')
     }
 
     /**
@@ -686,8 +422,7 @@ class RGATest {
     * should be before the one inserted in replica 2 which should be before those inserted at
     * replica 3.
     */
-    @Test
-    fun addWin0Add1_AddSecond0Add1_Add0Add1Merge1Merge2Get() {
+    "R1: insert at 0 with greater timestamp, insert at 1; R2: insert at 0 with second timestamp, insert at 1; R3: insert at 0, insert at 1, merge R1 and R2, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -716,7 +451,7 @@ class RGATest {
         rga3.merge(rga1)
         rga3.merge(rga2)
 
-        assertEquals(listOf('A', 'B', 'C', 'D', 'E', 'F'), rga3.get())
+        rga3.get().shouldContainExactly('A', 'B', 'C', 'D', 'E', 'F')
     }
 
     /**
@@ -727,8 +462,7 @@ class RGATest {
     * should be before the one inserted in replica 3 which should be before those inserted at
     * replica 2.
     */
-    @Test
-    fun addWin0Add1_Add0Add1_AddSecond0Add1Merge1Merge2Get() {
+    "R1: insert at 0 with greater timestamp, insert at 1; R2: insert at 0, insert at 1; R3: insert at 0 with second timestamp, insert at 1, merge R1 and R2, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -757,7 +491,7 @@ class RGATest {
         rga3.merge(rga1)
         rga3.merge(rga2)
 
-        assertEquals(listOf('A', 'B', 'C', 'D', 'E', 'F'), rga3.get())
+        rga3.get().shouldContainExactly('A', 'B', 'C', 'D', 'E', 'F')
     }
 
     /**
@@ -768,8 +502,7 @@ class RGATest {
     * should be before the one inserted in replica 1 which should be before those inserted at
     * replica 3.
     */
-    @Test
-    fun addSecond0Add1_AddWin0Add1_Add0Add1Merge1Merge2Get() {
+    "R1: insert at 0 with second timestamp, insert at 1; R2: insert at 0 with greater timestamp, insert at 1; R3: insert at 0, insert at 1, merge R1 and R2, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -798,7 +531,7 @@ class RGATest {
         rga3.merge(rga1)
         rga3.merge(rga2)
 
-        assertEquals(listOf('A', 'B', 'C', 'D', 'E', 'F'), rga3.get())
+        rga3.get().shouldContainExactly('A', 'B', 'C', 'D', 'E', 'F')
     }
 
     /**
@@ -809,8 +542,7 @@ class RGATest {
     * should be before the one inserted in replica 3 which should be before those inserted at
     * replica 1.
     */
-    @Test
-    fun add0Add1_AddWin0Add1_AddSecond0Add1Merge1Merge2Get() {
+    "R1: insert at 0, insert at 1; R2: insert at 0 with greater timestamp, insert at 1; R3: insert at 0 with second timestamp, insert at 1, merge R1 and R2, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -839,7 +571,7 @@ class RGATest {
         rga3.merge(rga1)
         rga3.merge(rga2)
 
-        assertEquals(listOf('A', 'B', 'C', 'D', 'E', 'F'), rga3.get())
+        rga3.get().shouldContainExactly('A', 'B', 'C', 'D', 'E', 'F')
     }
 
     /**
@@ -850,8 +582,7 @@ class RGATest {
     * should be before the one inserted in replica 2 which should be before those inserted at
     * replica 1.
     */
-    @Test
-    fun add0Add1_AddSecond0Add1_AddWin0Add1Merge1Merge2Get() {
+    "R1: insert at 0, insert at 1; R2: insert at 0 with second timestamp, insert at 1; R3: insert at 0 with greater timestamp, insert at 1, merge R1 and R2, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -880,7 +611,7 @@ class RGATest {
         rga3.merge(rga1)
         rga3.merge(rga2)
 
-        assertEquals(listOf('A', 'B', 'C', 'D', 'E', 'F'), rga3.get())
+        rga3.get().shouldContainExactly('A', 'B', 'C', 'D', 'E', 'F')
     }
 
     /**
@@ -891,8 +622,7 @@ class RGATest {
     * should be before the one inserted in replica 1 which should be before those inserted at
     * replica 2.
     */
-    @Test
-    fun addSecond0Add1_Add0Add1_AddWin0Add1Merge1Merge2Get() {
+    "R1: insert at 0 with second timestamp, insert at 1; R2: insert at 0, insert at 1; R3: insert at 0 with greater timestamp, insert at 1, merge R1 and R2, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -921,15 +651,14 @@ class RGATest {
         rga3.merge(rga1)
         rga3.merge(rga2)
 
-        assertEquals(listOf('A', 'B', 'C', 'D', 'E', 'F'), rga3.get())
+        rga3.get().shouldContainExactly('A', 'B', 'C', 'D', 'E', 'F')
     }
 
     /**
     * This test evaluates the use of delta return by call to insertAt method.
     * Call to get should return an array containing the value inserted in replica 1.
     */
-    @Test
-    fun insertOp() {
+    "use delta returned by insert" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
@@ -940,16 +669,15 @@ class RGATest {
         rga2.merge(insertOp)
         rga2.merge(insertOp)
 
-        assertEquals(listOf('A'), rga1.get())
-        assertEquals(listOf('A'), rga2.get())
+        rga1.get().shouldHaveSingleElement('A')
+        rga2.get().shouldHaveSingleElement('A')
     }
 
     /**
     * This test evaluates the use of delta return by call to removeAt method.
     * Call to get should return an empty array.
     */
-    @Test
-    fun removeOp() {
+    "use delta returned by remove" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -964,16 +692,15 @@ class RGATest {
         rga1.merge(removeOp)
         rga2.merge(removeOp)
 
-        assertEquals(listOf(), rga1.get())
-        assertEquals(listOf(), rga2.get())
+        rga1.get().shouldBeEmpty()
+        rga2.get().shouldBeEmpty()
     }
 
     /**
     * This test evaluates the use of delta return by call to insertAt and removeAt methods.
     * Call to get should return an empty array.
     */
-    @Test
-    fun insertRemoveOp() {
+    "use delta returned by insert and remove" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -989,16 +716,15 @@ class RGATest {
         rga2.merge(insertOp)
         rga2.merge(removeOp)
 
-        assertEquals(listOf(), rga1.get())
-        assertEquals(listOf(), rga2.get())
+        rga1.get().shouldBeEmpty()
+        rga2.get().shouldBeEmpty()
     }
 
     /**
     * This test evaluates the merge of deltas returned by call to insertAt and removeAt methods.
     * Call to get should return an empty array.
     */
-    @Test
-    fun insertRemoveOpFusion() {
+    "merge from delta insert to delta remove" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -1013,16 +739,15 @@ class RGATest {
         rga1.merge(op1)
         rga2.merge(op1)
 
-        assertEquals(listOf(), rga1.get())
-        assertEquals(listOf(), rga2.get())
+        rga1.get().shouldBeEmpty()
+        rga2.get().shouldBeEmpty()
     }
 
     /**
     * This test evaluates the merge of deltas returned by call to removeAt and insertAt methods.
     * Call to get should return an empty array.
     */
-    @Test
-    fun removeInsertOpFusion() {
+    "merge from delta remove to delta import" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -1037,8 +762,8 @@ class RGATest {
         rga1.merge(op2)
         rga2.merge(op2)
 
-        assertEquals(listOf(), rga1.get())
-        assertEquals(listOf(), rga2.get())
+        rga1.get().shouldBeEmpty()
+        rga2.get().shouldBeEmpty()
     }
 
     /**
@@ -1046,8 +771,7 @@ class RGATest {
     * Call to get should return an array containing the values set yb insertAt w.r.t the given
     * context.
     */
-    @Test
-    fun generateDelta() {
+    "generate delta" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -1069,36 +793,33 @@ class RGATest {
         val delta = rga1.generateDelta(vv)
         rga2.merge(delta)
 
-        assertEquals(listOf('D', 'B'), rga2.get())
+        rga2.get().shouldContainExactly('D', 'B')
     }
 
     /**
     * This test evaluates JSON serialization of an empty RGA.
     **/
-    @Test
-    fun emptyToJsonSerialization() {
+    "empty JSON serialization" {
         val rga = RGA<Char>()
 
         val rgaJson = rga.toJson(Char::class)
 
-        assertEquals("""{"_type":"RGA","_metadata":[],"value":[]}""", rgaJson)
+        rgaJson.shouldBe("""{"_type":"RGA","_metadata":[],"value":[]}""")
     }
 
     /**
     * This test evaluates JSON deserialization of an empty RGA.
     **/
-    @Test
-    fun emptyFromJsonDeserialization() {
+    "empty JSON deserialization" {
         val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[],"value":[]}""")
 
-        assertEquals(listOf(), rgaJson.get())
+        rgaJson.get().shouldBeEmpty()
     }
 
     /**
     * This test evaluates JSON serialization of an RGA.
     **/
-    @Test
-    fun toJsonSerialization() {
+    "JSNO serialization" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -1114,17 +835,17 @@ class RGATest {
         rga.insertAt(1, 'B', ts2)
         rga.removeAt(1, ts3)
         rga.insertAt(1, 'C', ts4)
+        val rgaJson = rga.toJson(Char::class)
 
-        assertEquals("""{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"dcid"},"cnt":-2147483648},"ts":{"uid":{"name":"dcid"},"cnt":-2147483648},"removed":false},{"anchor":{"uid":{"name":"dcid"},"cnt":-2147483648},"uid":{"uid":{"name":"dcid"},"cnt":-2147483645},"ts":{"uid":{"name":"dcid"},"cnt":-2147483645},"removed":false},{"atom":"B","anchor":{"uid":{"name":"dcid"},"cnt":-2147483648},"uid":{"uid":{"name":"dcid"},"cnt":-2147483647},"ts":{"uid":{"name":"dcid"},"cnt":-2147483646},"removed":true}],"value":["A","C"]}""", rga.toJson(Char::class))
+        rgaJson.shouldBe("""{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"dcid"},"cnt":-2147483648},"ts":{"uid":{"name":"dcid"},"cnt":-2147483648},"removed":false},{"anchor":{"uid":{"name":"dcid"},"cnt":-2147483648},"uid":{"uid":{"name":"dcid"},"cnt":-2147483645},"ts":{"uid":{"name":"dcid"},"cnt":-2147483645},"removed":false},{"atom":"B","anchor":{"uid":{"name":"dcid"},"cnt":-2147483648},"uid":{"uid":{"name":"dcid"},"cnt":-2147483647},"ts":{"uid":{"name":"dcid"},"cnt":-2147483646},"removed":true}],"value":["A","C"]}""")
     }
 
     /**
     * This test evaluates JSON deserialization of an RGA.
     **/
-    @Test
-    fun fromJsonDeserialization() {
+    "JSON deserialization" {
         val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"dcid"},"cnt":-2147483648},"ts":{"uid":{"name":"dcid"},"cnt":-2147483648},"removed":false},{"anchor":{"uid":{"name":"dcid"},"cnt":-2147483648},"uid":{"uid":{"name":"dcid"},"cnt":-2147483645},"ts":{"uid":{"name":"dcid"},"cnt":-2147483645},"removed":false},{"atom":"B","anchor":{"uid":{"name":"dcid"},"cnt":-2147483648},"uid":{"uid":{"name":"dcid"},"cnt":-2147483647},"ts":{"uid":{"name":"dcid"},"cnt":-2147483646},"removed":true}],"value":["A","C"]}""")
 
-        assertEquals(listOf('A', 'C'), rgaJson.get())
+        rgaJson.get().shouldContainExactly('A', 'C')
     }
-}
+})

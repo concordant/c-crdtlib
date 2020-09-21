@@ -36,7 +36,7 @@ class VersionVectorPropTest: StringSpec({
         forAll(versionVectorArb, versionVectorArb) { vv1, vv2 ->
             val isComparable = vv1.isSmaller(vv2) || vv1.isGreater(vv2) || vv1 == vv2
             val isNotComparable = vv1.isNotComparable(vv2) && vv2.isNotComparable(vv1)
-            isComparable xor isNotComparable
+            (isComparable || isNotComparable) && (!isComparable || !isNotComparable)
         }
     }
 
@@ -74,7 +74,7 @@ class VersionVectorPropTest: StringSpec({
         }
     }
     "incrementing maxVal" {
-        forAll(versionVectorNonMaxArb, dcuidArb, Arb.int(Integer.MIN_VALUE, Int.MAX_VALUE-1)) { vv, dcuid, i ->
+        forAll(versionVectorNonMaxArb, dcuidArb, Arb.int(Int.MIN_VALUE, Int.MAX_VALUE-1)) { vv, dcuid, i ->
             val maxTS = vv.maxVal()
             val incrTS = 1 + (maxTS ?: i)
             vv.addTS(Timestamp(dcuid, incrTS))
@@ -82,6 +82,3 @@ class VersionVectorPropTest: StringSpec({
         }
     }
 })
-
-
-

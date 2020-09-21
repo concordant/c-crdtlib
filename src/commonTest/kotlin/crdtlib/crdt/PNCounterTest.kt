@@ -17,37 +17,33 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package crdtlib.test
+package crdtlib.crdt
 
-import crdtlib.crdt.PNCounter
 import crdtlib.utils.DCUId
 import crdtlib.utils.SimpleEnvironment
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.*
 
 /**
 * Represents a suite test for PNCounter.
 **/
-class PNCounterTest {
+class PNCounterTest : StringSpec({
 
     /**
     * This test evaluates the scenario: get.
     * Call to get should return 0.
     */
-    @Test
-    fun createVal() {
+    "create and get value" {
         val cnt = PNCounter()
 
-        assertEquals(0, cnt.get())
+        cnt.get().shouldBe(0)
     }
 
     /**
     * This test evaluates the scenario: increment get.
     * Call to get should return the value set by increment.
     */
-    @Test
-    fun increment() {
+    "increment and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
@@ -56,7 +52,7 @@ class PNCounterTest {
 
         cnt.increment(inc, ts)
 
-        assertEquals(inc, cnt.get())
+        cnt.get().shouldBe(inc)
     }
 
 
@@ -64,8 +60,7 @@ class PNCounterTest {
     * This test evaluates the scenario: decrement get.
     * Call to get should return the inverse of value set by decrement.
     */
-    @Test
-    fun decrement() {
+    "decrement and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
@@ -74,62 +69,14 @@ class PNCounterTest {
 
         cnt.decrement(dec, ts)
 
-        assertEquals(-dec, cnt.get())
-    }
-
-    /**
-    * This test evaluates the scenario where increment overflows.
-    */
-    @Test
-    fun incrementOverflow() {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.getNewTimestamp()
-        dc.updateStateTS(ts1)
-        val ts2 = dc.getNewTimestamp()
-        dc.updateStateTS(ts2)
-        val ts3 = dc.getNewTimestamp()
-        val inc = 42
-        val cnt = PNCounter()
-
-        cnt.increment(Int.MAX_VALUE - inc, ts1)
-        cnt.increment(inc, ts2)
-
-        assertFailsWith(RuntimeException::class) {
-            cnt.increment(inc, ts3)
-        }
-    }
-
-
-    /**
-    * This test evaluates the scenario where decrement overflows.
-    */
-    @Test
-    fun decrementOverflow() {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.getNewTimestamp()
-        dc.updateStateTS(ts1)
-        val ts2 = dc.getNewTimestamp()
-        dc.updateStateTS(ts2)
-        val ts3 = dc.getNewTimestamp()
-        val dec = 10
-        val cnt = PNCounter()
-
-        cnt.decrement(Int.MAX_VALUE - dec, ts1)
-        cnt.decrement(dec, ts2)
-
-        assertFailsWith(RuntimeException::class) {
-            cnt.decrement(dec, ts3)
-        }
+        cnt.get().shouldBe(-dec)
     }
 
     /**
     * This test evaluates the scenario: increment(with a negative value) get.
     * Call to get should return the value set by increment.
     */
-    @Test
-    fun incrementNegativeAmount() {
+    "increment with negative amount and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
@@ -138,15 +85,14 @@ class PNCounterTest {
 
         cnt.increment(inc, ts)
 
-        assertEquals(inc, cnt.get())
+        cnt.get().shouldBe(inc)
     }
 
     /**
     * This test evaluates the scenario: decrement(with a negative value) get.
     * Call to get should return the inverse of value set by decrement.
     */
-    @Test
-    fun decrementNegativeAmount() {
+    "decrement with negative amount and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
@@ -155,15 +101,14 @@ class PNCounterTest {
 
         cnt.decrement(dec, ts)
 
-        assertEquals(-dec, cnt.get())
+        cnt.get().shouldBe(-dec)
     }
 
     /**
     * This test evaluates the scenario: incremement(multiple times) get.
     * Call to get should return the sum of values set by calls to increment.
     */
-    @Test
-    fun multiIncrement() {
+    "multiple increments and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -180,15 +125,14 @@ class PNCounterTest {
         cnt.increment(inc2, ts2)
         cnt.increment(inc3, ts3)
 
-        assertEquals(111, cnt.get())
+        cnt.get().shouldBe(111)
     }
 
     /**
     * This test evaluates the scenario: decremement(multiple times) get.
     * Call to get should return the inverse of the sum of values set by calls to decrement.
     */
-    @Test
-    fun multiDecrement() {
+    "multiple decrements and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -205,15 +149,14 @@ class PNCounterTest {
         cnt.decrement(dec2, ts2)
         cnt.decrement(dec3, ts3)
 
-        assertEquals(-111, cnt.get())
+        cnt.get().shouldBe(-111)
     }
 
     /**
     * This test evaluates the scenario: multiple increment and decrement get.
     * Call to get should return the sum of increments minus the sum of decrements.
     */
-    @Test
-    fun incrementDecrementPositive() {
+    "increment, decrement, get positive value" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -234,15 +177,14 @@ class PNCounterTest {
         cnt.increment(inc2, ts3)
         cnt.decrement(dec2, ts4)
 
-        assertEquals(47, cnt.get())
+        cnt.get().shouldBe(47)
     }
 
     /**
     * This test evaluates the scenario: multiple increment and decrement get.
     * Call to get should return the sum of increments minus the sum of decrements.
     */
-    @Test
-    fun incrementDecrementNegative() {
+    "increment, decrement, get negative value" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -263,15 +205,14 @@ class PNCounterTest {
         cnt.increment(inc2, ts3)
         cnt.decrement(dec2, ts4)
 
-        assertEquals(-14, cnt.get())
+        cnt.get().shouldBe(-14)
     }
 
     /**
     * This test evaluates the scenario: increment || merge get.
     * Call to get should return value set by increment in the first replica.
     */
-    @Test
-    fun increment_MergeValue() {
+    "R1: increment; R2: merge and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
@@ -283,16 +224,15 @@ class PNCounterTest {
         cnt2.merge(cnt1)
         cnt1.merge(cnt2)
 
-        assertEquals(11, cnt1.get())
-        assertEquals(11, cnt2.get())
+        cnt1.get().shouldBe(11)
+        cnt2.get().shouldBe(11)
     }
 
     /**
     * This test evaluates the scenario: decrement || merge get.
     * Call to get should return the inverse value set by decrement in the first replica.
     */
-    @Test
-    fun decrement_MergeValue() {
+    "R1: decrement; R2: merge and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
@@ -304,16 +244,15 @@ class PNCounterTest {
         cnt2.merge(cnt1)
         cnt1.merge(cnt2)
 
-        assertEquals(-11, cnt1.get())
-        assertEquals(-11, cnt2.get())
+        cnt1.get().shouldBe(-11)
+        cnt2.get().shouldBe(-11)
     }
 
     /**
     * This test evaluates the scenario: increment || increment merge get.
     * Call to get should return sum of the two increment values.
     */
-    @Test
-    fun increment_incrementMergeValue() {
+    "R1: increment; R2: increment, merge, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -329,15 +268,14 @@ class PNCounterTest {
         cnt2.increment(inc2, ts2)
         cnt2.merge(cnt1)
 
-        assertEquals(11, cnt2.get())
+        cnt2.get().shouldBe(11)
     }
 
     /**
     * This test evaluates the scenario: increment || merge increment get.
     * Call to get should return sum of the two increment values.
     */
-    @Test
-    fun increment_mergeIncrementValue() {
+    "R1: increment; R2: merge, increment, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -353,15 +291,14 @@ class PNCounterTest {
         cnt2.merge(cnt1)
         cnt2.increment(inc2, ts2)
 
-        assertEquals(11, cnt2.get())
+        cnt2.get().shouldBe(11)
     }
 
     /**
     * This test evaluates the scenario: decrement || decrement merge get.
     * Call to get should return the inverse of the sum of the two decrement values.
     */
-    @Test
-    fun decrement_decrementMergeValue() {
+    "R1: decrement; R2: decrement, merge, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -377,15 +314,14 @@ class PNCounterTest {
         cnt2.decrement(dec2, ts2)
         cnt2.merge(cnt1)
 
-        assertEquals(-11, cnt2.get())
+        cnt2.get().shouldBe(-11)
     }
 
     /**
     * This test evaluates the scenario: decrement || merge decrement get.
     * Call to get should return the inverse of the sum of the two decrement values.
     */
-    @Test
-    fun decrement_mergeDecrementValue() {
+    "R1: decrement; R2: merge, decrement, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -401,15 +337,14 @@ class PNCounterTest {
         cnt2.merge(cnt1)
         cnt2.decrement(dec2, ts2)
 
-        assertEquals(-11, cnt2.get())
+        cnt2.get().shouldBe(-11)
     }
 
     /**
     * This test evaluates the scenario: some operations || some operations merge get.
     * Call to get should return the sum of increment values minus the sum of the decrement values.
     */
-    @Test
-    fun multipleOperations_multipleOperationMergeValue() {
+    "R1: multiple operations; R2: multiple operations, merge, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -449,15 +384,14 @@ class PNCounterTest {
         cnt2.decrement(dec4, ts8)
         cnt2.merge(cnt1)
 
-        assertEquals(60, cnt2.get())
+        cnt2.get().shouldBe(60)
     }
 
     /**
     * This test evaluates the scenario: some operations || merge some operations get.
     * Call to get should return the sum of increment values minus the sum of the decrement values.
     */
-    @Test
-    fun multipleOperations_mergeMultipleOperationsValue() {
+    "R1: multiple operations; R2: merge, multiple operations, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -497,15 +431,14 @@ class PNCounterTest {
         cnt2.increment(inc4, ts6)
         cnt2.decrement(dec4, ts8)
 
-        assertEquals(60, cnt2.get())
+        cnt2.get().shouldBe(60)
     }
 
     /**
     * This test evaluates the use of delta return by call to increment method.
     * Call to get should return the increment value set in the first replica.
     */
-    @Test
-    fun incrementOp() {
+    "use delta returned by increment" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
@@ -517,16 +450,14 @@ class PNCounterTest {
         cnt2.merge(incOp)
         cnt1.merge(incOp)
 
-        assertEquals(11, cnt1.get())
-        assertEquals(11, cnt2.get())
+        cnt2.get().shouldBe(11) 
     }
 
     /**
     * This test evaluates the use of delta return by call to decrement method.
     * Call to get should return the inverse of the decrement value set in the first replica.
     */
-    @Test
-    fun decrementOp() {
+    "use delta returned by decrement" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
@@ -538,16 +469,15 @@ class PNCounterTest {
         cnt2.merge(decOp)
         cnt1.merge(decOp)
 
-        assertEquals(-11, cnt1.get())
-        assertEquals(-11, cnt2.get())
+        cnt1.get().shouldBe(-11)
+        cnt2.get().shouldBe(-11)
     }
 
     /**
     * This test evaluates the use of delta return by call to incremetn and decrement methods.
     * Call to get should return the sum of increment values minus the sum of decrement values.
     */
-    @Test
-    fun multipleOp() {
+    "use delta returned by increment and decrement" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -565,8 +495,8 @@ class PNCounterTest {
         cnt1.merge(decOp)
         cnt1.merge(incOp)
 
-        assertEquals(11, cnt1.get())
-        assertEquals(11, cnt2.get())
+        cnt1.get().shouldBe(11)
+        cnt2.get().shouldBe(11)
     }
 
     /*
@@ -574,8 +504,7 @@ class PNCounterTest {
     * Call to get should return the values set by operations registered in the first replica after
     * w.r.t the given context (here only the decrements).
     */
-    @Test
-    fun generateDelta() {
+    "generate delta" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -600,36 +529,33 @@ class PNCounterTest {
         val delta = cnt1.generateDelta(vv)
         cnt2.merge(delta)
 
-        assertEquals(-30, cnt2.get())
+        cnt2.get().shouldBe(-30)
     }
 
     /**
     * This test evaluates JSON serialization of an empty pncounter.
     **/
-    @Test
-    fun emptyToJsonSerialization() {
+    "empty JSON serialization" {
         val cnt = PNCounter()
 
         val cntJson = cnt.toJson();
 
-        assertEquals("""{"_type":"PNCounter","_metadata":{"increment":[],"decrement":[]},"value":0}""", cntJson)
+        cntJson.shouldBe("""{"_type":"PNCounter","_metadata":{"increment":[],"decrement":[]},"value":0}""")
     }
 
     /**
     * This test evaluates JSON deserialization of an empty pncounter.
     **/
-    @Test
-    fun emptyFromJsonDeserialization() {
+    "empty JSON deserialization" {
         val cntJson = PNCounter.fromJson("""{"_type":"PNCounter","_metadata":{"increment":[],"decrement":[]},"value":0}""")
 
-        assertEquals(0, cntJson.get())
+        cntJson.get().shouldBe(0)
     }
 
     /**
     * This test evaluates JSON serialization of a pncounter.
     **/
-    @Test
-    fun toJsonSerialization() {
+    "JSON serialization" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -652,17 +578,17 @@ class PNCounterTest {
         cnt2.decrement(dec2, ts2)
         cnt2.increment(inc2, ts4)
         cnt2.merge(cnt1)
+        val cntJson = cnt2.toJson()
 
-        assertEquals("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"uid":{"name":"dcid2"},"cnt":-2147483647}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483647}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"uid":{"name":"dcid2"},"cnt":-2147483648}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483648}}]},"value":10}""", cnt2.toJson())
+        cntJson.shouldBe("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"uid":{"name":"dcid2"},"cnt":-2147483647}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483647}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"uid":{"name":"dcid2"},"cnt":-2147483648}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483648}}]},"value":10}""")
     }
 
     /**
     * This test evaluates JSON deserialization of a pncounter.
     **/
-    @Test
-    fun fromJsonDeserialization() {
+    "JSON deserialization" {
         val cntJson = PNCounter.fromJson("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"uid":{"name":"dcid2"},"cnt":-2147483647}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483647}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"uid":{"name":"dcid2"},"cnt":-2147483648}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483648}}]},"value":10}""")
 
-        assertEquals(10, cntJson.get())
+        cntJson.get().shouldBe(10)
     }
-}
+})

@@ -17,52 +17,48 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package crdtlib.test
+package crdtlib.crdt
 
-import crdtlib.crdt.MVRegister
 import crdtlib.utils.DCUId
 import crdtlib.utils.SimpleEnvironment
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.*
+import io.kotest.matchers.collections.*
 
 /**
 * Represents a test suite for MVRegister.
 **/
-class MVRegisterTest {
+class MVRegisterTest : StringSpec({
 
     /**
     * This test evaluates the scenario: create empty get.
     * Call to get should return an empty set.
     */
-    @Test
-    fun createEmptyGet() {
+    "create an empty register and get" {
         val reg = MVRegister<String>()
 
-        assertTrue(reg.get().isEmpty())
+        reg.get().shouldBeEmpty()
     }
 
     /**
     * This test evaluates the scenario: create with value get.
     * Call to get should return a set containing the value.
     */
-    @Test
-    fun createValueGet() {
+    "create with a value and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
         val value = "value"
         val reg = MVRegister<String>(value, ts)
 
-        assertEquals(setOf(value), reg.get())
+        reg.get().shouldHaveSingleElement(value)
     }
 
     /**
     * This test evaluates the scenario: create by copy get.
     * Call to get should return a set containing the assigned in the first replica.
     */
-    @Test
-    fun createCopyGet() {
+    "copy with copy constructor and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
@@ -71,15 +67,14 @@ class MVRegisterTest {
 
         val reg2 = MVRegister<String>(reg1)
 
-        assertEquals(setOf(value), reg2.get())
+        reg2.get().shouldHaveSingleElement(value)
     }
 
     /**
     * This test evaluates the scenario: create by copy(concurrent values) get.
     * Call to get should return a set containing values assigned in first and second replicas.
     */
-    @Test
-    fun createCopySetGet() {
+    "copy with copy constructor a register with multi-values and get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -94,15 +89,14 @@ class MVRegisterTest {
         reg2.merge(reg1)
         val reg3 = MVRegister<String>(reg2)
 
-        assertEquals(setOf(val1, val2), reg3.get())
+        reg3.get().shouldContainExactlyInAnyOrder(val1, val2)
     }
 
     /**
     * This test evaluates the scenario: assign assign get.
     * Call to get should return last assigned value.
     */
-    @Test
-    fun assignAssignGet() {
+    "create, assign, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -114,15 +108,14 @@ class MVRegisterTest {
         val reg = MVRegister<String>(val1, ts1)
         reg.assign(val2, ts2)
 
-        assertEquals(setOf(val2), reg.get())
+        reg.get().shouldHaveSingleElement(val2)
     }
 
     /**
     * This test evaluates the scenario: assign assign(old timestamp) get.
     * Call to get should return first assigned value.
     */
-    @Test
-    fun assignAssignOldGet() {
+    "create assign, assign with older timestamp, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -134,15 +127,14 @@ class MVRegisterTest {
         val reg = MVRegister<String>(val1, ts2)
         reg.assign(val2, ts1)
 
-        assertEquals(setOf(val1), reg.get())
+        reg.get().shouldHaveSingleElement(val1)
     }
 
     /**
     * This test evaluates the scenario: assign || merge get.
     * Call to get should return value assigned by the first replica.
     */
-    @Test
-    fun assign_MergeGet() {
+    "R1: create with value; R2: create empty, merge, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
@@ -153,16 +145,15 @@ class MVRegisterTest {
         reg1.merge(reg2)
         reg2.merge(reg1)
 
-        assertEquals(setOf(value), reg1.get())
-        assertEquals(setOf(value), reg2.get())
+        reg1.get().shouldHaveSingleElement(value)
+        reg2.get().shouldHaveSingleElement(value)
     }
 
     /**
     * This test evaluates the scenario: assign || merge assign get.
     * Call to get should return a set containing the value assigned by the second replica.
     */
-    @Test
-    fun assign_MergeAssignGet() {
+    "R1: create with value; R2: create empty, merge, assign, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -177,15 +168,14 @@ class MVRegisterTest {
         reg2.merge(reg1)
         reg2.assign(val2, ts2)
 
-        assertEquals(setOf(val2), reg2.get())
+        reg2.get().shouldHaveSingleElement(val2)
     }
 
     /**
     * This test evaluates the scenario: assign || assign merge get.
     * Call to get should return a set containing the two values.
     */
-    @Test
-    fun assign_AssignMergeGet() {
+    "R1: create with value; R2: create empty, assign, merge, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -200,7 +190,7 @@ class MVRegisterTest {
         reg2.assign(val2, ts2)
         reg2.merge(reg1)
 
-        assertEquals(setOf(val1, val2), reg2.get())
+        reg2.get().shouldContainExactlyInAnyOrder(val1, val2)
     }
 
     /**
@@ -208,8 +198,7 @@ class MVRegisterTest {
     * merge2 get.
     * Call to get should return a set containing the last value assigned by the first replica.
     */
-    @Test
-    fun assignBeforeMerge1AssignBeforeMerge2_Merge1Merge2Get() {
+    "R1: create with value, assign; R2: craete empty, merge before assign, merge after assign, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts1 = dc.getNewTimestamp()
@@ -224,7 +213,7 @@ class MVRegisterTest {
         reg1.assign(val2, ts2)
         reg2.merge(reg1)
 
-        assertEquals(setOf(val2), reg2.get())
+        reg2.get().shouldHaveSingleElement(val2)
     }
 
     /**
@@ -233,8 +222,7 @@ class MVRegisterTest {
     * Call to get should return a set containing the last value assigned by the first replica and
     * value assigned by replica two.
     */
-    @Test
-    fun assignBeforeMerge1AssignBeforeMerge2_AssignMerge1Merge2Get() {
+    "R1: create with value, assign; R2: create with value, merge before assign, merge after assign, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -253,7 +241,7 @@ class MVRegisterTest {
         reg1.assign(val3, ts3)
         reg2.merge(reg1)
 
-        assertEquals(setOf(val2, val3), reg2.get())
+        reg2.get().shouldContainExactlyInAnyOrder(val2, val3)
     }
 
     /**
@@ -262,8 +250,7 @@ class MVRegisterTest {
     * Call to get should return a set containing the value assigned by the first, second, and third
     * replicas.
     */
-    @Test
-    fun assign_AssignMerge3_AssignMerge1Merge2Get() {
+    "R1: create with value; R2: create with value, merge R3; R3: create with value, merge R1, merge R2, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -284,7 +271,7 @@ class MVRegisterTest {
         reg3.merge(reg1)
         reg3.merge(reg2)
 
-        assertEquals(setOf(val1, val2, val3), reg3.get())
+        reg3.get().shouldContainExactlyInAnyOrder(val1, val2, val3)
     }
 
     /**
@@ -294,8 +281,7 @@ class MVRegisterTest {
     * replicas, the value assigned by replica three should not be present since it has been
     * overrided by replica two.
     */
-    @Test
-    fun assign_Merge3Assign_AssignMerge1Merge2Get() {
+    "R1: create with value; R2: create empty, merge R3, assign; R3: create with value, merge R1, merge R2, get" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val uid3 = DCUId("dcid3")
@@ -317,15 +303,14 @@ class MVRegisterTest {
         reg3.merge(reg1)
         reg3.merge(reg2)
 
-        assertEquals(setOf(val1, val2), reg3.get())
+        reg3.get().shouldContainExactlyInAnyOrder(val1, val2)
     }
 
     /**
     * This test evaluates the use of delta return by call to assign method.
     * Call to get should return a set containing the value assigned by the first replica.
     */
-    @Test
-    fun assignOp() {
+    "use delta returned by assign" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
         val ts = dc.getNewTimestamp()
@@ -337,8 +322,8 @@ class MVRegisterTest {
         reg1.merge(assignOp)
         reg2.merge(assignOp)
 
-        assertEquals(setOf(value), reg1.get())
-        assertEquals(setOf(value), reg2.get())
+        reg1.get().shouldHaveSingleElement(value)
+        reg2.get().shouldHaveSingleElement(value)
     }
 
     /*
@@ -346,8 +331,7 @@ class MVRegisterTest {
     * Call to value should return a set containing values assigned by operations registered in the
     * first and second replicas.
     */
-    @Test
-    fun generateDelta() {
+    "generate delta then merge" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -365,15 +349,14 @@ class MVRegisterTest {
         val delta = reg2.generateDelta(vv)
         reg3.merge(delta)
 
-        assertEquals(setOf(val1, val2), reg3.get())
+        reg3.get().shouldContainExactlyInAnyOrder(val1, val2)
     }
 
     /*
     * This test evaluates the generation of an empty delta plus its merging into another replica.
     * Call to value should return an empty set.
     */
-    @Test
-    fun generateEmptyDelta() {
+    "generate empty delta then merge" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -393,36 +376,32 @@ class MVRegisterTest {
         val delta = reg2.generateDelta(vv)
         reg3.merge(delta)
 
-        assertEquals(setOf(), reg3.get())
+        reg3.get().shouldBeEmpty()
     }
 
     /**
     * This test evaluates JSON serialization of an empty mv register.
     **/
-    @Test
-    fun emptyToJsonSerialization() {
+    "empty JSON serialization" {
         val reg = MVRegister<String>()
-
         val regJson = reg.toJson(String::class)
 
-        assertEquals("""{"_type":"MVRegister","_metadata":{"entries":[],"causalContext":{"entries":[]}},"value":[]}""", regJson)
+        regJson.shouldBe("""{"_type":"MVRegister","_metadata":{"entries":[],"causalContext":{"entries":[]}},"value":[]}""")
     }
 
     /**
     * This test evaluates JSON deserialization of an empty mv register.
     **/
-    @Test
-    fun emptyFromJsonDeserialization() {
+    "empty JSON deserialization" {
         val regJson = MVRegister.fromJson(String::class, """{"_type":"MVRegister","_metadata":{"entries":[],"causalContext":{"entries":[]}},"value":[]}""")
 
-        assertEquals(setOf(), regJson.get())
+        regJson.get().shouldBeEmpty()
     }
 
     /**
     * This test evaluates JSON serialization of a mv register.
     **/
-    @Test
-    fun toJsonSerialization() {
+    "JSON serialization" {
         val uid1 = DCUId("dcid1")
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
@@ -436,17 +415,17 @@ class MVRegisterTest {
         val reg2 = MVRegister<String>()
         reg2.assign(val2, ts2)
         reg2.merge(reg1)
+        val regJson = reg2.toJson(String::class)
 
-        assertEquals("""{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"dcid2"},"cnt":-2147483648},{"uid":{"name":"dcid1"},"cnt":-2147483648}],"causalContext":{"entries":[{"name":"dcid2"},-2147483648,{"name":"dcid1"},-2147483648]}},"value":["value2","value1"]}""", reg2.toJson(String::class))
+        regJson.shouldBe("""{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"dcid2"},"cnt":-2147483648},{"uid":{"name":"dcid1"},"cnt":-2147483648}],"causalContext":{"entries":[{"name":"dcid2"},-2147483648,{"name":"dcid1"},-2147483648]}},"value":["value2","value1"]}""")
     }
 
     /**
     * This test evaluates JSON deserialization of a mv register.
     **/
-    @Test
-    fun fromJsonDeserialization() {
+    "JSON deserialization" {
         val regJson = MVRegister.fromJson(String::class, """{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"dcid2"},"cnt":-2147483648},{"uid":{"name":"dcid1"},"cnt":-2147483648}],"causalContext":{"entries":[{"name":"dcid2"},-2147483648,{"name":"dcid1"},-2147483648]}},"value":["value2","value1"]}""")
 
-        assertEquals(setOf("value1", "value2"), regJson.get())
+        regJson.get().shouldContainExactlyInAnyOrder("value1", "value2")
     }
-}
+})

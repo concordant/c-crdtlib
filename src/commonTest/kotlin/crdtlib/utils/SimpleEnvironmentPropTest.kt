@@ -19,12 +19,11 @@
 
 package crdtlib.utils
 
+import io.kotest.assertions.throwables.*
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.int
 import io.kotest.property.forAll
-import java.lang.RuntimeException
-import kotlin.test.assertFailsWith
 
 /**
 * Represents a test suite for SimpleEnvironment.
@@ -67,7 +66,7 @@ class SimpleEnvironmentPropTest: StringSpec( {
         forAll(dcuidArb, dcuidArb){ uid1, uid2 ->
             val se = SimpleEnvironment(uid1)
             se.updateStateTS(Timestamp(uid2, Int.MAX_VALUE))
-            assertFailsWith(RuntimeException::class) {
+            shouldThrow<RuntimeException> {
                 se.getNewTimestamp()
             }
             true
