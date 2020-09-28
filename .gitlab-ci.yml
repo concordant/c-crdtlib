@@ -15,7 +15,7 @@ pages:
   stage: deploy
   script:
     - gradle dokka
-    - cp -r build/docs public
+    - mv build/docs public
     - ln -s c-crdtlib/index.html public/index.html
   artifacts:
     paths:
