@@ -9,3 +9,16 @@ test:
   stage: test
   script:
     - gradle allTests
+
+
+pages:
+  stage: deploy
+  script:
+    - gradle dokka
+    - mv build/docs public
+    - ln -s c-crdtlib/index.html public/index.html
+  artifacts:
+    paths:
+      - public
+  only:
+    - master

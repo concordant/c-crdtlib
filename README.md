@@ -7,6 +7,8 @@ CRDT library in Kotlin for the Concordant platform API. This project is based on
 multiplatform feature](https://kotlinlang.org/docs/reference/multiplatform.html). The Kotlin code is
 compiled to JVM Bytecode and to Javascript.
 
+Documentation of the master branch is automatically updated and deployed on the [GitLab](https://concordant.gitlabpages.inria.fr/software/c-crdtlib).
+
 ## Requirements
 
 - Download and install Gradle from [Gradle website](https://gradle.org/install/);
