@@ -16,7 +16,6 @@ pages:
   script:
     - gradle dokka
     - mv build/docs public
-    - ln -s c-crdtlib/index.html public/index.html
   artifacts:
     paths:
       - public
