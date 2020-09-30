@@ -1155,7 +1155,7 @@ class LWWMapTest : StringSpec({
         dc.updateStateTS(ts15)
         val ts16 = dc.getNewTimestamp()
         val vv = VersionVector()
-        vv.addTS(ts8)
+        vv.update(ts8)
         val key1 = "key1"
         val key2 = "key2"
         val key3 = "key3"
@@ -1243,7 +1243,7 @@ class LWWMapTest : StringSpec({
         dc.updateStateTS(ts15)
         val ts16 = dc.getNewTimestamp()
         val vv = VersionVector()
-        vv.addTS(ts4)
+        vv.update(ts4)
         val key1 = "key1"
         val key2 = "key2"
         val key3 = "key3"

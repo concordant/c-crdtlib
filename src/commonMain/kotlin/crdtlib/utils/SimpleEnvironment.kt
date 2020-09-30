@@ -35,7 +35,7 @@ class SimpleEnvironment(private val uid: DCUId) : Environment() {
     * @return the generated timestamp.
     */
     override fun getNewTimestampProtected(): Timestamp {
-        val lastTs = curState.maxVal()
+        val lastTs = curState.max()
         // Create a first timestamp with the smallest counter possible.
         if (lastTs == null) return Timestamp(uid, Timestamp.CNT_MIN_VALUE)
         if (lastTs == Timestamp.CNT_MAX_VALUE) {
@@ -57,7 +57,7 @@ class SimpleEnvironment(private val uid: DCUId) : Environment() {
     * @param ts the given timestamp.
     */
     override fun updateStateTSProtected(ts: Timestamp) {
-        curState.addTS(ts)
+        curState.update(ts)
     }
 
     /**
@@ -65,6 +65,6 @@ class SimpleEnvironment(private val uid: DCUId) : Environment() {
     * @param vv the given version vector.
     */
     override fun updateStateVVProtected(vv: VersionVector) {
-        curState.pointWiseMax(vv)
+        curState.update(vv)
     }
 }

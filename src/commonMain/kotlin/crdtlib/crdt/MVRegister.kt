@@ -66,7 +66,7 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
     */
     constructor(value: T, ts: Timestamp) {
         this.entries = mutableSetOf(Pair<T, Timestamp>(value, ts))
-        this.causalContext.addTS(ts)
+        this.causalContext.update(ts)
     }
 
     /**
@@ -75,12 +75,12 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
     */
     constructor(other: MVRegister<T>) {
         this.entries = other.entries.toMutableSet()
-        this.causalContext.pointWiseMax(other.causalContext)
+        this.causalContext.update(other.causalContext)
     }
 
     constructor(entries: Set<Pair<T, Timestamp>>, causalContext: VersionVector) {
         this.entries = entries.toMutableSet()
-        this.causalContext.pointWiseMax(causalContext)
+        this.causalContext.update(causalContext)
     }
 
     /**
@@ -102,10 +102,10 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
     */
     @Name("set")
     fun assign(value: T, ts: Timestamp): DeltaCRDT<MVRegister<T>> {
-        if (!this.causalContext.includesTS(ts)) {
+        if (!this.causalContext.contains(ts)) {
             this.entries.clear()
             this.entries.add(Pair<T, Timestamp>(value, ts))
-            this.causalContext.addTS(ts)
+            this.causalContext.update(ts)
         }
         return MVRegister(this)
     }
@@ -131,18 +131,18 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
 
         val keptEntries = mutableSetOf<Pair<T, Timestamp>>()
         for ((value, ts) in this.entries) {
-            if (!delta.causalContext.includesTS(ts) || delta.entries.any { it.second == ts }) {
+            if (!delta.causalContext.contains(ts) || delta.entries.any { it.second == ts }) {
                 keptEntries.add(Pair(value, ts))
             }
         }
         for ((value, ts) in delta.entries) {
-            if (!this.causalContext.includesTS(ts) || this.entries.any { it.second == ts }) {
+            if (!this.causalContext.contains(ts) || this.entries.any { it.second == ts }) {
                 keptEntries.add(Pair(value, ts))
             }
         }
 
         this.entries = keptEntries
-        this.causalContext.pointWiseMax(delta.causalContext)
+        this.causalContext.update(delta.causalContext)
     }
 
     /**

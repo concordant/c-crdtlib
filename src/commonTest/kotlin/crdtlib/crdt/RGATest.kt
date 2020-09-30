@@ -782,7 +782,7 @@ class RGATest : StringSpec({
         dc.updateStateTS(ts3)
         val ts4 = dc.getNewTimestamp()
         val vv = VersionVector()
-        vv.addTS(ts2)
+        vv.update(ts2)
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
 

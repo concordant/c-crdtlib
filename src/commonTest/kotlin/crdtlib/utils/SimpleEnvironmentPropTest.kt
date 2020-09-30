@@ -91,7 +91,7 @@ class SimpleEnvironmentPropTest: StringSpec( {
         forAll(simpleEnvironmentArb, timestampArb){ se, ts ->
             se.updateStateTS(ts)
             val vv = se.getCurrentState()
-            vv.includesTS(ts)
+            vv.contains(ts)
         }
     }
 
