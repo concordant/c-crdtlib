@@ -39,7 +39,7 @@ class SimpleEnvironmentTest : StringSpec({
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
 
-        val ts = dc.getNewTimestamp()
+        val ts = dc.tick()
 
         ts.shouldBe(Timestamp(uid, Timestamp.CNT_MIN_VALUE))
     }
@@ -53,7 +53,7 @@ class SimpleEnvironmentTest : StringSpec({
         val dc = SimpleEnvironment(uid)
         val emptyVV = VersionVector()
 
-        val vv = dc.getCurrentState()
+        val vv = dc.getState()
 
         vv.isSmallerOrEquals(emptyVV).shouldBeTrue()
         emptyVV.isSmallerOrEquals(vv).shouldBeTrue()
@@ -68,8 +68,8 @@ class SimpleEnvironmentTest : StringSpec({
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
 
-        dc.updateStateTS(Timestamp(uid, 7))
-        val ts = dc.getNewTimestamp()
+        dc.update(Timestamp(uid, 7))
+        val ts = dc.tick()
 
         ts.shouldBe(Timestamp(uid, 8))
     }
@@ -84,8 +84,8 @@ class SimpleEnvironmentTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc = SimpleEnvironment(uid1)
 
-        dc.updateStateTS(Timestamp(uid2, 4))
-        val ts = dc.getNewTimestamp()
+        dc.update(Timestamp(uid2, 4))
+        val ts = dc.tick()
 
         ts.shouldBe(Timestamp(uid1, 5))
     }
@@ -98,10 +98,10 @@ class SimpleEnvironmentTest : StringSpec({
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
 
-        dc.updateStateTS(Timestamp(uid, Int.MAX_VALUE))
+        dc.update(Timestamp(uid, Int.MAX_VALUE))
 
         shouldThrow<RuntimeException> {
-            dc.getNewTimestamp()
+            dc.tick()
         }
     }
 
@@ -114,10 +114,10 @@ class SimpleEnvironmentTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc = SimpleEnvironment(uid1)
 
-        dc.updateStateTS(Timestamp(uid2, Int.MAX_VALUE))
+        dc.update(Timestamp(uid2, Int.MAX_VALUE))
 
         shouldThrow<RuntimeException> {
-            dc.getNewTimestamp()
+            dc.tick()
         }
     }
 
@@ -131,9 +131,9 @@ class SimpleEnvironmentTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc = SimpleEnvironment(uid1)
 
-        dc.updateStateTS(Timestamp(uid2, 6))
-        dc.updateStateTS(Timestamp(uid1, 5))
-        val ts = dc.getNewTimestamp()
+        dc.update(Timestamp(uid2, 6))
+        dc.update(Timestamp(uid1, 5))
+        val ts = dc.tick()
 
         ts.shouldBe(Timestamp(uid1, 7))
     }
@@ -149,8 +149,8 @@ class SimpleEnvironmentTest : StringSpec({
         val cmpVV = VersionVector()
         cmpVV.addTS(ts)
 
-        dc.updateStateTS(ts)
-        val vv = dc.getCurrentState()
+        dc.update(ts)
+        val vv = dc.getState()
 
         vv.isSmallerOrEquals(cmpVV).shouldBeTrue()
         cmpVV.isSmallerOrEquals(vv).shouldBeTrue()
@@ -168,8 +168,8 @@ class SimpleEnvironmentTest : StringSpec({
         val cmpVV = VersionVector()
         cmpVV.addTS(ts)
 
-        dc.updateStateTS(ts)
-        val vv = dc.getCurrentState()
+        dc.update(ts)
+        val vv = dc.getState()
 
         vv.isSmallerOrEquals(cmpVV).shouldBeTrue()
         cmpVV.isSmallerOrEquals(vv).shouldBeTrue()
@@ -190,9 +190,9 @@ class SimpleEnvironmentTest : StringSpec({
         cmpVV.addTS(ts1)
         cmpVV.addTS(ts2)
 
-        dc.updateStateTS(ts1)
-        dc.updateStateTS(ts2)
-        val vv = dc.getCurrentState()
+        dc.update(ts1)
+        dc.update(ts2)
+        val vv = dc.getState()
 
         vv.isSmallerOrEquals(cmpVV).shouldBeTrue()
         cmpVV.isSmallerOrEquals(vv).shouldBeTrue()
@@ -213,8 +213,8 @@ class SimpleEnvironmentTest : StringSpec({
         vv.addTS(ts1)
         vv.addTS(ts2)
 
-        dc.updateStateVV(vv)
-        val ts3 = dc.getNewTimestamp()
+        dc.update(vv)
+        val ts3 = dc.tick()
 
         ts3.shouldBe(Timestamp(uid1, 8))
     }
@@ -233,8 +233,8 @@ class SimpleEnvironmentTest : StringSpec({
         vv1.addTS(ts1)
         vv1.addTS(ts2)
 
-        dc.updateStateVV(vv1)
-        val vv2 = dc.getCurrentState()
+        dc.update(vv1)
+        val vv2 = dc.getState()
 
         vv1.isSmallerOrEquals(vv2).shouldBeTrue()
         vv2.isSmallerOrEquals(vv1).shouldBeTrue()
