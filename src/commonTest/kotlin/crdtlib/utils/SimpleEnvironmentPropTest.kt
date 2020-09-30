@@ -34,29 +34,29 @@ class SimpleEnvironmentPropTest: StringSpec( {
     "initial environment has counter smaller than any other timestamp" {
         forAll(dcuidArb, Arb.int(Int.MIN_VALUE + 1, Int.MAX_VALUE)) { uid, i ->
             val se = SimpleEnvironment(uid)
-            se.getNewTimestamp().compareTo(Timestamp(uid, i)) < 0
+            se.tick().compareTo(Timestamp(uid, i)) < 0
         }
     }
     "empty environment has empty version vector" {
         forAll(simpleEnvironmentArb){ se ->
-            val vv = se.getCurrentState()
+            val vv = se.getState()
             vv.isSmallerOrEquals(VersionVector()) && VersionVector().isSmallerOrEquals(vv)
         }
     }
     "update of environment increments counter" {
-        forAll(dcuidArb, Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1)){ uid, cnt->
+        forAll(dcuidArb, Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1)){ uid, cnt ->
             val se = SimpleEnvironment(uid)
-            se.updateStateTS(Timestamp(uid, cnt))
-            val ts = se.getNewTimestamp()
+            se.update(Timestamp(uid, cnt))
+            val ts = se.tick()
             ts.cnt > cnt
         }
     }
     "timestamps are monotonically increasing" {
         forAll(dcuidArb, dcuidArb, Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1), Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1)){ uid1, uid2, cnt1, cnt2 ->
             val se = SimpleEnvironment(uid1)
-            se.updateStateTS(Timestamp(uid1, cnt1))
-            se.updateStateTS(Timestamp(uid2, cnt2))
-            val ts = se.getNewTimestamp()
+            se.update(Timestamp(uid1, cnt1))
+            se.update(Timestamp(uid2, cnt2))
+            val ts = se.tick()
 
             ts.cnt > cnt1 && ts.cnt > cnt2
         }
@@ -65,9 +65,9 @@ class SimpleEnvironmentPropTest: StringSpec( {
     "exception when arbitrary entry reaches max val" {
         forAll(dcuidArb, dcuidArb){ uid1, uid2 ->
             val se = SimpleEnvironment(uid1)
-            se.updateStateTS(Timestamp(uid2, Int.MAX_VALUE))
+            se.update(Timestamp(uid2, Int.MAX_VALUE))
             shouldThrow<RuntimeException> {
-                se.getNewTimestamp()
+                se.tick()
             }
             true
         }
@@ -77,28 +77,27 @@ class SimpleEnvironmentPropTest: StringSpec( {
     "new timestamps are monotonic" {
         forAll(dcuidArb, dcuidArb, Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1), Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1)){ uid1, uid2, cnt1, cnt2->
             val se = SimpleEnvironment(uid1)
-            se.updateStateTS(Timestamp(uid1, cnt1))
-            se.updateStateTS(Timestamp(uid2, cnt2))
-            val ts1 = se.getNewTimestamp()
-            val ts2 = se.getNewTimestamp()
+            se.update(Timestamp(uid1, cnt1))
+            se.update(Timestamp(uid2, cnt2))
+            val ts1 = se.tick()
+            val ts2 = se.tick()
 
-            ts1.cnt == ts2.cnt
-            // AB: This seems unintuitive
+            ts1.cnt < ts2.cnt
         }
     }
 
     "added timestamp is included in state version vector" {
         forAll(simpleEnvironmentArb, timestampArb){ se, ts ->
-            se.updateStateTS(ts)
-            val vv = se.getCurrentState()
+            se.update(ts)
+            val vv = se.getState()
             vv.contains(ts)
         }
     }
 
     "updated state includes added version vector" {
         forAll(simpleEnvironmentArb, versionVectorArb){ se, vv ->
-            se.updateStateVV(vv)
-            val vv2 = se.getCurrentState()
+            se.update(vv)
+            val vv2 = se.getState()
             vv.isSmallerOrEquals(vv2)
         }
     }

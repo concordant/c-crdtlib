@@ -47,7 +47,7 @@ class MVRegisterTest : StringSpec({
     "create with a value and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts = dc.getNewTimestamp()
+        val ts = dc.tick()
         val value = "value"
         val reg = MVRegister<String>(value, ts)
 
@@ -61,7 +61,7 @@ class MVRegisterTest : StringSpec({
     "copy with copy constructor and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts = dc.getNewTimestamp()
+        val ts = dc.tick()
         val value = "value"
         val reg1 = MVRegister<String>(value, ts)
 
@@ -79,8 +79,8 @@ class MVRegisterTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
         val val1 = "value1"
         val val2 = "value2"
         val reg1 = MVRegister<String>(val1, ts1)
@@ -99,9 +99,8 @@ class MVRegisterTest : StringSpec({
     "create, assign, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts1 = dc.getNewTimestamp()
-        dc.updateStateTS(ts1)
-        val ts2 = dc.getNewTimestamp()
+        val ts1 = dc.tick()
+        val ts2 = dc.tick()
         val val1 = "value1"
         val val2 = "value2"
 
@@ -118,9 +117,8 @@ class MVRegisterTest : StringSpec({
     "create assign, assign with older timestamp, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts1 = dc.getNewTimestamp()
-        dc.updateStateTS(ts1)
-        val ts2 = dc.getNewTimestamp()
+        val ts1 = dc.tick()
+        val ts2 = dc.tick()
         val val1 = "value1"
         val val2 = "value2"
 
@@ -137,7 +135,7 @@ class MVRegisterTest : StringSpec({
     "R1: create with value; R2: create empty, merge, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts = dc.getNewTimestamp()
+        val ts = dc.tick()
         val value = "value"
 
         val reg1 = MVRegister<String>(value, ts)
@@ -158,8 +156,8 @@ class MVRegisterTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
         val val1 = "value1"
         val val2 = "value2"
 
@@ -180,8 +178,8 @@ class MVRegisterTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
         val val1 = "value1"
         val val2 = "value2"
 
@@ -201,9 +199,8 @@ class MVRegisterTest : StringSpec({
     "R1: create with value, assign; R2: craete empty, merge before assign, merge after assign, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts1 = dc.getNewTimestamp()
-        dc.updateStateTS(ts1)
-        val ts2 = dc.getNewTimestamp()
+        val ts1 = dc.tick()
+        val ts2 = dc.tick()
         val val1 = "value1"
         val val2 = "value2"
 
@@ -227,10 +224,9 @@ class MVRegisterTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
-        dc1.updateStateTS(ts1)
-        val ts3 = dc1.getNewTimestamp()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
+        val ts3 = dc1.tick()
         val val1 = "value1"
         val val2 = "value2"
         val val3 = "value3"
@@ -257,9 +253,9 @@ class MVRegisterTest : StringSpec({
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
         val dc3 = SimpleEnvironment(uid3)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
-        val ts3 = dc3.getNewTimestamp()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
+        val ts3 = dc3.tick()
         val val1 = "value1"
         val val2 = "value2"
         val val3 = "value3"
@@ -288,9 +284,9 @@ class MVRegisterTest : StringSpec({
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
         val dc3 = SimpleEnvironment(uid3)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
-        val ts3 = dc3.getNewTimestamp()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
+        val ts3 = dc3.tick()
         val val1 = "value1"
         val val2 = "value2"
         val val3 = "value3"
@@ -313,7 +309,7 @@ class MVRegisterTest : StringSpec({
     "use delta returned by assign" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts = dc.getNewTimestamp()
+        val ts = dc.tick()
         val value = "value"
         val reg1 = MVRegister<String>()
         val reg2 = MVRegister<String>()
@@ -336,9 +332,9 @@ class MVRegisterTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
-        val vv = dc1.getCurrentState()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
+        val vv = dc1.getState()
         val val1 = "value1"
         val val2 = "value2"
         val reg1 = MVRegister<String>(val1, ts1)
@@ -379,8 +375,8 @@ class MVRegisterTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
         val val1 = "value1"
         val val2 = "value2"
 
