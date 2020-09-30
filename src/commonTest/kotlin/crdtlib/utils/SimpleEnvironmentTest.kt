@@ -147,7 +147,7 @@ class SimpleEnvironmentTest : StringSpec({
         val client = SimpleEnvironment(uid)
         val ts = Timestamp(uid, 7)
         val cmpVV = VersionVector()
-        cmpVV.addTS(ts)
+        cmpVV.update(ts)
 
         client.update(ts)
         val vv = client.getState()
@@ -166,7 +166,7 @@ class SimpleEnvironmentTest : StringSpec({
         val client = SimpleEnvironment(uid1)
         val ts = Timestamp(uid2, 5)
         val cmpVV = VersionVector()
-        cmpVV.addTS(ts)
+        cmpVV.update(ts)
 
         client.update(ts)
         val vv = client.getState()
@@ -187,8 +187,8 @@ class SimpleEnvironmentTest : StringSpec({
         val ts1 = Timestamp(uid1, 7)
         val ts2 = Timestamp(uid2, 6)
         val cmpVV = VersionVector()
-        cmpVV.addTS(ts1)
-        cmpVV.addTS(ts2)
+        cmpVV.update(ts1)
+        cmpVV.update(ts2)
 
         client.update(ts1)
         client.update(ts2)
@@ -210,8 +210,8 @@ class SimpleEnvironmentTest : StringSpec({
         val ts1 = Timestamp(uid1, 6)
         val ts2 = Timestamp(uid2, 7)
         val vv = VersionVector()
-        vv.addTS(ts1)
-        vv.addTS(ts2)
+        vv.update(ts1)
+        vv.update(ts2)
 
         client.update(vv)
         val ts3 = client.tick()
@@ -230,8 +230,8 @@ class SimpleEnvironmentTest : StringSpec({
         val ts1 = Timestamp(uid1, 6)
         val ts2 = Timestamp(uid2, 5)
         val vv1 = VersionVector()
-        vv1.addTS(ts1)
-        vv1.addTS(ts2)
+        vv1.update(ts1)
+        vv1.update(ts2)
 
         client.update(vv1)
         val vv2 = client.getState()

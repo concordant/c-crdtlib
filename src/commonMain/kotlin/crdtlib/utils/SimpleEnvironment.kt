@@ -43,14 +43,14 @@ class SimpleEnvironment(private val uid: ClientUId) : Environment() {
     * @return the generated timestamp.
     */
     override fun tickProtected(): Timestamp {
-        val lastCnt = this.currentState.maxVal()
+        val lastCnt = this.currentState.max()
         if (lastCnt == Timestamp.CNT_MAX_VALUE) {
             throw RuntimeException("Timestamp counter has reached Timestamp.CNT_MAX_VALUE")
         }
-	var ts = Timestamp(this.uid, Timestamp.CNT_MIN_VALUE)
-	if (lastCnt != null) ts = Timestamp(this.uid, lastCnt + 1)
-	this.update(ts)
-	return ts
+        var ts = Timestamp(this.uid, Timestamp.CNT_MIN_VALUE)
+        if (lastCnt != null) ts = Timestamp(this.uid, lastCnt + 1)
+        this.update(ts)
+        return ts
     }
 
     /**
@@ -58,7 +58,7 @@ class SimpleEnvironment(private val uid: ClientUId) : Environment() {
     * @param ts the given timestamp.
     */
     override fun updateProtected(ts: Timestamp) {
-        this.currentState.addTS(ts)
+        this.currentState.update(ts)
     }
 
     /**
@@ -66,6 +66,6 @@ class SimpleEnvironment(private val uid: ClientUId) : Environment() {
     * @param vv the given version vector.
     */
     override fun updateProtected(vv: VersionVector) {
-        this.currentState.pointWiseMax(vv)
+        this.currentState.update(vv)
     }
 }

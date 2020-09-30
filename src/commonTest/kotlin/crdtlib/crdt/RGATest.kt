@@ -732,7 +732,7 @@ class RGATest : StringSpec({
         val ts3 = client.tick()
         val ts4 = client.tick()
         val vv = VersionVector()
-        vv.addTS(ts2)
+        vv.update(ts2)
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
 

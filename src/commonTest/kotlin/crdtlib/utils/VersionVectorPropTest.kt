@@ -50,35 +50,35 @@ class VersionVectorPropTest: StringSpec({
     "merge is idempotent" {
         forAll(versionVectorArb) { vv1 ->
             val vv2 = vv1.copy()
-            vv2.pointWiseMax(vv1)
+            vv2.update(vv1)
             vv1 == vv2
         }
     }
     "merge is commutative" {
         forAll(versionVectorArb,versionVectorArb) { vv1, vv2 ->
             val vv2copy = vv2.copy()
-            vv2.pointWiseMax(vv1)
-            vv1.pointWiseMax(vv2copy)
+            vv2.update(vv1)
+            vv1.update(vv2copy)
             vv1 == vv2
         }
     }
     "added timestamp should be included" {
         forAll(versionVectorArb, timestampArb) { vv1, ts ->
-            vv1.addTS(ts)
-            vv1.includesTS(ts)
+            vv1.update(ts)
+            vv1.contains(ts)
         }
     }
     "new version vector includes no timestamp" {
         forAll(timestampArb) { ts ->
-            !(VersionVector().includesTS(ts))
+            !(VersionVector().contains(ts))
         }
     }
-    "incrementing maxVal" {
+    "incrementing max" {
         forAll(versionVectorNonMaxArb, clientuidArb, Arb.int(Int.MIN_VALUE, Int.MAX_VALUE-1)) { vv, clientuid, i ->
-            val maxTS = vv.maxVal()
+            val maxTS = vv.max()
             val incrTS = 1 + (maxTS ?: i)
-            vv.addTS(Timestamp(clientuid, incrTS))
-            incrTS == vv.maxVal()
+            vv.update(Timestamp(clientuid, incrTS))
+            incrTS == vv.max()
         }
     }
 })

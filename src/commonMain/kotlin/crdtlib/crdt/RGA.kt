@@ -161,7 +161,7 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
     override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<RGA<T>> {
         val delta = RGA<T>()
         for (node in this.nodes) {
-            if (!vv.includesTS(node.ts)) {
+            if (!vv.contains(node.ts)) {
                 delta.nodes.add(node.copy())
             }
         }

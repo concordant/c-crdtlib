@@ -33,17 +33,17 @@ class VersionVectorTest : StringSpec({
     /**
     * This test evaluates that the maximum value of newly created version vector is null.
     **/
-    "empty version vector get max value" {
+    "empty version vector get max" {
         val vv = VersionVector()
 
-        vv.maxVal().shouldBeNull()
+        vv.max().shouldBeNull()
     }
 
     /**
-    * This test evaluates that the value returned by the maxVal method after adding multiple
+    * This test evaluates that the value returned by the max method after adding multiple
     * timestamps is correct.
     **/
-    "multiple values get max value" {
+    "multiple values get max" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val uid3 = ClientUId("clientid3")
@@ -52,47 +52,48 @@ class VersionVectorTest : StringSpec({
         val ts3 = Timestamp(uid3, 1)
         val vv = VersionVector()
 
-        vv.addTS(ts1)
-        vv.addTS(ts2)
-        vv.addTS(ts3)
+        vv.update(ts1)
+        vv.update(ts2)
+        vv.update(ts3)
 
-        vv.maxVal().shouldBe(3)
+        vv.max().shouldBe(3)
     }
 
     /**
     * This test evaluates the inclusion of timestamps in a newly created version vector.
-    * Calls to includeTS should return false.
+    * Calls to contains should return false.
     **/
-    "empty version vector include no timestamp" {
+    "empty version vector contains no timestamp" {
         val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, 1)
         val ts2 = Timestamp(uid, 3)
         val vv = VersionVector()
 
-        vv.includesTS(ts1).shouldBeFalse()
-        vv.includesTS(ts2).shouldBeFalse()
+        vv.contains(ts1).shouldBeFalse()
+        vv.contains(ts2).shouldBeFalse()
     }
 
     /**
-    * This test evaluates the inclusion of timestamps having negative counter in a newly created version vector.
-    * Calls to includeTS should return false.
+    * This test evaluates the inclusion of timestamps having negative counter in a newly created
+    * version vector.
+    * Calls to contains should return false.
     **/
-    "empty version vector include no negative timestamp" {
+    "empty version vector contains no negative timestamp" {
         val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, Int.MIN_VALUE)
         val ts2 = Timestamp(uid, Timestamp.CNT_MIN_VALUE)
         val ts3 = Timestamp(uid, -8000)
         val vv = VersionVector()
 
-        vv.includesTS(ts1).shouldBeFalse()
-        vv.includesTS(ts2).shouldBeFalse()
-        vv.includesTS(ts3).shouldBeFalse()
+        vv.contains(ts1).shouldBeFalse()
+        vv.contains(ts2).shouldBeFalse()
+        vv.contains(ts3).shouldBeFalse()
     }
 
     /**
     * This test evaluates the inclusion of timestamps in a version vector where one timestamp has
     * been added.
-    * Calls to includeTS should return true for all timestamps with same client unique id and a
+    * Calls to contains should return true for all timestamps with same client unique id and a
     * count less or equals to the added timestamp, and false otherwise.
     **/
     "add timstamp then check inclusion" {
@@ -104,20 +105,20 @@ class VersionVectorTest : StringSpec({
         val ts4 = Timestamp(uid2, 1)
         val vv = VersionVector()
 
-        vv.addTS(ts2)
+        vv.update(ts2)
 
-        vv.includesTS(ts1).shouldBeTrue()
-        vv.includesTS(ts2).shouldBeTrue()
-        vv.includesTS(ts3).shouldBeFalse()
-        vv.includesTS(ts4).shouldBeFalse()
+        vv.contains(ts1).shouldBeTrue()
+        vv.contains(ts2).shouldBeTrue()
+        vv.contains(ts3).shouldBeFalse()
+        vv.contains(ts4).shouldBeFalse()
     }
 
     /**
     * This test evaluates the merging of a first none empty version vector into a second empty one.
-    * Calls to includeTS at second version vector should return true for all timestamps that were
+    * Calls to contains at second version vector should return true for all timestamps that were
     * added to the first one.
     **/
-    "point wise max to an empty version vector" {
+    "update to an empty version vector" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val uid3 = ClientUId("clientid3")
@@ -127,22 +128,22 @@ class VersionVectorTest : StringSpec({
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
-        vv1.addTS(ts1)
-        vv1.addTS(ts2)
-        vv1.addTS(ts3)
-        vv2.pointWiseMax(vv1)
+        vv1.update(ts1)
+        vv1.update(ts2)
+        vv1.update(ts3)
+        vv2.update(vv1)
 
-        vv2.includesTS(ts1).shouldBeTrue()
-        vv2.includesTS(ts2).shouldBeTrue()
-        vv2.includesTS(ts3).shouldBeTrue()
+        vv2.contains(ts1).shouldBeTrue()
+        vv2.contains(ts2).shouldBeTrue()
+        vv2.contains(ts3).shouldBeTrue()
     }
 
     /**
     * This test evaluates the merging of a first empty version vector into a second none empty one.
-    * Calls to includeTS at second version vector should return true for all timestamps that were
+    * Calls to contains at second version vector should return true for all timestamps that were
     * added to it before merging.
     **/
-    "point wise max from an empty version vector" {
+    "update from an empty version vector" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val uid3 = ClientUId("clientid3")
@@ -152,22 +153,22 @@ class VersionVectorTest : StringSpec({
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
-        vv1.addTS(ts1)
-        vv1.addTS(ts2)
-        vv1.addTS(ts3)
-        vv1.pointWiseMax(vv2)
+        vv1.update(ts1)
+        vv1.update(ts2)
+        vv1.update(ts3)
+        vv1.update(vv2)
 
-        vv1.includesTS(ts1).shouldBeTrue()
-        vv1.includesTS(ts2).shouldBeTrue()
-        vv1.includesTS(ts3).shouldBeTrue()
+        vv1.contains(ts1).shouldBeTrue()
+        vv1.contains(ts2).shouldBeTrue()
+        vv1.contains(ts3).shouldBeTrue()
     }
 
     /**
     * This test evaluates the merging of a first version vector into a second smaller one.
-    * Calls to includeTS at second version vector should return true for all timestamps that were
+    * Calls to contains at second version vector should return true for all timestamps that were
     * added to the first version vector.
     **/
-    "point wise max to a smaller version vector" {
+    "update to a smaller version vector" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val uid3 = ClientUId("clientid3")
@@ -178,25 +179,25 @@ class VersionVectorTest : StringSpec({
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
-        vv1.addTS(ts1)
-        vv1.addTS(ts2)
-        vv1.addTS(ts4)
-        vv2.addTS(ts1)
-        vv2.addTS(ts3)
-        vv2.pointWiseMax(vv1)
+        vv1.update(ts1)
+        vv1.update(ts2)
+        vv1.update(ts4)
+        vv2.update(ts1)
+        vv2.update(ts3)
+        vv2.update(vv1)
 
-        vv2.includesTS(ts1).shouldBeTrue()
-        vv2.includesTS(ts2).shouldBeTrue()
-        vv2.includesTS(ts3).shouldBeTrue()
-        vv2.includesTS(ts4).shouldBeTrue()
+        vv2.contains(ts1).shouldBeTrue()
+        vv2.contains(ts2).shouldBeTrue()
+        vv2.contains(ts3).shouldBeTrue()
+        vv2.contains(ts4).shouldBeTrue()
     }
 
     /**
     * This test evaluates the merging of a first smaller version vector into a second one.
-    * Calls to includeTS at second version vector should return true for all timestamps that were
+    * Calls to contains at second version vector should return true for all timestamps that were
     * added to it before merging.
     **/
-    "point wise max from a smaller version vector" {
+    "update from a smaller version vector" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val uid3 = ClientUId("clientid3")
@@ -207,25 +208,25 @@ class VersionVectorTest : StringSpec({
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
-        vv1.addTS(ts1)
-        vv1.addTS(ts2)
-        vv1.addTS(ts4)
-        vv2.addTS(ts1)
-        vv2.addTS(ts3)
-        vv1.pointWiseMax(vv2)
+        vv1.update(ts1)
+        vv1.update(ts2)
+        vv1.update(ts4)
+        vv2.update(ts1)
+        vv2.update(ts3)
+        vv1.update(vv2)
 
-        vv1.includesTS(ts1).shouldBeTrue()
-        vv1.includesTS(ts2).shouldBeTrue()
-        vv1.includesTS(ts3).shouldBeTrue()
-        vv1.includesTS(ts4).shouldBeTrue()
+        vv1.contains(ts1).shouldBeTrue()
+        vv1.contains(ts2).shouldBeTrue()
+        vv1.contains(ts3).shouldBeTrue()
+        vv1.contains(ts4).shouldBeTrue()
     }
 
     /**
     * This test evaluates the merging of two equal version vectors.
-    * Calls to includeTS at second version vector should return true for all timestamps that were
+    * Calls to contains at second version vector should return true for all timestamps that were
     * added to it before merging.
     **/
-    "point wise max between two equaled version vectors" {
+    "update between two equaled version vectors" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val uid3 = ClientUId("clientid3")
@@ -235,25 +236,25 @@ class VersionVectorTest : StringSpec({
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
-        vv1.addTS(ts1)
-        vv1.addTS(ts2)
-        vv1.addTS(ts3)
-        vv2.addTS(ts1)
-        vv2.addTS(ts2)
-        vv2.addTS(ts3)
-        vv1.pointWiseMax(vv2)
+        vv1.update(ts1)
+        vv1.update(ts2)
+        vv1.update(ts3)
+        vv2.update(ts1)
+        vv2.update(ts2)
+        vv2.update(ts3)
+        vv1.update(vv2)
 
-        vv1.includesTS(ts1).shouldBeTrue()
-        vv1.includesTS(ts2).shouldBeTrue()
-        vv1.includesTS(ts3).shouldBeTrue()
+        vv1.contains(ts1).shouldBeTrue()
+        vv1.contains(ts2).shouldBeTrue()
+        vv1.contains(ts3).shouldBeTrue()
     }
 
     /**
     * This test evaluates the merging of two concurrent version vectors.
-    * Calls to includeTS at second version vector should return true for all timestamps that were
+    * Calls to contains at second version vector should return true for all timestamps that were
     * added to itself and to the first version vector.
     **/
-    "point wise max between two concurrent version vectors" {
+    "update between two concurrent version vectors" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val uid3 = ClientUId("clientid3")
@@ -267,20 +268,20 @@ class VersionVectorTest : StringSpec({
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
-        vv1.addTS(ts1)
-        vv1.addTS(ts2)
-        vv1.addTS(ts5)
-        vv2.addTS(ts3)
-        vv2.addTS(ts4)
-        vv2.addTS(ts6)
-        vv2.pointWiseMax(vv1)
+        vv1.update(ts1)
+        vv1.update(ts2)
+        vv1.update(ts5)
+        vv2.update(ts3)
+        vv2.update(ts4)
+        vv2.update(ts6)
+        vv2.update(vv1)
 
-        vv2.includesTS(ts1).shouldBeTrue()
-        vv2.includesTS(ts2).shouldBeTrue()
-        vv2.includesTS(ts3).shouldBeTrue()
-        vv2.includesTS(ts4).shouldBeTrue()
-        vv2.includesTS(ts5).shouldBeTrue()
-        vv2.includesTS(ts6).shouldBeTrue()
+        vv2.contains(ts1).shouldBeTrue()
+        vv2.contains(ts2).shouldBeTrue()
+        vv2.contains(ts3).shouldBeTrue()
+        vv2.contains(ts4).shouldBeTrue()
+        vv2.contains(ts5).shouldBeTrue()
+        vv2.contains(ts6).shouldBeTrue()
     }
 
     /**
@@ -299,12 +300,12 @@ class VersionVectorTest : StringSpec({
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
-        vv1.addTS(ts1)
-        vv1.addTS(ts2)
-        vv1.addTS(ts4)
-        vv2.addTS(ts1)
-        vv2.addTS(ts3)
-        vv2.addTS(ts4)
+        vv1.update(ts1)
+        vv1.update(ts2)
+        vv1.update(ts4)
+        vv2.update(ts1)
+        vv2.update(ts3)
+        vv2.update(ts4)
 
         vv1.isSmallerOrEquals(vv2).shouldBeTrue()
         vv1.isSmaller(vv2).shouldBeTrue()
@@ -330,11 +331,11 @@ class VersionVectorTest : StringSpec({
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
-        vv1.addTS(ts2)
-        vv1.addTS(ts4)
-        vv2.addTS(ts1)
-        vv2.addTS(ts3)
-        vv2.addTS(ts4)
+        vv1.update(ts2)
+        vv1.update(ts4)
+        vv2.update(ts1)
+        vv2.update(ts3)
+        vv2.update(ts4)
 
         vv1.isSmallerOrEquals(vv2).shouldBeTrue()
         vv1.isSmaller(vv2).shouldBeTrue()
@@ -358,12 +359,12 @@ class VersionVectorTest : StringSpec({
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
-        vv1.addTS(ts1)
-        vv1.addTS(ts2)
-        vv1.addTS(ts3)
-        vv2.addTS(ts1)
-        vv2.addTS(ts2)
-        vv2.addTS(ts3)
+        vv1.update(ts1)
+        vv1.update(ts2)
+        vv1.update(ts3)
+        vv2.update(ts1)
+        vv2.update(ts2)
+        vv2.update(ts3)
 
         vv1.isSmallerOrEquals(vv2).shouldBeTrue()
         vv1.isSmaller(vv2).shouldBeFalse()
@@ -389,12 +390,12 @@ class VersionVectorTest : StringSpec({
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
-        vv1.addTS(ts1)
-        vv1.addTS(ts3)
-        vv1.addTS(ts4)
-        vv2.addTS(ts1)
-        vv2.addTS(ts2)
-        vv2.addTS(ts4)
+        vv1.update(ts1)
+        vv1.update(ts3)
+        vv1.update(ts4)
+        vv2.update(ts1)
+        vv2.update(ts2)
+        vv2.update(ts4)
 
         vv1.isSmallerOrEquals(vv2).shouldBeFalse()
         vv1.isSmaller(vv2).shouldBeFalse()
@@ -421,12 +422,12 @@ class VersionVectorTest : StringSpec({
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
-        vv1.addTS(ts1)
-        vv1.addTS(ts2)
-        vv1.addTS(ts5)
-        vv2.addTS(ts1)
-        vv2.addTS(ts3)
-        vv2.addTS(ts4)
+        vv1.update(ts1)
+        vv1.update(ts2)
+        vv1.update(ts5)
+        vv2.update(ts1)
+        vv2.update(ts3)
+        vv2.update(ts4)
 
         vv1.isSmallerOrEquals(vv2).shouldBeFalse()
         vv1.isSmaller(vv2).shouldBeFalse()
@@ -452,11 +453,11 @@ class VersionVectorTest : StringSpec({
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
-        vv1.addTS(ts1)
-        vv1.addTS(ts3)
-        vv2.addTS(ts1)
-        vv2.addTS(ts2)
-        vv2.addTS(ts4)
+        vv1.update(ts1)
+        vv1.update(ts3)
+        vv2.update(ts1)
+        vv2.update(ts2)
+        vv2.update(ts4)
 
         vv1.isSmallerOrEquals(vv2).shouldBeFalse()
         vv1.isSmaller(vv2).shouldBeFalse()
@@ -482,11 +483,11 @@ class VersionVectorTest : StringSpec({
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
-        vv1.addTS(ts1)
-        vv1.addTS(ts3)
-        vv1.addTS(ts4)
-        vv2.addTS(ts2)
-        vv2.addTS(ts4)
+        vv1.update(ts1)
+        vv1.update(ts3)
+        vv1.update(ts4)
+        vv2.update(ts2)
+        vv2.update(ts4)
 
         vv1.isSmallerOrEquals(vv2).shouldBeFalse()
         vv1.isSmaller(vv2).shouldBeFalse()
@@ -512,11 +513,11 @@ class VersionVectorTest : StringSpec({
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
-        vv1.addTS(ts1)
-        vv1.addTS(ts2)
-        vv1.addTS(ts4)
-        vv2.addTS(ts1)
-        vv2.addTS(ts3)
+        vv1.update(ts1)
+        vv1.update(ts2)
+        vv1.update(ts4)
+        vv2.update(ts1)
+        vv2.update(ts3)
 
         vv1.isSmallerOrEquals(vv2).shouldBeFalse()
         vv1.isSmaller(vv2).shouldBeFalse()
@@ -542,10 +543,10 @@ class VersionVectorTest : StringSpec({
         val vv1 = VersionVector()
         val vv2 = VersionVector()
 
-        vv1.addTS(ts2)
-        vv1.addTS(ts4)
-        vv2.addTS(ts1)
-        vv2.addTS(ts3)
+        vv1.update(ts2)
+        vv1.update(ts4)
+        vv2.update(ts1)
+        vv2.update(ts3)
 
         vv1.isSmallerOrEquals(vv2).shouldBeFalse()
         vv1.isSmaller(vv2).shouldBeFalse()
@@ -557,7 +558,7 @@ class VersionVectorTest : StringSpec({
 
     /**
     * This test evaluates the use of copy method.
-    * Calls to includeTS at second version vector should return true for all timestamps that were
+    * Calls to contains at second version vector should return true for all timestamps that were
     * added to the first one.
     **/
     "copy with copy method" {
@@ -569,9 +570,9 @@ class VersionVectorTest : StringSpec({
         val ts3 = Timestamp(uid3, 2)
         val vv1 = VersionVector()
 
-        vv1.addTS(ts1)
-        vv1.addTS(ts2)
-        vv1.addTS(ts3)
+        vv1.update(ts1)
+        vv1.update(ts2)
+        vv1.update(ts3)
         val vv2 = vv1.copy()
 
         vv1.isSmallerOrEquals(vv2).shouldBeTrue()
@@ -581,7 +582,7 @@ class VersionVectorTest : StringSpec({
 
     /**
     * This test evaluates the use of copy constructor.
-    * Calls to includeTS at second version vector should return true for all timestamps that were
+    * Calls to contains at second version vector should return true for all timestamps that were
     * added to the first one.
     **/
     "copy with copy constructor" {
@@ -593,9 +594,9 @@ class VersionVectorTest : StringSpec({
         val ts3 = Timestamp(uid3, 2)
         val vv1 = VersionVector()
 
-        vv1.addTS(ts1)
-        vv1.addTS(ts2)
-        vv1.addTS(ts3)
+        vv1.update(ts1)
+        vv1.update(ts2)
+        vv1.update(ts3)
         val vv2 = VersionVector(vv1)
 
         vv1.isSmallerOrEquals(vv2).shouldBeTrue()
@@ -638,9 +639,9 @@ class VersionVectorTest : StringSpec({
         val ts3 = Timestamp(uid3, 2)
         val vv = VersionVector()
 
-        vv.addTS(ts1)
-        vv.addTS(ts2)
-        vv.addTS(ts3)
+        vv.update(ts1)
+        vv.update(ts2)
+        vv.update(ts3)
         val vvJson = vv.toJson()
 
         vvJson.shouldBe("""{"entries":[{"name":"clientid1"},3,{"name":"clientid2"},4,{"name":"clientid3"},2]}""")
@@ -658,9 +659,9 @@ class VersionVectorTest : StringSpec({
         val ts3 = Timestamp(uid3, 2)
         val vv = VersionVector()
 
-        vv.addTS(ts1)
-        vv.addTS(ts2)
-        vv.addTS(ts3)
+        vv.update(ts1)
+        vv.update(ts2)
+        vv.update(ts3)
         val vvJson = VersionVector.fromJson("""{"entries":[{"name":"clientid1"},3,{"name":"clientid2"},4,{"name":"clientid3"},2]}""")
 
         vv.isSmallerOrEquals(vvJson).shouldBeTrue()

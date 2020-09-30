@@ -25,7 +25,7 @@ val versionVectorArb = arb { rs ->
     val tss = Arb.list(timestampArb, range = 0..10).values(rs)
     tss.map { ts ->
         val vv = VersionVector()
-        ts.value.map {t -> vv.addTS(t)}
+        ts.value.map {t -> vv.update(t)}
         vv
     }
 }
@@ -34,7 +34,7 @@ val versionVectorNonMaxArb = arb { rs ->
     val tss = Arb.list(timestampNonMaxArb, range = 0..10).values(rs)
     tss.map { ts ->
         val vv = VersionVector()
-        ts.value.map {t -> vv.addTS(t)}
+        ts.value.map {t -> vv.update(t)}
         vv
     }
 }
