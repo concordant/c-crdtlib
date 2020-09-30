@@ -30,9 +30,9 @@ import kotlinx.serialization.json.*
 class VersionVector {
 
     /**
-    * A mutable map storing for each datacenter the greatest timestamp value seen until now.
+    * A mutable map storing for each client the greatest timestamp value seen until now.
     */
-    private val entries: MutableMap<DCUId, Int> = mutableMapOf()
+    private val entries: MutableMap<ClientUId, Int> = mutableMapOf()
 
     /**
     * Default constructor.

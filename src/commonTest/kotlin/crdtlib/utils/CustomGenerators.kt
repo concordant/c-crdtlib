@@ -4,21 +4,21 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.*
 
 val timestampArb = arb { rs ->
-    val dcuids = dcuidArb.values(rs)
+    val clientuids = clientuidArb.values(rs)
     val cnts = Arb.int().values(rs)
-    dcuids.zip(cnts).map { (dcuids, cnt) -> Timestamp(dcuids.value, cnt.value) }
+    clientuids.zip(cnts).map { (clientuids, cnt) -> Timestamp(clientuids.value, cnt.value) }
 }
 
 val timestampNonMaxArb = arb { rs ->
-    val dcuids = dcuidArb.values(rs)
+    val clientuids = clientuidArb.values(rs)
     val cnts = Arb.int(Int.MIN_VALUE, Int.MAX_VALUE-1).values(rs)
-    dcuids.zip(cnts).map { (dcuids, cnt) -> Timestamp(dcuids.value, cnt.value) }
+    clientuids.zip(cnts).map { (clientuids, cnt) -> Timestamp(clientuids.value, cnt.value) }
 }
 
 
-val dcuidArb = arb { rs ->
+val clientuidArb = arb { rs ->
     val names = Arb.string(1..2).values(rs)
-    names.map { name -> DCUId(name.value)}
+    names.map { name -> ClientUId(name.value)}
 }
 
 val versionVectorArb = arb { rs ->
@@ -41,6 +41,6 @@ val versionVectorNonMaxArb = arb { rs ->
 
 
 val simpleEnvironmentArb = arb { rs ->
-    val dcuids = dcuidArb.values(rs)
-    dcuids.map { dcuid -> SimpleEnvironment(dcuid.value)}
+    val clientuids = clientuidArb.values(rs)
+    clientuids.map { clientuid -> SimpleEnvironment(clientuid.value)}
 }

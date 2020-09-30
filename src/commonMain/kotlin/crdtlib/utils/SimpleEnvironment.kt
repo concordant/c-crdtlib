@@ -21,9 +21,9 @@ package crdtlib.utils
 
 /**
 * This class represents a simple environment generating increasing monotonic timestamps.
-* @property uid the datacenter unique identifier associated with this environment.
+* @property uid the client unique identifier associated with this environment.
 */
-class SimpleEnvironment(private val uid: DCUId) : Environment() {
+class SimpleEnvironment(private val uid: ClientUId) : Environment() {
 
     /**
     * A version vector storing this environment causal context.

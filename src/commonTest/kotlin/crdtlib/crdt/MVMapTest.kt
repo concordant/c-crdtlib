@@ -19,7 +19,7 @@
 
 package crdtlib.crdt
 
-import crdtlib.utils.DCUId
+import crdtlib.utils.ClientUId
 import crdtlib.utils.SimpleEnvironment
 import crdtlib.utils.VersionVector
 import io.kotest.core.spec.style.StringSpec
@@ -51,12 +51,12 @@ class MVMapTest : StringSpec({
     * Call to get should return the value set by the put.
     */
     "put and get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
-        val ts4 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
+        val ts4 = client.tick()
         val key = "key"
         val valueBoolean = true
         val valueDouble = 3.14159
@@ -80,16 +80,16 @@ class MVMapTest : StringSpec({
     * Call to get should return null.
     */
     "put, delete, get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
-        val ts4 = dc.tick()
-        val ts5 = dc.tick()
-        val ts6 = dc.tick()
-        val ts7 = dc.tick()
-        val ts8 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
+        val ts4 = client.tick()
+        val ts5 = client.tick()
+        val ts6 = client.tick()
+        val ts7 = client.tick()
+        val ts8 = client.tick()
         val key = "key"
         val valueBoolean = true
         val valueDouble = 3.14159
@@ -117,12 +117,12 @@ class MVMapTest : StringSpec({
     * Call to get should return null.
     */
     "delete and get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
-        val ts4 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
+        val ts4 = client.tick()
         val key = "key"
         val map = MVMap()
 
@@ -142,16 +142,16 @@ class MVMapTest : StringSpec({
     * Call to get should return the value set by the second put.
     */
     "put, put, get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
-        val ts4 = dc.tick()
-        val ts5 = dc.tick()
-        val ts6 = dc.tick()
-        val ts7 = dc.tick()
-        val ts8 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
+        val ts4 = client.tick()
+        val ts5 = client.tick()
+        val ts6 = client.tick()
+        val ts7 = client.tick()
+        val ts8 = client.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -183,20 +183,20 @@ class MVMapTest : StringSpec({
     * Call to get should return null.
     */
     "put, put, del, get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
-        val ts4 = dc.tick()
-        val ts5 = dc.tick()
-        val ts6 = dc.tick()
-        val ts7 = dc.tick()
-        val ts8 = dc.tick()
-        val ts9 = dc.tick()
-        val ts10 = dc.tick()
-        val ts11 = dc.tick()
-        val ts12 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
+        val ts4 = client.tick()
+        val ts5 = client.tick()
+        val ts6 = client.tick()
+        val ts7 = client.tick()
+        val ts8 = client.tick()
+        val ts9 = client.tick()
+        val ts10 = client.tick()
+        val ts11 = client.tick()
+        val ts12 = client.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -232,12 +232,12 @@ class MVMapTest : StringSpec({
     * Call to get should return the value set by the put registered in the first replica.
     */
     "R1: put; R2: merge and get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
-        val ts4 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
+        val ts4 = client.tick()
         val key = "key"
         val valueBoolean = true
         val valueDouble = 3.14159
@@ -268,18 +268,18 @@ class MVMapTest : StringSpec({
     * Call to get should return the value set by put registered in the second replica.
     */
     "R1: put; R2: merge, put, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts3 = dc1.tick()
-        val ts5 = dc1.tick()
-        val ts7 = dc1.tick()
-        val ts2 = dc2.tick()
-        val ts4 = dc2.tick()
-        val ts6 = dc2.tick()
-        val ts8 = dc2.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts3 = client1.tick()
+        val ts5 = client1.tick()
+        val ts7 = client1.tick()
+        val ts2 = client2.tick()
+        val ts4 = client2.tick()
+        val ts6 = client2.tick()
+        val ts8 = client2.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -313,18 +313,18 @@ class MVMapTest : StringSpec({
     * Call to get should return a set containing the two concurently put values.
     */
     "R1: put; R2: put, merge, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts3 = dc1.tick()
-        val ts5 = dc1.tick()
-        val ts7 = dc1.tick()
-        val ts2 = dc2.tick()
-        val ts4 = dc2.tick()
-        val ts6 = dc2.tick()
-        val ts8 = dc2.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts3 = client1.tick()
+        val ts5 = client1.tick()
+        val ts7 = client1.tick()
+        val ts2 = client2.tick()
+        val ts4 = client2.tick()
+        val ts6 = client2.tick()
+        val ts8 = client2.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -358,22 +358,22 @@ class MVMapTest : StringSpec({
     * Call to get should return a set containing the value set in the second replica and null.
     */
     "R1: put, delete; R2: put with older timestamp, merge, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts3 = dc1.tick()
-        val ts5 = dc1.tick()
-        val ts7 = dc1.tick()
-        val ts2 = dc2.tick()
-        val ts4 = dc2.tick()
-        val ts6 = dc2.tick()
-        val ts8 = dc2.tick()
-        val ts9 = dc2.tick()
-        val ts10 = dc2.tick()
-        val ts11 = dc2.tick()
-        val ts12 = dc2.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts3 = client1.tick()
+        val ts5 = client1.tick()
+        val ts7 = client1.tick()
+        val ts2 = client2.tick()
+        val ts4 = client2.tick()
+        val ts6 = client2.tick()
+        val ts8 = client2.tick()
+        val ts9 = client2.tick()
+        val ts10 = client2.tick()
+        val ts11 = client2.tick()
+        val ts12 = client2.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -412,22 +412,22 @@ class MVMapTest : StringSpec({
     * Call to get should return a set containing the value set in the second replica and null.
     */
     "R1: put, delete; R2: put with older timestamp, merge before delete, merge after delete, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts3 = dc1.tick()
-        val ts5 = dc1.tick()
-        val ts7 = dc1.tick()
-        val ts2 = dc2.tick()
-        val ts4 = dc2.tick()
-        val ts6 = dc2.tick()
-        val ts8 = dc2.tick()
-        val ts9 = dc2.tick()
-        val ts10 = dc2.tick()
-        val ts11 = dc2.tick()
-        val ts12 = dc2.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts3 = client1.tick()
+        val ts5 = client1.tick()
+        val ts7 = client1.tick()
+        val ts2 = client2.tick()
+        val ts4 = client2.tick()
+        val ts6 = client2.tick()
+        val ts8 = client2.tick()
+        val ts9 = client2.tick()
+        val ts10 = client2.tick()
+        val ts11 = client2.tick()
+        val ts12 = client2.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -466,26 +466,26 @@ class MVMapTest : StringSpec({
     * Call to get should return the value set by put registered in the second replica and null.
     */
     "R1: put, delete; R2: put with newer timestamp, merge, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts3 = dc1.tick()
-        val ts5 = dc1.tick()
-        val ts7 = dc1.tick()
-        val ts9 = dc1.tick()
-        val ts11 = dc1.tick()
-        val ts13 = dc1.tick()
-        val ts15 = dc1.tick()
-        dc2.tick()
-        dc2.tick()
-        dc2.tick()
-        dc2.tick()
-        val ts10 = dc2.tick()
-        val ts12 = dc2.tick()
-        val ts14 = dc2.tick()
-        val ts16 = dc2.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts3 = client1.tick()
+        val ts5 = client1.tick()
+        val ts7 = client1.tick()
+        val ts9 = client1.tick()
+        val ts11 = client1.tick()
+        val ts13 = client1.tick()
+        val ts15 = client1.tick()
+        client2.tick()
+        client2.tick()
+        client2.tick()
+        client2.tick()
+        val ts10 = client2.tick()
+        val ts12 = client2.tick()
+        val ts14 = client2.tick()
+        val ts16 = client2.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -524,26 +524,26 @@ class MVMapTest : StringSpec({
     * Call to get should return the value set by put registered in the second replica and null.
     */
     "R1: put, delete; R2: put with newer timestamp, merge before delete, merge after delete, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts3 = dc1.tick()
-        val ts5 = dc1.tick()
-        val ts7 = dc1.tick()
-        val ts9 = dc1.tick()
-        val ts11 = dc1.tick()
-        val ts13 = dc1.tick()
-        val ts15 = dc1.tick()
-        dc2.tick()
-        dc2.tick()
-        dc2.tick()
-        dc2.tick()
-        val ts10 = dc2.tick()
-        val ts12 = dc2.tick()
-        val ts14 = dc2.tick()
-        val ts16 = dc2.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts3 = client1.tick()
+        val ts5 = client1.tick()
+        val ts7 = client1.tick()
+        val ts9 = client1.tick()
+        val ts11 = client1.tick()
+        val ts13 = client1.tick()
+        val ts15 = client1.tick()
+        client2.tick()
+        client2.tick()
+        client2.tick()
+        client2.tick()
+        val ts10 = client2.tick()
+        val ts12 = client2.tick()
+        val ts14 = client2.tick()
+        val ts16 = client2.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -582,24 +582,24 @@ class MVMapTest : StringSpec({
     * Call to get should return the value set by put registered in the second replica.
     */
     "R1: put; R2: put; R3: merge R1, delete, merge R2 ,get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val dc3 = SimpleEnvironment(uid3)
-        val ts1 = dc1.tick()
-        val ts4 = dc1.tick()
-        val ts7 = dc1.tick()
-        val ts10 = dc1.tick()
-        val ts2 = dc2.tick()
-        val ts5 = dc2.tick()
-        val ts8 = dc2.tick()
-        val ts11 = dc2.tick()
-        val ts3 = dc3.tick()
-        val ts6 = dc3.tick()
-        val ts9 = dc3.tick()
-        val ts12 = dc3.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val client3 = SimpleEnvironment(uid3)
+        val ts1 = client1.tick()
+        val ts4 = client1.tick()
+        val ts7 = client1.tick()
+        val ts10 = client1.tick()
+        val ts2 = client2.tick()
+        val ts5 = client2.tick()
+        val ts8 = client2.tick()
+        val ts11 = client2.tick()
+        val ts3 = client3.tick()
+        val ts6 = client3.tick()
+        val ts9 = client3.tick()
+        val ts12 = client3.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -639,12 +639,12 @@ class MVMapTest : StringSpec({
     * Call to get should return the value set by put registered in the first replica.
     */
     "use deltas returned by put" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
-        val ts4 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
+        val ts4 = client.tick()
         val key = "key"
         val valueBoolean = true
         val valueDouble = 3.14159
@@ -681,16 +681,16 @@ class MVMapTest : StringSpec({
     * Call to get should return null.
     */
     "use deltas returned by put and delelte" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
-        val ts4 = dc.tick()
-        val ts5 = dc.tick()
-        val ts6 = dc.tick()
-        val ts7 = dc.tick()
-        val ts8 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
+        val ts4 = client.tick()
+        val ts5 = client.tick()
+        val ts6 = client.tick()
+        val ts7 = client.tick()
+        val ts8 = client.tick()
         val key = "key"
         val valueBoolean = true
         val valueDouble = 3.14159
@@ -739,20 +739,20 @@ class MVMapTest : StringSpec({
     * Call to get should return the values set by puts registered in the first replica.
     */
     "merge deltas returned by put operations" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
-        val ts4 = dc.tick()
-        val ts5 = dc.tick()
-        val ts6 = dc.tick()
-        val ts7 = dc.tick()
-        val ts8 = dc.tick()
-        val ts9 = dc.tick()
-        val ts10 = dc.tick()
-        val ts11 = dc.tick()
-        val ts12 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
+        val ts4 = client.tick()
+        val ts5 = client.tick()
+        val ts6 = client.tick()
+        val ts7 = client.tick()
+        val ts8 = client.tick()
+        val ts9 = client.tick()
+        val ts10 = client.tick()
+        val ts11 = client.tick()
+        val ts12 = client.tick()
         val key1 = "key1"
         val key2 = "key2"
         val valBoolean1 = true
@@ -807,20 +807,20 @@ class MVMapTest : StringSpec({
     * Call to get should return the value set by put or null if it has been deleted.
     */
     "merge deltas returned by put and delete operations" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
-        val ts4 = dc.tick()
-        val ts5 = dc.tick()
-        val ts6 = dc.tick()
-        val ts7 = dc.tick()
-        val ts8 = dc.tick()
-        val ts9 = dc.tick()
-        val ts10 = dc.tick()
-        val ts11 = dc.tick()
-        val ts12 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
+        val ts4 = client.tick()
+        val ts5 = client.tick()
+        val ts6 = client.tick()
+        val ts7 = client.tick()
+        val ts8 = client.tick()
+        val ts9 = client.tick()
+        val ts10 = client.tick()
+        val ts11 = client.tick()
+        val ts12 = client.tick()
         val key1 = "key1"
         val key2 = "key2"
         val valueBoolean = true
@@ -872,24 +872,24 @@ class MVMapTest : StringSpec({
     * the given context.
     */
     "generate delta" {
-        val uid = DCUId("dcid1")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
-        val ts4 = dc.tick()
-        val ts5 = dc.tick()
-        val ts6 = dc.tick()
-        val ts7 = dc.tick()
-        val ts8 = dc.tick()
-        val ts9 = dc.tick()
-        val ts10 = dc.tick()
-        val ts11 = dc.tick()
-        val ts12 = dc.tick()
-        val ts13 = dc.tick()
-        val ts14 = dc.tick()
-        val ts15 = dc.tick()
-        val ts16 = dc.tick()
+        val uid = ClientUId("clientid1")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
+        val ts4 = client.tick()
+        val ts5 = client.tick()
+        val ts6 = client.tick()
+        val ts7 = client.tick()
+        val ts8 = client.tick()
+        val ts9 = client.tick()
+        val ts10 = client.tick()
+        val ts11 = client.tick()
+        val ts12 = client.tick()
+        val ts13 = client.tick()
+        val ts14 = client.tick()
+        val ts15 = client.tick()
+        val ts16 = client.tick()
         val vv = VersionVector()
         vv.addTS(ts8)
         val key1 = "key1"
@@ -945,24 +945,24 @@ class MVMapTest : StringSpec({
     * Call to get should return the values set by puts or null set by delete w.r.t the given context.
     */
     "generate delta with delete" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
-        val ts4 = dc.tick()
-        val ts5 = dc.tick()
-        val ts6 = dc.tick()
-        val ts7 = dc.tick()
-        val ts8 = dc.tick()
-        val ts9 = dc.tick()
-        val ts10 = dc.tick()
-        val ts11 = dc.tick()
-        val ts12 = dc.tick()
-        val ts13 = dc.tick()
-        val ts14 = dc.tick()
-        val ts15 = dc.tick()
-        val ts16 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
+        val ts4 = client.tick()
+        val ts5 = client.tick()
+        val ts6 = client.tick()
+        val ts7 = client.tick()
+        val ts8 = client.tick()
+        val ts9 = client.tick()
+        val ts10 = client.tick()
+        val ts11 = client.tick()
+        val ts12 = client.tick()
+        val ts13 = client.tick()
+        val ts14 = client.tick()
+        val ts15 = client.tick()
+        val ts16 = client.tick()
         val vv = VersionVector()
         vv.addTS(ts4)
         val key1 = "key1"
@@ -1023,9 +1023,9 @@ class MVMapTest : StringSpec({
     * This test evaluates JSON deserialization of an empty MV map.
     **/
     "empty JSON deserialization" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts = client.tick()
 
         val mapJson = MVMap.fromJson("""{"_type":"MVMap","_metadata":{"entries":{},"causalContext":{"entries":[]}}}""")
         mapJson.put("key1", "value1", ts)
@@ -1039,17 +1039,17 @@ class MVMapTest : StringSpec({
     * This test evaluates JSON serialization of a MV map.
     **/
     "JSON serialization" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts3 = dc1.tick()
-        val ts4 = dc1.tick()
-        val ts5 = dc1.tick()
-        val ts6 = dc1.tick()
-        val ts7 = dc1.tick()
-        val ts2 = dc2.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts3 = client1.tick()
+        val ts4 = client1.tick()
+        val ts5 = client1.tick()
+        val ts6 = client1.tick()
+        val ts7 = client1.tick()
+        val ts2 = client2.tick()
         val key1 = "key1"
         val key2 = "key2"
         val key3 = "key3"
@@ -1073,14 +1073,14 @@ class MVMapTest : StringSpec({
         map1.merge(map2)
         val mapJson = map1.toJson()
 
-        mapJson.shouldBe("""{"_type":"MVMap","_metadata":{"entries":{"key1%INTEGER":[{"uid":{"name":"dcid1"},"cnt":-2147483648}],"key2%STRING":[{"uid":{"name":"dcid1"},"cnt":-2147483646}],"key3%STRING":[{"uid":{"name":"dcid1"},"cnt":-2147483645},{"uid":{"name":"dcid2"},"cnt":-2147483648}],"key4%BOOLEAN":[{"uid":{"name":"dcid1"},"cnt":-2147483644}],"key5%DOUBLE":[{"uid":{"name":"dcid1"},"cnt":-2147483643}]},"causalContext":{"entries":[{"name":"dcid1"},-2147483643,{"name":"dcid2"},-2147483648]}},"key1%INTEGER":[1],"key2%STRING":[null],"key3%STRING":["value3","value2"],"key4%BOOLEAN":[true],"key5%DOUBLE":[3.14159]}""")
+        mapJson.shouldBe("""{"_type":"MVMap","_metadata":{"entries":{"key1%INTEGER":[{"uid":{"name":"clientid1"},"cnt":-2147483648}],"key2%STRING":[{"uid":{"name":"clientid1"},"cnt":-2147483646}],"key3%STRING":[{"uid":{"name":"clientid1"},"cnt":-2147483645},{"uid":{"name":"clientid2"},"cnt":-2147483648}],"key4%BOOLEAN":[{"uid":{"name":"clientid1"},"cnt":-2147483644}],"key5%DOUBLE":[{"uid":{"name":"clientid1"},"cnt":-2147483643}]},"causalContext":{"entries":[{"name":"clientid1"},-2147483643,{"name":"clientid2"},-2147483648]}},"key1%INTEGER":[1],"key2%STRING":[null],"key3%STRING":["value3","value2"],"key4%BOOLEAN":[true],"key5%DOUBLE":[3.14159]}""")
     }
 
     /**
     * This test evaluates JSON deserialization of a MV map.
     **/
     "JSON deserialization" {
-        val mapJson = MVMap.fromJson("""{"_type":"MVMap","_metadata":{"entries":{"key1%INTEGER":[{"uid":{"name":"dcid1"},"cnt":-2147483648}],"key2%STRING":[{"uid":{"name":"dcid1"},"cnt":-2147483646}],"key3%STRING":[{"uid":{"name":"dcid1"},"cnt":-2147483645},{"uid":{"name":"dcid2"},"cnt":-2147483648}],"key4%BOOLEAN":[{"uid":{"name":"dcid1"},"cnt":-2147483644}],"key5%DOUBLE":[{"uid":{"name":"dcid1"},"cnt":-2147483643}]},"causalContext":{"entries":[{"name":"dcid1"},-2147483643,{"name":"dcid2"},-2147483648]}},"key1%INTEGER":[1],"key2%STRING":[null],"key3%STRING":["value3","value2"],"key4%BOOLEAN":[true],"key5%DOUBLE":[3.14159]}""")
+        val mapJson = MVMap.fromJson("""{"_type":"MVMap","_metadata":{"entries":{"key1%INTEGER":[{"uid":{"name":"clientid1"},"cnt":-2147483648}],"key2%STRING":[{"uid":{"name":"clientid1"},"cnt":-2147483646}],"key3%STRING":[{"uid":{"name":"clientid1"},"cnt":-2147483645},{"uid":{"name":"clientid2"},"cnt":-2147483648}],"key4%BOOLEAN":[{"uid":{"name":"clientid1"},"cnt":-2147483644}],"key5%DOUBLE":[{"uid":{"name":"clientid1"},"cnt":-2147483643}]},"causalContext":{"entries":[{"name":"clientid1"},-2147483643,{"name":"clientid2"},-2147483648]}},"key1%INTEGER":[1],"key2%STRING":[null],"key3%STRING":["value3","value2"],"key4%BOOLEAN":[true],"key5%DOUBLE":[3.14159]}""")
 
         mapJson.getInt("key1")!!.shouldHaveSingleElement(1)
         mapJson.getString("key2").shouldBeNull()

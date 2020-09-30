@@ -32,7 +32,7 @@ class SimpleEnvironmentPropTest: StringSpec( {
 
     // AB: This seems rather special for this particular environment
     "initial environment has counter smaller than any other timestamp" {
-        forAll(dcuidArb, Arb.int(Int.MIN_VALUE + 1, Int.MAX_VALUE)) { uid, i ->
+        forAll(clientuidArb, Arb.int(Int.MIN_VALUE + 1, Int.MAX_VALUE)) { uid, i ->
             val se = SimpleEnvironment(uid)
             se.tick().compareTo(Timestamp(uid, i)) < 0
         }
@@ -44,7 +44,7 @@ class SimpleEnvironmentPropTest: StringSpec( {
         }
     }
     "update of environment increments counter" {
-        forAll(dcuidArb, Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1)){ uid, cnt ->
+        forAll(clientuidArb, Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1)){ uid, cnt ->
             val se = SimpleEnvironment(uid)
             se.update(Timestamp(uid, cnt))
             val ts = se.tick()
@@ -52,7 +52,7 @@ class SimpleEnvironmentPropTest: StringSpec( {
         }
     }
     "timestamps are monotonically increasing" {
-        forAll(dcuidArb, dcuidArb, Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1), Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1)){ uid1, uid2, cnt1, cnt2 ->
+        forAll(clientuidArb, clientuidArb, Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1), Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1)){ uid1, uid2, cnt1, cnt2 ->
             val se = SimpleEnvironment(uid1)
             se.update(Timestamp(uid1, cnt1))
             se.update(Timestamp(uid2, cnt2))
@@ -63,7 +63,7 @@ class SimpleEnvironmentPropTest: StringSpec( {
     }
 
     "exception when arbitrary entry reaches max val" {
-        forAll(dcuidArb, dcuidArb){ uid1, uid2 ->
+        forAll(clientuidArb, clientuidArb){ uid1, uid2 ->
             val se = SimpleEnvironment(uid1)
             se.update(Timestamp(uid2, Int.MAX_VALUE))
             shouldThrow<RuntimeException> {
@@ -75,7 +75,7 @@ class SimpleEnvironmentPropTest: StringSpec( {
 
 
     "new timestamps are monotonic" {
-        forAll(dcuidArb, dcuidArb, Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1), Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1)){ uid1, uid2, cnt1, cnt2->
+        forAll(clientuidArb, clientuidArb, Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1), Arb.int(Int.MIN_VALUE, Int.MAX_VALUE -1)){ uid1, uid2, cnt1, cnt2->
             val se = SimpleEnvironment(uid1)
             se.update(Timestamp(uid1, cnt1))
             se.update(Timestamp(uid2, cnt2))

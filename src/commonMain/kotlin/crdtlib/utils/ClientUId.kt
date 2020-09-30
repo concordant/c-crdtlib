@@ -19,24 +19,43 @@
 
 package crdtlib.utils
 
-import io.kotest.core.spec.style.StringSpec
-import io.kotest.property.Arb
-import io.kotest.property.arbitrary.string
-import io.kotest.property.forAll
+import kotlinx.serialization.*
 
-class DCUIdPropTest: StringSpec({
-    "compare DCIds as the name" {
-        forAll(Arb.string(), Arb.string()){ a,b ->
-            when {
-                a == b -> DCUId(a) == DCUId(b)
-                a < b -> DCUId(a) < DCUId(b)
-                else -> DCUId(a) > DCUId(b)
-            }
+/**
+* This class represents a client unique identifier (UId).
+* @property name the name associated with the client.
+**/
+@Serializable
+data class ClientUId(private val name: String) {
+
+    /**
+    * Compares this client name to a given other client name.
+    * @param other the other instance of client unique id.
+    * @return the results of the comparison between the two client names.
+    **/
+    @Name("compareTo")
+    operator fun compareTo(other: ClientUId): Int {
+        return this.name.compareTo(other.name)
+    }
+
+    /**
+    * Serializes this client unique id to a json string.
+    * @return the resulted json string.
+    */
+    @Name("toJson")
+    fun toJson(): String {
+        return Json.stringify(ClientUId.serializer(), this)
+    }
+
+    companion object {
+        /**
+        * Deserializes a given json string in a client id object.
+        * @param json the given json string.
+        * @return the resulted client id.
+        */
+        @Name("fromJson")
+        fun fromJson(json: String): ClientUId {
+            return Json.parse(ClientUId.serializer(), json)
         }
     }
-    "deserialize is inverse to serialize" {
-        forAll(dcuidArb) { dcuid ->
-            dcuid == DCUId.fromJson(dcuid.toJson())
-        }
-    }
-})
+}
