@@ -552,14 +552,14 @@ class PNCounterTest : StringSpec({
         cnt2.merge(cnt1)
         val cntJson = cnt2.toJson()
 
-        cntJson.shouldBe("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"uid":{"name":"dcid2"},"cnt":-2147483647}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483647}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"uid":{"name":"dcid2"},"cnt":-2147483648}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483648}}]},"value":10}""")
+        cntJson.shouldBe("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"uid":{"name":"dcid2"},"cnt":-2147483646}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483646}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"uid":{"name":"dcid2"},"cnt":-2147483647}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483647}}]},"value":10}""")
     }
 
     /**
     * This test evaluates JSON deserialization of a pncounter.
     **/
     "JSON deserialization" {
-        val cntJson = PNCounter.fromJson("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"uid":{"name":"dcid2"},"cnt":-2147483647}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483647}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"uid":{"name":"dcid2"},"cnt":-2147483648}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483648}}]},"value":10}""")
+        val cntJson = PNCounter.fromJson("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"uid":{"name":"dcid2"},"cnt":-2147483646}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483646}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"uid":{"name":"dcid2"},"cnt":-2147483647}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483647}}]},"value":10}""")
 
         cntJson.get().shouldBe(10)
     }

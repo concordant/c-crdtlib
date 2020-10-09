@@ -47,8 +47,7 @@ class SimpleEnvironment(private val uid: DCUId) : Environment() {
         if (lastCnt == Timestamp.CNT_MAX_VALUE) {
             throw RuntimeException("Timestamp counter has reached Timestamp.CNT_MAX_VALUE")
         }
-	var ts = Timestamp(this.uid, Timestamp.CNT_MIN_VALUE)
-	if (lastCnt != null) ts = Timestamp(this.uid, lastCnt + 1)
+	var ts = Timestamp(this.uid, (lastCnt ?: Timestamp.CNT_MIN_VALUE) + 1)
 	this.update(ts)
 	return ts
     }

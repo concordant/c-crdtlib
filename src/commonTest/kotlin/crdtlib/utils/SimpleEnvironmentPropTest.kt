@@ -32,9 +32,11 @@ class SimpleEnvironmentPropTest: StringSpec( {
 
     // AB: This seems rather special for this particular environment
     "initial environment has counter smaller than any other timestamp" {
-        forAll(dcuidArb, Arb.int(Int.MIN_VALUE + 1, Int.MAX_VALUE)) { uid, i ->
+	// Int.MIN_VALUE is a Kotest edge case (always generated):
+	// use it to be sure we test Int.MIN_VALUE + 1.
+        forAll(dcuidArb, Arb.int(Int.MIN_VALUE, Int.MAX_VALUE - 1)) { uid, i ->
             val se = SimpleEnvironment(uid)
-            se.tick().compareTo(Timestamp(uid, i)) < 0
+            se.tick().compareTo(Timestamp(uid, i + 1)) <= 0
         }
     }
     "empty environment has empty version vector" {

@@ -386,14 +386,14 @@ class MVRegisterTest : StringSpec({
         reg2.merge(reg1)
         val regJson = reg2.toJson(String::class)
 
-        regJson.shouldBe("""{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"dcid2"},"cnt":-2147483648},{"uid":{"name":"dcid1"},"cnt":-2147483648}],"causalContext":{"entries":[{"name":"dcid2"},-2147483648,{"name":"dcid1"},-2147483648]}},"value":["value2","value1"]}""")
+        regJson.shouldBe("""{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"dcid2"},"cnt":-2147483647},{"uid":{"name":"dcid1"},"cnt":-2147483647}],"causalContext":{"entries":[{"name":"dcid2"},-2147483647,{"name":"dcid1"},-2147483647]}},"value":["value2","value1"]}""")
     }
 
     /**
     * This test evaluates JSON deserialization of a mv register.
     **/
     "JSON deserialization" {
-        val regJson = MVRegister.fromJson(String::class, """{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"dcid2"},"cnt":-2147483648},{"uid":{"name":"dcid1"},"cnt":-2147483648}],"causalContext":{"entries":[{"name":"dcid2"},-2147483648,{"name":"dcid1"},-2147483648]}},"value":["value2","value1"]}""")
+        val regJson = MVRegister.fromJson(String::class, """{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"dcid2"},"cnt":-2147483647},{"uid":{"name":"dcid1"},"cnt":-2147483647}],"causalContext":{"entries":[{"name":"dcid2"},-2147483647,{"name":"dcid1"},-2147483647]}},"value":["value2","value1"]}""")
 
         regJson.get().shouldContainExactlyInAnyOrder("value1", "value2")
     }
