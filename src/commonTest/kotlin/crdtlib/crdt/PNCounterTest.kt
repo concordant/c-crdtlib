@@ -46,7 +46,7 @@ class PNCounterTest : StringSpec({
     "increment and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts = dc.getNewTimestamp()
+        val ts = dc.tick()
         val inc = 10
         val cnt = PNCounter()
 
@@ -63,7 +63,7 @@ class PNCounterTest : StringSpec({
     "decrement and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts = dc.getNewTimestamp()
+        val ts = dc.tick()
         val dec = 10
         val cnt = PNCounter()
 
@@ -79,7 +79,7 @@ class PNCounterTest : StringSpec({
     "increment with negative amount and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts = dc.getNewTimestamp()
+        val ts = dc.tick()
         val inc = -10
         val cnt = PNCounter()
 
@@ -95,7 +95,7 @@ class PNCounterTest : StringSpec({
     "decrement with negative amount and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts = dc.getNewTimestamp()
+        val ts = dc.tick()
         val dec = -10
         val cnt = PNCounter()
 
@@ -111,11 +111,9 @@ class PNCounterTest : StringSpec({
     "multiple increments and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts1 = dc.getNewTimestamp()
-        dc.updateStateTS(ts1)
-        val ts2 = dc.getNewTimestamp()
-        dc.updateStateTS(ts2)
-        val ts3 = dc.getNewTimestamp()
+        val ts1 = dc.tick()
+        val ts2 = dc.tick()
+        val ts3 = dc.tick()
         val inc1 = 10
         val inc2 = 1
         val inc3 = 100
@@ -135,11 +133,9 @@ class PNCounterTest : StringSpec({
     "multiple decrements and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts1 = dc.getNewTimestamp()
-        dc.updateStateTS(ts1)
-        val ts2 = dc.getNewTimestamp()
-        dc.updateStateTS(ts2)
-        val ts3 = dc.getNewTimestamp()
+        val ts1 = dc.tick()
+        val ts2 = dc.tick()
+        val ts3 = dc.tick()
         val dec1 = 10
         val dec2 = 1
         val dec3 = 100
@@ -159,13 +155,10 @@ class PNCounterTest : StringSpec({
     "increment, decrement, get positive value" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts1 = dc.getNewTimestamp()
-        dc.updateStateTS(ts1)
-        val ts2 = dc.getNewTimestamp()
-        dc.updateStateTS(ts2)
-        val ts3 = dc.getNewTimestamp()
-        dc.updateStateTS(ts3)
-        val ts4 = dc.getNewTimestamp()
+        val ts1 = dc.tick()
+        val ts2 = dc.tick()
+        val ts3 = dc.tick()
+        val ts4 = dc.tick()
         val inc1 = 42
         val inc2 = 34
         val dec1 = 27
@@ -187,13 +180,10 @@ class PNCounterTest : StringSpec({
     "increment, decrement, get negative value" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts1 = dc.getNewTimestamp()
-        dc.updateStateTS(ts1)
-        val ts2 = dc.getNewTimestamp()
-        dc.updateStateTS(ts2)
-        val ts3 = dc.getNewTimestamp()
-        dc.updateStateTS(ts3)
-        val ts4 = dc.getNewTimestamp()
+        val ts1 = dc.tick()
+        val ts2 = dc.tick()
+        val ts3 = dc.tick()
+        val ts4 = dc.tick()
         val inc1 = 42
         val inc2 = 34
         val dec1 = 77
@@ -215,7 +205,7 @@ class PNCounterTest : StringSpec({
     "R1: increment; R2: merge and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts = dc.getNewTimestamp()
+        val ts = dc.tick()
         val inc = 11 
         val cnt1 = PNCounter()
         val cnt2 = PNCounter()
@@ -235,7 +225,7 @@ class PNCounterTest : StringSpec({
     "R1: decrement; R2: merge and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts = dc.getNewTimestamp()
+        val ts = dc.tick()
         val dec = 11 
         val cnt1 = PNCounter()
         val cnt2 = PNCounter()
@@ -257,8 +247,8 @@ class PNCounterTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
         val inc1 = 10 
         val inc2 = 1 
         val cnt1 = PNCounter()
@@ -280,8 +270,8 @@ class PNCounterTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
         val inc1 = 10 
         val inc2 = 1 
         val cnt1 = PNCounter()
@@ -303,8 +293,8 @@ class PNCounterTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
         val dec1 = 10 
         val dec2 = 1 
         val cnt1 = PNCounter()
@@ -326,8 +316,8 @@ class PNCounterTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
         val dec1 = 10 
         val dec2 = 1 
         val cnt1 = PNCounter()
@@ -349,20 +339,14 @@ class PNCounterTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
-        dc1.updateStateTS(ts1)
-        val ts3 = dc1.getNewTimestamp()
-        dc2.updateStateTS(ts2)
-        val ts4 = dc2.getNewTimestamp()
-        dc1.updateStateTS(ts3)
-        val ts5 = dc1.getNewTimestamp()
-        dc2.updateStateTS(ts4)
-        val ts6 = dc2.getNewTimestamp()
-        dc1.updateStateTS(ts5)
-        val ts7 = dc1.getNewTimestamp()
-        dc2.updateStateTS(ts6)
-        val ts8 = dc2.getNewTimestamp()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
+        val ts3 = dc1.tick()
+        val ts4 = dc2.tick()
+        val ts5 = dc1.tick()
+        val ts6 = dc2.tick()
+        val ts7 = dc1.tick()
+        val ts8 = dc2.tick()
         val dec1 = 10
         val dec2 = 20
         val dec3 = 30
@@ -396,20 +380,14 @@ class PNCounterTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
-        dc1.updateStateTS(ts1)
-        val ts3 = dc1.getNewTimestamp()
-        dc2.updateStateTS(ts2)
-        val ts4 = dc2.getNewTimestamp()
-        dc1.updateStateTS(ts3)
-        val ts5 = dc1.getNewTimestamp()
-        dc2.updateStateTS(ts4)
-        val ts6 = dc2.getNewTimestamp()
-        dc1.updateStateTS(ts5)
-        val ts7 = dc1.getNewTimestamp()
-        dc2.updateStateTS(ts6)
-        val ts8 = dc2.getNewTimestamp()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
+        val ts3 = dc1.tick()
+        val ts4 = dc2.tick()
+        val ts5 = dc1.tick()
+        val ts6 = dc2.tick()
+        val ts7 = dc1.tick()
+        val ts8 = dc2.tick()
         val dec1 = 10
         val dec2 = 20
         val dec3 = 30
@@ -441,7 +419,7 @@ class PNCounterTest : StringSpec({
     "use delta returned by increment" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts = dc.getNewTimestamp()
+        val ts = dc.tick()
         val inc = 11 
         val cnt1 = PNCounter()
         val cnt2 = PNCounter()
@@ -460,7 +438,7 @@ class PNCounterTest : StringSpec({
     "use delta returned by decrement" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts = dc.getNewTimestamp()
+        val ts = dc.tick()
         val dec = 11 
         val cnt1 = PNCounter()
         val cnt2 = PNCounter()
@@ -480,9 +458,8 @@ class PNCounterTest : StringSpec({
     "use delta returned by increment and decrement" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts1 = dc.getNewTimestamp()
-        dc.updateStateTS(ts1)
-        val ts2 = dc.getNewTimestamp()
+        val ts1 = dc.tick()
+        val ts2 = dc.tick()
         val dec = 11 
         val inc = 22 
         val cnt1 = PNCounter()
@@ -507,14 +484,11 @@ class PNCounterTest : StringSpec({
     "generate delta" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts1 = dc.getNewTimestamp()
-        dc.updateStateTS(ts1)
-        val ts2 = dc.getNewTimestamp()
-        dc.updateStateTS(ts2)
-        val vv = dc.getCurrentState()
-        val ts3 = dc.getNewTimestamp()
-        dc.updateStateTS(ts3)
-        val ts4 = dc.getNewTimestamp()
+        val ts1 = dc.tick()
+        val ts2 = dc.tick()
+        val vv = dc.getState()
+        val ts3 = dc.tick()
+        val ts4 = dc.tick()
         val inc1 = 11
         val inc2 = 33
         val dec1 = 10
@@ -560,12 +534,10 @@ class PNCounterTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
-        dc1.updateStateTS(ts1)
-        val ts3 = dc1.getNewTimestamp()
-        dc2.updateStateTS(ts2)
-        val ts4 = dc2.getNewTimestamp()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
+        val ts3 = dc1.tick()
+        val ts4 = dc2.tick()
         val dec1 = 10
         val dec2 = 20
         val inc1 = 10
@@ -580,14 +552,14 @@ class PNCounterTest : StringSpec({
         cnt2.merge(cnt1)
         val cntJson = cnt2.toJson()
 
-        cntJson.shouldBe("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"uid":{"name":"dcid2"},"cnt":-2147483647}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483647}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"uid":{"name":"dcid2"},"cnt":-2147483648}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483648}}]},"value":10}""")
+        cntJson.shouldBe("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"uid":{"name":"dcid2"},"cnt":-2147483646}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483646}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"uid":{"name":"dcid2"},"cnt":-2147483647}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483647}}]},"value":10}""")
     }
 
     /**
     * This test evaluates JSON deserialization of a pncounter.
     **/
     "JSON deserialization" {
-        val cntJson = PNCounter.fromJson("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"uid":{"name":"dcid2"},"cnt":-2147483647}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483647}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"uid":{"name":"dcid2"},"cnt":-2147483648}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483648}}]},"value":10}""")
+        val cntJson = PNCounter.fromJson("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"dcid2"},{"first":30,"second":{"uid":{"name":"dcid2"},"cnt":-2147483646}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483646}}],"decrement":[{"name":"dcid2"},{"first":20,"second":{"uid":{"name":"dcid2"},"cnt":-2147483647}},{"name":"dcid1"},{"first":10,"second":{"uid":{"name":"dcid1"},"cnt":-2147483647}}]},"value":10}""")
 
         cntJson.get().shouldBe(10)
     }

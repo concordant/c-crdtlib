@@ -36,7 +36,7 @@ class LWWRegisterTest : StringSpec({
     "create register and get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts = dc.getNewTimestamp()
+        val ts = dc.tick()
         val value = "value"
 
         val reg = LWWRegister<String>(value, ts)
@@ -51,9 +51,8 @@ class LWWRegisterTest : StringSpec({
     "create, assign, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts1 = dc.getNewTimestamp()
-        dc.updateStateTS(ts1)
-        val ts2 = dc.getNewTimestamp()
+        val ts1 = dc.tick()
+        val ts2 = dc.tick()
         val val1 = "value1"
         val val2 = "value2"
 
@@ -70,9 +69,8 @@ class LWWRegisterTest : StringSpec({
     "create, assign with older timestamp, get" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts1 = dc.getNewTimestamp()
-        dc.updateStateTS(ts1)
-        val ts2 = dc.getNewTimestamp()
+        val ts1 = dc.tick()
+        val ts2 = dc.tick()
         val val1 = "value1"
         val val2 = "value2"
         
@@ -91,8 +89,8 @@ class LWWRegisterTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
         val val1 = "value1"
         val val2 = "value2"
 
@@ -114,10 +112,9 @@ class LWWRegisterTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
-        dc2.updateStateTS(ts2)
-        val ts3 = dc2.getNewTimestamp()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
+        val ts3 = dc2.tick()
         val val1 = "value1"
         val val2 = "value2"
         val val3 = "value3"
@@ -139,12 +136,10 @@ class LWWRegisterTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
-        dc1.updateStateTS(ts1)
-        val ts3 = dc1.getNewTimestamp()
-        dc2.updateStateTS(ts2)
-        val ts4 = dc2.getNewTimestamp()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
+        val ts3 = dc1.tick()
+        val ts4 = dc2.tick()
         val val1 = "value1"
         val val2 = "value2"
         val val3 = "value3"
@@ -171,13 +166,10 @@ class LWWRegisterTest : StringSpec({
         val uid2 = DCUId("dcid2")
         val dc1 = SimpleEnvironment(uid1)
         val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.getNewTimestamp()
-        val ts2 = dc2.getNewTimestamp()
-        dc1.updateStateTS(ts1)
-        val vv1 = dc1.getCurrentState()
-        dc2.updateStateTS(ts2)
-        dc2.updateStateTS(ts1)
-        val vv2 = dc2.getCurrentState()
+        val ts1 = dc1.tick()
+        val ts2 = dc2.tick()
+        val vv1 = dc1.getState()
+        val vv2 = dc2.getState()
         val val1 = "value1"
         val val2 = "value2"
 
@@ -199,20 +191,20 @@ class LWWRegisterTest : StringSpec({
     "JSON serialization" {
         val uid = DCUId("dcid")
         val dc = SimpleEnvironment(uid)
-        val ts = dc.getNewTimestamp()
+        val ts = dc.tick()
         val value = "value"
 
         val reg = LWWRegister<String>(value, ts)
         val regJson = reg.toJson()
 
-        regJson.shouldBe("""{"_type":"LWWRegister","_metadata":{"uid":{"name":"dcid"},"cnt":-2147483648},"value":"value"}""")
+        regJson.shouldBe("""{"_type":"LWWRegister","_metadata":{"uid":{"name":"dcid"},"cnt":-2147483647},"value":"value"}""")
     }
 
     /**
     * This test evaluates JSON deserialization of a lww register.
     **/
     "JSON deserialization" {
-        val regJson = LWWRegister.fromJson<String>("""{"_type":"LWWRegister","_metadata":{"uid":{"name":"dcid"},"cnt":-2147483648},"value":"value"}""")
+        val regJson = LWWRegister.fromJson<String>("""{"_type":"LWWRegister","_metadata":{"uid":{"name":"dcid"},"cnt":-2147483647},"value":"value"}""")
 
         regJson.get().shouldBe("value")
     }

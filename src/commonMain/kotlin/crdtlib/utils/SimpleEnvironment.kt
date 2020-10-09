@@ -28,43 +28,43 @@ class SimpleEnvironment(private val uid: DCUId) : Environment() {
     /**
     * A version vector storing this environment causal context.
     */
-    private var curState: VersionVector = VersionVector()
-
-    /**
-    * Generates a monotonically increasing timestamp.
-    * @return the generated timestamp.
-    */
-    override fun getNewTimestampProtected(): Timestamp {
-        val lastTs = curState.maxVal()
-        // Create a first timestamp with the smallest counter possible.
-        if (lastTs == null) return Timestamp(uid, Timestamp.CNT_MIN_VALUE)
-        if (lastTs == Timestamp.CNT_MAX_VALUE) {
-            throw RuntimeException("Timestamp counter has reached Timestamp.CNT_MAX_VALUE")
-        }
-        return Timestamp(uid, lastTs + 1)
-    }
+    private val currentState: VersionVector = VersionVector()
 
     /**
     * Gets the current state associated with the environment.
     * @return the current state.
     */
-    override fun getCurrentStateProtected(): VersionVector {
-        return curState.copy()
+    override fun getStateProtected(): VersionVector {
+        return this.currentState.copy()
     }
 
     /**
-    * Updates the current state with the given timestamp.
+    * Generates a monotonically increasing timestamp.
+    * @return the generated timestamp.
+    */
+    override fun tickProtected(): Timestamp {
+        val lastCnt = this.currentState.maxVal()
+        if (lastCnt == Timestamp.CNT_MAX_VALUE) {
+            throw RuntimeException("Timestamp counter has reached Timestamp.CNT_MAX_VALUE")
+        }
+	var ts = Timestamp(this.uid, (lastCnt ?: Timestamp.CNT_MIN_VALUE) + 1)
+	this.update(ts)
+	return ts
+    }
+
+    /**
+    * Updates the currentState with the given timestamp.
     * @param ts the given timestamp.
     */
-    override fun updateStateTSProtected(ts: Timestamp) {
-        curState.addTS(ts)
+    override fun updateProtected(ts: Timestamp) {
+        this.currentState.addTS(ts)
     }
 
     /**
-    * Updates the current state with the given version vector.
+    * Updates the current currentState with the given version vector.
     * @param vv the given version vector.
     */
-    override fun updateStateVVProtected(vv: VersionVector) {
-        curState.pointWiseMax(vv)
+    override fun updateProtected(vv: VersionVector) {
+        this.currentState.pointWiseMax(vv)
     }
 }
