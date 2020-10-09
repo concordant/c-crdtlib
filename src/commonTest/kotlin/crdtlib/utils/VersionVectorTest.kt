@@ -36,7 +36,7 @@ class VersionVectorTest : StringSpec({
     "empty version vector get max value" {
         val vv = VersionVector()
 
-        vv.maxVal().shouldBeNull()
+        vv.maxVal().shouldBe(Timestamp.CNT_MIN_VALUE)
     }
 
     /**
@@ -77,14 +77,14 @@ class VersionVectorTest : StringSpec({
     * This test evaluates the inclusion of timestamps having negative counter in a newly created version vector.
     * Calls to includeTS should return false.
     **/
-    "empty version vector include no negative timestamp" {
+    "empty version vector include no negative timestamp except Timestamp.CNT_MIN_VALUE" {
         val uid = DCUId("dcid")
-        val ts1 = Timestamp(uid, Int.MIN_VALUE)
-        val ts2 = Timestamp(uid, Timestamp.CNT_MIN_VALUE)
+        val ts1 = Timestamp(uid, Timestamp.CNT_MIN_VALUE)
+        val ts2 = Timestamp(uid, Timestamp.CNT_MIN_VALUE + 1)
         val ts3 = Timestamp(uid, -8000)
         val vv = VersionVector()
 
-        vv.includesTS(ts1).shouldBeFalse()
+        vv.includesTS(ts1).shouldBeTrue()
         vv.includesTS(ts2).shouldBeFalse()
         vv.includesTS(ts3).shouldBeFalse()
     }
