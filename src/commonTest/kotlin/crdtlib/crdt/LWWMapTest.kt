@@ -1165,7 +1165,7 @@ class LWWMapTest : StringSpec({
         map.put(key5, value5, ts6)
         val mapJson = map.toJson()
 
-        mapJson.shouldBe("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"dcid"},"cnt":-2147483648},"key2%STRING":{"uid":{"name":"dcid"},"cnt":-2147483646},"key3%STRING":{"uid":{"name":"dcid"},"cnt":-2147483645},"key4%BOOLEAN":{"uid":{"name":"dcid"},"cnt":-2147483644},"key5%DOUBLE":{"uid":{"name":"dcid"},"cnt":-2147483643}}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""")
+        mapJson.shouldBe("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"dcid"},"cnt":-2147483647},"key2%STRING":{"uid":{"name":"dcid"},"cnt":-2147483645},"key3%STRING":{"uid":{"name":"dcid"},"cnt":-2147483644},"key4%BOOLEAN":{"uid":{"name":"dcid"},"cnt":-2147483643},"key5%DOUBLE":{"uid":{"name":"dcid"},"cnt":-2147483642}}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""")
     }
 
     /**
