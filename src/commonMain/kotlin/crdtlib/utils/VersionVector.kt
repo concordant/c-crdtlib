@@ -55,30 +55,30 @@ class VersionVector {
     * Gets the maximal value stored in this version vector.
     * @return the maximal value or null if there are no values.
     */
-    @Name("maxVal")
-    fun maxVal(): Int {
+    @Name("max")
+    fun max(): Int {
         return this.entries.values.max() ?: Timestamp.CNT_MIN_VALUE
+    }
+
+    /**
+    * Returns if a given timestamp is contained in the version vector.
+    * @param ts the given timestamp.
+    * @return true if the timestamp is contained in the version vector, false otherwise.
+    */
+    @Name("contains")
+    fun contains(ts: Timestamp): Boolean {
+        val cnt = this.get(ts.uid)
+        return cnt >= ts.cnt
     }
 
     /**
     * Adds a given timestamp to this version vector.
     * @param ts the given timestamp.
     */
-    @Name("addTS")
-    fun addTS(ts: Timestamp) {
+    @Name("updateTs")
+    fun update(ts: Timestamp) {
         val curCnt = this.get(ts.uid)
         if(curCnt < ts.cnt) this.entries.put(ts.uid, ts.cnt)
-    }
-
-    /**
-    * Returns if a given timestamp is included in the version vector.
-    * @param ts the given timestamp.
-    * @return true if the timestamp is included in the version vector, false otherwise.
-    */
-    @Name("includesTS")
-    fun includesTS(ts: Timestamp): Boolean {
-        val cnt = this.get(ts.uid)
-        return cnt >= ts.cnt
     }
 
     /**
@@ -86,8 +86,8 @@ class VersionVector {
     * entry.
     * @param vv the given version vector used for update.
     */
-    @Name("pointWiseMax")
-    fun pointWiseMax(vv: VersionVector) {
+    @Name("updateVv")
+    fun update(vv: VersionVector) {
         for((k, v) in vv.entries) {
             val curCnt = this.get(k)
             if (curCnt < v) this.entries.put(k, v)
@@ -168,22 +168,6 @@ class VersionVector {
     }
 
     /**
-     * Overrides the hashCode function of object
-     * @return a hash code value for this object.
-     */
-    override fun hashCode(): Int {
-        return entries.hashCode()
-    }
-
-    /**
-     * Overrides the toString function of object
-     * @return a string representation of the object.
-     */
-    override fun toString(): String {
-        return "VersionVector(entries='$entries')"
-    }
-
-    /**
      * Checks that this version vector is not comparable to a given version vector.
      * @param vv the given version vector to compare with.
      * @return true if this version vector is not comparable to the other one, false otherwise.
@@ -219,6 +203,22 @@ class VersionVector {
     @Name("copy")
     fun copy(): VersionVector {
         return VersionVector(this)
+    }
+
+    /**
+     * Overrides the hashCode function of object
+     * @return a hash code value for this object.
+     */
+    override fun hashCode(): Int {
+        return entries.hashCode()
+    }
+
+    /**
+     * Overrides the toString function of object
+     * @return a string representation of the object.
+     */
+    override fun toString(): String {
+        return "VersionVector(entries='$entries')"
     }
 
     /**

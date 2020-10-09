@@ -133,7 +133,7 @@ class MVMap : DeltaCRDT<MVMap> {
     @Name("setBoolean")
     fun put(key: String, value: Boolean?, ts: Timestamp): MVMap {
         val op = MVMap()
-        if (!this.causalContext.includesTS(ts)) {
+        if (!this.causalContext.contains(ts)) {
             var meta = this.entries.get(key + MVMap.BOOLEAN)
             if (meta == null) meta = mutableSetOf()
             else meta.clear()
@@ -141,8 +141,8 @@ class MVMap : DeltaCRDT<MVMap> {
 
             this.entries.put(key + MVMap.BOOLEAN, meta)
             op.entries.put(key + MVMap.BOOLEAN, meta.toMutableSet())
-            this.causalContext.addTS(ts)
-            op.causalContext.addTS(ts)
+            this.causalContext.update(ts)
+            op.causalContext.update(ts)
         }
         return op
     }
@@ -158,7 +158,7 @@ class MVMap : DeltaCRDT<MVMap> {
     @Name("setDouble")
     fun put(key: String, value: Double?, ts: Timestamp): MVMap {
         val op = MVMap()
-        if (!this.causalContext.includesTS(ts)) {
+        if (!this.causalContext.contains(ts)) {
             var meta = this.entries.get(key + MVMap.DOUBLE)
             if (meta == null) meta = mutableSetOf()
             else meta.clear()
@@ -166,8 +166,8 @@ class MVMap : DeltaCRDT<MVMap> {
 
             this.entries.put(key + MVMap.DOUBLE, meta)
             op.entries.put(key + MVMap.DOUBLE, meta.toMutableSet())
-            this.causalContext.addTS(ts)
-            op.causalContext.addTS(ts)
+            this.causalContext.update(ts)
+            op.causalContext.update(ts)
         }
         return op
     }
@@ -183,7 +183,7 @@ class MVMap : DeltaCRDT<MVMap> {
     @Name("setInt")
     fun put(key: String, value: Int?, ts: Timestamp): MVMap {
         val op = MVMap()
-        if (!this.causalContext.includesTS(ts)) {
+        if (!this.causalContext.contains(ts)) {
             var meta = this.entries.get(key + MVMap.INTEGER)
             if (meta == null) meta = mutableSetOf()
             else meta.clear()
@@ -191,8 +191,8 @@ class MVMap : DeltaCRDT<MVMap> {
 
             this.entries.put(key + MVMap.INTEGER, meta)
             op.entries.put(key + MVMap.INTEGER, meta.toMutableSet())
-            this.causalContext.addTS(ts)
-            op.causalContext.addTS(ts)
+            this.causalContext.update(ts)
+            op.causalContext.update(ts)
         }
         return op
     }
@@ -208,7 +208,7 @@ class MVMap : DeltaCRDT<MVMap> {
     @Name("setString")
     fun put(key: String, value: String?, ts: Timestamp): MVMap {
         val op = MVMap()
-        if (!this.causalContext.includesTS(ts)) {
+        if (!this.causalContext.contains(ts)) {
             var meta = this.entries.get(key + MVMap.STRING)
             if (meta == null) meta = mutableSetOf()
             else meta.clear()
@@ -216,8 +216,8 @@ class MVMap : DeltaCRDT<MVMap> {
 
             this.entries.put(key + MVMap.STRING, meta)
             op.entries.put(key + MVMap.STRING, meta.toMutableSet())
-            this.causalContext.addTS(ts)
-            op.causalContext.addTS(ts)
+            this.causalContext.update(ts)
+            op.causalContext.update(ts)
         }
         return op
     }
@@ -278,11 +278,11 @@ class MVMap : DeltaCRDT<MVMap> {
     override fun generateDeltaProtected(vv: VersionVector):  DeltaCRDT<MVMap>{
         var delta = MVMap()
         for ((key, meta) in this.entries) {
-            if (meta.any { !vv.includesTS(it.second) }) {
+            if (meta.any { !vv.contains(it.second) }) {
                 delta.entries.put(key, meta.toMutableSet())
             }
         }
-        delta.causalContext.pointWiseMax(this.causalContext)
+        delta.causalContext.update(this.causalContext)
         return delta
     }
 
@@ -303,12 +303,12 @@ class MVMap : DeltaCRDT<MVMap> {
             val localEntries = this.entries.get(key)
             if (localEntries != null) {
                 for ((value, ts) in localEntries) {
-                    if (!delta.causalContext.includesTS(ts) || foreignEntries.any { it.second == ts }) {
+                    if (!delta.causalContext.contains(ts) || foreignEntries.any { it.second == ts }) {
                         keptEntries.add(Pair(value, ts))
                     }
                 }
                 for ((value, ts) in foreignEntries) {
-                    if (!this.causalContext.includesTS(ts)) {
+                    if (!this.causalContext.contains(ts)) {
                         keptEntries.add(Pair(value, ts))
                     }
                 }
@@ -319,7 +319,7 @@ class MVMap : DeltaCRDT<MVMap> {
             }
             this.entries.put(key, keptEntries)
         }
-        this.causalContext.pointWiseMax(delta.causalContext)
+        this.causalContext.update(delta.causalContext)
     }
 
     /**

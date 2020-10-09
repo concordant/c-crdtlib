@@ -233,7 +233,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
         for ((key, meta) in this.entries) {
             val value = meta.first
             val ts = meta.second
-            if (!vv.includesTS(ts)) {
+            if (!vv.contains(ts)) {
                 delta.entries.put(key, Pair(value, ts))
             }
         }

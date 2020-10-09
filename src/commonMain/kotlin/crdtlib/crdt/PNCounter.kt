@@ -132,12 +132,12 @@ class PNCounter : DeltaCRDT<PNCounter> {
     override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<PNCounter> {
         val delta = PNCounter()
         for ((uid, meta) in increment) {
-            if (!vv.includesTS(meta.second)) {
+            if (!vv.contains(meta.second)) {
                 delta.increment.put(uid, Pair(meta.first, meta.second))
             }
         }
         for ((uid, meta) in decrement) {
-            if (!vv.includesTS(meta.second)) {
+            if (!vv.contains(meta.second)) {
                 delta.decrement.put(uid, Pair(meta.first, meta.second))
             }
         }
