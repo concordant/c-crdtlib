@@ -19,7 +19,7 @@
 
 package crdtlib.crdt
 
-import crdtlib.utils.DCUId
+import crdtlib.utils.ClientUId
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
@@ -35,19 +35,19 @@ import kotlinx.serialization.json.*
     "_type": "PNCounter",
     "_metadata": {
         "increment": [
-            (( DCUId.toJson(), {
+            (( ClientUId.toJson(), {
                 "first": $value, // $value is an integer
                 "second": Timestamp.toJson() 
-            }, )*( DCUId.toJson(), {
+            }, )*( ClientUId.toJson(), {
                 "first": $value, // $value is an integer
                 "second": Timestamp.toJson() 
             } ))?
         ],
         "decrement": [ 
-            (( DCUId.toJson(), {
+            (( ClientUId.toJson(), {
                 "first": $value, // $value is an integer
                 "second": Timestamp.toJson() 
-            }, )*( DCUId.toJson(), {
+            }, )*( ClientUId.toJson(), {
                 "first": $value, // $value is an integer
                 "second": Timestamp.toJson() 
             } ))?
@@ -60,14 +60,14 @@ import kotlinx.serialization.json.*
 class PNCounter : DeltaCRDT<PNCounter> {
 
     /**
-    * A mutable map storing for each datacenter metadata relative to increment operations.
+    * A mutable map storing for each client metadata relative to increment operations.
     */
-    private val increment: MutableMap<DCUId, Pair<Int, Timestamp>> = mutableMapOf();
+    private val increment: MutableMap<ClientUId, Pair<Int, Timestamp>> = mutableMapOf();
 
     /**
-    * A mutable map storing for each datacenter metadata relative to decrement operations.
+    * A mutable map storing for each client metadata relative to decrement operations.
     */
-    private val decrement: MutableMap<DCUId, Pair<Int, Timestamp>> = mutableMapOf();
+    private val decrement: MutableMap<ClientUId, Pair<Int, Timestamp>> = mutableMapOf();
 
     /**
     * Default constructor.
@@ -148,8 +148,8 @@ class PNCounter : DeltaCRDT<PNCounter> {
     * Merges information contained in a given delta into the local replica, the merge is unilateral
     * and only the local replica is modified.
     * A foreign information (i.e., increment or decrement values) is applied if the last stored
-    * operation w.r.t to a given datacenter is older than the foreign one, or no information is
-    * present for this datacenter.
+    * operation w.r.t to a given client is older than the foreign one, or no information is
+    * present for this client.
     * @param delta the delta that should be merge with the local replica.
     */
     override fun mergeProtected(delta: DeltaCRDT<PNCounter>) {

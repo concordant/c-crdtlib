@@ -31,11 +31,11 @@ class TimestampTest : StringSpec({
 
     /**
     * This test evaluates the comparison of a smaller timestamp and a greater one, with same
-    * datacenter unique id and different counts.
+    * client unique id and different counts.
     * Call to compareTo should return negative value.
     */
-    "negative compareTo same DCUId and different count" {
-        val uid = DCUId("dcid")
+    "negative compareTo same ClientUId and different count" {
+        val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, 1)
         val ts2 = Timestamp(uid, 2)
 
@@ -46,12 +46,12 @@ class TimestampTest : StringSpec({
 
     /**
     * This test evaluates the comparison of a smaller timestamp and a greater one, with different
-    * datacenter unique ids and different counts.
+    * client unique ids and different counts.
     * Call to compareTo should return negative value.
     */
-    "negative compareTo different DCUId and different count" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
+    "negative compareTo different ClientUId and different count" {
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
         val ts1 = Timestamp(uid1, 1)
         val ts2 = Timestamp(uid2, 2)
 
@@ -62,12 +62,12 @@ class TimestampTest : StringSpec({
 
     /**
     * This test evaluates the comparison of a smaller timestamp and a greater one, with different
-    * datacenter unique ids and same count.
+    * client unique ids and same count.
     * Call to compareTo should return negative value.
     */
-    "negative compareTo different DCUId and same count" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
+    "negative compareTo different ClientUId and same count" {
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
         val ts1 = Timestamp(uid1, 1)
         val ts2 = Timestamp(uid2, 1)
 
@@ -78,11 +78,11 @@ class TimestampTest : StringSpec({
 
     /**
     * This test evaluates the comparison of a greater timestamp and a smaller one, with same
-    * datacenter unique id and different counts.
+    * client unique id and different counts.
     * Call to compareTo should return positive value.
     */
-    "positive compareTo same DCUId and different count" {
-        val uid = DCUId("dcid")
+    "positive compareTo same ClientUId and different count" {
+        val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, 1)
         val ts2 = Timestamp(uid, 2)
 
@@ -93,12 +93,12 @@ class TimestampTest : StringSpec({
 
     /**
     * This test evaluates the comparison of a greater timestamp and a smaller one, with different
-    * datacenter unique ids and different counts.
+    * client unique ids and different counts.
     * Call to compareTo should return positive value.
     */
-    "positive compareTo different DCUId and different count" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
+    "positive compareTo different ClientUId and different count" {
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
         val ts1 = Timestamp(uid1, 1)
         val ts2 = Timestamp(uid2, 2)
 
@@ -109,12 +109,12 @@ class TimestampTest : StringSpec({
 
     /**
     * This test evaluates the comparison of a greater timestamp and a smaller one, with different
-    * datacenter unique ids and same count.
+    * client unique ids and same count.
     * Call to compareTo should return positive value.
     */
-    "positive compareTo different DCUId and same count" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
+    "positive compareTo different ClientUId and same count" {
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
         val ts1 = Timestamp(uid1, 1)
         val ts2 = Timestamp(uid2, 1)
 
@@ -128,7 +128,7 @@ class TimestampTest : StringSpec({
     * Call to compareTo should return zero.
     */
     "zero compareTo" {
-        val uid = DCUId("dcid")
+        val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, 1)
         val ts2 = Timestamp(uid, 1)
 
@@ -139,10 +139,10 @@ class TimestampTest : StringSpec({
 
     /**
     * This test evaluates the comparison (using operators) of a smaller timestamp and a greater one,
-    * with same datacenter unique id and different counts.
+    * with same client unique id and different counts.
     */
-    "negative compareTo with operators same DCUId and different count" {
-        val uid = DCUId("dcid")
+    "negative compareTo with operators same ClientUId and different count" {
+        val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, 1)
         val ts2 = Timestamp(uid, 2)
 
@@ -155,11 +155,11 @@ class TimestampTest : StringSpec({
 
     /**
     * This test evaluates the comparison (using operators) of a smaller timestamp and a greater one,
-    * with different datacenter unique ids and different counts.
+    * with different client unique ids and different counts.
     */
-    "negative compareTo with operators different DCUId and different count" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
+    "negative compareTo with operators different ClientUId and different count" {
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
         val ts1 = Timestamp(uid1, 1)
         val ts2 = Timestamp(uid2, 2)
 
@@ -172,11 +172,11 @@ class TimestampTest : StringSpec({
 
     /**
     * This test evaluates the comparison (using operators) of a smaller timestamp and a greater one,
-    * with different datacenter unique ids and same count.
+    * with different client unique ids and same count.
     */
-    "negative compareTo with operators different DCUId and same count" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
+    "negative compareTo with operators different ClientUId and same count" {
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
         val ts1 = Timestamp(uid1, 1)
         val ts2 = Timestamp(uid2, 1)
 
@@ -189,10 +189,10 @@ class TimestampTest : StringSpec({
 
     /**
     * This test evaluates the comparison (using operators) of a greater timestamp and a smaller one,
-    * with same datacenter unique id and different counts.
+    * with same client unique id and different counts.
     */
-    "positive compareTo with operators same DCUId and different count" {
-        val uid = DCUId("dcid")
+    "positive compareTo with operators same ClientUId and different count" {
+        val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, 1)
         val ts2 = Timestamp(uid, 2)
 
@@ -205,11 +205,11 @@ class TimestampTest : StringSpec({
 
     /**
     * This test evaluates the comparison (using operators) of a greater timestamp and a smaller one,
-    * with different datacenter unique  ids and different counts.
+    * with different client unique  ids and different counts.
     */
-    "positive compareTo with operators different DCUId and different count" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
+    "positive compareTo with operators different ClientUId and different count" {
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
         val ts1 = Timestamp(uid1, 1)
         val ts2 = Timestamp(uid2, 2)
 
@@ -222,11 +222,11 @@ class TimestampTest : StringSpec({
 
     /**
     * This test evaluates the comparison (using operators) of a greater timestamp and a smaller one,
-    * with different datacenter unique ids and same count.
+    * with different client unique ids and same count.
     */
-    "positive compareTo with operators different DCUId and same count" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
+    "positive compareTo with operators different ClientUId and same count" {
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
         val ts1 = Timestamp(uid1, 1)
         val ts2 = Timestamp(uid2, 1)
 
@@ -241,7 +241,7 @@ class TimestampTest : StringSpec({
     * This test evaluates the comparison (using operators) of two equal timestamps.
     */
     "zero compareTo with operators" {
-        val uid = DCUId("dcid")
+        val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, 1)
         val ts2 = Timestamp(uid, 1)
 
@@ -256,20 +256,20 @@ class TimestampTest : StringSpec({
     * This test evaluates JSON serialization.
     **/
     "JSON serialization" {
-        val ts = Timestamp(DCUId("dcid1"), 3)
+        val ts = Timestamp(ClientUId("clientid1"), 3)
 
         val tsJson = ts.toJson()
 
-        tsJson.shouldBe("""{"uid":{"name":"dcid1"},"cnt":3}""")
+        tsJson.shouldBe("""{"uid":{"name":"clientid1"},"cnt":3}""")
     }
 
     /**
     * This test evaluates JSON deserialization.
     **/
     "JSON deserialization" {
-        val ts = Timestamp(DCUId("dcid1"), 3)
+        val ts = Timestamp(ClientUId("clientid1"), 3)
 
-        val tsJson = Timestamp.fromJson("""{"uid":{"name":"dcid1"},"cnt":3}""")
+        val tsJson = Timestamp.fromJson("""{"uid":{"name":"clientid1"},"cnt":3}""")
 
         tsJson.shouldBe(ts)
     }

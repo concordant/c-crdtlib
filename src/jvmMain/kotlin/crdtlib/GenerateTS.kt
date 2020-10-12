@@ -34,7 +34,7 @@ fun main(args: Array<String>) {
     println();
     println(TypeScriptGenerator(
         rootClasses = setOf(
-            DCUId::class,
+            ClientUId::class,
             Environment::class,
             SimpleEnvironment::class,
             Timestamp::class,

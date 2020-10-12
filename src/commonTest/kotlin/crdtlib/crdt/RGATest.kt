@@ -19,7 +19,7 @@
 
 package crdtlib.crdt
 
-import crdtlib.utils.DCUId
+import crdtlib.utils.ClientUId
 import crdtlib.utils.Timestamp
 import crdtlib.utils.SimpleEnvironment
 import crdtlib.utils.VersionVector
@@ -46,9 +46,9 @@ class RGATest : StringSpec({
     * Call to get should return an array containing the inserted value.
     */
     "insert at 0 and get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts = client.tick()
         val rga = RGA<Char>()
 
         rga.insertAt(0, 'A', ts)
@@ -62,10 +62,10 @@ class RGATest : StringSpec({
     * Second value should be at index 0 and first value at index 1.
     */
     "insert at 0, insert at 0, get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
         val rga = RGA<Char>()
 
         rga.insertAt(0, 'B', ts1)
@@ -80,10 +80,10 @@ class RGATest : StringSpec({
     * First value should be at index 0 and second value at index 1.
     */
     "insert at 0, insert at 1, get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
         val rga = RGA<Char>()
 
         rga.insertAt(0, 'A', ts1)
@@ -97,10 +97,10 @@ class RGATest : StringSpec({
     * Call to get should return an empty array.
     */
     "inser at 0, remove at 0, get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
         val rga = RGA<Char>()
 
         rga.insertAt(0, 'A', ts1)
@@ -114,12 +114,12 @@ class RGATest : StringSpec({
     * Call to get should return an empty array.
     */
     "insert at 0, insert at 0, remove at 0, remove at 0, get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
-        val ts4 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
+        val ts4 = client.tick()
         val rga = RGA<Char>()
 
         rga.insertAt(0, 'A', ts1)
@@ -136,12 +136,12 @@ class RGATest : StringSpec({
     * Second inserted value should be at index 0 and third inserted value at index 1.
     */
     "insert at 0, insert at 1, remove at 0, insert at 1, get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
-        val ts4 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
+        val ts4 = client.tick()
         val rga = RGA<Char>()
 
         rga.insertAt(0, 'A', ts1)
@@ -158,12 +158,12 @@ class RGATest : StringSpec({
     * First inserted value should be at index 0 and thrid inserted value at index 1.
     */
     "insert at 0, insert at 1, remove at 1, insert at 1, get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
-        val ts4 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
+        val ts4 = client.tick()
         val rga = RGA<Char>()
 
         rga.insertAt(0, 'A', ts1)
@@ -179,9 +179,9 @@ class RGATest : StringSpec({
     * Call to get should return an array containing the value inserted in replica 1.
     */
     "R1: insert at 1; R2: merge, get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts = client.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
 
@@ -196,10 +196,10 @@ class RGATest : StringSpec({
     * Call to get should return an array containing the two values inserted in replica 1.
     */
     "R1: insert at 0, insert at 0; R2: merge, get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
 
@@ -215,11 +215,11 @@ class RGATest : StringSpec({
     * Call to get should return an array containing the three values inserted in replica 1.
     */
     "R1: insert at 0, insert at 1, insert at 2; R2: merge, get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
 
@@ -238,12 +238,12 @@ class RGATest : StringSpec({
     * should be at index 0 and the one inserted at replica 1 at index 1.
     */
     "R1: insert at 0; R2: insert at 0 with greater timestamp, merge, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
 
@@ -261,12 +261,12 @@ class RGATest : StringSpec({
     * 1 should be at index 0 and the one inserted at replica 2 at index 1.
     */
     "R1: insert at 0 with greater timestamp; R2: insert at 0, merge, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
 
@@ -283,14 +283,14 @@ class RGATest : StringSpec({
     * according to decreasing order of their associated timestamp.
     */
     "R1: insert at 0, insert at 0; R2: insert at 0, insert at 0, merge, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
-        val ts3 = dc1.tick()
-        val ts4 = dc2.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
+        val ts3 = client1.tick()
+        val ts4 = client2.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
 
@@ -310,14 +310,14 @@ class RGATest : StringSpec({
     * should be before the one inserted in replica 2.
     */
     "insert at 0 with greater timestamp, insert at 1; R2: insert at 0, insert at 1, merge, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
-        val ts3 = dc1.tick()
-        val ts4 = dc2.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
+        val ts3 = client1.tick()
+        val ts4 = client2.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
 
@@ -337,14 +337,14 @@ class RGATest : StringSpec({
     * should be before the one inserted in replica 1.
     */
     "R1: insert at 0, insert at 1; R2: insert at 0 with greater timestamp, insert at 1, merge, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
-        val ts3 = dc1.tick()
-        val ts4 = dc2.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
+        val ts3 = client1.tick()
+        val ts4 = client2.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
 
@@ -364,16 +364,16 @@ class RGATest : StringSpec({
     * first and the fourth one).
     */
     "R1: insert four times, remove at 1; R2: merge after inserts, remove at 2, merge, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts2 = dc1.tick()
-        val ts3 = dc1.tick()
-        val ts4 = dc1.tick()
-        val ts5 = dc1.tick()
-        val ts6 = dc2.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts2 = client1.tick()
+        val ts3 = client1.tick()
+        val ts4 = client1.tick()
+        val ts5 = client1.tick()
+        val ts6 = client2.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
 
@@ -398,18 +398,18 @@ class RGATest : StringSpec({
     * replica 3.
     */
     "R1: insert at 0 with greater timestamp, insert at 1; R2: insert at 0 with second timestamp, insert at 1; R3: insert at 0, insert at 1, merge R1 and R2, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val dc3 = SimpleEnvironment(uid3)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
-        val ts3 = dc3.tick()
-        val ts4 = dc1.tick()
-        val ts5 = dc2.tick()
-        val ts6 = dc3.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val client3 = SimpleEnvironment(uid3)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
+        val ts3 = client3.tick()
+        val ts4 = client1.tick()
+        val ts5 = client2.tick()
+        val ts6 = client3.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
         val rga3 = RGA<Char>()
@@ -435,18 +435,18 @@ class RGATest : StringSpec({
     * replica 2.
     */
     "R1: insert at 0 with greater timestamp, insert at 1; R2: insert at 0, insert at 1; R3: insert at 0 with second timestamp, insert at 1, merge R1 and R2, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val dc3 = SimpleEnvironment(uid3)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
-        val ts3 = dc3.tick()
-        val ts4 = dc1.tick()
-        val ts5 = dc2.tick()
-        val ts6 = dc3.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val client3 = SimpleEnvironment(uid3)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
+        val ts3 = client3.tick()
+        val ts4 = client1.tick()
+        val ts5 = client2.tick()
+        val ts6 = client3.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
         val rga3 = RGA<Char>()
@@ -472,18 +472,18 @@ class RGATest : StringSpec({
     * replica 3.
     */
     "R1: insert at 0 with second timestamp, insert at 1; R2: insert at 0 with greater timestamp, insert at 1; R3: insert at 0, insert at 1, merge R1 and R2, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val dc3 = SimpleEnvironment(uid3)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
-        val ts3 = dc3.tick()
-        val ts4 = dc1.tick()
-        val ts5 = dc2.tick()
-        val ts6 = dc3.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val client3 = SimpleEnvironment(uid3)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
+        val ts3 = client3.tick()
+        val ts4 = client1.tick()
+        val ts5 = client2.tick()
+        val ts6 = client3.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
         val rga3 = RGA<Char>()
@@ -509,18 +509,18 @@ class RGATest : StringSpec({
     * replica 1.
     */
     "R1: insert at 0, insert at 1; R2: insert at 0 with greater timestamp, insert at 1; R3: insert at 0 with second timestamp, insert at 1, merge R1 and R2, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val dc3 = SimpleEnvironment(uid3)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
-        val ts3 = dc3.tick()
-        val ts4 = dc1.tick()
-        val ts5 = dc2.tick()
-        val ts6 = dc3.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val client3 = SimpleEnvironment(uid3)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
+        val ts3 = client3.tick()
+        val ts4 = client1.tick()
+        val ts5 = client2.tick()
+        val ts6 = client3.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
         val rga3 = RGA<Char>()
@@ -546,18 +546,18 @@ class RGATest : StringSpec({
     * replica 1.
     */
     "R1: insert at 0, insert at 1; R2: insert at 0 with second timestamp, insert at 1; R3: insert at 0 with greater timestamp, insert at 1, merge R1 and R2, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val dc3 = SimpleEnvironment(uid3)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
-        val ts3 = dc3.tick()
-        val ts4 = dc1.tick()
-        val ts5 = dc2.tick()
-        val ts6 = dc3.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val client3 = SimpleEnvironment(uid3)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
+        val ts3 = client3.tick()
+        val ts4 = client1.tick()
+        val ts5 = client2.tick()
+        val ts6 = client3.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
         val rga3 = RGA<Char>()
@@ -583,18 +583,18 @@ class RGATest : StringSpec({
     * replica 2.
     */
     "R1: insert at 0 with second timestamp, insert at 1; R2: insert at 0, insert at 1; R3: insert at 0 with greater timestamp, insert at 1, merge R1 and R2, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val dc3 = SimpleEnvironment(uid3)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
-        val ts3 = dc3.tick()
-        val ts4 = dc1.tick()
-        val ts5 = dc2.tick()
-        val ts6 = dc3.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val client3 = SimpleEnvironment(uid3)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
+        val ts3 = client3.tick()
+        val ts4 = client1.tick()
+        val ts5 = client2.tick()
+        val ts6 = client3.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
         val rga3 = RGA<Char>()
@@ -616,9 +616,9 @@ class RGATest : StringSpec({
     * Call to get should return an array containing the value inserted in replica 1.
     */
     "use delta returned by insert" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts = client.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
 
@@ -635,10 +635,10 @@ class RGATest : StringSpec({
     * Call to get should return an empty array.
     */
     "use delta returned by remove" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
 
@@ -657,10 +657,10 @@ class RGATest : StringSpec({
     * Call to get should return an empty array.
     */
     "use delta returned by insert and remove" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
 
@@ -680,10 +680,10 @@ class RGATest : StringSpec({
     * Call to get should return an empty array.
     */
     "merge from delta insert to delta remove" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
 
@@ -702,10 +702,10 @@ class RGATest : StringSpec({
     * Call to get should return an empty array.
     */
     "merge from delta remove to delta import" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
         val rga1 = RGA<Char>()
         val rga2 = RGA<Char>()
 
@@ -725,12 +725,12 @@ class RGATest : StringSpec({
     * context.
     */
     "generate delta" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
-        val ts4 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
+        val ts4 = client.tick()
         val vv = VersionVector()
         vv.update(ts2)
         val rga1 = RGA<Char>()
@@ -770,12 +770,12 @@ class RGATest : StringSpec({
     * This test evaluates JSON serialization of an RGA.
     **/
     "JSON serialization" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
-        val ts3 = dc.tick()
-        val ts4 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
+        val ts3 = client.tick()
+        val ts4 = client.tick()
         val rga = RGA<Char>()
 
         rga.insertAt(0, 'A', ts1)
@@ -784,14 +784,14 @@ class RGATest : StringSpec({
         rga.insertAt(1, 'C', ts4)
         val rgaJson = rga.toJson(Char::class)
 
-        rgaJson.shouldBe("""{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"dcid"},"cnt":-2147483647},"ts":{"uid":{"name":"dcid"},"cnt":-2147483647},"removed":false},{"anchor":{"uid":{"name":"dcid"},"cnt":-2147483647},"uid":{"uid":{"name":"dcid"},"cnt":-2147483644},"ts":{"uid":{"name":"dcid"},"cnt":-2147483644},"removed":false},{"atom":"B","anchor":{"uid":{"name":"dcid"},"cnt":-2147483647},"uid":{"uid":{"name":"dcid"},"cnt":-2147483646},"ts":{"uid":{"name":"dcid"},"cnt":-2147483645},"removed":true}],"value":["A","C"]}""")
+        rgaJson.shouldBe("""{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"clientid"},"cnt":-2147483647},"ts":{"uid":{"name":"clientid"},"cnt":-2147483647},"removed":false},{"anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483644},"ts":{"uid":{"name":"clientid"},"cnt":-2147483644},"removed":false},{"atom":"B","anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483646},"ts":{"uid":{"name":"clientid"},"cnt":-2147483645},"removed":true}],"value":["A","C"]}""")
     }
 
     /**
     * This test evaluates JSON deserialization of an RGA.
     **/
     "JSON deserialization" {
-        val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"dcid"},"cnt":-2147483647},"ts":{"uid":{"name":"dcid"},"cnt":-2147483647},"removed":false},{"anchor":{"uid":{"name":"dcid"},"cnt":-2147483647},"uid":{"uid":{"name":"dcid"},"cnt":-2147483644},"ts":{"uid":{"name":"dcid"},"cnt":-2147483644},"removed":false},{"atom":"B","anchor":{"uid":{"name":"dcid"},"cnt":-2147483647},"uid":{"uid":{"name":"dcid"},"cnt":-2147483646},"ts":{"uid":{"name":"dcid"},"cnt":-2147483645},"removed":true}],"value":["A","C"]}""")
+        val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"clientid"},"cnt":-2147483647},"ts":{"uid":{"name":"clientid"},"cnt":-2147483647},"removed":false},{"anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483644},"ts":{"uid":{"name":"clientid"},"cnt":-2147483644},"removed":false},{"atom":"B","anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483646},"ts":{"uid":{"name":"clientid"},"cnt":-2147483645},"removed":true}],"value":["A","C"]}""")
 
         rgaJson.get().shouldContainExactly('A', 'C')
     }

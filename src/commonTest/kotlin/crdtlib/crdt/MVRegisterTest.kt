@@ -19,7 +19,7 @@
 
 package crdtlib.crdt
 
-import crdtlib.utils.DCUId
+import crdtlib.utils.ClientUId
 import crdtlib.utils.SimpleEnvironment
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.*
@@ -45,9 +45,9 @@ class MVRegisterTest : StringSpec({
     * Call to get should return a set containing the value.
     */
     "create with a value and get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts = client.tick()
         val value = "value"
         val reg = MVRegister<String>(value, ts)
 
@@ -59,9 +59,9 @@ class MVRegisterTest : StringSpec({
     * Call to get should return a set containing the assigned in the first replica.
     */
     "copy with copy constructor and get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts = client.tick()
         val value = "value"
         val reg1 = MVRegister<String>(value, ts)
 
@@ -75,12 +75,12 @@ class MVRegisterTest : StringSpec({
     * Call to get should return a set containing values assigned in first and second replicas.
     */
     "copy with copy constructor a register with multi-values and get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
         val val1 = "value1"
         val val2 = "value2"
         val reg1 = MVRegister<String>(val1, ts1)
@@ -97,10 +97,10 @@ class MVRegisterTest : StringSpec({
     * Call to get should return last assigned value.
     */
     "create, assign, get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
         val val1 = "value1"
         val val2 = "value2"
 
@@ -115,10 +115,10 @@ class MVRegisterTest : StringSpec({
     * Call to get should return first assigned value.
     */
     "create assign, assign with older timestamp, get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
         val val1 = "value1"
         val val2 = "value2"
 
@@ -133,9 +133,9 @@ class MVRegisterTest : StringSpec({
     * Call to get should return value assigned by the first replica.
     */
     "R1: create with value; R2: create empty, merge, get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts = client.tick()
         val value = "value"
 
         val reg1 = MVRegister<String>(value, ts)
@@ -152,12 +152,12 @@ class MVRegisterTest : StringSpec({
     * Call to get should return a set containing the value assigned by the second replica.
     */
     "R1: create with value; R2: create empty, merge, assign, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
         val val1 = "value1"
         val val2 = "value2"
 
@@ -174,12 +174,12 @@ class MVRegisterTest : StringSpec({
     * Call to get should return a set containing the two values.
     */
     "R1: create with value; R2: create empty, assign, merge, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
         val val1 = "value1"
         val val2 = "value2"
 
@@ -197,10 +197,10 @@ class MVRegisterTest : StringSpec({
     * Call to get should return a set containing the last value assigned by the first replica.
     */
     "R1: create with value, assign; R2: craete empty, merge before assign, merge after assign, get" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts1 = dc.tick()
-        val ts2 = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts1 = client.tick()
+        val ts2 = client.tick()
         val val1 = "value1"
         val val2 = "value2"
 
@@ -220,13 +220,13 @@ class MVRegisterTest : StringSpec({
     * value assigned by replica two.
     */
     "R1: create with value, assign; R2: create with value, merge before assign, merge after assign, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
-        val ts3 = dc1.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
+        val ts3 = client1.tick()
         val val1 = "value1"
         val val2 = "value2"
         val val3 = "value3"
@@ -247,15 +247,15 @@ class MVRegisterTest : StringSpec({
     * replicas.
     */
     "R1: create with value; R2: create with value, merge R3; R3: create with value, merge R1, merge R2, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val dc3 = SimpleEnvironment(uid3)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
-        val ts3 = dc3.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val client3 = SimpleEnvironment(uid3)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
+        val ts3 = client3.tick()
         val val1 = "value1"
         val val2 = "value2"
         val val3 = "value3"
@@ -278,15 +278,15 @@ class MVRegisterTest : StringSpec({
     * overrided by replica two.
     */
     "R1: create with value; R2: create empty, merge R3, assign; R3: create with value, merge R1, merge R2, get" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val dc3 = SimpleEnvironment(uid3)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
-        val ts3 = dc3.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val client3 = SimpleEnvironment(uid3)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
+        val ts3 = client3.tick()
         val val1 = "value1"
         val val2 = "value2"
         val val3 = "value3"
@@ -307,9 +307,9 @@ class MVRegisterTest : StringSpec({
     * Call to get should return a set containing the value assigned by the first replica.
     */
     "use delta returned by assign" {
-        val uid = DCUId("dcid")
-        val dc = SimpleEnvironment(uid)
-        val ts = dc.tick()
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+        val ts = client.tick()
         val value = "value"
         val reg1 = MVRegister<String>()
         val reg2 = MVRegister<String>()
@@ -328,13 +328,13 @@ class MVRegisterTest : StringSpec({
     * first and second replicas.
     */
     "generate delta then merge" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
-        val vv = dc1.getState()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
+        val vv = client1.getState()
         val val1 = "value1"
         val val2 = "value2"
         val reg1 = MVRegister<String>(val1, ts1)
@@ -371,12 +371,12 @@ class MVRegisterTest : StringSpec({
     * This test evaluates JSON serialization of a mv register.
     **/
     "JSON serialization" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val dc1 = SimpleEnvironment(uid1)
-        val dc2 = SimpleEnvironment(uid2)
-        val ts1 = dc1.tick()
-        val ts2 = dc2.tick()
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+        val ts1 = client1.tick()
+        val ts2 = client2.tick()
         val val1 = "value1"
         val val2 = "value2"
 
@@ -386,14 +386,14 @@ class MVRegisterTest : StringSpec({
         reg2.merge(reg1)
         val regJson = reg2.toJson(String::class)
 
-        regJson.shouldBe("""{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"dcid2"},"cnt":-2147483647},{"uid":{"name":"dcid1"},"cnt":-2147483647}],"causalContext":{"entries":[{"name":"dcid2"},-2147483647,{"name":"dcid1"},-2147483647]}},"value":["value2","value1"]}""")
+        regJson.shouldBe("""{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"clientid2"},"cnt":-2147483647},{"uid":{"name":"clientid1"},"cnt":-2147483647}],"causalContext":{"entries":[{"name":"clientid2"},-2147483647,{"name":"clientid1"},-2147483647]}},"value":["value2","value1"]}""")
     }
 
     /**
     * This test evaluates JSON deserialization of a mv register.
     **/
     "JSON deserialization" {
-        val regJson = MVRegister.fromJson(String::class, """{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"dcid2"},"cnt":-2147483647},{"uid":{"name":"dcid1"},"cnt":-2147483647}],"causalContext":{"entries":[{"name":"dcid2"},-2147483647,{"name":"dcid1"},-2147483647]}},"value":["value2","value1"]}""")
+        val regJson = MVRegister.fromJson(String::class, """{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"clientid2"},"cnt":-2147483647},{"uid":{"name":"clientid1"},"cnt":-2147483647}],"causalContext":{"entries":[{"name":"clientid2"},-2147483647,{"name":"clientid1"},-2147483647]}},"value":["value2","value1"]}""")
 
         regJson.get().shouldContainExactlyInAnyOrder("value1", "value2")
     }

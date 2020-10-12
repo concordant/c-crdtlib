@@ -44,9 +44,9 @@ class VersionVectorTest : StringSpec({
     * timestamps is correct.
     **/
     "multiple values get max" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 3)
         val ts2 = Timestamp(uid2, 2)
         val ts3 = Timestamp(uid3, 1)
@@ -64,7 +64,7 @@ class VersionVectorTest : StringSpec({
     * Calls to contains should return false.
     **/
     "empty version vector contains no timestamp" {
-        val uid = DCUId("dcid")
+        val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, 1)
         val ts2 = Timestamp(uid, 3)
         val vv = VersionVector()
@@ -74,11 +74,12 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates the inclusion of timestamps having negative counter in a newly created version vector.
+    * This test evaluates the inclusion of timestamps having negative counter in a newly created
+    * version vector.
     * Calls to contains should return false.
     **/
     "empty version vector contains no negative timestamp except Timestamp.CNT_MIN_VALUE" {
-        val uid = DCUId("dcid")
+        val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, Timestamp.CNT_MIN_VALUE)
         val ts2 = Timestamp(uid, Timestamp.CNT_MIN_VALUE + 1)
         val ts3 = Timestamp(uid, -8000)
@@ -92,12 +93,12 @@ class VersionVectorTest : StringSpec({
     /**
     * This test evaluates the inclusion of timestamps in a version vector where one timestamp has
     * been added.
-    * Calls to contains should return true for all timestamps with same datacenter unique id and a
+    * Calls to contains should return true for all timestamps with same client unique id and a
     * count less or equals to the added timestamp, and false otherwise.
     **/
     "add timstamp then check inclusion" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
         val ts1 = Timestamp(uid1, 1)
         val ts2 = Timestamp(uid1, 2)
         val ts3 = Timestamp(uid1, 3)
@@ -118,9 +119,9 @@ class VersionVectorTest : StringSpec({
     * added to the first one.
     **/
     "update to an empty version vector" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 2)
         val ts2 = Timestamp(uid2, 3)
         val ts3 = Timestamp(uid3, 1)
@@ -143,9 +144,9 @@ class VersionVectorTest : StringSpec({
     * added to it before merging.
     **/
     "update from an empty version vector" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 2)
         val ts2 = Timestamp(uid2, 3)
         val ts3 = Timestamp(uid3, 1)
@@ -168,9 +169,9 @@ class VersionVectorTest : StringSpec({
     * added to the first version vector.
     **/
     "update to a smaller version vector" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 2)
         val ts2 = Timestamp(uid2, 3)
         val ts3 = Timestamp(uid3, 1)
@@ -197,9 +198,9 @@ class VersionVectorTest : StringSpec({
     * added to it before merging.
     **/
     "update from a smaller version vector" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 2)
         val ts2 = Timestamp(uid2, 3)
         val ts3 = Timestamp(uid3, 1)
@@ -226,9 +227,9 @@ class VersionVectorTest : StringSpec({
     * added to it before merging.
     **/
     "update between two equaled version vectors" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 2)
         val ts2 = Timestamp(uid2, 3)
         val ts3 = Timestamp(uid3, 1)
@@ -254,10 +255,10 @@ class VersionVectorTest : StringSpec({
     * added to itself and to the first version vector.
     **/
     "update between two concurrent version vectors" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
-        val uid4 = DCUId("dcid4")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
+        val uid4 = ClientUId("clientid4")
         val ts1 = Timestamp(uid1, 2)
         val ts2 = Timestamp(uid2, 3)
         val ts3 = Timestamp(uid2, 4)
@@ -289,9 +290,9 @@ class VersionVectorTest : StringSpec({
     * Calls to smallerOrEquals should return true.
     **/
     "is smaller or equals with a smaller version vector with same entries" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 3)
         val ts2 = Timestamp(uid2, 2)
         val ts3 = Timestamp(uid2, 4)
@@ -320,9 +321,9 @@ class VersionVectorTest : StringSpec({
     * Calls to smallerOrEquals should return true.
     **/
     "is smaller or equals with a smaller version vector with less entries" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 3)
         val ts2 = Timestamp(uid2, 2)
         val ts3 = Timestamp(uid2, 4)
@@ -349,9 +350,9 @@ class VersionVectorTest : StringSpec({
     * Calls to smallerOrEquals should return true.
     **/
     "is smaller or equals with an equaled version vector" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 3)
         val ts2 = Timestamp(uid2, 4)
         val ts3 = Timestamp(uid3, 2)
@@ -379,9 +380,9 @@ class VersionVectorTest : StringSpec({
     * Calls to smallerOrEquals should return false.
     **/
     "is smaller or equals with a greater version vector with same entries" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 3)
         val ts2 = Timestamp(uid2, 2)
         val ts3 = Timestamp(uid2, 4)
@@ -410,9 +411,9 @@ class VersionVectorTest : StringSpec({
     * Calls to smallerOrEquals should return false.
     **/
     "is smaller or equals with a concurrent version vector with same entries" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 3)
         val ts2 = Timestamp(uid2, 2)
         val ts3 = Timestamp(uid2, 4)
@@ -442,9 +443,9 @@ class VersionVectorTest : StringSpec({
     * Calls to smallerOrEquals should return false.
     **/
     "is smaller or equals with a concurrent version vector with less entries" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 3)
         val ts2 = Timestamp(uid2, 2)
         val ts3 = Timestamp(uid2, 4)
@@ -472,9 +473,9 @@ class VersionVectorTest : StringSpec({
     * Calls to smallerOrEquals should return false.
     **/
     "is smaller or equals with a greater version vector with more entries" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 3)
         val ts2 = Timestamp(uid2, 2)
         val ts3 = Timestamp(uid2, 4)
@@ -502,9 +503,9 @@ class VersionVectorTest : StringSpec({
     * Calls to smallerOrEquals should return false.
     **/
     "is smaller or equals with a concurrent version vector with more entries" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 3)
         val ts2 = Timestamp(uid2, 2)
         val ts3 = Timestamp(uid2, 4)
@@ -532,9 +533,9 @@ class VersionVectorTest : StringSpec({
     * Calls to smallerOrEquals should return false.
     **/
     "is smaller or equals with a concurrent version vector having different entries" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 3)
         val ts2 = Timestamp(uid2, 2)
         val ts3 = Timestamp(uid2, 4)
@@ -561,9 +562,9 @@ class VersionVectorTest : StringSpec({
     * added to the first one.
     **/
     "copy with copy method" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 3)
         val ts2 = Timestamp(uid2, 4)
         val ts3 = Timestamp(uid3, 2)
@@ -585,9 +586,9 @@ class VersionVectorTest : StringSpec({
     * added to the first one.
     **/
     "copy with copy constructor" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 3)
         val ts2 = Timestamp(uid2, 4)
         val ts3 = Timestamp(uid3, 2)
@@ -630,9 +631,9 @@ class VersionVectorTest : StringSpec({
     * This test evaluates JSON serialization of a version vector.
     **/
     "JSON serialization" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 3)
         val ts2 = Timestamp(uid2, 4)
         val ts3 = Timestamp(uid3, 2)
@@ -643,16 +644,16 @@ class VersionVectorTest : StringSpec({
         vv.update(ts3)
         val vvJson = vv.toJson()
 
-        vvJson.shouldBe("""{"entries":[{"name":"dcid1"},3,{"name":"dcid2"},4,{"name":"dcid3"},2]}""")
+        vvJson.shouldBe("""{"entries":[{"name":"clientid1"},3,{"name":"clientid2"},4,{"name":"clientid3"},2]}""")
     }
 
     /**
     * This test evaluates JSON deserialization of a version vector.
     **/
     "JSON deserialization" {
-        val uid1 = DCUId("dcid1")
-        val uid2 = DCUId("dcid2")
-        val uid3 = DCUId("dcid3")
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val uid3 = ClientUId("clientid3")
         val ts1 = Timestamp(uid1, 3)
         val ts2 = Timestamp(uid2, 4)
         val ts3 = Timestamp(uid3, 2)
@@ -661,7 +662,7 @@ class VersionVectorTest : StringSpec({
         vv.update(ts1)
         vv.update(ts2)
         vv.update(ts3)
-        val vvJson = VersionVector.fromJson("""{"entries":[{"name":"dcid1"},3,{"name":"dcid2"},4,{"name":"dcid3"},2]}""")
+        val vvJson = VersionVector.fromJson("""{"entries":[{"name":"clientid1"},3,{"name":"clientid2"},4,{"name":"clientid3"},2]}""")
 
         vv.isSmallerOrEquals(vvJson).shouldBeTrue()
         vvJson.isSmallerOrEquals(vv).shouldBeTrue()
