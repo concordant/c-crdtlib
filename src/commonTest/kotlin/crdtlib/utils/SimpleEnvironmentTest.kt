@@ -41,7 +41,7 @@ class SimpleEnvironmentTest : StringSpec({
 
         val ts = client.tick()
 
-        ts.shouldBe(Timestamp(uid, Timestamp.CNT_MIN_VALUE))
+        ts.shouldBe(Timestamp(uid, Timestamp.CNT_MIN_VALUE + 1))
     }
 
     /**

@@ -769,7 +769,7 @@ class RGATest : StringSpec({
     /**
     * This test evaluates JSON serialization of an RGA.
     **/
-    "JSNO serialization" {
+    "JSON serialization" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -784,14 +784,14 @@ class RGATest : StringSpec({
         rga.insertAt(1, 'C', ts4)
         val rgaJson = rga.toJson(Char::class)
 
-        rgaJson.shouldBe("""{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"clientid"},"cnt":-2147483648},"ts":{"uid":{"name":"clientid"},"cnt":-2147483648},"removed":false},{"anchor":{"uid":{"name":"clientid"},"cnt":-2147483648},"uid":{"uid":{"name":"clientid"},"cnt":-2147483645},"ts":{"uid":{"name":"clientid"},"cnt":-2147483645},"removed":false},{"atom":"B","anchor":{"uid":{"name":"clientid"},"cnt":-2147483648},"uid":{"uid":{"name":"clientid"},"cnt":-2147483647},"ts":{"uid":{"name":"clientid"},"cnt":-2147483646},"removed":true}],"value":["A","C"]}""")
+        rgaJson.shouldBe("""{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"clientid"},"cnt":-2147483647},"ts":{"uid":{"name":"clientid"},"cnt":-2147483647},"removed":false},{"anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483644},"ts":{"uid":{"name":"clientid"},"cnt":-2147483644},"removed":false},{"atom":"B","anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483646},"ts":{"uid":{"name":"clientid"},"cnt":-2147483645},"removed":true}],"value":["A","C"]}""")
     }
 
     /**
     * This test evaluates JSON deserialization of an RGA.
     **/
     "JSON deserialization" {
-        val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"clientid"},"cnt":-2147483648},"ts":{"uid":{"name":"clientid"},"cnt":-2147483648},"removed":false},{"anchor":{"uid":{"name":"clientid"},"cnt":-2147483648},"uid":{"uid":{"name":"clientid"},"cnt":-2147483645},"ts":{"uid":{"name":"clientid"},"cnt":-2147483645},"removed":false},{"atom":"B","anchor":{"uid":{"name":"clientid"},"cnt":-2147483648},"uid":{"uid":{"name":"clientid"},"cnt":-2147483647},"ts":{"uid":{"name":"clientid"},"cnt":-2147483646},"removed":true}],"value":["A","C"]}""")
+        val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"clientid"},"cnt":-2147483647},"ts":{"uid":{"name":"clientid"},"cnt":-2147483647},"removed":false},{"anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483644},"ts":{"uid":{"name":"clientid"},"cnt":-2147483644},"removed":false},{"atom":"B","anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483646},"ts":{"uid":{"name":"clientid"},"cnt":-2147483645},"removed":true}],"value":["A","C"]}""")
 
         rgaJson.get().shouldContainExactly('A', 'C')
     }

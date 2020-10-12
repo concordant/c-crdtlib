@@ -34,6 +34,10 @@ class VersionVector {
     */
     private val entries: MutableMap<ClientUId, Int> = mutableMapOf()
 
+    private fun get(uid: ClientUId): Int{
+	return this.entries.get(uid) ?: Timestamp.CNT_MIN_VALUE
+    }
+    
     /**
     * Default constructor.
     */
@@ -52,19 +56,19 @@ class VersionVector {
     * @return the maximal value or null if there are no values.
     */
     @Name("max")
-    fun max(): Int? {
-        return this.entries.values.max()
+    fun max(): Int {
+        return this.entries.values.max() ?: Timestamp.CNT_MIN_VALUE
     }
 
     /**
-    * Returns if a given timestamp is caontained in the version vector.
+    * Returns if a given timestamp is contained in the version vector.
     * @param ts the given timestamp.
     * @return true if the timestamp is contained in the version vector, false otherwise.
     */
     @Name("contains")
     fun contains(ts: Timestamp): Boolean {
-        val cnt = this.entries.get(ts.uid)
-        return cnt != null && cnt >= ts.cnt
+        val cnt = this.get(ts.uid)
+        return cnt >= ts.cnt
     }
 
     /**
@@ -73,8 +77,8 @@ class VersionVector {
     */
     @Name("updateTs")
     fun update(ts: Timestamp) {
-        val curCnt = this.entries.get(ts.uid)
-        if(curCnt == null || curCnt < ts.cnt) this.entries.put(ts.uid, ts.cnt)
+        val curCnt = this.get(ts.uid)
+        if(curCnt < ts.cnt) this.entries.put(ts.uid, ts.cnt)
     }
 
     /**
@@ -85,8 +89,8 @@ class VersionVector {
     @Name("updateVv")
     fun update(vv: VersionVector) {
         for((k, v) in vv.entries) {
-            val curCnt = this.entries.get(k)
-            if (curCnt == null || curCnt < v) this.entries.put(k, v)
+            val curCnt = this.get(k)
+            if (curCnt < v) this.entries.put(k, v)
         }
     }
 
@@ -98,8 +102,8 @@ class VersionVector {
     @Name("isSmallerOrEquals")
     fun isSmallerOrEquals(vv: VersionVector): Boolean {
         for ((k, localV) in this.entries) {
-            val v = vv.entries.get(k)
-            if(v == null || localV > v) return false
+            val v = vv.get(k)
+            if(localV > v) return false
         }
         return true
     }
@@ -113,8 +117,8 @@ class VersionVector {
     fun isSmaller(vv: VersionVector): Boolean {
         var isEqual = this.entries.isNotEmpty()
         for ((k, localV) in this.entries) {
-            val v = vv.entries.get(k)
-            if(v == null || localV > v) return false
+            val v = vv.get(k)
+            if(localV > v) return false
             isEqual = isEqual && (localV == v)
         }
         return !isEqual
@@ -128,8 +132,8 @@ class VersionVector {
     @Name("isGreaterOrEquals")
     fun isGreaterOrEquals(vv: VersionVector): Boolean {
         for ((k, v) in vv.entries) {
-            val localV = this.entries.get(k)
-            if(localV == null || localV < v) return false
+            val localV = this.get(k)
+            if(localV < v) return false
         }
         return true
     }
@@ -143,8 +147,8 @@ class VersionVector {
     fun isGreater(vv: VersionVector): Boolean {
         var isEqual = vv.entries.isNotEmpty()
         for ((k, v) in vv.entries) {
-            val localV = this.entries.get(k)
-            if(localV == null || localV < v) return false
+            val localV = this.get(k)
+            if(localV < v) return false
             isEqual = isEqual && (localV == v)
         }
         return !isEqual
@@ -173,8 +177,8 @@ class VersionVector {
         var isSmaller = false
         var isLarger = false
         for ((k, localV) in this.entries) {
-            val v = vv.entries.get(k)
-            if(v == null || localV > v)
+            val v = vv.get(k)
+            if(localV > v)
                 // one entry in this object is larger
                 isLarger = true
             else if(localV < v)

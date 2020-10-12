@@ -74,9 +74,8 @@ class VersionVectorPropTest: StringSpec({
         }
     }
     "incrementing max" {
-        forAll(versionVectorNonMaxArb, clientuidArb, Arb.int(Int.MIN_VALUE, Int.MAX_VALUE-1)) { vv, clientuid, i ->
-            val maxTS = vv.max()
-            val incrTS = 1 + (maxTS ?: i)
+        forAll(versionVectorNonMaxArb, clientuidArb) { vv, clientuid ->
+            val incrTS = vv.max() +1
             vv.update(Timestamp(clientuid, incrTS))
             incrTS == vv.max()
         }
