@@ -30,8 +30,14 @@ repositories {
     maven(url = "https://jitpack.io")
 }
 
-kotlin {
+configurations {
+    val ktlint by creating
+}
+dependencies {
+    "ktlint"("com.pinterest:ktlint:0.36.0")
+}
 
+kotlin {
     jvm() {
         withJava()
         val jvmJar by tasks.getting(org.gradle.jvm.tasks.Jar::class) {
@@ -54,7 +60,7 @@ kotlin {
             languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
         }
 
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 implementation(kotlin("stdlib"))
                 implementation(kotlin("reflect"))
@@ -62,7 +68,7 @@ kotlin {
             }
         }
 
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation("io.kotest:kotest-property:4.1.1")
                 implementation("io.kotest:kotest-assertions-core:4.1.1")
@@ -103,8 +109,7 @@ kotlin {
     }
 
     tasks {
-        val dokka by getting(DokkaTask::class) {
-
+        dokka{
             outputFormat = "html"
             outputDirectory = "$buildDir/docs"
 
@@ -112,6 +117,20 @@ kotlin {
                 register("common") {}
             }
         }
+	register<JavaExec>("ktlint"){
+	    group = "verification"
+	    description = "Ktlint: check"
+	    classpath = configurations["ktlint"]
+	    main = "com.pinterest.ktlint.Main"
+	    args("src/**/*.kt")
+	}
+	register<JavaExec>("ktlintFix"){
+	    group = "verification"
+	    description = "Ktlint: fix"
+	    classpath = configurations["ktlint"]
+	    main = "com.pinterest.ktlint.Main"
+	    args("-F", "src/**/*.kt")
+	}
     }
 }
 
