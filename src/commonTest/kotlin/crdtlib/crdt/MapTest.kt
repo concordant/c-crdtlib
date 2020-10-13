@@ -50,7 +50,7 @@ class MapTest : StringSpec({
         map.getMVString(key).shouldBeNull()
         map.getCntInt(key).shouldBeNull()
     }
-    
+
     /**
     * This test evaluates the scenario: put get.
     * Call to get should return the value set by the put.
@@ -79,7 +79,7 @@ class MapTest : StringSpec({
         map.getLWWInt(key).shouldBe(valueInt)
         map.getLWWString(key).shouldBe(valueString)
     }
-    
+
     /**
     * This test evaluates the scenario: put del get.
     * Call to get should return null.
@@ -357,7 +357,7 @@ class MapTest : StringSpec({
         map2.getLWWInt(key).shouldBe(valInt2)
         map2.getLWWString(key).shouldBe(valString2)
     }
-    
+
     /**
     * This test evaluates the scenario: putLWW || put merge get.
     * Call to get should return the value set by put registered in the first replica.
@@ -1112,7 +1112,7 @@ class MapTest : StringSpec({
         map2.getLWWInt(key3).shouldBe(valueInt)
         map2.getLWWString(key3).shouldBe(valueString)
     }
-    
+
     /**
     * This test evaluates the scenario: put get.
     * Call to get should return the value set by the put.
@@ -1141,7 +1141,7 @@ class MapTest : StringSpec({
         map.getMVInt(key)!!.shouldHaveSingleElement(valueInt)
         map.getMVString(key)!!.shouldHaveSingleElement(valueString)
     }
-    
+
     /**
     * This test evaluates the scenario: put del get.
     * Call to get should return null.
@@ -2074,7 +2074,7 @@ class MapTest : StringSpec({
         map2.getMVInt(key3)!!.shouldHaveSingleElement(valueInt)
         map2.getMVString(key3)!!.shouldHaveSingleElement(valueString)
     }
-    
+
     /**
     * This test evaluates the scenario: increment get.
     * Call to get should return the value set by increment.
@@ -2091,7 +2091,6 @@ class MapTest : StringSpec({
 
         map.getCntInt(key).shouldBe(inc)
     }
-
 
     /**
     * This test evaluates the scenario: decrement get.
@@ -2250,7 +2249,7 @@ class MapTest : StringSpec({
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
-        val inc = 11 
+        val inc = 11
         val key = "key"
         val map1 = Map()
         val map2 = Map()
@@ -2271,7 +2270,7 @@ class MapTest : StringSpec({
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
-        val dec = 11 
+        val dec = 11
         val key = "key"
         val map1 = Map()
         val map2 = Map()
@@ -2295,8 +2294,8 @@ class MapTest : StringSpec({
         val client2 = SimpleEnvironment(uid2)
         val ts1 = client1.tick()
         val ts2 = client2.tick()
-        val inc1 = 10 
-        val inc2 = 1 
+        val inc1 = 10
+        val inc2 = 1
         val key = "key"
         val map1 = Map()
         val map2 = Map()
@@ -2319,8 +2318,8 @@ class MapTest : StringSpec({
         val client2 = SimpleEnvironment(uid2)
         val ts1 = client1.tick()
         val ts2 = client2.tick()
-        val inc1 = 10 
-        val inc2 = 1 
+        val inc1 = 10
+        val inc2 = 1
         val key = "key"
         val map1 = Map()
         val map2 = Map()
@@ -2343,8 +2342,8 @@ class MapTest : StringSpec({
         val client2 = SimpleEnvironment(uid2)
         val ts1 = client1.tick()
         val ts2 = client2.tick()
-        val dec1 = 10 
-        val dec2 = 1 
+        val dec1 = 10
+        val dec2 = 1
         val key = "key"
         val map1 = Map()
         val map2 = Map()
@@ -2367,8 +2366,8 @@ class MapTest : StringSpec({
         val client2 = SimpleEnvironment(uid2)
         val ts1 = client1.tick()
         val ts2 = client2.tick()
-        val dec1 = 10 
-        val dec2 = 1 
+        val dec1 = 10
+        val dec2 = 1
         val key = "key"
         val map1 = Map()
         val map2 = Map()
@@ -2493,7 +2492,7 @@ class MapTest : StringSpec({
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
-        val dec = 11 
+        val dec = 11
         val key = "key"
         val map1 = Map()
         val map2 = Map()
@@ -2515,8 +2514,8 @@ class MapTest : StringSpec({
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
         val ts2 = client.tick()
-        val dec = 11 
-        val inc = 22 
+        val dec = 11
+        val inc = 22
         val key = "key"
         val map1 = Map()
         val map2 = Map()

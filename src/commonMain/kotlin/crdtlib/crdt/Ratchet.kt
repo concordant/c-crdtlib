@@ -23,7 +23,6 @@ import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
-import kotlin.reflect.KClass
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 

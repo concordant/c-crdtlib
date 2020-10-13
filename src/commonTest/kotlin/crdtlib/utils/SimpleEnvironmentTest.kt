@@ -25,7 +25,6 @@ import io.kotest.matchers.*
 import io.kotest.matchers.booleans.*
 import io.kotest.matchers.comparables.*
 
-
 /**
 * Represents a test suite for SimpleEnvironment.
 **/

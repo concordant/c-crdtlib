@@ -118,7 +118,6 @@ class LWWMap : DeltaCRDT<LWWMap> {
         return op
     }
 
-
     /**
     * Puts a key / double value pair into the map.
     * @param key the key that is targeted.
@@ -137,7 +136,6 @@ class LWWMap : DeltaCRDT<LWWMap> {
         return op
     }
 
-
     /**
     * Puts a key / integer value pair into the map.
     * @param key the key that is targeted.
@@ -155,7 +153,6 @@ class LWWMap : DeltaCRDT<LWWMap> {
         }
         return op
     }
-
 
     /**
     * Puts a key / string value pair into the map.

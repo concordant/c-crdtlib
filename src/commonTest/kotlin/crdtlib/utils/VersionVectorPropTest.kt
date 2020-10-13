@@ -20,11 +20,9 @@
 package crdtlib.utils
 
 import io.kotest.core.spec.style.StringSpec
-import io.kotest.property.Arb
-import io.kotest.property.arbitrary.int
 import io.kotest.property.forAll
 
-class VersionVectorPropTest: StringSpec({
+class VersionVectorPropTest : StringSpec({
     "deserialize is inverse to serialize" {
         forAll(versionVectorArb) { vv ->
             val vv2 = VersionVector.fromJson(VersionVector(vv).toJson())
@@ -55,7 +53,7 @@ class VersionVectorPropTest: StringSpec({
         }
     }
     "merge is commutative" {
-        forAll(versionVectorArb,versionVectorArb) { vv1, vv2 ->
+        forAll(versionVectorArb, versionVectorArb) { vv1, vv2 ->
             val vv2copy = vv2.copy()
             vv2.update(vv1)
             vv1.update(vv2copy)
@@ -75,7 +73,7 @@ class VersionVectorPropTest: StringSpec({
     }
     "incrementing max" {
         forAll(versionVectorNonMaxArb, clientuidArb) { vv, clientuid ->
-            val incrTS = vv.max() +1
+            val incrTS = vv.max() + 1
             vv.update(Timestamp(clientuid, incrTS))
             incrTS == vv.max()
         }

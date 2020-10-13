@@ -22,7 +22,6 @@ package crdtlib.utils
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 
-
 /**
 * This class represents a version vector.
 */
@@ -34,10 +33,10 @@ class VersionVector {
     */
     private val entries: MutableMap<ClientUId, Int> = mutableMapOf()
 
-    private fun get(uid: ClientUId): Int{
+    private fun get(uid: ClientUId): Int {
         return this.entries.get(uid) ?: Timestamp.CNT_MIN_VALUE
     }
-    
+
     /**
     * Default constructor.
     */
@@ -78,7 +77,7 @@ class VersionVector {
     @Name("updateTs")
     fun update(ts: Timestamp) {
         val curCnt = this.get(ts.uid)
-        if(curCnt < ts.cnt) this.entries.put(ts.uid, ts.cnt)
+        if (curCnt < ts.cnt) this.entries.put(ts.uid, ts.cnt)
     }
 
     /**
@@ -88,7 +87,7 @@ class VersionVector {
     */
     @Name("updateVv")
     fun update(vv: VersionVector) {
-        for((k, v) in vv.entries) {
+        for ((k, v) in vv.entries) {
             val curCnt = this.get(k)
             if (curCnt < v) this.entries.put(k, v)
         }
@@ -103,7 +102,7 @@ class VersionVector {
     fun isSmallerOrEquals(vv: VersionVector): Boolean {
         for ((k, localV) in this.entries) {
             val v = vv.get(k)
-            if(localV > v) return false
+            if (localV > v) return false
         }
         return true
     }
@@ -118,7 +117,7 @@ class VersionVector {
         var isEqual = this.entries.isNotEmpty()
         for ((k, localV) in this.entries) {
             val v = vv.get(k)
-            if(localV > v) return false
+            if (localV > v) return false
             isEqual = isEqual && (localV == v)
         }
         return !isEqual
@@ -133,7 +132,7 @@ class VersionVector {
     fun isGreaterOrEquals(vv: VersionVector): Boolean {
         for ((k, v) in vv.entries) {
             val localV = this.get(k)
-            if(localV < v) return false
+            if (localV < v) return false
         }
         return true
     }
@@ -148,7 +147,7 @@ class VersionVector {
         var isEqual = vv.entries.isNotEmpty()
         for ((k, v) in vv.entries) {
             val localV = this.get(k)
-            if(localV < v) return false
+            if (localV < v) return false
             isEqual = isEqual && (localV == v)
         }
         return !isEqual
@@ -178,10 +177,10 @@ class VersionVector {
         var isLarger = false
         for ((k, localV) in this.entries) {
             val v = vv.get(k)
-            if(localV > v)
+            if (localV > v)
                 // one entry in this object is larger
                 isLarger = true
-            else if(localV < v)
+            else if (localV < v)
                 // one entry in the other vv is larger
                 isSmaller = true
             if (isSmaller && isLarger)
@@ -190,7 +189,7 @@ class VersionVector {
 
         // there are entries in the vv that this one does not have
         if (isLarger && !this.entries.keys.containsAll(vv.entries.keys))
-            return true;
+            return true
 
         // all entries are either (smaller or equal) or (larger or equal)
         return false

@@ -37,19 +37,19 @@ import kotlinx.serialization.json.*
         "increment": [
             (( ClientUId.toJson(), {
                 "first": $value, // $value is an integer
-                "second": Timestamp.toJson() 
+                "second": Timestamp.toJson()
             }, )*( ClientUId.toJson(), {
                 "first": $value, // $value is an integer
-                "second": Timestamp.toJson() 
+                "second": Timestamp.toJson()
             } ))?
         ],
-        "decrement": [ 
+        "decrement": [
             (( ClientUId.toJson(), {
                 "first": $value, // $value is an integer
-                "second": Timestamp.toJson() 
+                "second": Timestamp.toJson()
             }, )*( ClientUId.toJson(), {
                 "first": $value, // $value is an integer
-                "second": Timestamp.toJson() 
+                "second": Timestamp.toJson()
             } ))?
         ]
     },
@@ -62,12 +62,12 @@ class PNCounter : DeltaCRDT<PNCounter> {
     /**
     * A mutable map storing for each client metadata relative to increment operations.
     */
-    private val increment: MutableMap<ClientUId, Pair<Int, Timestamp>> = mutableMapOf();
+    private val increment: MutableMap<ClientUId, Pair<Int, Timestamp>> = mutableMapOf()
 
     /**
     * A mutable map storing for each client metadata relative to decrement operations.
     */
-    private val decrement: MutableMap<ClientUId, Pair<Int, Timestamp>> = mutableMapOf();
+    private val decrement: MutableMap<ClientUId, Pair<Int, Timestamp>> = mutableMapOf()
 
     /**
     * Default constructor.
@@ -81,7 +81,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
     */
     @Name("get")
     fun get(): Int {
-        return this.increment.values.sumBy{ it.first } - this.decrement.values.sumBy{ it.first }
+        return this.increment.values.sumBy { it.first } - this.decrement.values.sumBy { it.first }
     }
 
     /**
@@ -196,12 +196,12 @@ class PNCounter : DeltaCRDT<PNCounter> {
 /**
 * This class is a json transformer for PNCounter, it allows the separation between data and metadata.
 */
-class JsonPNCounterSerializer(private val serializer : KSerializer<PNCounter>) :
+class JsonPNCounterSerializer(private val serializer: KSerializer<PNCounter>) :
         JsonTransformingSerializer<PNCounter>(serializer, "JsonPNCounterSerializer") {
 
     override fun writeTransform(element: JsonElement): JsonElement {
-        val incValue = element.jsonObject.getArray("increment").filter { it.jsonObject.containsKey("first") }.sumBy{ it.jsonObject.getPrimitive("first").int }
-        val decValue = element.jsonObject.getArray("decrement").filter { it.jsonObject.containsKey("first") }.sumBy{ it.jsonObject.getPrimitive("first").int }
+        val incValue = element.jsonObject.getArray("increment").filter { it.jsonObject.containsKey("first") }.sumBy { it.jsonObject.getPrimitive("first").int }
+        val decValue = element.jsonObject.getArray("decrement").filter { it.jsonObject.containsKey("first") }.sumBy { it.jsonObject.getPrimitive("first").int }
         return JsonObject(mapOf("_type" to JsonPrimitive("PNCounter"), "_metadata" to element, "value" to JsonPrimitive(incValue - decValue)))
     }
 

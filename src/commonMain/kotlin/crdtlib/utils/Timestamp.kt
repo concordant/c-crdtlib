@@ -37,7 +37,7 @@ data class Timestamp(val uid: ClientUId, val cnt: Int) {
     **/
     @Name("compareTo")
     operator fun compareTo(other: Timestamp): Int {
-        if(this.cnt != other.cnt)
+        if (this.cnt != other.cnt)
             return this.cnt.compareTo(other.cnt)
         return this.uid.compareTo(other.uid)
     }

@@ -20,7 +20,6 @@
 package crdtlib.crdt
 
 import crdtlib.utils.ClientUId
-import crdtlib.utils.Timestamp
 import crdtlib.utils.SimpleEnvironment
 import crdtlib.utils.VersionVector
 import io.kotest.core.spec.style.StringSpec

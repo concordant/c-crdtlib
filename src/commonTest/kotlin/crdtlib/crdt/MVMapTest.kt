@@ -45,7 +45,7 @@ class MVMapTest : StringSpec({
         map.getInt(key).shouldBeNull()
         map.getString(key).shouldBeNull()
     }
-    
+
     /**
     * This test evaluates the scenario: put get.
     * Call to get should return the value set by the put.
@@ -74,7 +74,7 @@ class MVMapTest : StringSpec({
         map.getInt(key)!!.shouldHaveSingleElement(valueInt)
         map.getString(key)!!.shouldHaveSingleElement(valueString)
     }
-    
+
     /**
     * This test evaluates the scenario: put del get.
     * Call to get should return null.

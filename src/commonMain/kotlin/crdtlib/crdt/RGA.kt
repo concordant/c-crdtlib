@@ -152,7 +152,7 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
     fun get(): List<T> {
         return this.nodes.filter { it.removed == false }.map { it.atom }
     }
-    
+
     /**
     * Generates a delta of operations recorded and not already present in a given context.
     * @param vv the context used as starting point to generate the delta.
@@ -167,7 +167,7 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
         }
         return delta
     }
-    
+
     /**
     * Merges information contained in a given delta into the local replica, the merge is unilateral
     * and only local replica is modified.
@@ -191,13 +191,13 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
                     // There exist nodes with the same anchor.
                     var firstWeakerSiblingNode = siblings.find {
                         it.uid < node.uid }
-                    if (firstWeakerSiblingNode != null){
+                    if (firstWeakerSiblingNode != null) {
                         // insert before first weaker sibling
                         index = this.nodes.indexOf(firstWeakerSiblingNode)
                     } else {
                         // no weaker sibling: find next element up the tree
                         var currNode: RGANode<T> = node
-                        while (currNode.anchor != null){
+                        while (currNode.anchor != null) {
                             val currAnchor = this.nodes.find {
                                 it.uid == currNode.anchor }
                             if (currAnchor == null) {
@@ -209,17 +209,17 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
                                 it.anchor == currNode.anchor }
                             firstWeakerSiblingNode = siblings.find {
                                 it.uid < currNode.uid }
-                            if (firstWeakerSiblingNode != null){
+                            if (firstWeakerSiblingNode != null) {
                                 index = this.nodes.indexOf(firstWeakerSiblingNode)
                                 break
                             }
                         }
-                        if (currNode.anchor == null){
+                        if (currNode.anchor == null) {
                             // reached the root of the tree: append
                             index = this.nodes.size
                         }
                     }
-                } else if (node.anchor != null){
+                } else if (node.anchor != null) {
                     // fast case: no sibling, add right after anchor
                     index = this.nodes.indexOfFirst { it.uid == node.anchor } + 1
                     if (index == 0) {
@@ -231,7 +231,6 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
                     index = 0
                 }
                 this.nodes.add(index, node.copy())
-
             } else if (node.removed) {
                 // This node already exists and foreign node is a tombstone.
                 if (localNode.removed == false) { // Remove-wins.

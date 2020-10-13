@@ -24,9 +24,9 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.string
 import io.kotest.property.forAll
 
-class ClientUIdPropTest: StringSpec({
+class ClientUIdPropTest : StringSpec({
     "compare client unique ids as the name" {
-        forAll(Arb.string(), Arb.string()){ a,b ->
+        forAll(Arb.string(), Arb.string()) { a, b ->
             when {
                 a == b -> ClientUId(a) == ClientUId(b)
                 a < b -> ClientUId(a) < ClientUId(b)
