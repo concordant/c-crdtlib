@@ -392,7 +392,7 @@ class JsonMVMapSerializer(private val serializer: KSerializer<MVMap>) :
                 } else if (key.endsWith(MVMap.INTEGER)) {
                     value.add(JsonPrimitive(tmpPair.jsonObject.getPrimitive("first").intOrNull) as JsonElement)
                 } else {
-                  value.add(tmpPair.jsonObject.get("first") as JsonElement)
+                    value.add(tmpPair.jsonObject.get("first") as JsonElement)
                 }
                 meta.add(tmpPair.jsonObject.getObject("second"))
             }

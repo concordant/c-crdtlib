@@ -116,7 +116,7 @@ class MapTest : StringSpec({
         map.getLWWInt(key).shouldBeNull()
         map.getLWWString(key).shouldBeNull()
     }
- 
+
     /**
     * This test evaluates the scenario: del get.
     * Call to get should return null.
@@ -1178,7 +1178,7 @@ class MapTest : StringSpec({
         map.getMVInt(key).shouldBeNull()
         map.getMVString(key).shouldBeNull()
     }
- 
+
     /**
     * This test evaluates the scenario: del get.
     * Call to get should return null.

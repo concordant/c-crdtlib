@@ -114,7 +114,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
         val op = PNCounter()
         if (amount == 0) return op
         if (amount < 0) return this.increment(-amount, ts)
-      
+
         val count = this.decrement.get(ts.uid)?.first ?: 0
         if (Int.MAX_VALUE - count < amount - 1) {
             throw RuntimeException("PNCounter has reached Int.MAX_VALUE")

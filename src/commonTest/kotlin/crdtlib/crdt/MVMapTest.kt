@@ -111,7 +111,7 @@ class MVMapTest : StringSpec({
         map.getInt(key).shouldBeNull()
         map.getString(key).shouldBeNull()
     }
- 
+
     /**
     * This test evaluates the scenario: del get.
     * Call to get should return null.

@@ -35,7 +35,7 @@ class VersionVector {
     private val entries: MutableMap<ClientUId, Int> = mutableMapOf()
 
     private fun get(uid: ClientUId): Int{
-	return this.entries.get(uid) ?: Timestamp.CNT_MIN_VALUE
+        return this.entries.get(uid) ?: Timestamp.CNT_MIN_VALUE
     }
     
     /**

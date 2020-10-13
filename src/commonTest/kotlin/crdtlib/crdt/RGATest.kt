@@ -276,7 +276,7 @@ class RGATest : StringSpec({
 
         rga2.get().shouldContainExactly('A', 'B')
     }
- 
+
     /**
     * This test evaluates the scenario: insert at 0 twice || insert at 0 twice, merge get.
     * Call to get should return an array containing the four values. Values should be ordered
