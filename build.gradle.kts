@@ -128,8 +128,15 @@ kotlin {
             main = "com.pinterest.ktlint.Main"
             args("-F")
         }
+        register<Copy>("installGitHook") {
+            from("pre-commit")
+            into(".git/hooks")
+            // Kotlin does not support octal litterals
+            fileMode = 7 * 64 + 7 * 8 + 7
+        }
     }
 }
+tasks.getByPath("assemble").dependsOn("installGitHook")
 
 tasks.withType<Test> { useJUnitPlatform() }
 
