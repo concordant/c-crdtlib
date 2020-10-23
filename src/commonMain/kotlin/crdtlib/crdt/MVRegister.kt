@@ -179,8 +179,6 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
 /**
 * This class is a serializer for generic MVRegister.
 */
-@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
-@Serializer(forClass = MVRegister::class)
 class MVRegisterSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
         KSerializer<MVRegister<T>> {
 

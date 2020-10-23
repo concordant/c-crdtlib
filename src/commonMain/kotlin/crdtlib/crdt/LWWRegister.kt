@@ -136,8 +136,6 @@ class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegis
 /**
 * This class is a serializer for generic LWWRegister.
 */
-@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
-@Serializer(forClass = LWWRegister::class)
 class LWWRegisterSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
         KSerializer<LWWRegister<T>> {
 

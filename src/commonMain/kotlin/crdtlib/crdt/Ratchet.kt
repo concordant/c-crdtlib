@@ -117,8 +117,6 @@ class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
 /**
 * This class is a serializer for generic Ratchet.
 */
-@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
-@Serializer(forClass = Ratchet::class)
 class RatchetSerializer<T : Comparable<T>>(private val dataSerializer: KSerializer<T>) :
         KSerializer<Ratchet<T>> {
 

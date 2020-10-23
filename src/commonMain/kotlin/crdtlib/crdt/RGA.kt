@@ -275,8 +275,6 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
 /**
 * This class is a serializer for generic RGANode.
 */
-@Serializer(forClass = RGANode::class)
-@OptIn(ExperimentalSerializationApi::class)
 class RGANodeSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
         KSerializer<RGANode<T>> {
 
@@ -284,7 +282,7 @@ class RGANodeSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
             buildClassSerialDescriptor("RGANodeSerializer") {
         val dataDescriptor = dataSerializer.descriptor
         element("atom", dataDescriptor)
-        element("anchor", RGAUId.serializer().nullable.descriptor)
+        element("anchor", RGAUId.serializer().descriptor)
         element("uid", RGAUId.serializer().descriptor)
         element("ts", Timestamp.serializer().descriptor)
         element("removed", Boolean.serializer().descriptor)
@@ -293,14 +291,13 @@ class RGANodeSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
     override fun serialize(encoder: Encoder, value: RGANode<T>) {
         val output = encoder.beginStructure(descriptor)
         output.encodeSerializableElement(descriptor, 0, dataSerializer, value.atom)
-        output.encodeNullableSerializableElement(descriptor, 1, RGAUId.serializer(), value.anchor)
-        output.encodeSerializableElement(descriptor, 2, RGAUId.serializer().nullable, value.uid)
+        output.encodeSerializableElement(descriptor, 1, RGAUId.serializer().nullable, value.anchor)
+        output.encodeSerializableElement(descriptor, 2, RGAUId.serializer(), value.uid)
         output.encodeSerializableElement(descriptor, 3, Timestamp.serializer(), value.ts)
         output.encodeBooleanElement(descriptor, 4, value.removed)
         output.endStructure(descriptor)
     }
 
-    @OptIn(kotlinx.serialization.InternalSerializationApi::class)
     override fun deserialize(decoder: Decoder): RGANode<T> {
         val input = decoder.beginStructure(descriptor)
         lateinit var atom: T
@@ -328,8 +325,6 @@ class RGANodeSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
 /**
 * This class is a serializer for generic RGA.
 */
-@OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
-@Serializer(forClass = RGA::class)
 class RGASerializer<T : Any>(private val dataSerializer: KSerializer<T>) : KSerializer<RGA<T>> {
 
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("RGASerializer") {
