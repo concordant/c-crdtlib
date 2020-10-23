@@ -23,15 +23,14 @@ import crdtlib.crdt.*
 import crdtlib.utils.*
 import me.ntrrgc.tsGenerator.TypeScriptGenerator
 
-
 fun main(args: Array<String>) {
-    println("declare module 'c-crdtlib' {");
-    println();
-    println("export var crdtlib;");
-    println("export namespace crdtlib {");
-    println();
-    println("export namespace utils {");
-    println();
+    println("declare module 'c-crdtlib' {")
+    println()
+    println("export var crdtlib;")
+    println("export namespace crdtlib {")
+    println()
+    println("export namespace utils {")
+    println()
     println(TypeScriptGenerator(
         rootClasses = setOf(
             ClientUId::class,
@@ -42,10 +41,10 @@ fun main(args: Array<String>) {
             VersionVector::class
         )
     ).definitionsText)
-    println("}");
-    println();
-    println("export namespace crdt {");
-    println();
+    println("}")
+    println()
+    println("export namespace crdt {")
+    println()
     println(TypeScriptGenerator(
         rootClasses = setOf(
             DeltaCRDT::class,
@@ -57,7 +56,7 @@ fun main(args: Array<String>) {
             Ratchet::class
         )
     ).definitionsText)
-    println("}");
-    println("}");
-    println("}");
+    println("}")
+    println("}")
+    println("}")
 }

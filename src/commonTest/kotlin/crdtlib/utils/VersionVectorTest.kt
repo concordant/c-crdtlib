@@ -29,7 +29,7 @@ import io.kotest.matchers.nulls.*
 * Represents a test suite for VersionVector.
 **/
 class VersionVectorTest : StringSpec({
-    
+
     /**
     * This test evaluates that the maximum value of newly created version vector is null.
     **/

@@ -25,10 +25,9 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.*
 import io.kotest.property.forAll
 
-
 val RatchetIntArb = arb { rs ->
     val vs = Arb.int().values(rs)
-    vs.map { v -> Ratchet(v.value)}
+    vs.map { v -> Ratchet(v.value) }
 }
 
 enum class OpType {
@@ -38,20 +37,20 @@ val OperationArb = arb { rs ->
     val typs = Arb.enum<OpType>().values(rs)
 
     val vs = Arb.int().values(rs)
-    typs.zip(vs).map { (t, v) -> Pair(t.value, v.value)}
+    typs.zip(vs).map { (t, v) -> Pair(t.value, v.value) }
 }
 
-class RatchetPropTest: StringSpec({
+class RatchetPropTest : StringSpec({
 
     "deserialize is inverse to serialize" {
         forAll(RatchetIntArb) { r ->
             r.get() == Ratchet.fromJson<Int>(r.toJson()).get()
-            //TODO: After fixing equality, this should also work:
+            // TODO: After fixing equality, this should also work:
             // r == Ratchet.fromJson<Int>(r.toJson())
         }
     }
     "get initial value" {
-        forAll(Arb.string()){ s ->
+        forAll(Arb.string()) { s ->
             s == Ratchet(s).get()
         }
     }
@@ -62,15 +61,15 @@ class RatchetPropTest: StringSpec({
 
             val r = Ratchet(Int.MIN_VALUE)
             ops.map { op ->
-                when(op.first){
+                when (op.first) {
                     OpType.ASSIGN -> r.assign(op.second)
                     OpType.MERGE -> r.merge(Ratchet(op.second))
-                }}
+                } }
             r.get() == maximum
         }
     }
 
-    "merge with deltas"{
+    "merge with deltas" {
         forAll(Arb.list(Arb.int()), Arb.list(Arb.int())) { ops1, ops2 ->
             val m1 = ops1.max() ?: Int.MIN_VALUE
             val m2 = ops2.max() ?: Int.MIN_VALUE

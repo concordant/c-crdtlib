@@ -46,12 +46,12 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
     /**
     * A mutable set storing the different values with their associated timestamp.
     */
-    var entries: MutableSet<Pair<T, Timestamp>> = mutableSetOf();
+    var entries: MutableSet<Pair<T, Timestamp>> = mutableSetOf()
 
     /**
     * A version vector summarizing the entries seen by all values.
     */
-    val causalContext: VersionVector = VersionVector();
+    val causalContext: VersionVector = VersionVector()
 
     /**
     * Default constructor creating a empty register.

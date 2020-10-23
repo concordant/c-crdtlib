@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Git pre-commit hook applying Ktlint on staged files
+# (using user-defined gradle task)
+
+
+STASH_NAME=pre-commit-$(date +%s)-$RANDOM
+if ! git diff-files --quiet ; then
+    # dirty workdir: stash to work on staged files only
+    git stash push -q --keep-index -m "$STASH_NAME"
+fi
+
+echo "Pre-commit hook: Running ktlint (fix)"
+gradle ktlintFix
+RESULT=$?
+# stage modified files
+git add --update
+
+# restore workdir
+# get stash ID (stash{#}) (empty if workdir was clean)
+STASH_ID=$(git stash list | sed -En "s/(stash@\{.*\}).*$STASH_NAME.*/\1/p")
+
+if [[ -n "$STASH_ID" ]] ; then
+    # git stash pop would conflict with changes kept in index
+    # in partially added files : use diff/apply.
+    git diff $STASH_ID^2 $STASH_ID | git apply
+    if [ $? -eq 0 ] ; then
+        git stash drop -q $STASH_ID
+    else
+        echo "Pre-commit hook did conflicting changes (see previous messages)"
+        echo "Previous workdir state is stashed in $STASH_ID: $STASH_NAME"
+    fi
+fi
+
+exit $RESULT

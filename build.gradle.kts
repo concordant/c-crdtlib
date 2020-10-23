@@ -15,7 +15,6 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -30,8 +29,14 @@ repositories {
     maven(url = "https://jitpack.io")
 }
 
-kotlin {
+configurations {
+    val ktlint by creating
+}
+dependencies {
+    "ktlint"("com.pinterest:ktlint:0.36.0")
+}
 
+kotlin {
     jvm() {
         withJava()
         val jvmJar by tasks.getting(org.gradle.jvm.tasks.Jar::class) {
@@ -54,7 +59,7 @@ kotlin {
             languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
         }
 
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 implementation(kotlin("stdlib"))
                 implementation(kotlin("reflect"))
@@ -62,7 +67,7 @@ kotlin {
             }
         }
 
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation("io.kotest:kotest-property:4.1.1")
                 implementation("io.kotest:kotest-assertions-core:4.1.1")
@@ -82,7 +87,6 @@ kotlin {
                 implementation("io.kotest:kotest-property-jvm:4.1.1")
                 implementation("io.kotest:kotest-runner-junit5-jvm:4.1.1")
                 implementation("io.kotest:kotest-assertions-core-jvm:4.1.1")
-
             }
         }
 
@@ -103,8 +107,7 @@ kotlin {
     }
 
     tasks {
-        val dokka by getting(DokkaTask::class) {
-
+        dokka {
             outputFormat = "html"
             outputDirectory = "$buildDir/docs"
 
@@ -112,8 +115,28 @@ kotlin {
                 register("common") {}
             }
         }
+        register<JavaExec>("ktlint") {
+            group = "verification"
+            description = "Ktlint: check"
+            classpath = configurations["ktlint"]
+            main = "com.pinterest.ktlint.Main"
+        }
+        register<JavaExec>("ktlintFix") {
+            group = "verification"
+            description = "Ktlint: fix"
+            classpath = configurations["ktlint"]
+            main = "com.pinterest.ktlint.Main"
+            args("-F")
+        }
+        register<Copy>("installGitHook") {
+            from("pre-commit")
+            into(".git/hooks")
+            // Kotlin does not support octal litterals
+            fileMode = 7 * 64 + 7 * 8 + 7
+        }
     }
 }
+tasks.getByPath("assemble").dependsOn("installGitHook")
 
 tasks.withType<Test> { useJUnitPlatform() }
 

@@ -147,7 +147,6 @@ class MVMap : DeltaCRDT<MVMap> {
         return op
     }
 
-
     /**
     * Puts a key / double value pair into the map.
     * @param key the key that is targeted.
@@ -172,7 +171,6 @@ class MVMap : DeltaCRDT<MVMap> {
         return op
     }
 
-
     /**
     * Puts a key / integer value pair into the map.
     * @param key the key that is targeted.
@@ -196,7 +194,6 @@ class MVMap : DeltaCRDT<MVMap> {
         }
         return op
     }
-
 
     /**
     * Puts a key / string value pair into the map.
@@ -275,7 +272,7 @@ class MVMap : DeltaCRDT<MVMap> {
     * @param vv the context used as starting point to generate the delta.
     * @return the corresponding delta of operations.
     */
-    override fun generateDeltaProtected(vv: VersionVector):  DeltaCRDT<MVMap>{
+    override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<MVMap> {
         var delta = MVMap()
         for ((key, meta) in this.entries) {
             if (meta.any { !vv.contains(it.second) }) {
@@ -392,7 +389,7 @@ class JsonMVMapSerializer(private val serializer: KSerializer<MVMap>) :
                 } else if (key.endsWith(MVMap.INTEGER)) {
                     value.add(JsonPrimitive(tmpPair.jsonObject.getPrimitive("first").intOrNull) as JsonElement)
                 } else {
-                  value.add(tmpPair.jsonObject.get("first") as JsonElement)
+                    value.add(tmpPair.jsonObject.get("first") as JsonElement)
                 }
                 meta.add(tmpPair.jsonObject.getObject("second"))
             }

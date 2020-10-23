@@ -73,7 +73,7 @@ class LWWRegisterTest : StringSpec({
         val ts2 = client.tick()
         val val1 = "value1"
         val val2 = "value2"
-        
+
         val reg = LWWRegister<String>(val1, ts2)
         reg.assign(val2, ts1)
 

@@ -24,7 +24,6 @@ import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
-import kotlin.reflect.KClass
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 
@@ -51,7 +50,7 @@ class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegis
     * Constructor creating a copy of a given register.
     * @param other the register that should be copy.
     */
-    constructor(other: LWWRegister<T>): this(other.value, other.ts) {
+    constructor(other: LWWRegister<T>) : this(other.value, other.ts) {
     }
 
     /**

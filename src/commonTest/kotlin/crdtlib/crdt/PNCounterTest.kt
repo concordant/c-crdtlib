@@ -55,7 +55,6 @@ class PNCounterTest : StringSpec({
         cnt.get().shouldBe(inc)
     }
 
-
     /**
     * This test evaluates the scenario: decrement get.
     * Call to get should return the inverse of value set by decrement.
@@ -206,7 +205,7 @@ class PNCounterTest : StringSpec({
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
-        val inc = 11 
+        val inc = 11
         val cnt1 = PNCounter()
         val cnt2 = PNCounter()
 
@@ -226,7 +225,7 @@ class PNCounterTest : StringSpec({
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
-        val dec = 11 
+        val dec = 11
         val cnt1 = PNCounter()
         val cnt2 = PNCounter()
 
@@ -249,8 +248,8 @@ class PNCounterTest : StringSpec({
         val client2 = SimpleEnvironment(uid2)
         val ts1 = client1.tick()
         val ts2 = client2.tick()
-        val inc1 = 10 
-        val inc2 = 1 
+        val inc1 = 10
+        val inc2 = 1
         val cnt1 = PNCounter()
         val cnt2 = PNCounter()
 
@@ -272,8 +271,8 @@ class PNCounterTest : StringSpec({
         val client2 = SimpleEnvironment(uid2)
         val ts1 = client1.tick()
         val ts2 = client2.tick()
-        val inc1 = 10 
-        val inc2 = 1 
+        val inc1 = 10
+        val inc2 = 1
         val cnt1 = PNCounter()
         val cnt2 = PNCounter()
 
@@ -295,8 +294,8 @@ class PNCounterTest : StringSpec({
         val client2 = SimpleEnvironment(uid2)
         val ts1 = client1.tick()
         val ts2 = client2.tick()
-        val dec1 = 10 
-        val dec2 = 1 
+        val dec1 = 10
+        val dec2 = 1
         val cnt1 = PNCounter()
         val cnt2 = PNCounter()
 
@@ -318,8 +317,8 @@ class PNCounterTest : StringSpec({
         val client2 = SimpleEnvironment(uid2)
         val ts1 = client1.tick()
         val ts2 = client2.tick()
-        val dec1 = 10 
-        val dec2 = 1 
+        val dec1 = 10
+        val dec2 = 1
         val cnt1 = PNCounter()
         val cnt2 = PNCounter()
 
@@ -420,7 +419,7 @@ class PNCounterTest : StringSpec({
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
-        val inc = 11 
+        val inc = 11
         val cnt1 = PNCounter()
         val cnt2 = PNCounter()
 
@@ -428,7 +427,7 @@ class PNCounterTest : StringSpec({
         cnt2.merge(incOp)
         cnt1.merge(incOp)
 
-        cnt2.get().shouldBe(11) 
+        cnt2.get().shouldBe(11)
     }
 
     /**
@@ -439,7 +438,7 @@ class PNCounterTest : StringSpec({
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
-        val dec = 11 
+        val dec = 11
         val cnt1 = PNCounter()
         val cnt2 = PNCounter()
 
@@ -460,8 +459,8 @@ class PNCounterTest : StringSpec({
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
         val ts2 = client.tick()
-        val dec = 11 
-        val inc = 22 
+        val dec = 11
+        val inc = 22
         val cnt1 = PNCounter()
         val cnt2 = PNCounter()
 
@@ -512,7 +511,7 @@ class PNCounterTest : StringSpec({
     "empty JSON serialization" {
         val cnt = PNCounter()
 
-        val cntJson = cnt.toJson();
+        val cntJson = cnt.toJson()
 
         cntJson.shouldBe("""{"_type":"PNCounter","_metadata":{"increment":[],"decrement":[]},"value":0}""")
     }

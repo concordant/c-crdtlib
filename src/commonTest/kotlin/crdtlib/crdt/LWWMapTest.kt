@@ -1178,6 +1178,6 @@ class LWWMapTest : StringSpec({
         mapJson.getString("key2").shouldBeNull()
         mapJson.getString("key3").shouldBe("value3")
         mapJson.getBoolean("key4").shouldBe(true)
-        mapJson.getDouble("key5").shouldBe(3.14159) 
+        mapJson.getDouble("key5").shouldBe(3.14159)
     }
 })

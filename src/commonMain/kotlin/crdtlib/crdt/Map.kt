@@ -65,7 +65,7 @@ class Map : DeltaCRDT<Map> {
     */
     private val mvMap: MVMap = MVMap()
 
-    private val cntMap: MutableMap<String, PNCounter> = mutableMapOf() 
+    private val cntMap: MutableMap<String, PNCounter> = mutableMapOf()
 
     /**
     * Default constructor.
@@ -186,7 +186,6 @@ class Map : DeltaCRDT<Map> {
         return op
     }
 
-
     /**
     * Puts a key / double value pair into the map.
     * @param key the key that is targeted.
@@ -201,7 +200,6 @@ class Map : DeltaCRDT<Map> {
         return op
     }
 
-
     /**
     * Puts a key / integer value pair into the map.
     * @param key the key that is targeted.
@@ -215,7 +213,6 @@ class Map : DeltaCRDT<Map> {
         op.lwwMap.merge(this.lwwMap.put(key, value, ts))
         return op
     }
-
 
     /**
     * Puts a key / string value pair into the map.
@@ -245,7 +242,6 @@ class Map : DeltaCRDT<Map> {
         return op
     }
 
-
     /**
     * Puts a key / double value pair into the map.
     * @param key the key that is targeted.
@@ -260,7 +256,6 @@ class Map : DeltaCRDT<Map> {
         return op
     }
 
-
     /**
     * Puts a key / integer value pair into the map.
     * @param key the key that is targeted.
@@ -274,7 +269,6 @@ class Map : DeltaCRDT<Map> {
         op.mvMap.merge(this.mvMap.put(key, value, ts))
         return op
     }
-
 
     /**
     * Puts a key / string value pair into the map.
@@ -544,7 +538,7 @@ class JsonMapSerializer(private val serializer: KSerializer<Map>) :
                 } else if (key.endsWith(MVMap.INTEGER)) {
                     value.add(JsonPrimitive(tmpPair.jsonObject.getPrimitive("first").intOrNull) as JsonElement)
                 } else {
-                  value.add(tmpPair.jsonObject.get("first") as JsonElement)
+                    value.add(tmpPair.jsonObject.get("first") as JsonElement)
                 }
                 meta.add(tmpPair.jsonObject.getObject("second"))
             }
@@ -556,8 +550,8 @@ class JsonMapSerializer(private val serializer: KSerializer<Map>) :
         val cnt = element.jsonObject.getObject("cntMap")
         val cntMetadata = mutableMapOf<String, JsonElement>()
         for ((key, meta) in cnt) {
-            val incValue = meta.jsonObject.getArray("increment").filter { it.jsonObject.containsKey("first") }.sumBy{ it.jsonObject.getPrimitive("first").int }
-            val decValue = meta.jsonObject.getArray("decrement").filter { it.jsonObject.containsKey("first") }.sumBy{ it.jsonObject.getPrimitive("first").int }
+            val incValue = meta.jsonObject.getArray("increment").filter { it.jsonObject.containsKey("first") }.sumBy { it.jsonObject.getPrimitive("first").int }
+            val decValue = meta.jsonObject.getArray("decrement").filter { it.jsonObject.containsKey("first") }.sumBy { it.jsonObject.getPrimitive("first").int }
             cntMetadata.put(key, meta)
             values.put(key + Map.PNCOUNTER, JsonPrimitive(incValue - decValue))
         }
