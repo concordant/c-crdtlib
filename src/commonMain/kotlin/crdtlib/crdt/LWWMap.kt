@@ -48,6 +48,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     /**
     * A mutable map storing metadata relative to each key.
     */
+    @Required
     private val entries: MutableMap<String, Pair<String?, Timestamp>> = mutableMapOf()
 
     /**
@@ -265,7 +266,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     @Name("toJson")
     fun toJson(): String {
         val jsonSerializer = JsonLWWMapSerializer(LWWMap.serializer())
-        return Json.stringify<LWWMap>(jsonSerializer, this)
+        return Json.encodeToString<LWWMap>(jsonSerializer, this)
     }
 
     companion object {
@@ -302,7 +303,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
         @Name("fromJson")
         fun fromJson(json: String): LWWMap {
             val jsonSerializer = JsonLWWMapSerializer(LWWMap.serializer())
-            return Json.parse(jsonSerializer, json)
+            return Json.decodeFromString(jsonSerializer, json)
         }
     }
 }
@@ -311,13 +312,13 @@ class LWWMap : DeltaCRDT<LWWMap> {
 * This class is a json transformer for LWWMap, it allows the separation between data and metadata.
 */
 class JsonLWWMapSerializer(private val serializer: KSerializer<LWWMap>) :
-        JsonTransformingSerializer<LWWMap>(serializer, "JsonLWWMapSerializer") {
+        JsonTransformingSerializer<LWWMap>(serializer) {
 
-    override fun writeTransform(element: JsonElement): JsonElement {
+    override fun transformSerialize(element: JsonElement): JsonElement {
         val values = mutableMapOf<String, JsonElement>()
         val entries = mutableMapOf<String, JsonElement>()
-        for ((key, entry) in element.jsonObject.getObject("entries")) {
-            var value = entry.jsonObject.getPrimitive("first")
+        for ((key, entry) in element.jsonObject.get("entries")!!.jsonObject) {
+            var value = entry.jsonObject.get("first")!!.jsonPrimitive
             if (key.endsWith(LWWMap.BOOLEAN)) {
                 value = JsonPrimitive(value.booleanOrNull)
             } else if (key.endsWith(LWWMap.DOUBLE)) {
@@ -326,17 +327,17 @@ class JsonLWWMapSerializer(private val serializer: KSerializer<LWWMap>) :
                 value = JsonPrimitive(value.intOrNull)
             }
             values.put(key, value as JsonElement)
-            entries.put(key, entry.jsonObject.getObject("second"))
+            entries.put(key, entry.jsonObject.get("second")!!.jsonObject)
         }
         val metadata = JsonObject(mapOf("entries" to JsonObject(entries.toMap())))
         return JsonObject(mapOf("_type" to JsonPrimitive("LWWMap"), "_metadata" to metadata).plus(values))
     }
 
-    override fun readTransform(element: JsonElement): JsonElement {
-        val metadata = element.jsonObject.getObject("_metadata")
+    override fun transformDeserialize(element: JsonElement): JsonElement {
+        val metadata = element.jsonObject.get("_metadata")!!.jsonObject
         val entries = mutableMapOf<String, JsonElement>()
-        for ((key, entry) in metadata.getObject("entries")) {
-            var value = element.jsonObject.getPrimitive(key)
+        for ((key, entry) in metadata.get("entries")!!.jsonObject) {
+            var value = element.jsonObject.get(key)!!.jsonPrimitive
             if (value !is JsonNull && !key.endsWith(LWWMap.STRING)) {
                 value = JsonPrimitive(value.toString())
             }

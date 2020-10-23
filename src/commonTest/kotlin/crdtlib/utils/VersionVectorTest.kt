@@ -78,7 +78,7 @@ class VersionVectorTest : StringSpec({
     * version vector.
     * Calls to contains should return false.
     **/
-    "empty version vector contains no negative timestamp except Timestamp.CNT_MIN_VALUE" {
+    "empty version vector contains no negative timestamp except Timestamp CNT_MIN_VALUE" {
         val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, Timestamp.CNT_MIN_VALUE)
         val ts2 = Timestamp(uid, Timestamp.CNT_MIN_VALUE + 1)

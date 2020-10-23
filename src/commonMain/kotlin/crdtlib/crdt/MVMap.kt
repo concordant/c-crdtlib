@@ -51,11 +51,13 @@ class MVMap : DeltaCRDT<MVMap> {
     /**
     * A mutable map storing metadata relative to each key.
     */
+    @Required
     private val entries: MutableMap<String, MutableSet<Pair<String?, Timestamp>>> = mutableMapOf()
 
     /**
     * A causal context summarizing executed operations.
     */
+    @Required
     private var causalContext: VersionVector = VersionVector()
 
     /**
@@ -326,7 +328,7 @@ class MVMap : DeltaCRDT<MVMap> {
     @Name("toJson")
     fun toJson(): String {
         val jsonSerializer = JsonMVMapSerializer(MVMap.serializer())
-        return Json.stringify<MVMap>(jsonSerializer, this)
+        return Json.encodeToString<MVMap>(jsonSerializer, this)
     }
 
     companion object {
@@ -363,7 +365,7 @@ class MVMap : DeltaCRDT<MVMap> {
         @Name("fromJson")
         fun fromJson(json: String): MVMap {
             val jsonSerializer = JsonMVMapSerializer(MVMap.serializer())
-            return Json.parse(jsonSerializer, json)
+            return Json.decodeFromString(jsonSerializer, json)
         }
     }
 }
@@ -372,26 +374,26 @@ class MVMap : DeltaCRDT<MVMap> {
 * This class is a json transformer for MVMap, it allows the separation between data and metadata.
 */
 class JsonMVMapSerializer(private val serializer: KSerializer<MVMap>) :
-        JsonTransformingSerializer<MVMap>(serializer, "JsonMVMapSerializer") {
+        JsonTransformingSerializer<MVMap>(serializer) {
 
-    override fun writeTransform(element: JsonElement): JsonElement {
+    override fun transformSerialize(element: JsonElement): JsonElement {
         val values = mutableMapOf<String, JsonElement>()
         val entries = mutableMapOf<String, JsonElement>()
-        val causalContext = element.jsonObject.getObject("causalContext")
-        for ((key, entry) in element.jsonObject.getObject("entries")) {
+        val causalContext = element.jsonObject["causalContext"]!!.jsonObject
+        for ((key, entry) in element.jsonObject["entries"]!!.jsonObject) {
             val value = mutableListOf<JsonElement>()
             val meta = mutableListOf<JsonElement>()
             for (tmpPair in entry.jsonArray) {
                 if (key.endsWith(MVMap.BOOLEAN)) {
-                    value.add(JsonPrimitive(tmpPair.jsonObject.getPrimitive("first").booleanOrNull) as JsonElement)
+                    value.add(JsonPrimitive(tmpPair.jsonObject["first"]?.jsonPrimitive?.booleanOrNull) as JsonElement)
                 } else if (key.endsWith(MVMap.DOUBLE)) {
-                    value.add(JsonPrimitive(tmpPair.jsonObject.getPrimitive("first").doubleOrNull) as JsonElement)
+                    value.add(JsonPrimitive(tmpPair.jsonObject["first"]?.jsonPrimitive?.doubleOrNull) as JsonElement)
                 } else if (key.endsWith(MVMap.INTEGER)) {
-                    value.add(JsonPrimitive(tmpPair.jsonObject.getPrimitive("first").intOrNull) as JsonElement)
+                    value.add(JsonPrimitive(tmpPair.jsonObject["first"]?.jsonPrimitive?.intOrNull) as JsonElement)
                 } else {
-                    value.add(tmpPair.jsonObject.get("first") as JsonElement)
+                    value.add(tmpPair.jsonObject["first"] as JsonElement)
                 }
-                meta.add(tmpPair.jsonObject.getObject("second"))
+                meta.add(tmpPair.jsonObject["second"]!!.jsonObject)
             }
             values.put(key, JsonArray(value))
             entries.put(key, JsonArray(meta))
@@ -400,12 +402,12 @@ class JsonMVMapSerializer(private val serializer: KSerializer<MVMap>) :
         return JsonObject(mapOf("_type" to JsonPrimitive("MVMap"), "_metadata" to metadata).plus(values))
     }
 
-    override fun readTransform(element: JsonElement): JsonElement {
-        val metadata = element.jsonObject.getObject("_metadata")
-        val causalContext = metadata.getObject("causalContext")
+    override fun transformDeserialize(element: JsonElement): JsonElement {
+        val metadata = element.jsonObject["_metadata"]!!.jsonObject
+        val causalContext = metadata["causalContext"]!!.jsonObject
         val entries = mutableMapOf<String, JsonElement>()
-        for ((key, meta) in metadata.getObject("entries")) {
-            val values = element.jsonObject.getArray(key)
+        for ((key, meta) in metadata["entries"]!!.jsonObject) {
+            val values = element.jsonObject[key]!!.jsonArray
             val tmpEntries = mutableListOf<JsonElement>()
             var idx = 0
             for (ts in meta.jsonArray) {

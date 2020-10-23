@@ -25,6 +25,11 @@ import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
 import kotlinx.serialization.*
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.encoding.CompositeDecoder
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
 
 /**
@@ -106,11 +111,11 @@ class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegis
     * Serializes this crdt LWW register to a json string.
     * @return the resulted json string.
     */
-    @OptIn(ImplicitReflectionSerializer::class)
+    @OptIn(kotlinx.serialization.InternalSerializationApi::class)
     @Name("toJson")
     fun toJson(): String {
         val jsonSerializer = JsonLWWRegisterSerializer(LWWRegister.serializer(this.value::class.serializer() as KSerializer<T>))
-        return Json.stringify<LWWRegister<T>>(jsonSerializer, this)
+        return Json.encodeToString<LWWRegister<T>>(jsonSerializer, this)
     }
 
     companion object {
@@ -119,11 +124,11 @@ class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegis
         * @param json the given json string.
         * @return the resulted LWW register.
         */
-        @OptIn(ImplicitReflectionSerializer::class)
+        @OptIn(kotlinx.serialization.InternalSerializationApi::class)
         @Name("fromJson")
         inline fun <reified T : Any> fromJson(json: String): LWWRegister<T> {
             val jsonSerializer = JsonLWWRegisterSerializer(LWWRegister.serializer(T::class.serializer()))
-            return Json.parse(jsonSerializer, json)
+            return Json.decodeFromString(jsonSerializer, json)
         }
     }
 }
@@ -131,11 +136,10 @@ class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegis
 /**
 * This class is a serializer for generic LWWRegister.
 */
-@Serializer(forClass = LWWRegister::class)
 class LWWRegisterSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
         KSerializer<LWWRegister<T>> {
 
-    override val descriptor: SerialDescriptor = SerialDescriptor("LWWRegisterSerializer") {
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("LWWRegisterSerializer") {
         element("value", dataSerializer.descriptor)
         element("ts", Timestamp.serializer().descriptor)
     }
@@ -153,7 +157,7 @@ class LWWRegisterSerializer<T : Any>(private val dataSerializer: KSerializer<T>)
         lateinit var ts: Timestamp
         loop@ while (true) {
             when (val idx = input.decodeElementIndex(descriptor)) {
-                CompositeDecoder.READ_DONE -> break@loop
+                CompositeDecoder.DECODE_DONE -> break@loop
                 0 -> value = input.decodeSerializableElement(descriptor, idx, dataSerializer)
                 1 -> ts = input.decodeSerializableElement(descriptor, idx, Timestamp.serializer())
                 else -> throw SerializationException("Unknown index $idx")
@@ -168,17 +172,17 @@ class LWWRegisterSerializer<T : Any>(private val dataSerializer: KSerializer<T>)
 * This class is a json transformer for LWWRegister, it allows the separation between data and metadata.
 */
 class JsonLWWRegisterSerializer<T : Any>(private val serializer: KSerializer<LWWRegister<T>>) :
-        JsonTransformingSerializer<LWWRegister<T>>(serializer, "JsonLWWRegisterSerializer") {
+        JsonTransformingSerializer<LWWRegister<T>>(serializer) {
 
-    override fun writeTransform(element: JsonElement): JsonElement {
-        val value = element.jsonObject.get("value") as JsonElement
-        val metadata = element.jsonObject.getObject("ts")
+    override fun transformSerialize(element: JsonElement): JsonElement {
+        val value = element.jsonObject["value"] as JsonElement
+        val metadata = element.jsonObject["ts"]!!.jsonObject
         return JsonObject(mapOf("_type" to JsonPrimitive("LWWRegister"), "_metadata" to metadata, "value" to value))
     }
 
-    override fun readTransform(element: JsonElement): JsonElement {
-        val value = element.jsonObject.get("value") as JsonElement
-        val ts = element.jsonObject.getObject("_metadata")
+    override fun transformDeserialize(element: JsonElement): JsonElement {
+        val value = element.jsonObject["value"] as JsonElement
+        val ts = element.jsonObject["_metadata"]!!.jsonObject
         return JsonObject(mapOf("value" to value, "ts" to ts))
     }
 }

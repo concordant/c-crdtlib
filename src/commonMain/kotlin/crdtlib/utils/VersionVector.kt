@@ -20,7 +20,6 @@
 package crdtlib.utils
 
 import kotlinx.serialization.*
-import kotlinx.serialization.json.*
 
 /**
 * This class represents a version vector.
@@ -31,6 +30,7 @@ class VersionVector {
     /**
     * A mutable map storing for each client the greatest timestamp value seen until now.
     */
+    @Required
     private val entries: MutableMap<ClientUId, Int> = mutableMapOf()
 
     private fun get(uid: ClientUId): Int {
@@ -56,7 +56,7 @@ class VersionVector {
     */
     @Name("max")
     fun max(): Int {
-        return this.entries.values.max() ?: Timestamp.CNT_MIN_VALUE
+        return this.entries.values.maxOrNull() ?: Timestamp.CNT_MIN_VALUE
     }
 
     /**
@@ -226,8 +226,7 @@ class VersionVector {
     */
     @Name("toJson")
     fun toJson(): String {
-        val JSON = Json(JsonConfiguration.Stable)
-        return JSON.stringify(VersionVector.serializer(), this)
+        return Json.encodeToString(VersionVector.serializer(), this)
     }
 
     companion object {
@@ -238,8 +237,7 @@ class VersionVector {
         */
         @Name("fromJson")
         fun fromJson(json: String): VersionVector {
-            val JSON = Json(JsonConfiguration.Stable)
-            return JSON.parse(VersionVector.serializer(), json)
+            return Json.decodeFromString(VersionVector.serializer(), json)
         }
     }
 }

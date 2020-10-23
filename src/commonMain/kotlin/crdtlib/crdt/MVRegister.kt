@@ -27,6 +27,11 @@ import crdtlib.utils.VersionVector
 import kotlin.reflect.KClass
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.*
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.encoding.CompositeDecoder
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
 
 /**
@@ -149,11 +154,11 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
     * Serializes this crdt MV register to a json string.
     * @return the resulted json string.
     */
-    @OptIn(ImplicitReflectionSerializer::class)
+    @OptIn(kotlinx.serialization.InternalSerializationApi::class)
     @Name("toJson")
     fun toJson(kclass: KClass<T>): String {
         val jsonSerializer = JsonMVRegisterSerializer(MVRegister.serializer(kclass.serializer()))
-        return Json.stringify<MVRegister<T>>(jsonSerializer, this)
+        return Json.encodeToString<MVRegister<T>>(jsonSerializer, this)
     }
 
     companion object {
@@ -162,11 +167,11 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
         * @param json the given json string.
         * @return the resulted MV register.
         */
-        @OptIn(ImplicitReflectionSerializer::class)
+        @OptIn(kotlinx.serialization.InternalSerializationApi::class)
         @Name("fromJson")
         fun <T : Any> fromJson(kclass: KClass<T>, json: String): MVRegister<T> {
             val jsonSerializer = JsonMVRegisterSerializer(MVRegister.serializer(kclass.serializer()))
-            return Json.parse(jsonSerializer, json)
+            return Json.decodeFromString(jsonSerializer, json)
         }
     }
 }
@@ -174,11 +179,10 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
 /**
 * This class is a serializer for generic MVRegister.
 */
-@Serializer(forClass = MVRegister::class)
 class MVRegisterSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
         KSerializer<MVRegister<T>> {
 
-    override val descriptor: SerialDescriptor = SerialDescriptor("MVRegisterSerializer") {
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("MVRegisterSerializer") {
         element("entries", SetSerializer(PairSerializer(dataSerializer, Timestamp.serializer())).descriptor)
         element("causalContext", VersionVector.serializer().descriptor)
     }
@@ -196,7 +200,7 @@ class MVRegisterSerializer<T : Any>(private val dataSerializer: KSerializer<T>) 
         lateinit var causalContext: VersionVector
         loop@ while (true) {
             when (val idx = input.decodeElementIndex(descriptor)) {
-                CompositeDecoder.READ_DONE -> break@loop
+                CompositeDecoder.DECODE_DONE -> break@loop
                 0 -> entries = input.decodeSerializableElement(descriptor, idx, SetSerializer(PairSerializer(dataSerializer, Timestamp.serializer())))
                 1 -> causalContext = input.decodeSerializableElement(descriptor, idx, VersionVector.serializer())
                 else -> throw SerializationException("Unknown index $idx")
@@ -211,29 +215,29 @@ class MVRegisterSerializer<T : Any>(private val dataSerializer: KSerializer<T>) 
 * This class is a json transformer for MVRegister, it allows the separation between data and metadata.
 */
 class JsonMVRegisterSerializer<T : Any>(private val serializer: KSerializer<MVRegister<T>>) :
-        JsonTransformingSerializer<MVRegister<T>>(serializer, "JsonMVRegisterSerializer") {
+        JsonTransformingSerializer<MVRegister<T>>(serializer) {
 
-    override fun writeTransform(element: JsonElement): JsonElement {
+    override fun transformSerialize(element: JsonElement): JsonElement {
         val entries = mutableListOf<JsonElement>()
         val value = mutableListOf<JsonElement>()
-        for (tmpPair in element.jsonObject.getArray("entries")) {
-            value.add(tmpPair.jsonObject.get("first") as JsonElement)
-            entries.add(tmpPair.jsonObject.getObject("second"))
+        for (tmpPair in element.jsonObject["entries"]!!.jsonArray) {
+            value.add(tmpPair.jsonObject["first"] as JsonElement)
+            entries.add(tmpPair.jsonObject["second"]!!.jsonObject)
         }
-        val metadata = JsonObject(mapOf("entries" to JsonArray(entries), "causalContext" to element.jsonObject.getObject("causalContext")))
+        val metadata = JsonObject(mapOf("entries" to JsonArray(entries), "causalContext" to element.jsonObject["causalContext"]!!.jsonObject))
         return JsonObject(mapOf("_type" to JsonPrimitive("MVRegister"), "_metadata" to metadata, "value" to JsonArray(value)))
     }
 
-    override fun readTransform(element: JsonElement): JsonElement {
+    override fun transformDeserialize(element: JsonElement): JsonElement {
         val entries = mutableListOf<JsonElement>()
-        val metadata = element.jsonObject.getObject("_metadata")
-        val value = element.jsonObject.getArray("value")
+        val metadata = element.jsonObject["_metadata"]!!.jsonObject
+        val value = element.jsonObject["value"]!!.jsonArray
         var idxValue = 0
-        for (tmpEntry in metadata.getArray("entries")) {
+        for (tmpEntry in metadata["entries"]!!.jsonArray) {
             entries.add(JsonObject(mapOf("first" to value[idxValue], "second" to tmpEntry)))
             idxValue++
         }
-        val causalContext = metadata.getObject("causalContext")
+        val causalContext = metadata["causalContext"]!!.jsonObject
         return JsonObject(mapOf("entries" to JsonArray(entries), "causalContext" to causalContext))
     }
 }

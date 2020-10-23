@@ -27,6 +27,11 @@ import crdtlib.utils.VersionVector
 import kotlin.reflect.KClass
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.*
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.encoding.CompositeDecoder
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.internal.*
 import kotlinx.serialization.json.*
 
@@ -245,11 +250,11 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
     * Serializes this crdt rga to a json string.
     * @return the resulted json string.
     */
-    @OptIn(ImplicitReflectionSerializer::class)
+    @OptIn(kotlinx.serialization.InternalSerializationApi::class)
     @Name("toJson")
     fun toJson(kclass: KClass<T>): String {
         val jsonSerializer = JsonRGASerializer(RGA.serializer(kclass.serializer()))
-        return Json.stringify<RGA<T>>(jsonSerializer, this)
+        return Json.encodeToString<RGA<T>>(jsonSerializer, this)
     }
 
     companion object {
@@ -258,11 +263,11 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
         * @param json the given json string.
         * @return the resulted crdt rga.
         */
-        @OptIn(ImplicitReflectionSerializer::class)
+        @OptIn(kotlinx.serialization.InternalSerializationApi::class)
         @Name("fromJson")
         fun <T : Any> fromJson(kclass: KClass<T>, json: String): RGA<T> {
             val jsonSerializer = JsonRGASerializer(RGA.serializer(kclass.serializer()))
-            return Json.parse(jsonSerializer, json)
+            return Json.decodeFromString(jsonSerializer, json)
         }
     }
 }
@@ -270,11 +275,11 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
 /**
 * This class is a serializer for generic RGANode.
 */
-@Serializer(forClass = RGANode::class)
 class RGANodeSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
         KSerializer<RGANode<T>> {
 
-    override val descriptor: SerialDescriptor = SerialDescriptor("RGANodeSerializer") {
+        override val descriptor: SerialDescriptor =
+            buildClassSerialDescriptor("RGANodeSerializer") {
         val dataDescriptor = dataSerializer.descriptor
         element("atom", dataDescriptor)
         element("anchor", RGAUId.serializer().descriptor)
@@ -286,14 +291,13 @@ class RGANodeSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
     override fun serialize(encoder: Encoder, value: RGANode<T>) {
         val output = encoder.beginStructure(descriptor)
         output.encodeSerializableElement(descriptor, 0, dataSerializer, value.atom)
-        output.encodeNullableSerializableElement(descriptor, 1, RGAUId.serializer(), value.anchor)
+        output.encodeSerializableElement(descriptor, 1, RGAUId.serializer().nullable, value.anchor)
         output.encodeSerializableElement(descriptor, 2, RGAUId.serializer(), value.uid)
         output.encodeSerializableElement(descriptor, 3, Timestamp.serializer(), value.ts)
         output.encodeBooleanElement(descriptor, 4, value.removed)
         output.endStructure(descriptor)
     }
 
-    @OptIn(kotlinx.serialization.InternalSerializationApi::class)
     override fun deserialize(decoder: Decoder): RGANode<T> {
         val input = decoder.beginStructure(descriptor)
         lateinit var atom: T
@@ -303,10 +307,10 @@ class RGANodeSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
         var removed = true
         loop@ while (true) {
             when (val idx = input.decodeElementIndex(descriptor)) {
-                CompositeDecoder.READ_DONE -> break@loop
+                CompositeDecoder.DECODE_DONE -> break@loop
 
                 0 -> atom = input.decodeSerializableElement(descriptor, idx, dataSerializer)
-                1 -> anchor = input.decodeNullableSerializableElement(descriptor, idx, NullableSerializer(RGAUId.serializer()))
+                1 -> anchor = input.decodeSerializableElement(descriptor, idx, RGAUId.serializer().nullable)
                 2 -> uid = input.decodeSerializableElement(descriptor, idx, RGAUId.serializer())
                 3 -> ts = input.decodeSerializableElement(descriptor, idx, Timestamp.serializer())
                 4 -> removed = input.decodeBooleanElement(descriptor, idx)
@@ -321,10 +325,9 @@ class RGANodeSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
 /**
 * This class is a serializer for generic RGA.
 */
-@Serializer(forClass = RGA::class)
 class RGASerializer<T : Any>(private val dataSerializer: KSerializer<T>) : KSerializer<RGA<T>> {
 
-    override val descriptor: SerialDescriptor = SerialDescriptor("RGASerializer") {
+    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("RGASerializer") {
         val nodeSerializer = RGANode.serializer(dataSerializer)
         element("nodes", ListSerializer(nodeSerializer).descriptor)
     }
@@ -342,7 +345,7 @@ class RGASerializer<T : Any>(private val dataSerializer: KSerializer<T>) : KSeri
         lateinit var nodes: List<RGANode<T>>
         loop@ while (true) {
             when (val idx = input.decodeElementIndex(descriptor)) {
-                CompositeDecoder.READ_DONE -> break@loop
+                CompositeDecoder.DECODE_DONE -> break@loop
                 0 -> nodes = input.decodeSerializableElement(descriptor, idx, ListSerializer(nodeSerializer))
                 else -> throw SerializationException("Unknown index $idx")
             }
@@ -356,13 +359,13 @@ class RGASerializer<T : Any>(private val dataSerializer: KSerializer<T>) : KSeri
 * This class is a json transformer for RGA, it allows the separation between data and metadata.
 */
 class JsonRGASerializer<T : Any>(private val serializer: KSerializer<RGA<T>>) :
-        JsonTransformingSerializer<RGA<T>>(serializer, "JsonRGASerializer") {
+        JsonTransformingSerializer<RGA<T>>(serializer) {
 
-    override fun writeTransform(element: JsonElement): JsonElement {
+    override fun transformSerialize(element: JsonElement): JsonElement {
         val metadata = mutableListOf<JsonElement>()
         val value = mutableListOf<JsonElement>()
-        for (tmpNode in element.jsonObject.getArray("nodes")) {
-            val removed = tmpNode.jsonObject.getPrimitive("removed").boolean
+        for (tmpNode in element.jsonObject.get("nodes")!!.jsonArray) {
+            val removed = tmpNode.jsonObject.get("removed")!!.jsonPrimitive.boolean
             var transformedNode = tmpNode
             if (removed == false) {
                 transformedNode = JsonObject(tmpNode.jsonObject.filterNot { it.key == "atom" })
@@ -373,12 +376,12 @@ class JsonRGASerializer<T : Any>(private val serializer: KSerializer<RGA<T>>) :
         return JsonObject(mapOf("_type" to JsonPrimitive("RGA"), "_metadata" to JsonArray(metadata), "value" to JsonArray(value)))
     }
 
-    override fun readTransform(element: JsonElement): JsonElement {
-        val value = element.jsonObject.getArray("value")
+    override fun transformDeserialize(element: JsonElement): JsonElement {
+        val value = element.jsonObject.get("value")!!.jsonArray
         val nodes = mutableListOf<JsonElement>()
         var idxValue = 0
-        for (tmpNode in element.jsonObject.getArray("_metadata")) {
-            val removed = tmpNode.jsonObject.getPrimitive("removed").boolean
+        for (tmpNode in element.jsonObject.get("_metadata")!!.jsonArray) {
+            val removed = tmpNode.jsonObject.get("removed")!!.jsonPrimitive.boolean
             var transformedNode = tmpNode
             if (removed == false) {
                 transformedNode = JsonObject(tmpNode.jsonObject.plus("atom" to value[idxValue]))

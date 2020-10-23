@@ -44,7 +44,7 @@ data class ClientUId(private val name: String) {
     */
     @Name("toJson")
     fun toJson(): String {
-        return Json.stringify(ClientUId.serializer(), this)
+        return Json.encodeToString(ClientUId.serializer(), this)
     }
 
     companion object {
@@ -55,7 +55,7 @@ data class ClientUId(private val name: String) {
         */
         @Name("fromJson")
         fun fromJson(json: String): ClientUId {
-            return Json.parse(ClientUId.serializer(), json)
+            return Json.decodeFromString(ClientUId.serializer(), json)
         }
     }
 }
