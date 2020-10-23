@@ -31,155 +31,155 @@ import kotlinx.serialization.json.*
 * This class is a delta-based CRDT map implementing last writer wins (LWW) to resolve conflicts.
 * It is serializable to JSON and respect the following schema:
 * {
-    "_type": "Map",
-    "_metadata": {
-        "lwwMap": {
-            // $key is a string
-            ( "$key": Timestamp.toJson() )*( , "$key": Timestamp.toJson() )?
-        },
-        "mvMap": {
-            "entries": {
-                // $key is a string
-                (( "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] )*( , "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] ))?
-            },
-            "causalContext": VersionVector.toJson()
-        },
-        "cntMap": {
-            ( "$key": PNCounter.toJson() )*( , "$key": PNCounter.toJson() )?
-        }
-    }
-    // $key is a string and $value can be Boolean, double, integer, string or array
-    ( , "$key": "$value" )*
+*   "_type": "Map",
+*   "_metadata": {
+*       "lwwMap": {
+*           // $key is a string
+*           ( "$key": Timestamp.toJson() )*( , "$key": Timestamp.toJson() )?
+*       },
+*       "mvMap": {
+*           "entries": {
+*               // $key is a string
+*               (( "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] )*( , "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] ))?
+*           },
+*           "causalContext": VersionVector.toJson()
+*       },
+*       "cntMap": {
+*           ( "$key": PNCounter.toJson() )*( , "$key": PNCounter.toJson() )?
+*       }
+*   }
+*   // $key is a string and $value can be Boolean, double, integer, string or array
+*   ( , "$key": "$value" )*
 * }
 */
 @Serializable
 class Map : DeltaCRDT<Map> {
 
     /**
-    * A LWW map storing key / value pairs that should be merged using LWW.
-    */
+     * A LWW map storing key / value pairs that should be merged using LWW.
+     */
     private val lwwMap: LWWMap = LWWMap()
 
     /**
-    * A LWW map storing key / value pairs that should be merged using LWW.
-    */
+     * A LWW map storing key / value pairs that should be merged using LWW.
+     */
     private val mvMap: MVMap = MVMap()
 
     @Required
     private val cntMap: MutableMap<String, PNCounter> = mutableMapOf()
 
     /**
-    * Default constructor.
-    */
+     * Default constructor.
+     */
     constructor() {
     }
 
     /**
-    * Gets the Boolean value corresponding to a given key.
-    * @param key the key that should be looked for.
-    * @return the Boolean value associated to the key, or null if the key is not present in the map
-    * or last operation is a delete.
-    */
+     * Gets the Boolean value corresponding to a given key.
+     * @param key the key that should be looked for.
+     * @return the Boolean value associated to the key, or null if the key is not present in the map
+     * or last operation is a delete.
+     */
     @Name("getLWWBoolean")
     fun getLWWBoolean(key: String): Boolean? {
         return this.lwwMap.getBoolean(key)
     }
 
     /**
-    * Gets the Boolean value corresponding to a given key.
-    * @param key the key that should be looked for.
-    * @return the Boolean value associated to the key, or null if the key is not present in the map
-    * or last operation is a delete.
-    */
+     * Gets the Boolean value corresponding to a given key.
+     * @param key the key that should be looked for.
+     * @return the Boolean value associated to the key, or null if the key is not present in the map
+     * or last operation is a delete.
+     */
     @Name("getLWWDouble")
     fun getLWWDouble(key: String): Double? {
         return this.lwwMap.getDouble(key)
     }
 
     /**
-    * Gets the integer value corresponding to a given key.
-    * @param key the key that should be looked for.
-    * @return the integer value associated to the key, or null if the key is not present in the map
-    * or last operation is a delete.
-    */
+     * Gets the integer value corresponding to a given key.
+     * @param key the key that should be looked for.
+     * @return the integer value associated to the key, or null if the key is not present in the map
+     * or last operation is a delete.
+     */
     @Name("getLWWInt")
     fun getLWWInt(key: String): Int? {
         return this.lwwMap.getInt(key)
     }
 
     /**
-    * Gets the string value corresponding to a given key.
-    * @param key the key that should be looked for.
-    * @return the string value associated to the key, or null if the key is not present in the map
-    * or last operation is a delete.
-    */
+     * Gets the string value corresponding to a given key.
+     * @param key the key that should be looked for.
+     * @return the string value associated to the key, or null if the key is not present in the map
+     * or last operation is a delete.
+     */
     @Name("getLWWString")
     fun getLWWString(key: String): String? {
         return this.lwwMap.getString(key)
     }
 
     /**
-    * Gets the set of Boolean values corresponding to a given key.
-    * @param key the key that should be looked for.
-    * @return the set of Boolean values associated to the key, or null if the key is not present in
-    * the map or last operation is a delete.
-    */
+     * Gets the set of Boolean values corresponding to a given key.
+     * @param key the key that should be looked for.
+     * @return the set of Boolean values associated to the key, or null if the key is not present in
+     * the map or last operation is a delete.
+     */
     @Name("getMVBoolean")
     fun getMVBoolean(key: String): Set<Boolean?>? {
         return this.mvMap.getBoolean(key)
     }
 
     /**
-    * Gets the set of double values corresponding to a given key.
-    * @param key the key that should be looked for.
-    * @return the set of double values associated to the key, or null if the key is not present in
-    * the map or last operation is a delete.
-    */
+     * Gets the set of double values corresponding to a given key.
+     * @param key the key that should be looked for.
+     * @return the set of double values associated to the key, or null if the key is not present in
+     * the map or last operation is a delete.
+     */
     @Name("getMVDouble")
     fun getMVDouble(key: String): Set<Double?>? {
         return this.mvMap.getDouble(key)
     }
 
     /**
-    * Gets the set of integer values corresponding to a given key.
-    * @param key the key that should be looked for.
-    * @return the set of integer values associated to the key, or null if the key is not present in
-    * the map or last operation is a delete.
-    */
+     * Gets the set of integer values corresponding to a given key.
+     * @param key the key that should be looked for.
+     * @return the set of integer values associated to the key, or null if the key is not present in
+     * the map or last operation is a delete.
+     */
     @Name("getMVInt")
     fun getMVInt(key: String): Set<Int?>? {
         return this.mvMap.getInt(key)
     }
 
     /**
-    * Gets the set of string of values corresponding to a given key.
-    * @param key the key that should be looked for.
-    * @return the set of string values associated to the key, or null if the key is not present in
-    * the map or last operation is a delete.
-    */
+     * Gets the set of string of values corresponding to a given key.
+     * @param key the key that should be looked for.
+     * @return the set of string values associated to the key, or null if the key is not present in
+     * the map or last operation is a delete.
+     */
     @Name("getMVString")
     fun getMVString(key: String): Set<String?>? {
         return this.mvMap.getString(key)
     }
 
     /**
-    * Gets the set of integer values corresponding to a given key.
-    * @param key the key that should be looked for.
-    * @return the set of integer values associated to the key, or null if the key is not present in
-    * the map or last operation is a delete.
-    */
+     * Gets the set of integer values corresponding to a given key.
+     * @param key the key that should be looked for.
+     * @return the set of integer values associated to the key, or null if the key is not present in
+     * the map or last operation is a delete.
+     */
     @Name("getCntInt")
     fun getCntInt(key: String): Int? {
         return this.cntMap.get(key)?.get()
     }
 
     /**
-    * Puts a key / Boolean value pair into the map.
-    * @param key the key that is targeted.
-    * @param value the Boolean value that should be assigned to the key.
-    * @param ts the timestamp of this operation.
-    * @return the delta corresponding to this operation.
-    */
+     * Puts a key / Boolean value pair into the map.
+     * @param key the key that is targeted.
+     * @param value the Boolean value that should be assigned to the key.
+     * @param ts the timestamp of this operation.
+     * @return the delta corresponding to this operation.
+     */
     @Name("setLWWBoolean")
     fun putLWW(key: String, value: Boolean?, ts: Timestamp): Map {
         val op = Map()
@@ -188,12 +188,12 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Puts a key / double value pair into the map.
-    * @param key the key that is targeted.
-    * @param value the double value that should be assigned to the key.
-    * @param ts the timestamp of this operation.
-    * @return the delta corresponding to this operation.
-    */
+     * Puts a key / double value pair into the map.
+     * @param key the key that is targeted.
+     * @param value the double value that should be assigned to the key.
+     * @param ts the timestamp of this operation.
+     * @return the delta corresponding to this operation.
+     */
     @Name("setLWWDouble")
     fun putLWW(key: String, value: Double?, ts: Timestamp): Map {
         val op = Map()
@@ -202,12 +202,12 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Puts a key / integer value pair into the map.
-    * @param key the key that is targeted.
-    * @param value the integer value that should be assigned to the key.
-    * @param ts the timestamp of this operation.
-    * @return the delta corresponding to this operation.
-    */
+     * Puts a key / integer value pair into the map.
+     * @param key the key that is targeted.
+     * @param value the integer value that should be assigned to the key.
+     * @param ts the timestamp of this operation.
+     * @return the delta corresponding to this operation.
+     */
     @Name("setLWWInt")
     fun putLWW(key: String, value: Int?, ts: Timestamp): Map {
         val op = Map()
@@ -216,12 +216,12 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Puts a key / string value pair into the map.
-    * @param key the key that is targeted.
-    * @param value the string value that should be assigned to the key.
-    * @param ts the timestamp of this operation.
-    * @return the delta corresponding to this operation.
-    */
+     * Puts a key / string value pair into the map.
+     * @param key the key that is targeted.
+     * @param value the string value that should be assigned to the key.
+     * @param ts the timestamp of this operation.
+     * @return the delta corresponding to this operation.
+     */
     @Name("setLWWString")
     fun putLWW(key: String, value: String?, ts: Timestamp): Map {
         val op = Map()
@@ -230,12 +230,12 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Puts a key / Boolean value pair into the map.
-    * @param key the key that is targeted.
-    * @param value the Boolean value that should be assigned to the key.
-    * @param ts the timestamp of this operation.
-    * @return the delta corresponding to this operation.
-    */
+     * Puts a key / Boolean value pair into the map.
+     * @param key the key that is targeted.
+     * @param value the Boolean value that should be assigned to the key.
+     * @param ts the timestamp of this operation.
+     * @return the delta corresponding to this operation.
+     */
     @Name("setMVBoolean")
     fun putMV(key: String, value: Boolean?, ts: Timestamp): Map {
         val op = Map()
@@ -244,12 +244,12 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Puts a key / double value pair into the map.
-    * @param key the key that is targeted.
-    * @param value the double value that should be assigned to the key.
-    * @param ts the timestamp of this operation.
-    * @return the delta corresponding to this operation.
-    */
+     * Puts a key / double value pair into the map.
+     * @param key the key that is targeted.
+     * @param value the double value that should be assigned to the key.
+     * @param ts the timestamp of this operation.
+     * @return the delta corresponding to this operation.
+     */
     @Name("setMVDouble")
     fun putMV(key: String, value: Double?, ts: Timestamp): Map {
         val op = Map()
@@ -258,12 +258,12 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Puts a key / integer value pair into the map.
-    * @param key the key that is targeted.
-    * @param value the integer value that should be assigned to the key.
-    * @param ts the timestamp of this operation.
-    * @return the delta corresponding to this operation.
-    */
+     * Puts a key / integer value pair into the map.
+     * @param key the key that is targeted.
+     * @param value the integer value that should be assigned to the key.
+     * @param ts the timestamp of this operation.
+     * @return the delta corresponding to this operation.
+     */
     @Name("setMVInt")
     fun putMV(key: String, value: Int?, ts: Timestamp): Map {
         val op = Map()
@@ -272,12 +272,12 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Puts a key / string value pair into the map.
-    * @param key the key that is targeted.
-    * @param value the string value that should be assigned to the key.
-    * @param ts the timestamp of this operation.
-    * @return the delta corresponding to this operation.
-    */
+     * Puts a key / string value pair into the map.
+     * @param key the key that is targeted.
+     * @param value the string value that should be assigned to the key.
+     * @param ts the timestamp of this operation.
+     * @return the delta corresponding to this operation.
+     */
     @Name("setMVString")
     fun putMV(key: String, value: String?, ts: Timestamp): Map {
         val op = Map()
@@ -304,12 +304,12 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Deletes a given key / Boolean value pair if it is present in the map and has not yet been
-    * deleted.
-    * @param key the key that should be deleted.
-    * @param ts the timestamp linked to this operation.
-    * @return the delta corresponding to this operation.
-    */
+     * Deletes a given key / Boolean value pair if it is present in the map and has not yet been
+     * deleted.
+     * @param key the key that should be deleted.
+     * @param ts the timestamp linked to this operation.
+     * @return the delta corresponding to this operation.
+     */
     @Name("deleteLWWBoolean")
     fun deleteLWWBoolean(key: String, ts: Timestamp): Map {
         val op = Map()
@@ -318,12 +318,12 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Deletes a given key / double value pair if it is present in the map and has not yet been
-    * deleted.
-    * @param key the key that should be deleted.
-    * @param ts the timestamp linked to this operation.
-    * @return the delta corresponding to this operation.
-    */
+     * Deletes a given key / double value pair if it is present in the map and has not yet been
+     * deleted.
+     * @param key the key that should be deleted.
+     * @param ts the timestamp linked to this operation.
+     * @return the delta corresponding to this operation.
+     */
     @Name("deleteLWWDouble")
     fun deleteLWWDouble(key: String, ts: Timestamp): Map {
         val op = Map()
@@ -332,12 +332,12 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Deletes a given key / integer value pair if it is present in the map and has not yet been
-    * deleted.
-    * @param key the key that should be deleted.
-    * @param ts the timestamp linked to this operation.
-    * @return the delta corresponding to this operation.
-    */
+     * Deletes a given key / integer value pair if it is present in the map and has not yet been
+     * deleted.
+     * @param key the key that should be deleted.
+     * @param ts the timestamp linked to this operation.
+     * @return the delta corresponding to this operation.
+     */
     @Name("deleteLWWInt")
     fun deleteLWWInt(key: String, ts: Timestamp): Map {
         val op = Map()
@@ -346,12 +346,12 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Deletes a given key / string value pair if it is present in the map and has not yet been
-    * deleted.
-    * @param key the key that should be deleted.
-    * @param ts the timestamp linked to this operation.
-    * @return the delta corresponding to this operation.
-    */
+     * Deletes a given key / string value pair if it is present in the map and has not yet been
+     * deleted.
+     * @param key the key that should be deleted.
+     * @param ts the timestamp linked to this operation.
+     * @return the delta corresponding to this operation.
+     */
     @Name("deleteLWWString")
     fun deleteLWWString(key: String, ts: Timestamp): Map {
         val op = Map()
@@ -360,12 +360,12 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Deletes a given key / Boolean value pair if it is present in the map and has not yet been
-    * deleted.
-    * @param key the key that should be deleted.
-    * @param ts the timestamp linked to this operation.
-    * @return the delta corresponding to this operation.
-    */
+     * Deletes a given key / Boolean value pair if it is present in the map and has not yet been
+     * deleted.
+     * @param key the key that should be deleted.
+     * @param ts the timestamp linked to this operation.
+     * @return the delta corresponding to this operation.
+     */
     @Name("deleteMVBoolean")
     fun deleteMVBoolean(key: String, ts: Timestamp): Map {
         val op = Map()
@@ -374,12 +374,12 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Deletes a given key / double value pair if it is present in the map and has not yet been
-    * deleted.
-    * @param key the key that should be deleted.
-    * @param ts the timestamp linked to this operation.
-    * @return the delta corresponding to this operation.
-    */
+     * Deletes a given key / double value pair if it is present in the map and has not yet been
+     * deleted.
+     * @param key the key that should be deleted.
+     * @param ts the timestamp linked to this operation.
+     * @return the delta corresponding to this operation.
+     */
     @Name("deleteMVDouble")
     fun deleteMVDouble(key: String, ts: Timestamp): Map {
         val op = Map()
@@ -388,12 +388,12 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Deletes a given key / integer value pair if it is present in the map and has not yet been
-    * deleted.
-    * @param key the key that should be deleted.
-    * @param ts the timestamp linked to this operation.
-    * @return the delta corresponding to this operation.
-    */
+     * Deletes a given key / integer value pair if it is present in the map and has not yet been
+     * deleted.
+     * @param key the key that should be deleted.
+     * @param ts the timestamp linked to this operation.
+     * @return the delta corresponding to this operation.
+     */
     @Name("deleteMVInt")
     fun deleteMVInt(key: String, ts: Timestamp): Map {
         val op = Map()
@@ -402,12 +402,12 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Deletes a given key / string value pair if it is present in the map and has not yet been
-    * deleted.
-    * @param key the key that should be deleted.
-    * @param ts the timestamp linked to this operation.
-    * @return the delta corresponding to this operation.
-    */
+     * Deletes a given key / string value pair if it is present in the map and has not yet been
+     * deleted.
+     * @param key the key that should be deleted.
+     * @param ts the timestamp linked to this operation.
+     * @return the delta corresponding to this operation.
+     */
     @Name("deleteMVString")
     fun deleteMVString(key: String, ts: Timestamp): Map {
         val op = Map()
@@ -416,10 +416,10 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Generates a delta of operations recorded and not already present in a given context.
-    * @param vv the context used as starting point to generate the delta.
-    * @return the corresponding delta of operations.
-    */
+     * Generates a delta of operations recorded and not already present in a given context.
+     * @param vv the context used as starting point to generate the delta.
+     * @return the corresponding delta of operations.
+     */
     override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<Map> {
         var delta = Map()
 
@@ -435,12 +435,12 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Merges information contained in a given delta into the local replica, the merge is unilateral
-    * and only the local replica is modified.
-    * A foreign operation (i.e., put or delete) is applied iff last locally stored operation has a
-    * smaller timestamp compared to the foreign one, or there is no local operation recorded.
-    * @param delta the delta that should be merged with the local replica.
-    */
+     * Merges information contained in a given delta into the local replica, the merge is unilateral
+     * and only the local replica is modified.
+     * A foreign operation (i.e., put or delete) is applied iff last locally stored operation has a
+     * smaller timestamp compared to the foreign one, or there is no local operation recorded.
+     * @param delta the delta that should be merged with the local replica.
+     */
     override fun mergeProtected(delta: DeltaCRDT<Map>) {
         if (delta !is Map)
             throw UnexpectedTypeException("Map does not support merging with type: " + delta::class)
@@ -457,9 +457,9 @@ class Map : DeltaCRDT<Map> {
     }
 
     /**
-    * Serializes this crdt map to a json string.
-    * @return the resulted json string.
-    */
+     * Serializes this crdt map to a json string.
+     * @return the resulted json string.
+     */
     @Name("toJson")
     fun toJson(): String {
         val jsonSerializer = JsonMapSerializer(Map.serializer())
@@ -468,30 +468,30 @@ class Map : DeltaCRDT<Map> {
 
     companion object {
         /**
-        * Constant value for key fields' separator.
-        */
+         * Constant value for key fields' separator.
+         */
         const val SEPARATOR = "%"
 
         /**
-        * Constant suffix value for key associated to a last writer wins value.
-        */
+         * Constant suffix value for key associated to a last writer wins value.
+         */
         const val LWWREGISTER = Map.SEPARATOR + "LWW"
 
         /**
-        * Constant suffix value for key associated to a multi-value.
-        */
+         * Constant suffix value for key associated to a multi-value.
+         */
         const val MVREGISTER = Map.SEPARATOR + "MV"
 
         /**
-        * Constant suffix value for key associated to a counter value.
-        */
+         * Constant suffix value for key associated to a counter value.
+         */
         const val PNCOUNTER = Map.SEPARATOR + "CNT"
 
         /**
-        * Deserializes a given json string in a crdt map.
-        * @param json the given json string.
-        * @return the resulted crdt map.
-        */
+         * Deserializes a given json string in a crdt map.
+         * @param json the given json string.
+         * @return the resulted crdt map.
+         */
         @Name("fromJson")
         fun fromJson(json: String): Map {
             val jsonSerializer = JsonMapSerializer(Map.serializer())
@@ -504,7 +504,7 @@ class Map : DeltaCRDT<Map> {
 * This class is a json transformer for Map, it allows the separation between data and metadata.
 */
 class JsonMapSerializer(private val serializer: KSerializer<Map>) :
-        JsonTransformingSerializer<Map>(serializer) {
+    JsonTransformingSerializer<Map>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {
         val values = mutableMapOf<String, JsonElement>()

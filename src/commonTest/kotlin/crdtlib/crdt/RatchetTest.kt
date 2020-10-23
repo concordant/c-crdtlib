@@ -29,9 +29,9 @@ import io.kotest.matchers.*
 class RatchetTest : StringSpec({
 
     /**
-    * This test evaluates the scenario: create string value get.
-    * Call to get should return the value set by the constructor.
-    */
+     * This test evaluates the scenario: create string value get.
+     * Call to get should return the value set by the constructor.
+     */
     "create string ratchet then get" {
         val value = "value"
 
@@ -41,9 +41,9 @@ class RatchetTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: create int value get.
-    * Call to get should return the value set by the constructor.
-    */
+     * This test evaluates the scenario: create int value get.
+     * Call to get should return the value set by the constructor.
+     */
     "create integer ratchet then get" {
         val value = 42
 
@@ -53,9 +53,9 @@ class RatchetTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: create assign (with greater value) get.
-    * Call to get should return the value set by assign.
-    */
+     * This test evaluates the scenario: create assign (with greater value) get.
+     * Call to get should return the value set by assign.
+     */
     "create, assign greater value, get" {
         val val1 = 42
         val val2 = 100
@@ -67,9 +67,9 @@ class RatchetTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: create assign (with lower value) get.
-    * Call to get should return the value set by the constructor.
-    */
+     * This test evaluates the scenario: create assign (with lower value) get.
+     * Call to get should return the value set by the constructor.
+     */
     "create, assign lower value, get" {
         val val1 = 42
         val val2 = 3
@@ -81,9 +81,9 @@ class RatchetTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: create || create (with greater value) merge get.
-    * Call to get should return the value set by the second replica.
-    */
+     * This test evaluates the scenario: create || create (with greater value) merge get.
+     * Call to get should return the value set by the second replica.
+     */
     "R1: create; R2: create with greater value, merge, get" {
         val val1 = 42
         val val2 = 101
@@ -96,9 +96,9 @@ class RatchetTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: create || create (with lower value) merge get.
-    * Call to get should return the value set by the first replica.
-    */
+     * This test evaluates the scenario: create || create (with lower value) merge get.
+     * Call to get should return the value set by the first replica.
+     */
     "R1: create; R2: create with lower value, merge, get" {
         val val1 = 42
         val val2 = 41
@@ -111,10 +111,10 @@ class RatchetTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: create (with lower value) assign (with the greatest value)
-    * || create (with lower value) merge get.
-    * Call to get should return the value set by assign in the first replica.
-    */
+     * This test evaluates the scenario: create (with lower value) assign (with the greatest value)
+     * || create (with lower value) merge get.
+     * Call to get should return the value set by assign in the first replica.
+     */
     "R1: create, assign with the greatest value; R2: create, merge, get" {
         val val1 = "BBB"
         val val2 = "CCC"
@@ -129,10 +129,10 @@ class RatchetTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: create (with lower value) assign (with a greater value) ||
-    * create (with the greatest value) merge get.
-    * Call to get should return the value set in the second replica.
-    */
+     * This test evaluates the scenario: create (with lower value) assign (with a greater value) ||
+     * create (with the greatest value) merge get.
+     * Call to get should return the value set in the second replica.
+     */
     "R1: create, assign; R2: create with greatest value, merge, get" {
         val val1 = "AAA"
         val val2 = "BBB"
@@ -147,10 +147,10 @@ class RatchetTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: create (with the greatest value) assign (with lower value)
-    * || create (with lower value) merge get.
-    * Call to get should return the value set at initialization in the first replica.
-    */
+     * This test evaluates the scenario: create (with the greatest value) assign (with lower value)
+     * || create (with lower value) merge get.
+     * Call to get should return the value set at initialization in the first replica.
+     */
     "R1: create with greatest value, assign; R2: create, merge, get" {
         val val1 = "CCC"
         val val2 = "AAA"
@@ -165,10 +165,10 @@ class RatchetTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: create (with lower value) merge (before assign in replica 2)
-    * || create (with the greatest value) assign (with lower value) merge get.
-    * Call to get should return the value set at initialization in the second replica.
-    */
+     * This test evaluates the scenario: create (with lower value) merge (before assign in replica 2)
+     * || create (with the greatest value) assign (with lower value) merge get.
+     * Call to get should return the value set at initialization in the second replica.
+     */
     "R1: create, merge before assign; r2: create with greatest value, assign, merge" {
         val val1 = 4
         val val2 = 5
@@ -184,9 +184,9 @@ class RatchetTest : StringSpec({
     }
 
     /**
-    * This test evaluates the use of delta return by call to assign method.
-    * Call to get should return value set at initialization in the first replica.
-    */
+     * This test evaluates the use of delta return by call to assign method.
+     * Call to get should return value set at initialization in the first replica.
+     */
     "use delta returned by assign" {
         val val1 = 8
         val val2 = 6
@@ -220,8 +220,8 @@ class RatchetTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON serialization of a ratchet.
-    **/
+     * This test evaluates JSON serialization of a ratchet.
+     **/
     "JSON serialization" {
         val value = "VALUE"
 
@@ -232,8 +232,8 @@ class RatchetTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON deserialization of a ratchet.
-    **/
+     * This test evaluates JSON deserialization of a ratchet.
+     **/
     "JSON deserialization" {
         val ratJson = Ratchet.fromJson<String>("""{"_type":"Ratchet","value":"VALUE"}""")
 

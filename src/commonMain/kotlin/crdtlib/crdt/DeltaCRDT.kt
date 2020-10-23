@@ -28,34 +28,34 @@ import crdtlib.utils.VersionVector
 abstract class DeltaCRDT<CrdtT> {
 
     /**
-    * Protected abstract method generating the delta from a given version vector.
-    * @param vv the given version vector.
-    * @return the delta from the version vector.
-    */
+     * Protected abstract method generating the delta from a given version vector.
+     * @param vv the given version vector.
+     * @return the delta from the version vector.
+     */
     protected abstract fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<CrdtT>
 
     /**
-    * Protected abstract methods merging a given delta into this CRDT.
-    * @param delta the delta to be merge.
-    */
+     * Protected abstract methods merging a given delta into this CRDT.
+     * @param delta the delta to be merge.
+     */
     protected abstract fun mergeProtected(delta: DeltaCRDT<CrdtT>)
 
     /**
-    * Generates the delta from a given version vector by calling the protected abstract method.
-    * This trick is used to be able to force the method name in the generated javascript.
-    * @param vv the given version vector.
-    * @return the delta from the version vector.
-    */
+     * Generates the delta from a given version vector by calling the protected abstract method.
+     * This trick is used to be able to force the method name in the generated javascript.
+     * @param vv the given version vector.
+     * @return the delta from the version vector.
+     */
     @Name("generateDelta")
     fun generateDelta(vv: VersionVector): DeltaCRDT<CrdtT> {
         return generateDeltaProtected(vv)
     }
 
     /**
-    * Merges a given delta into this CRDT by calling the protected method.
-    * This trick is used to be able to force the method name in the generated javascript.
-    * @param delta the delta to be merge.
-    */
+     * Merges a given delta into this CRDT by calling the protected method.
+     * This trick is used to be able to force the method name in the generated javascript.
+     * @param delta the delta to be merge.
+     */
     @Name("merge")
     fun merge(delta: DeltaCRDT<CrdtT>) {
         mergeProtected(delta)

@@ -33,9 +33,9 @@ import io.kotest.matchers.nulls.*
 class MVMapTest : StringSpec({
 
     /**
-    * This test evaluates the scenario: get.
-    * Call to get should return null.
-    */
+     * This test evaluates the scenario: get.
+     * Call to get should return null.
+     */
     "create and get" {
         val key = "key"
         val map = MVMap()
@@ -47,9 +47,9 @@ class MVMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put get.
-    * Call to get should return the value set by the put.
-    */
+     * This test evaluates the scenario: put get.
+     * Call to get should return the value set by the put.
+     */
     "put and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -76,9 +76,9 @@ class MVMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put del get.
-    * Call to get should return null.
-    */
+     * This test evaluates the scenario: put del get.
+     * Call to get should return null.
+     */
     "put, delete, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -113,9 +113,9 @@ class MVMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: del get.
-    * Call to get should return null.
-    */
+     * This test evaluates the scenario: del get.
+     * Call to get should return null.
+     */
     "delete and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -138,9 +138,9 @@ class MVMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put put get.
-    * Call to get should return the value set by the second put.
-    */
+     * This test evaluates the scenario: put put get.
+     * Call to get should return the value set by the second put.
+     */
     "put, put, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -179,9 +179,9 @@ class MVMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put put del get.
-    * Call to get should return null.
-    */
+     * This test evaluates the scenario: put put del get.
+     * Call to get should return null.
+     */
     "put, put, del, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -228,9 +228,9 @@ class MVMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put || merge get.
-    * Call to get should return the value set by the put registered in the first replica.
-    */
+     * This test evaluates the scenario: put || merge get.
+     * Call to get should return the value set by the put registered in the first replica.
+     */
     "R1: put; R2: merge and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -264,9 +264,9 @@ class MVMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put || merge put get.
-    * Call to get should return the value set by put registered in the second replica.
-    */
+     * This test evaluates the scenario: put || merge put get.
+     * Call to get should return the value set by put registered in the second replica.
+     */
     "R1: put; R2: merge, put, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -309,9 +309,9 @@ class MVMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put || put merge get
-    * Call to get should return a set containing the two concurently put values.
-    */
+     * This test evaluates the scenario: put || put merge get
+     * Call to get should return a set containing the two concurently put values.
+     */
     "R1: put; R2: put, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -354,9 +354,9 @@ class MVMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put del || put(with older timestamp) merge get.
-    * Call to get should return a set containing the value set in the second replica and null.
-    */
+     * This test evaluates the scenario: put del || put(with older timestamp) merge get.
+     * Call to get should return a set containing the value set in the second replica and null.
+     */
     "R1: put, delete; R2: put with older timestamp, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -407,10 +407,10 @@ class MVMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put del || put(with older timestamp) merge(before del)
-    * merge(after del) get.
-    * Call to get should return a set containing the value set in the second replica and null.
-    */
+     * This test evaluates the scenario: put del || put(with older timestamp) merge(before del)
+     * merge(after del) get.
+     * Call to get should return a set containing the value set in the second replica and null.
+     */
     "R1: put, delete; R2: put with older timestamp, merge before delete, merge after delete, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -1009,8 +1009,8 @@ class MVMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON serialization an empty MV map.
-    **/
+     * This test evaluates JSON serialization an empty MV map.
+     **/
     "empty JSON serialization" {
         val map = MVMap()
 
@@ -1020,8 +1020,8 @@ class MVMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON deserialization of an empty MV map.
-    **/
+     * This test evaluates JSON deserialization of an empty MV map.
+     **/
     "empty JSON deserialization" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -1036,8 +1036,8 @@ class MVMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON serialization of a MV map.
-    **/
+     * This test evaluates JSON serialization of a MV map.
+     **/
     "JSON serialization" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -1077,8 +1077,8 @@ class MVMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON deserialization of a MV map.
-    **/
+     * This test evaluates JSON deserialization of a MV map.
+     **/
     "JSON deserialization" {
         val mapJson = MVMap.fromJson("""{"_type":"MVMap","_metadata":{"entries":{"key1%INTEGER":[{"uid":{"name":"clientid1"},"cnt":-2147483647}],"key2%STRING":[{"uid":{"name":"clientid1"},"cnt":-2147483645}],"key3%STRING":[{"uid":{"name":"clientid1"},"cnt":-2147483644},{"uid":{"name":"clientid2"},"cnt":-2147483647}],"key4%BOOLEAN":[{"uid":{"name":"clientid1"},"cnt":-2147483643}],"key5%DOUBLE":[{"uid":{"name":"clientid1"},"cnt":-2147483642}]},"causalContext":{"entries":[{"name":"clientid1"},-2147483642,{"name":"clientid2"},-2147483647]}},"key1%INTEGER":[1],"key2%STRING":[null],"key3%STRING":["value3","value2"],"key4%BOOLEAN":[true],"key5%DOUBLE":[3.14159]}""")
 

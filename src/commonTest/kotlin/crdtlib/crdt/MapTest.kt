@@ -33,9 +33,9 @@ import io.kotest.matchers.nulls.*
 class MapTest : StringSpec({
 
     /**
-    * This test evaluates the scenario: get.
-    * Call to get should return null
-    */
+     * This test evaluates the scenario: get.
+     * Call to get should return null
+     */
     "create and get" {
         val key = "key"
         val map = Map()
@@ -52,9 +52,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put get.
-    * Call to get should return the value set by the put.
-    */
+     * This test evaluates the scenario: put get.
+     * Call to get should return the value set by the put.
+     */
     "LWW put and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -81,9 +81,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put del get.
-    * Call to get should return null.
-    */
+     * This test evaluates the scenario: put del get.
+     * Call to get should return null.
+     */
     "LWW put, delelte, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -118,9 +118,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: del get.
-    * Call to get should return null.
-    */
+     * This test evaluates the scenario: del get.
+     * Call to get should return null.
+     */
     "LWW delete and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -143,9 +143,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put put get
-    * Call to get should return the value set by the second put.
-    */
+     * This test evaluates the scenario: put put get
+     * Call to get should return the value set by the second put.
+     */
     "LWW put, put, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -184,9 +184,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put put del get.
-    * Call to get should return null.
-    */
+     * This test evaluates the scenario: put put del get.
+     * Call to get should return null.
+     */
     "LWW put, put, delelte, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -233,9 +233,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put || merge get.
-    * Call to get should return the value set by the put registered in the first replica.
-    */
+     * This test evaluates the scenario: put || merge get.
+     * Call to get should return the value set by the put registered in the first replica.
+     */
     "LWW R1: put; R2: merge, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -269,9 +269,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put || merge putLWW get.
-    * Call to get should return the value set by put registered in the second replica.
-    */
+     * This test evaluates the scenario: put || merge putLWW get.
+     * Call to get should return the value set by put registered in the second replica.
+     */
     "LWW R1: put; R2: merge, put LWW, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -314,9 +314,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put || putLWW merge get
-    * Call to get should return the value set by put registered in the second replica.
-    */
+     * This test evaluates the scenario: put || putLWW merge get
+     * Call to get should return the value set by put registered in the second replica.
+     */
     "LWW R1: put; R2: put LWW, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -359,9 +359,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: putLWW || put merge get.
-    * Call to get should return the value set by put registered in the first replica.
-    */
+     * This test evaluates the scenario: putLWW || put merge get.
+     * Call to get should return the value set by put registered in the first replica.
+     */
     "LWW R1: put LWW; R2: put, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -404,9 +404,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put delLWW || put merge get.
-    * Call to get should return null.
-    */
+     * This test evaluates the scenario: put delLWW || put merge get.
+     * Call to get should return null.
+     */
     "LWW R1: put, delelte LWW; R2: put, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -457,9 +457,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put delLWW || put merge(before del) merge(after del) get.
-    * Call to get should return null.
-    */
+     * This test evaluates the scenario: put delLWW || put merge(before del) merge(after del) get.
+     * Call to get should return null.
+     */
     "LWW R1: put, delete LWW; R2: put, merge before delete, merge after delete, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -1114,9 +1114,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put get.
-    * Call to get should return the value set by the put.
-    */
+     * This test evaluates the scenario: put get.
+     * Call to get should return the value set by the put.
+     */
     "MV put and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -1143,9 +1143,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put del get.
-    * Call to get should return null.
-    */
+     * This test evaluates the scenario: put del get.
+     * Call to get should return null.
+     */
     "MV put, delete, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -1180,9 +1180,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: del get.
-    * Call to get should return null.
-    */
+     * This test evaluates the scenario: del get.
+     * Call to get should return null.
+     */
     "MV delete and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -1205,9 +1205,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put put get.
-    * Call to get should return the value set by the second put.
-    */
+     * This test evaluates the scenario: put put get.
+     * Call to get should return the value set by the second put.
+     */
     "MV put, put, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -1246,9 +1246,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put put del get.
-    * Call to get should return null.
-    */
+     * This test evaluates the scenario: put put del get.
+     * Call to get should return null.
+     */
     "MV put, put, delete, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -1295,9 +1295,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put || merge get.
-    * Call to get should return the value set by the put registered in the first replica.
-    */
+     * This test evaluates the scenario: put || merge get.
+     * Call to get should return the value set by the put registered in the first replica.
+     */
     "MV R1: put; R2: merge, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -1331,9 +1331,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put || merge put get.
-    * Call to get should return the value set by put registered in the second replica.
-    */
+     * This test evaluates the scenario: put || merge put get.
+     * Call to get should return the value set by put registered in the second replica.
+     */
     "MV R1: put; R2: merge, put, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -1376,9 +1376,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put || put merge get
-    * Call to get should return a set containing the two concurently put values.
-    */
+     * This test evaluates the scenario: put || put merge get
+     * Call to get should return a set containing the two concurently put values.
+     */
     "MV R1: put; R2: put, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -1421,9 +1421,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put del || put (with older timestamp) merge get.
-    * Call to get should return a set containing the value set in the second replica.
-    */
+     * This test evaluates the scenario: put del || put (with older timestamp) merge get.
+     * Call to get should return a set containing the value set in the second replica.
+     */
     "MV R1: put, delete; R2: put with older timestamp, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -1474,10 +1474,10 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put del || put(with older timestamp) merge(before del)
-    * merge(after del) get.
-    * Call to get should return a set containing the value set in the second replica.
-    */
+     * This test evaluates the scenario: put del || put(with older timestamp) merge(before del)
+     * merge(after del) get.
+     * Call to get should return a set containing the value set in the second replica.
+     */
     "MV R1: put, delete; R2: put with older timestamp, merge before delete, merge after delete, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -2076,9 +2076,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: increment get.
-    * Call to get should return the value set by increment.
-    */
+     * This test evaluates the scenario: increment get.
+     * Call to get should return the value set by increment.
+     */
     "CNT increment and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -2093,9 +2093,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: decrement get.
-    * Call to get should return the inverse of value set by decrement.
-    */
+     * This test evaluates the scenario: decrement get.
+     * Call to get should return the inverse of value set by decrement.
+     */
     "CNT decrement and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -2110,9 +2110,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: increment(with a negative value) get.
-    * Call to get should return the value set by increment.
-    */
+     * This test evaluates the scenario: increment(with a negative value) get.
+     * Call to get should return the value set by increment.
+     */
     "CNT increment with negative amount and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -2127,9 +2127,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: decrement(with a negative value) get.
-    * Call to get should return the inverse of value set by decrement.
-    */
+     * This test evaluates the scenario: decrement(with a negative value) get.
+     * Call to get should return the inverse of value set by decrement.
+     */
     "CNT decrement with a negative amount and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -2144,9 +2144,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: incremement(multiple times) get.
-    * Call to get should return the sum of values set by calls to increment.
-    */
+     * This test evaluates the scenario: incremement(multiple times) get.
+     * Call to get should return the sum of values set by calls to increment.
+     */
     "CNT multiple increments and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -2167,9 +2167,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: decremement(multiple times) get.
-    * Call to get should return the inverse of the sum of values set by calls to decrement.
-    */
+     * This test evaluates the scenario: decremement(multiple times) get.
+     * Call to get should return the inverse of the sum of values set by calls to decrement.
+     */
     "CNT multiple decrements and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -2190,9 +2190,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: multiple increment and decrement get.
-    * Call to get should return the sum of increments minus the sum of decrements.
-    */
+     * This test evaluates the scenario: multiple increment and decrement get.
+     * Call to get should return the sum of increments minus the sum of decrements.
+     */
     "CNT increment, decrement, get positive value" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -2216,9 +2216,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: multiple increment and decrement get.
-    * Call to get should return the sum of increments minus the sum of decrements.
-    */
+     * This test evaluates the scenario: multiple increment and decrement get.
+     * Call to get should return the sum of increments minus the sum of decrements.
+     */
     "CNT increment, decrement, get a negative value" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -2242,9 +2242,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: increment || merge get.
-    * Call to get should return value set by increment in the first replica.
-    */
+     * This test evaluates the scenario: increment || merge get.
+     * Call to get should return value set by increment in the first replica.
+     */
     "CNT R1: increment; R2: merge and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -2263,9 +2263,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: decrement || merge get.
-    * Call to get should return the inverse value set by decrement in the first replica.
-    */
+     * This test evaluates the scenario: decrement || merge get.
+     * Call to get should return the inverse value set by decrement in the first replica.
+     */
     "CNT R1: decrement; R2: merge and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -2284,9 +2284,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: increment || increment merge get.
-    * Call to get should return sum of the two increment values.
-    */
+     * This test evaluates the scenario: increment || increment merge get.
+     * Call to get should return sum of the two increment values.
+     */
     "CNT R1: increment; R2: increment, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -2308,9 +2308,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: increment || merge increment get.
-    * Call to get should return sum of the two increment values.
-    */
+     * This test evaluates the scenario: increment || merge increment get.
+     * Call to get should return sum of the two increment values.
+     */
     "CNT R1: increment; R2: merge, increment, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -2332,9 +2332,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: decrement || decrement merge get.
-    * Call to get should return the inverse of the sum of the two decrement values.
-    */
+     * This test evaluates the scenario: decrement || decrement merge get.
+     * Call to get should return the inverse of the sum of the two decrement values.
+     */
     "CNT R1: decrement; R2: decrement, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -2356,9 +2356,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: decrement || merge decrement get.
-    * Call to get should return the inverse of the sum of the two decrement values.
-    */
+     * This test evaluates the scenario: decrement || merge decrement get.
+     * Call to get should return the inverse of the sum of the two decrement values.
+     */
     "CNT R1: decrement; R2: merge, decrement, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -2380,9 +2380,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: some operations || some operations merge get.
-    * Call to get should return the sum of increment values minus the sum of the decrement values.
-    */
+     * This test evaluates the scenario: some operations || some operations merge get.
+     * Call to get should return the sum of increment values minus the sum of the decrement values.
+     */
     "CNT R1: multiple operations; R2: multiple operations, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -2422,9 +2422,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: some operations || merge some operations get.
-    * Call to get should return the sum of increment values minus the sum of the decrement values.
-    */
+     * This test evaluates the scenario: some operations || merge some operations get.
+     * Call to get should return the sum of increment values minus the sum of the decrement values.
+     */
     "CNT R1: multiple operations; R2: merge, multiple operations, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -2464,9 +2464,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the use of delta return by call to increment method.
-    * Call to get should return the increment value set in the first replica.
-    */
+     * This test evaluates the use of delta return by call to increment method.
+     * Call to get should return the increment value set in the first replica.
+     */
     "CNT use delta return by increment" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -2485,9 +2485,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the use of delta return by call to decrement method.
-    * Call to get should return the inverse of the decrement value set in the first replica.
-    */
+     * This test evaluates the use of delta return by call to decrement method.
+     * Call to get should return the inverse of the decrement value set in the first replica.
+     */
     "CNT use delta return by decrement" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -2506,9 +2506,9 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the use of delta return by call to increment and decrement methods.
-    * Call to get should return the sum of increment values minus the sum of decrement values.
-    */
+     * This test evaluates the use of delta return by call to increment and decrement methods.
+     * Call to get should return the sum of increment values minus the sum of decrement values.
+     */
     "CNT use delta return by increment and decrement" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -2563,8 +2563,8 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON serialization an empty map.
-    **/
+     * This test evaluates JSON serialization an empty map.
+     **/
     "empty JSON serialization" {
         val map = Map()
 
@@ -2574,8 +2574,8 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON deserialization of an empty map.
-    **/
+     * This test evaluates JSON deserialization of an empty map.
+     **/
     "empty JSON deserialization" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -2597,8 +2597,8 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON serialization of a map.
-    **/
+     * This test evaluates JSON serialization of a map.
+     **/
     "JSON serialization" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -2631,8 +2631,8 @@ class MapTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON deserialization of a map.
-    **/
+     * This test evaluates JSON deserialization of a map.
+     **/
     "JSON deserialization" {
         val mapJson = Map.fromJson("""{"_type":"Map","_metadata":{"lwwMap":{"entries":{"key%BOOLEAN":{"uid":{"name":"clientid"},"cnt":-2147483647},"key%DOUBLE":{"uid":{"name":"clientid"},"cnt":-2147483646},"key%INTEGER":{"uid":{"name":"clientid"},"cnt":-2147483645},"key%STRING":{"uid":{"name":"clientid"},"cnt":-2147483644}}},"mvMap":{"entries":{"key%BOOLEAN":[{"uid":{"name":"clientid"},"cnt":-2147483643}],"key%DOUBLE":[{"uid":{"name":"clientid"},"cnt":-2147483642}],"key%INTEGER":[{"uid":{"name":"clientid"},"cnt":-2147483641}],"key%STRING":[{"uid":{"name":"clientid"},"cnt":-2147483640}]},"causalContext":{"entries":[{"name":"clientid"},-2147483640]}},"cntMap":{"key":{"increment":[{"name":"clientid"},{"first":42,"second":{"uid":{"name":"clientid"},"cnt":-2147483639}}],"decrement":[{"name":"clientid"},{"first":11,"second":{"uid":{"name":"clientid"},"cnt":-2147483638}}]}}},"key%BOOLEAN%LWW":true,"key%DOUBLE%LWW":3.14,"key%INTEGER%LWW":42,"key%STRING%LWW":"value","key%BOOLEAN%MV":[true],"key%DOUBLE%MV":[3.14],"key%INTEGER%MV":[42],"key%STRING%MV":["value"],"key%CNT":31}""")
 

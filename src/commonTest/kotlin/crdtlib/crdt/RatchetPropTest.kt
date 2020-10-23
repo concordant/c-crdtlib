@@ -64,7 +64,8 @@ class RatchetPropTest : StringSpec({
                 when (op.first) {
                     OpType.ASSIGN -> r.assign(op.second)
                     OpType.MERGE -> r.merge(Ratchet(op.second))
-                } }
+                }
+            }
             r.get() == maximum
         }
     }

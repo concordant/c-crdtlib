@@ -37,9 +37,9 @@ import kotlinx.serialization.json.*
 * A LWW register can only embed primitive types (i.e,, string, numbers, and boolean).
 * It is serializable to JSON and respects the following schema:
 * {
-    "_type": "LWWRegister",
-    "_metadata": Timestamp.toJson(),
-    "value": T.toJson()
+*   "_type": "LWWRegister",
+*   "_metadata": Timestamp.toJson(),
+*   "value": T.toJson()
 * }
 * @property value the value stored in the register.
 * @property value the timestamp associated to the value.
@@ -52,28 +52,28 @@ class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegis
     }
 
     /**
-    * Constructor creating a copy of a given register.
-    * @param other the register that should be copy.
-    */
+     * Constructor creating a copy of a given register.
+     * @param other the register that should be copy.
+     */
     constructor(other: LWWRegister<T>) : this(other.value, other.ts) {
     }
 
     /**
-    * Gets the value currently stored in the register.
-    * @return value stored in the register.
-    */
+     * Gets the value currently stored in the register.
+     * @return value stored in the register.
+     */
     @Name("get")
     fun get(): T {
         return value
     }
 
     /**
-    * Assigns a given value to the register.
-    * Assign is not effective if the associated timestamp is smaller (older) than the current one.
-    * @param value the value that should be assigned.
-    * @param ts the timestamp associated to the operation.
-    * @return the delta corresponding to this operation.
-    */
+     * Assigns a given value to the register.
+     * Assign is not effective if the associated timestamp is smaller (older) than the current one.
+     * @param value the value that should be assigned.
+     * @param ts the timestamp associated to the operation.
+     * @return the delta corresponding to this operation.
+     */
     @Name("set")
     fun assign(v: T, ts: Timestamp): DeltaCRDT<LWWRegister<T>> {
         if (this.ts < ts) {
@@ -84,20 +84,20 @@ class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegis
     }
 
     /**
-    * Generates a delta of operations recorded and not already present in a given context.
-    * @param vv the context used as starting point to generate the delta.
-    * @return the corresponding delta of operations.
-    */
+     * Generates a delta of operations recorded and not already present in a given context.
+     * @param vv the context used as starting point to generate the delta.
+     * @return the corresponding delta of operations.
+     */
     override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<LWWRegister<T>> {
         return LWWRegister<T>(this)
     }
 
     /**
-    * Merges information contained in a given delta into the local replica, the merge is unilateral
-    * and only the local replica is modified.
-    * The foreign value wins iff its associated timestamp is greater than the current one.
-    * @param delta the delta that should be merge with the local replica.
-    */
+     * Merges information contained in a given delta into the local replica, the merge is unilateral
+     * and only the local replica is modified.
+     * The foreign value wins iff its associated timestamp is greater than the current one.
+     * @param delta the delta that should be merge with the local replica.
+     */
     override fun mergeProtected(delta: DeltaCRDT<LWWRegister<T>>) {
         if (delta !is LWWRegister<T>) throw UnexpectedTypeException("LWWRegister does not support merging with type: " + delta::class)
 
@@ -108,9 +108,9 @@ class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegis
     }
 
     /**
-    * Serializes this crdt LWW register to a json string.
-    * @return the resulted json string.
-    */
+     * Serializes this crdt LWW register to a json string.
+     * @return the resulted json string.
+     */
     @OptIn(kotlinx.serialization.InternalSerializationApi::class)
     @Name("toJson")
     fun toJson(): String {
@@ -120,10 +120,10 @@ class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegis
 
     companion object {
         /**
-        * Deserializes a given json string in a crdt LWW register.
-        * @param json the given json string.
-        * @return the resulted LWW register.
-        */
+         * Deserializes a given json string in a crdt LWW register.
+         * @param json the given json string.
+         * @return the resulted LWW register.
+         */
         @OptIn(kotlinx.serialization.InternalSerializationApi::class)
         @Name("fromJson")
         inline fun <reified T : Any> fromJson(json: String): LWWRegister<T> {
@@ -137,7 +137,7 @@ class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegis
 * This class is a serializer for generic LWWRegister.
 */
 class LWWRegisterSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
-        KSerializer<LWWRegister<T>> {
+    KSerializer<LWWRegister<T>> {
 
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("LWWRegisterSerializer") {
         element("value", dataSerializer.descriptor)
@@ -172,7 +172,7 @@ class LWWRegisterSerializer<T : Any>(private val dataSerializer: KSerializer<T>)
 * This class is a json transformer for LWWRegister, it allows the separation between data and metadata.
 */
 class JsonLWWRegisterSerializer<T : Any>(private val serializer: KSerializer<LWWRegister<T>>) :
-        JsonTransformingSerializer<LWWRegister<T>>(serializer) {
+    JsonTransformingSerializer<LWWRegister<T>>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {
         val value = element.jsonObject["value"] as JsonElement

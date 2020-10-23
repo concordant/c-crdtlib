@@ -33,7 +33,7 @@ configurations {
     val ktlint by creating
 }
 dependencies {
-    "ktlint"("com.pinterest:ktlint:0.36.0")
+    "ktlint"("com.pinterest:ktlint:0.39.0")
 }
 
 kotlin {
