@@ -91,7 +91,6 @@ class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
     * Serializes this crdt ratchet to a json string.
     * @return the resulted json string.
     */
-    //    @OptIn(ImplicitReflectionSerializer::class)
     @OptIn(kotlinx.serialization.InternalSerializationApi::class)
     @Name("toJson")
     fun toJson(): String {
@@ -106,8 +105,7 @@ class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
         * @param json the given json string.
         * @return the resulted ratchet.
         */
-    //    @OptIn(ImplicitReflectionSerializer::class)
-    @OptIn(kotlinx.serialization.InternalSerializationApi::class)
+        @OptIn(kotlinx.serialization.InternalSerializationApi::class)
         @Name("fromJson")
         inline fun <reified T : Comparable<T>> fromJson(json: String): Ratchet<T> {
             val jsonSerializer = JsonRatchetSerializer(Ratchet.serializer(T::class.serializer()))
