@@ -26,7 +26,14 @@ import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
 import kotlinx.serialization.*
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.JsonTransformingSerializer
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 /**
 * This class is a delta-based CRDT pn-counter.
@@ -62,11 +69,13 @@ class PNCounter : DeltaCRDT<PNCounter> {
     /**
     * A mutable map storing for each client metadata relative to increment operations.
     */
+    @Required
     private val increment: MutableMap<ClientUId, Pair<Int, Timestamp>> = mutableMapOf()
 
     /**
     * A mutable map storing for each client metadata relative to decrement operations.
     */
+    @Required
     private val decrement: MutableMap<ClientUId, Pair<Int, Timestamp>> = mutableMapOf()
 
     /**
@@ -176,7 +185,8 @@ class PNCounter : DeltaCRDT<PNCounter> {
     @Name("toJson")
     fun toJson(): String {
         val jsonSerializer = JsonPNCounterSerializer(PNCounter.serializer())
-        return Json.stringify<PNCounter>(jsonSerializer, this)
+        return Json.encodeToString<PNCounter>(jsonSerializer, this)
+        // return Json.encodeToString<PNCounter>(this)
     }
 
     companion object {
@@ -188,7 +198,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
         @Name("fromJson")
         fun fromJson(json: String): PNCounter {
             val jsonSerializer = JsonPNCounterSerializer(PNCounter.serializer())
-            return Json.parse(jsonSerializer, json)
+            return Json.decodeFromString(jsonSerializer, json)
         }
     }
 }
@@ -197,15 +207,22 @@ class PNCounter : DeltaCRDT<PNCounter> {
 * This class is a json transformer for PNCounter, it allows the separation between data and metadata.
 */
 class JsonPNCounterSerializer(private val serializer: KSerializer<PNCounter>) :
-        JsonTransformingSerializer<PNCounter>(serializer, "JsonPNCounterSerializer") {
+        JsonTransformingSerializer<PNCounter>(serializer) {
 
-    override fun writeTransform(element: JsonElement): JsonElement {
-        val incValue = element.jsonObject.getArray("increment").filter { it.jsonObject.containsKey("first") }.sumBy { it.jsonObject.getPrimitive("first").int }
-        val decValue = element.jsonObject.getArray("decrement").filter { it.jsonObject.containsKey("first") }.sumBy { it.jsonObject.getPrimitive("first").int }
-        return JsonObject(mapOf("_type" to JsonPrimitive("PNCounter"), "_metadata" to element, "value" to JsonPrimitive(incValue - decValue)))
+    override fun transformSerialize(element: JsonElement): JsonElement {
+        val incValue = element.jsonObject["increment"]!!.jsonArray.filter {
+            it.jsonObject.containsKey("first")
+        }.sumBy { it.jsonObject["first"]!!.jsonPrimitive.int }
+        val decValue = element.jsonObject["decrement"]!!.jsonArray.filter {
+            it.jsonObject.containsKey("first")
+        }.sumBy { it.jsonObject["first"]!!.jsonPrimitive.int }
+        return JsonObject(mapOf(
+            "_type" to JsonPrimitive("PNCounter"),
+            "_metadata" to element,
+            "value" to JsonPrimitive(incValue - decValue)))
     }
 
-    override fun readTransform(element: JsonElement): JsonElement {
-        return element.jsonObject.getObject("_metadata")
+    override fun transformDeserialize(element: JsonElement): JsonElement {
+        return element.jsonObject["_metadata"]!!.jsonObject
     }
 }

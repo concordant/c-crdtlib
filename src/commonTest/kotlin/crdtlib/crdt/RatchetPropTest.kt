@@ -56,7 +56,7 @@ class RatchetPropTest : StringSpec({
     }
     "arbitrary set and merge always yields largest element" {
         forAll(Arb.list(OperationArb)) { ops ->
-            val maybeMaximum = ops.maxBy { it.second }
+            val maybeMaximum = ops.maxByOrNull { it.second }
             val maximum = maybeMaximum?.second ?: Int.MIN_VALUE
 
             val r = Ratchet(Int.MIN_VALUE)
@@ -71,8 +71,8 @@ class RatchetPropTest : StringSpec({
 
     "merge with deltas" {
         forAll(Arb.list(Arb.int()), Arb.list(Arb.int())) { ops1, ops2 ->
-            val m1 = ops1.max() ?: Int.MIN_VALUE
-            val m2 = ops2.max() ?: Int.MIN_VALUE
+            val m1 = ops1.maxOrNull() ?: Int.MIN_VALUE
+            val m2 = ops2.maxOrNull() ?: Int.MIN_VALUE
 
             val r1 = Ratchet(Int.MIN_VALUE)
             val r2 = Ratchet(Int.MIN_VALUE)

@@ -19,6 +19,6 @@
 
 package crdtlib.utils
 
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
 
-val Json = Json(JsonConfiguration.Stable)
+val Json = kotlinx.serialization.json.Json { allowStructuredMapKeys = true }

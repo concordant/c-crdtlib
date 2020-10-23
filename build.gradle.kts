@@ -18,8 +18,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("multiplatform") version "1.3.72"
-    kotlin("plugin.serialization") version "1.3.72"
+    kotlin("multiplatform") version "1.4.10"
+    kotlin("plugin.serialization") version "1.4.10"
     id("org.jetbrains.dokka") version "0.10.0"
 }
 
@@ -61,47 +61,33 @@ kotlin {
 
         commonMain {
             dependencies {
-                implementation(kotlin("stdlib"))
                 implementation(kotlin("reflect"))
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:0.20.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
             }
         }
 
         commonTest {
             dependencies {
-                implementation("io.kotest:kotest-property:4.1.1")
-                implementation("io.kotest:kotest-assertions-core:4.1.1")
+                implementation("io.kotest:kotest-property:4.3.0")
+                implementation("io.kotest:kotest-assertions-core:4.3.0")
             }
         }
 
         val jvmMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-jdk8"))
                 implementation("com.github.ntrrgc:ts-generator:1.1.1")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
             }
         }
 
         val jvmTest by getting {
             dependencies {
-                implementation("io.kotest:kotest-property-jvm:4.1.1")
-                implementation("io.kotest:kotest-runner-junit5-jvm:4.1.1")
-                implementation("io.kotest:kotest-assertions-core-jvm:4.1.1")
-            }
-        }
-
-        val nodeJsMain by getting {
-            dependencies {
-                implementation(kotlin("stdlib-js"))
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.20.0")
+                implementation("io.kotest:kotest-runner-junit5-jvm:4.3.0")
             }
         }
 
         val nodeJsTest by getting {
             dependencies {
-                implementation("io.kotest:kotest-property-js:4.1.1")
-                implementation("io.kotest:kotest-core-js:4.1.1")
-                implementation("io.kotest:kotest-assertions-core-js:4.1.1")
+                implementation("io.kotest:kotest-core-js:4.2.0.RC2")
             }
         }
     }
