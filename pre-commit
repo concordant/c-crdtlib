@@ -18,7 +18,7 @@ git add --update
 
 # restore workdir
 # get stash ID (stash{#}) (empty if workdir was clean)
-STASH_ID=$(git stash list | sed -rn "s/(stash@\{.*\}).*$STASH_NAME.*/\1/p")
+STASH_ID=$(git stash list | sed -En "s/(stash@\{.*\}).*$STASH_NAME.*/\1/p")
 
 if [[ -n "$STASH_ID" ]] ; then
     # git stash pop would conflict with changes kept in index
