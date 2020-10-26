@@ -21,7 +21,6 @@ package crdtlib.crdt
 
 import crdtlib.utils.Json
 import crdtlib.utils.Name
-import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -62,7 +61,7 @@ class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
      * @return the delta corresponding to this operation.
      */
     @Name("set")
-    fun assign(value: T): DeltaCRDT<Ratchet<T>> {
+    fun assign(value: T): Ratchet<T> {
         if (this.value < value) this.value = value
         return Ratchet(this.value)
     }
@@ -72,7 +71,7 @@ class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
      * @param vv the context used as starting point to generate the delta.
      * @return the corresponding delta of operations.
      */
-    override fun generateDelta(vv: VersionVector): DeltaCRDT<Ratchet<T>> {
+    override fun generateDelta(vv: VersionVector): Ratchet<T> {
         return Ratchet(this.value)
     }
 
@@ -82,8 +81,7 @@ class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
      * A foreign value is kept iff it is greater than the local one.
      * @param delta the delta that should be merge with the local replica.
      */
-    override fun merge(delta: DeltaCRDT<Ratchet<T>>) {
-        if (delta !is Ratchet) throw UnexpectedTypeException("Ratchet does not support merging with type: " + delta::class)
+    override fun merge(delta: Ratchet<T>) {
         if (this.value < delta.value) this.value = delta.value
     }
 

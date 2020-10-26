@@ -22,7 +22,6 @@ package crdtlib.crdt
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
-import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.*
@@ -163,7 +162,7 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
      * @param vv the context used as starting point to generate the delta.
      * @return the corresponding delta of operations.
      */
-    override fun generateDelta(vv: VersionVector): DeltaCRDT<RGA<T>> {
+    override fun generateDelta(vv: VersionVector): RGA<T> {
         val delta = RGA<T>()
         for (node in this.nodes) {
             if (!vv.contains(node.ts)) {
@@ -183,11 +182,7 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
      * smaller timestamp) node found, or at the end of the array if no weaker node exists.
      * @param delta the delta that should be merge with the local replica.
      */
-    override fun merge(delta: DeltaCRDT<RGA<T>>) {
-        if (delta !is RGA) throw UnexpectedTypeException(
-            "RGA does not support merging with type:" + delta::class
-        )
-
+    override fun merge(delta: RGA<T>) {
         for (node in delta.nodes) {
             val localNode = this.nodes.find { it.uid == node.uid }
             if (localNode == null) { // First time this node is seen.

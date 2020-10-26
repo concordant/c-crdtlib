@@ -33,12 +33,12 @@ abstract class DeltaCRDT<T> {
      * @return the delta from the version vector.
      */
     @Name("generateDelta")
-    abstract fun generateDelta(vv: VersionVector): DeltaCRDT<T>
+    abstract fun generateDelta(vv: VersionVector): T
 
     /**
      * Merges a given delta into this CRDT by calling the protected method.
      * @param delta the delta to be merge.
      */
     @Name("merge")
-    abstract fun merge(delta: DeltaCRDT<T>)
+    abstract fun merge(delta: T)
 }

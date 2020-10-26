@@ -22,7 +22,6 @@ package crdtlib.crdt
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
-import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.*
@@ -106,7 +105,7 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
      * @return the delta corresponding to this operation.
      */
     @Name("set")
-    fun assign(value: T, ts: Timestamp): DeltaCRDT<MVRegister<T>> {
+    fun assign(value: T, ts: Timestamp): MVRegister<T> {
         if (!this.causalContext.contains(ts)) {
             this.entries.clear()
             this.entries.add(Pair<T, Timestamp>(value, ts))
@@ -120,7 +119,7 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
      * @param vv the context used as starting point to generate the delta.
      * @return the corresponding delta of operations.
      */
-    override fun generateDelta(vv: VersionVector): DeltaCRDT<MVRegister<T>> {
+    override fun generateDelta(vv: VersionVector): MVRegister<T> {
         return MVRegister(this)
     }
 
@@ -131,9 +130,7 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
      * associated timestamp is not included in the local (foreign) causal context.
      * @param delta the delta that should be merge with the local replica.
      */
-    override fun merge(delta: DeltaCRDT<MVRegister<T>>) {
-        if (delta !is MVRegister) throw UnexpectedTypeException("MVRegister does not support merging with type: " + delta::class)
-
+    override fun merge(delta: MVRegister<T>) {
         val keptEntries = mutableSetOf<Pair<T, Timestamp>>()
         for ((value, ts) in this.entries) {
             if (!delta.causalContext.contains(ts) || delta.entries.any { it.second == ts }) {

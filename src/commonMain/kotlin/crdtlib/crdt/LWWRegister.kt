@@ -75,7 +75,7 @@ class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegis
      * @return the delta corresponding to this operation.
      */
     @Name("set")
-    fun assign(v: T, ts: Timestamp): DeltaCRDT<LWWRegister<T>> {
+    fun assign(v: T, ts: Timestamp): LWWRegister<T> {
         if (this.ts < ts) {
             this.ts = ts
             this.value = v
@@ -88,7 +88,7 @@ class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegis
      * @param vv the context used as starting point to generate the delta.
      * @return the corresponding delta of operations.
      */
-    override fun generateDelta(vv: VersionVector): DeltaCRDT<LWWRegister<T>> {
+    override fun generateDelta(vv: VersionVector): LWWRegister<T> {
         return LWWRegister<T>(this)
     }
 
@@ -98,9 +98,7 @@ class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegis
      * The foreign value wins iff its associated timestamp is greater than the current one.
      * @param delta the delta that should be merge with the local replica.
      */
-    override fun merge(delta: DeltaCRDT<LWWRegister<T>>) {
-        if (delta !is LWWRegister<T>) throw UnexpectedTypeException("LWWRegister does not support merging with type: " + delta::class)
-
+    override fun merge(delta: LWWRegister<T>) {
         if (this.ts < delta.ts) {
             this.value = delta.value
             this.ts = delta.ts
