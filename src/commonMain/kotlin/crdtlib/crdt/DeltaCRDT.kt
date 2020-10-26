@@ -25,22 +25,20 @@ import crdtlib.utils.VersionVector
 /**
 * Interface for delta based CRDT
 */
-abstract class DeltaCRDT<CrdtT> {
+abstract class DeltaCRDT<T> {
 
     /**
      * Generates the delta from a given version vector by calling the protected abstract method.
-     * This trick is used to be able to force the method name in the generated javascript.
      * @param vv the given version vector.
      * @return the delta from the version vector.
      */
     @Name("generateDelta")
-    abstract fun generateDelta(vv: VersionVector): DeltaCRDT<CrdtT>
+    abstract fun generateDelta(vv: VersionVector): DeltaCRDT<T>
 
     /**
      * Merges a given delta into this CRDT by calling the protected method.
-     * This trick is used to be able to force the method name in the generated javascript.
      * @param delta the delta to be merge.
      */
     @Name("merge")
-    abstract fun merge(delta: DeltaCRDT<CrdtT>)
+    abstract fun merge(delta: DeltaCRDT<T>)
 }
