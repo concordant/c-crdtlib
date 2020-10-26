@@ -26,22 +26,22 @@ package crdtlib.utils
 class SimpleEnvironment(private val uid: ClientUId) : Environment() {
 
     /**
-    * A version vector storing this environment causal context.
-    */
+     * A version vector storing this environment causal context.
+     */
     private val currentState: VersionVector = VersionVector()
 
     /**
-    * Gets the current state associated with the environment.
-    * @return the current state.
-    */
+     * Gets the current state associated with the environment.
+     * @return the current state.
+     */
     override fun getStateProtected(): VersionVector {
         return this.currentState.copy()
     }
 
     /**
-    * Generates a monotonically increasing timestamp.
-    * @return the generated timestamp.
-    */
+     * Generates a monotonically increasing timestamp.
+     * @return the generated timestamp.
+     */
     override fun tickProtected(): Timestamp {
         val lastCnt = this.currentState.max()
         if (lastCnt == Timestamp.CNT_MAX_VALUE) {
@@ -53,17 +53,17 @@ class SimpleEnvironment(private val uid: ClientUId) : Environment() {
     }
 
     /**
-    * Updates the currentState with the given timestamp.
-    * @param ts the given timestamp.
-    */
+     * Updates the currentState with the given timestamp.
+     * @param ts the given timestamp.
+     */
     override fun updateProtected(ts: Timestamp) {
         this.currentState.update(ts)
     }
 
     /**
-    * Updates the current currentState with the given version vector.
-    * @param vv the given version vector.
-    */
+     * Updates the current currentState with the given version vector.
+     * @param vv the given version vector.
+     */
     override fun updateProtected(vv: VersionVector) {
         this.currentState.update(vv)
     }

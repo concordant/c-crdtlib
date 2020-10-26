@@ -31,9 +31,9 @@ import io.kotest.matchers.nulls.*
 **/
 class LWWMapTest : StringSpec({
     /**
-    * This test evaluates the scenario: get.
-    * Call to get should return null
-    */
+     * This test evaluates the scenario: get.
+     * Call to get should return null
+     */
     "create and get" {
         val key = "key"
         val map = LWWMap()
@@ -45,9 +45,9 @@ class LWWMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put get.
-    * Call to get should return the value set by the put.
-    */
+     * This test evaluates the scenario: put get.
+     * Call to get should return the value set by the put.
+     */
     "put and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -74,9 +74,9 @@ class LWWMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put del get.
-    * Call to get should return null.
-    */
+     * This test evaluates the scenario: put del get.
+     * Call to get should return null.
+     */
     "put, delete, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -111,9 +111,9 @@ class LWWMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: del get.
-    * Call to get should return null.
-    */
+     * This test evaluates the scenario: del get.
+     * Call to get should return null.
+     */
     "delete and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -136,9 +136,9 @@ class LWWMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put put get
-    * Call to get should return the value set by the second put.
-    */
+     * This test evaluates the scenario: put put get
+     * Call to get should return the value set by the second put.
+     */
     "put, put, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -177,9 +177,9 @@ class LWWMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put put del get.
-    * Call to get should return null.
-    */
+     * This test evaluates the scenario: put put del get.
+     * Call to get should return null.
+     */
     "put, put, del, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -226,9 +226,9 @@ class LWWMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put || merge get.
-    * Call to get should return the value set by the put registered in the first replica.
-    */
+     * This test evaluates the scenario: put || merge get.
+     * Call to get should return the value set by the put registered in the first replica.
+     */
     "R1: put; R2: merge and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -262,9 +262,9 @@ class LWWMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put || merge putLWW get.
-    * Call to get should return the value set by put registered in the second replica.
-    */
+     * This test evaluates the scenario: put || merge putLWW get.
+     * Call to get should return the value set by put registered in the second replica.
+     */
     "R1: put; R2: merge, put LWW, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -307,9 +307,9 @@ class LWWMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put || putLWW merge get
-    * Call to get should return the value set by put registered in the second replica.
-    */
+     * This test evaluates the scenario: put || putLWW merge get
+     * Call to get should return the value set by put registered in the second replica.
+     */
     "R1: put; R2: put LWW, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -352,9 +352,9 @@ class LWWMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: putLWW || put merge get.
-    * Call to get should return the value set by put registered in the first replica.
-    */
+     * This test evaluates the scenario: putLWW || put merge get.
+     * Call to get should return the value set by put registered in the first replica.
+     */
     "R1: put LWW; R2: put, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -397,9 +397,9 @@ class LWWMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put delLWW || put merge get.
-    * Call to get should return null.
-    */
+     * This test evaluates the scenario: put delLWW || put merge get.
+     * Call to get should return null.
+     */
     "R1: put, delete LWW; R2: put, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -450,9 +450,9 @@ class LWWMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: put delLWW || put merge(before del) merge(after del) get.
-    * Call to get should return null.
-    */
+     * This test evaluates the scenario: put delLWW || put merge(before del) merge(after del) get.
+     * Call to get should return null.
+     */
     "R1: put, delete LWW; R2: put, merge before delete, merge after delelte, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -1107,8 +1107,8 @@ class LWWMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON serialization an empty LWW map.
-    **/
+     * This test evaluates JSON serialization an empty LWW map.
+     **/
     "empty JSON serialization" {
         val map = LWWMap()
 
@@ -1118,8 +1118,8 @@ class LWWMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON deserialization of an empty LWW map.
-    **/
+     * This test evaluates JSON deserialization of an empty LWW map.
+     **/
     "empty JSON deserialization" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -1134,8 +1134,8 @@ class LWWMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON serialization of a LWW map.
-    **/
+     * This test evaluates JSON serialization of a LWW map.
+     **/
     "JSON serialization" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -1169,8 +1169,8 @@ class LWWMapTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON deserialization of a LWW map.
-    **/
+     * This test evaluates JSON deserialization of a LWW map.
+     **/
     "JSON deserialization" {
         val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"clientid"},"cnt":-2147483648},"key2%STRING":{"uid":{"name":"clientid"},"cnt":-2147483646},"key3%STRING":{"uid":{"name":"clientid"},"cnt":-2147483645},"key4%BOOLEAN":{"uid":{"name":"clientid"},"cnt":-2147483644},"key5%DOUBLE":{"uid":{"name":"clientid"},"cnt":-2147483643}}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""")
 

@@ -29,19 +29,19 @@ import kotlinx.serialization.*
 data class ClientUId(private val name: String) {
 
     /**
-    * Compares this client name to a given other client name.
-    * @param other the other instance of client unique id.
-    * @return the results of the comparison between the two client names.
-    **/
+     * Compares this client name to a given other client name.
+     * @param other the other instance of client unique id.
+     * @return the results of the comparison between the two client names.
+     **/
     @Name("compareTo")
     operator fun compareTo(other: ClientUId): Int {
         return this.name.compareTo(other.name)
     }
 
     /**
-    * Serializes this client unique id to a json string.
-    * @return the resulted json string.
-    */
+     * Serializes this client unique id to a json string.
+     * @return the resulted json string.
+     */
     @Name("toJson")
     fun toJson(): String {
         return Json.encodeToString(ClientUId.serializer(), this)
@@ -49,10 +49,10 @@ data class ClientUId(private val name: String) {
 
     companion object {
         /**
-        * Deserializes a given json string in a client id object.
-        * @param json the given json string.
-        * @return the resulted client id.
-        */
+         * Deserializes a given json string in a client id object.
+         * @param json the given json string.
+         * @return the resulted client id.
+         */
         @Name("fromJson")
         fun fromJson(json: String): ClientUId {
             return Json.decodeFromString(ClientUId.serializer(), json)

@@ -28,8 +28,8 @@ import kotlinx.serialization.*
 class VersionVector {
 
     /**
-    * A mutable map storing for each client the greatest timestamp value seen until now.
-    */
+     * A mutable map storing for each client the greatest timestamp value seen until now.
+     */
     @Required
     private val entries: MutableMap<ClientUId, Int> = mutableMapOf()
 
@@ -38,32 +38,32 @@ class VersionVector {
     }
 
     /**
-    * Default constructor.
-    */
+     * Default constructor.
+     */
     constructor() {
     }
 
     /**
-    * Copy constructor.
-    */
+     * Copy constructor.
+     */
     constructor(vv: VersionVector) {
         this.entries.putAll(vv.entries)
     }
 
     /**
-    * Gets the maximal value stored in this version vector.
-    * @return the maximal value or null if there are no values.
-    */
+     * Gets the maximal value stored in this version vector.
+     * @return the maximal value or null if there are no values.
+     */
     @Name("max")
     fun max(): Int {
         return this.entries.values.maxOrNull() ?: Timestamp.CNT_MIN_VALUE
     }
 
     /**
-    * Returns if a given timestamp is contained in the version vector.
-    * @param ts the given timestamp.
-    * @return true if the timestamp is contained in the version vector, false otherwise.
-    */
+     * Returns if a given timestamp is contained in the version vector.
+     * @param ts the given timestamp.
+     * @return true if the timestamp is contained in the version vector, false otherwise.
+     */
     @Name("contains")
     fun contains(ts: Timestamp): Boolean {
         val cnt = this.get(ts.uid)
@@ -71,9 +71,9 @@ class VersionVector {
     }
 
     /**
-    * Adds a given timestamp to this version vector.
-    * @param ts the given timestamp.
-    */
+     * Adds a given timestamp to this version vector.
+     * @param ts the given timestamp.
+     */
     @Name("updateTs")
     fun update(ts: Timestamp) {
         val curCnt = this.get(ts.uid)
@@ -81,10 +81,10 @@ class VersionVector {
     }
 
     /**
-    * Updates this version vector with a given version vector by taking the maximum value for each
-    * entry.
-    * @param vv the given version vector used for update.
-    */
+     * Updates this version vector with a given version vector by taking the maximum value for each
+     * entry.
+     * @param vv the given version vector used for update.
+     */
     @Name("updateVv")
     fun update(vv: VersionVector) {
         for ((k, v) in vv.entries) {
@@ -94,10 +94,10 @@ class VersionVector {
     }
 
     /**
-    * Checks that this version vector is smaller than or equal a given version vector.
-    * @param vv the given version vector used for comparison.
-    * @return true if this version vector is smaller than or equal the other one, false otherwise.
-    */
+     * Checks that this version vector is smaller than or equal a given version vector.
+     * @param vv the given version vector used for comparison.
+     * @return true if this version vector is smaller than or equal the other one, false otherwise.
+     */
     @Name("isSmallerOrEquals")
     fun isSmallerOrEquals(vv: VersionVector): Boolean {
         for ((k, localV) in this.entries) {
@@ -178,10 +178,10 @@ class VersionVector {
         for ((k, localV) in this.entries) {
             val v = vv.get(k)
             if (localV > v)
-                // one entry in this object is larger
+            // one entry in this object is larger
                 isLarger = true
             else if (localV < v)
-                // one entry in the other vv is larger
+            // one entry in the other vv is larger
                 isSmaller = true
             if (isSmaller && isLarger)
                 return true
@@ -196,9 +196,9 @@ class VersionVector {
     }
 
     /**
-    * Copies this version vector.
-    * @return a copy of this version vector.
-    */
+     * Copies this version vector.
+     * @return a copy of this version vector.
+     */
     @Name("copy")
     fun copy(): VersionVector {
         return VersionVector(this)
@@ -221,9 +221,9 @@ class VersionVector {
     }
 
     /**
-    * Serializes this version vector to a json string.
-    * @return the resulted json string.
-    */
+     * Serializes this version vector to a json string.
+     * @return the resulted json string.
+     */
     @Name("toJson")
     fun toJson(): String {
         return Json.encodeToString(VersionVector.serializer(), this)
@@ -231,10 +231,10 @@ class VersionVector {
 
     companion object {
         /**
-        * Deserializes a given json string in a version vector object.
-        * @param json the given json string.
-        * @return the resulted version vector.
-        */
+         * Deserializes a given json string in a version vector object.
+         * @param json the given json string.
+         * @return the resulted version vector.
+         */
         @Name("fromJson")
         fun fromJson(json: String): VersionVector {
             return Json.decodeFromString(VersionVector.serializer(), json)

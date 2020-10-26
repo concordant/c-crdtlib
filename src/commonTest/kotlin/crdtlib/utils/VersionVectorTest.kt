@@ -31,8 +31,8 @@ import io.kotest.matchers.nulls.*
 class VersionVectorTest : StringSpec({
 
     /**
-    * This test evaluates that the maximum value of newly created version vector is null.
-    **/
+     * This test evaluates that the maximum value of newly created version vector is null.
+     **/
     "empty version vector get max" {
         val vv = VersionVector()
 
@@ -40,9 +40,9 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates that the value returned by the max method after adding multiple
-    * timestamps is correct.
-    **/
+     * This test evaluates that the value returned by the max method after adding multiple
+     * timestamps is correct.
+     **/
     "multiple values get max" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -60,9 +60,9 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates the inclusion of timestamps in a newly created version vector.
-    * Calls to contains should return false.
-    **/
+     * This test evaluates the inclusion of timestamps in a newly created version vector.
+     * Calls to contains should return false.
+     **/
     "empty version vector contains no timestamp" {
         val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, 1)
@@ -74,10 +74,10 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates the inclusion of timestamps having negative counter in a newly created
-    * version vector.
-    * Calls to contains should return false.
-    **/
+     * This test evaluates the inclusion of timestamps having negative counter in a newly created
+     * version vector.
+     * Calls to contains should return false.
+     **/
     "empty version vector contains no negative timestamp except Timestamp CNT_MIN_VALUE" {
         val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, Timestamp.CNT_MIN_VALUE)
@@ -91,11 +91,11 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates the inclusion of timestamps in a version vector where one timestamp has
-    * been added.
-    * Calls to contains should return true for all timestamps with same client unique id and a
-    * count less or equals to the added timestamp, and false otherwise.
-    **/
+     * This test evaluates the inclusion of timestamps in a version vector where one timestamp has
+     * been added.
+     * Calls to contains should return true for all timestamps with same client unique id and a
+     * count less or equals to the added timestamp, and false otherwise.
+     **/
     "add timstamp then check inclusion" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -114,10 +114,10 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates the merging of a first none empty version vector into a second empty one.
-    * Calls to contains at second version vector should return true for all timestamps that were
-    * added to the first one.
-    **/
+     * This test evaluates the merging of a first none empty version vector into a second empty one.
+     * Calls to contains at second version vector should return true for all timestamps that were
+     * added to the first one.
+     **/
     "update to an empty version vector" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -139,10 +139,10 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates the merging of a first empty version vector into a second none empty one.
-    * Calls to contains at second version vector should return true for all timestamps that were
-    * added to it before merging.
-    **/
+     * This test evaluates the merging of a first empty version vector into a second none empty one.
+     * Calls to contains at second version vector should return true for all timestamps that were
+     * added to it before merging.
+     **/
     "update from an empty version vector" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -164,10 +164,10 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates the merging of a first version vector into a second smaller one.
-    * Calls to contains at second version vector should return true for all timestamps that were
-    * added to the first version vector.
-    **/
+     * This test evaluates the merging of a first version vector into a second smaller one.
+     * Calls to contains at second version vector should return true for all timestamps that were
+     * added to the first version vector.
+     **/
     "update to a smaller version vector" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -193,10 +193,10 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates the merging of a first smaller version vector into a second one.
-    * Calls to contains at second version vector should return true for all timestamps that were
-    * added to it before merging.
-    **/
+     * This test evaluates the merging of a first smaller version vector into a second one.
+     * Calls to contains at second version vector should return true for all timestamps that were
+     * added to it before merging.
+     **/
     "update from a smaller version vector" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -222,10 +222,10 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates the merging of two equal version vectors.
-    * Calls to contains at second version vector should return true for all timestamps that were
-    * added to it before merging.
-    **/
+     * This test evaluates the merging of two equal version vectors.
+     * Calls to contains at second version vector should return true for all timestamps that were
+     * added to it before merging.
+     **/
     "update between two equaled version vectors" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -250,10 +250,10 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates the merging of two concurrent version vectors.
-    * Calls to contains at second version vector should return true for all timestamps that were
-    * added to itself and to the first version vector.
-    **/
+     * This test evaluates the merging of two concurrent version vectors.
+     * Calls to contains at second version vector should return true for all timestamps that were
+     * added to itself and to the first version vector.
+     **/
     "update between two concurrent version vectors" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -285,10 +285,10 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates smaller or equals comparison between a first smaller version vector and a
-    * second one with the same entries.
-    * Calls to smallerOrEquals should return true.
-    **/
+     * This test evaluates smaller or equals comparison between a first smaller version vector and a
+     * second one with the same entries.
+     * Calls to smallerOrEquals should return true.
+     **/
     "is smaller or equals with a smaller version vector with same entries" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -316,10 +316,10 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates smaller or equals comparison between a first smaller version vector and a
-    * second one with more entries.
-    * Calls to smallerOrEquals should return true.
-    **/
+     * This test evaluates smaller or equals comparison between a first smaller version vector and a
+     * second one with more entries.
+     * Calls to smallerOrEquals should return true.
+     **/
     "is smaller or equals with a smaller version vector with less entries" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -346,9 +346,9 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates smaller or equals comparison between two equal version vectors.
-    * Calls to smallerOrEquals should return true.
-    **/
+     * This test evaluates smaller or equals comparison between two equal version vectors.
+     * Calls to smallerOrEquals should return true.
+     **/
     "is smaller or equals with an equaled version vector" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -375,10 +375,10 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates smaller or equals comparison between a first greater version vector and a
-    * second with the same entries.
-    * Calls to smallerOrEquals should return false.
-    **/
+     * This test evaluates smaller or equals comparison between a first greater version vector and a
+     * second with the same entries.
+     * Calls to smallerOrEquals should return false.
+     **/
     "is smaller or equals with a greater version vector with same entries" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -406,10 +406,10 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates smaller or equals comparison between two concurrent version vectors with
-    * the same entries.
-    * Calls to smallerOrEquals should return false.
-    **/
+     * This test evaluates smaller or equals comparison between two concurrent version vectors with
+     * the same entries.
+     * Calls to smallerOrEquals should return false.
+     **/
     "is smaller or equals with a concurrent version vector with same entries" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -438,10 +438,10 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates smaller or equals comparison between a first version vector and a
-    * concurrent second one with more entries.
-    * Calls to smallerOrEquals should return false.
-    **/
+     * This test evaluates smaller or equals comparison between a first version vector and a
+     * concurrent second one with more entries.
+     * Calls to smallerOrEquals should return false.
+     **/
     "is smaller or equals with a concurrent version vector with less entries" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -468,10 +468,10 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates smaller or equals comparison between a first greater version vector and a
-    * second one with less entries.
-    * Calls to smallerOrEquals should return false.
-    **/
+     * This test evaluates smaller or equals comparison between a first greater version vector and a
+     * second one with less entries.
+     * Calls to smallerOrEquals should return false.
+     **/
     "is smaller or equals with a greater version vector with more entries" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -498,10 +498,10 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates smaller or equals comparison between a first version vector and a second
-    * concurrent one with less entries.
-    * Calls to smallerOrEquals should return false.
-    **/
+     * This test evaluates smaller or equals comparison between a first version vector and a second
+     * concurrent one with less entries.
+     * Calls to smallerOrEquals should return false.
+     **/
     "is smaller or equals with a concurrent version vector with more entries" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -528,10 +528,10 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates smaller or equals comparison between a first version vector and a second
-    * concurrent one, where both have an entry not present in the other one.
-    * Calls to smallerOrEquals should return false.
-    **/
+     * This test evaluates smaller or equals comparison between a first version vector and a second
+     * concurrent one, where both have an entry not present in the other one.
+     * Calls to smallerOrEquals should return false.
+     **/
     "is smaller or equals with a concurrent version vector having different entries" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -557,10 +557,10 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates the use of copy method.
-    * Calls to contains at second version vector should return true for all timestamps that were
-    * added to the first one.
-    **/
+     * This test evaluates the use of copy method.
+     * Calls to contains at second version vector should return true for all timestamps that were
+     * added to the first one.
+     **/
     "copy with copy method" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -581,10 +581,10 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates the use of copy constructor.
-    * Calls to contains at second version vector should return true for all timestamps that were
-    * added to the first one.
-    **/
+     * This test evaluates the use of copy constructor.
+     * Calls to contains at second version vector should return true for all timestamps that were
+     * added to the first one.
+     **/
     "copy with copy constructor" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -605,8 +605,8 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON serialization of an empty version vector.
-    **/
+     * This test evaluates JSON serialization of an empty version vector.
+     **/
     "empty JSON serialization" {
         val vv = VersionVector()
 
@@ -616,8 +616,8 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON deserialization of an empty version vector.
-    **/
+     * This test evaluates JSON deserialization of an empty version vector.
+     **/
     "empty JSON deserialization" {
         val vv = VersionVector()
 
@@ -628,8 +628,8 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON serialization of a version vector.
-    **/
+     * This test evaluates JSON serialization of a version vector.
+     **/
     "JSON serialization" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -648,8 +648,8 @@ class VersionVectorTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON deserialization of a version vector.
-    **/
+     * This test evaluates JSON deserialization of a version vector.
+     **/
     "JSON deserialization" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")

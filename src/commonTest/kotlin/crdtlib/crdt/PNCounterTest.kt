@@ -30,9 +30,9 @@ import io.kotest.matchers.*
 class PNCounterTest : StringSpec({
 
     /**
-    * This test evaluates the scenario: get.
-    * Call to get should return 0.
-    */
+     * This test evaluates the scenario: get.
+     * Call to get should return 0.
+     */
     "create and get value" {
         val cnt = PNCounter()
 
@@ -40,9 +40,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: increment get.
-    * Call to get should return the value set by increment.
-    */
+     * This test evaluates the scenario: increment get.
+     * Call to get should return the value set by increment.
+     */
     "increment and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -56,9 +56,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: decrement get.
-    * Call to get should return the inverse of value set by decrement.
-    */
+     * This test evaluates the scenario: decrement get.
+     * Call to get should return the inverse of value set by decrement.
+     */
     "decrement and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -72,9 +72,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: increment(with a negative value) get.
-    * Call to get should return the value set by increment.
-    */
+     * This test evaluates the scenario: increment(with a negative value) get.
+     * Call to get should return the value set by increment.
+     */
     "increment with negative amount and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -88,9 +88,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: decrement(with a negative value) get.
-    * Call to get should return the inverse of value set by decrement.
-    */
+     * This test evaluates the scenario: decrement(with a negative value) get.
+     * Call to get should return the inverse of value set by decrement.
+     */
     "decrement with negative amount and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -104,9 +104,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: incremement(multiple times) get.
-    * Call to get should return the sum of values set by calls to increment.
-    */
+     * This test evaluates the scenario: incremement(multiple times) get.
+     * Call to get should return the sum of values set by calls to increment.
+     */
     "multiple increments and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -126,9 +126,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: decremement(multiple times) get.
-    * Call to get should return the inverse of the sum of values set by calls to decrement.
-    */
+     * This test evaluates the scenario: decremement(multiple times) get.
+     * Call to get should return the inverse of the sum of values set by calls to decrement.
+     */
     "multiple decrements and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -148,9 +148,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: multiple increment and decrement get.
-    * Call to get should return the sum of increments minus the sum of decrements.
-    */
+     * This test evaluates the scenario: multiple increment and decrement get.
+     * Call to get should return the sum of increments minus the sum of decrements.
+     */
     "increment, decrement, get positive value" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -173,9 +173,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: multiple increment and decrement get.
-    * Call to get should return the sum of increments minus the sum of decrements.
-    */
+     * This test evaluates the scenario: multiple increment and decrement get.
+     * Call to get should return the sum of increments minus the sum of decrements.
+     */
     "increment, decrement, get negative value" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -198,9 +198,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: increment || merge get.
-    * Call to get should return value set by increment in the first replica.
-    */
+     * This test evaluates the scenario: increment || merge get.
+     * Call to get should return value set by increment in the first replica.
+     */
     "R1: increment; R2: merge and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -218,9 +218,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: decrement || merge get.
-    * Call to get should return the inverse value set by decrement in the first replica.
-    */
+     * This test evaluates the scenario: decrement || merge get.
+     * Call to get should return the inverse value set by decrement in the first replica.
+     */
     "R1: decrement; R2: merge and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -238,9 +238,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: increment || increment merge get.
-    * Call to get should return sum of the two increment values.
-    */
+     * This test evaluates the scenario: increment || increment merge get.
+     * Call to get should return sum of the two increment values.
+     */
     "R1: increment; R2: increment, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -261,9 +261,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: increment || merge increment get.
-    * Call to get should return sum of the two increment values.
-    */
+     * This test evaluates the scenario: increment || merge increment get.
+     * Call to get should return sum of the two increment values.
+     */
     "R1: increment; R2: merge, increment, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -284,9 +284,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: decrement || decrement merge get.
-    * Call to get should return the inverse of the sum of the two decrement values.
-    */
+     * This test evaluates the scenario: decrement || decrement merge get.
+     * Call to get should return the inverse of the sum of the two decrement values.
+     */
     "R1: decrement; R2: decrement, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -307,9 +307,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: decrement || merge decrement get.
-    * Call to get should return the inverse of the sum of the two decrement values.
-    */
+     * This test evaluates the scenario: decrement || merge decrement get.
+     * Call to get should return the inverse of the sum of the two decrement values.
+     */
     "R1: decrement; R2: merge, decrement, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -330,9 +330,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: some operations || some operations merge get.
-    * Call to get should return the sum of increment values minus the sum of the decrement values.
-    */
+     * This test evaluates the scenario: some operations || some operations merge get.
+     * Call to get should return the sum of increment values minus the sum of the decrement values.
+     */
     "R1: multiple operations; R2: multiple operations, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -371,9 +371,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: some operations || merge some operations get.
-    * Call to get should return the sum of increment values minus the sum of the decrement values.
-    */
+     * This test evaluates the scenario: some operations || merge some operations get.
+     * Call to get should return the sum of increment values minus the sum of the decrement values.
+     */
     "R1: multiple operations; R2: merge, multiple operations, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -412,9 +412,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the use of delta return by call to increment method.
-    * Call to get should return the increment value set in the first replica.
-    */
+     * This test evaluates the use of delta return by call to increment method.
+     * Call to get should return the increment value set in the first replica.
+     */
     "use delta returned by increment" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -431,9 +431,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the use of delta return by call to decrement method.
-    * Call to get should return the inverse of the decrement value set in the first replica.
-    */
+     * This test evaluates the use of delta return by call to decrement method.
+     * Call to get should return the inverse of the decrement value set in the first replica.
+     */
     "use delta returned by decrement" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -451,9 +451,9 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the use of delta return by call to incremetn and decrement methods.
-    * Call to get should return the sum of increment values minus the sum of decrement values.
-    */
+     * This test evaluates the use of delta return by call to incremetn and decrement methods.
+     * Call to get should return the sum of increment values minus the sum of decrement values.
+     */
     "use delta returned by increment and decrement" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -506,8 +506,8 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON serialization of an empty pncounter.
-    **/
+     * This test evaluates JSON serialization of an empty pncounter.
+     **/
     "empty JSON serialization" {
         val cnt = PNCounter()
 
@@ -517,8 +517,8 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON deserialization of an empty pncounter.
-    **/
+     * This test evaluates JSON deserialization of an empty pncounter.
+     **/
     "empty JSON deserialization" {
         val cntJson = PNCounter.fromJson("""{"_type":"PNCounter","_metadata":{"increment":[],"decrement":[]},"value":0}""")
 
@@ -526,8 +526,8 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON serialization of a pncounter.
-    **/
+     * This test evaluates JSON serialization of a pncounter.
+     **/
     "JSON serialization" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -555,8 +555,8 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON deserialization of a pncounter.
-    **/
+     * This test evaluates JSON deserialization of a pncounter.
+     **/
     "JSON deserialization" {
         val cntJson = PNCounter.fromJson("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}},{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}}],"decrement":[{"name":"clientid2"},{"first":20,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}]},"value":10}""")
 

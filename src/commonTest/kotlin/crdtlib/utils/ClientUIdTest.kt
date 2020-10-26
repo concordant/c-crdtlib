@@ -30,9 +30,9 @@ import io.kotest.matchers.comparables.*
 class ClientUIdTest : StringSpec({
 
     /**
-    * This test evaluates the comparison of a smaller ClientUId and a greater one.
-    * Call to compareTo should return negative value.
-    */
+     * This test evaluates the comparison of a smaller ClientUId and a greater one.
+     * Call to compareTo should return negative value.
+     */
     "negative compareTo" {
         val client1 = ClientUId("clientid1")
         val client2 = ClientUId("clientid2")
@@ -43,9 +43,9 @@ class ClientUIdTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison of a greater ClientUId and a smaller one.
-    * Call to compareTo should return positive value.
-    */
+     * This test evaluates the comparison of a greater ClientUId and a smaller one.
+     * Call to compareTo should return positive value.
+     */
     "positive compareTo" {
         val client1 = ClientUId("clientid1")
         val client2 = ClientUId("clientid2")
@@ -56,9 +56,9 @@ class ClientUIdTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison of two equal ClientUIds.
-    * Call to compareTo should return 0.
-    */
+     * This test evaluates the comparison of two equal ClientUIds.
+     * Call to compareTo should return 0.
+     */
     "zero compareTo" {
         val client1 = ClientUId("clientid1")
         val client2 = ClientUId("clientid1")
@@ -69,8 +69,8 @@ class ClientUIdTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison (using operators) of a smaller ClientUId and a greater one.
-    */
+     * This test evaluates the comparison (using operators) of a smaller ClientUId and a greater one.
+     */
     "negative compareTo using operators" {
         val client1 = ClientUId("clientid1")
         val client2 = ClientUId("clientid2")
@@ -83,8 +83,8 @@ class ClientUIdTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison (using operators) of a greater ClientUId and a smaller one.
-    */
+     * This test evaluates the comparison (using operators) of a greater ClientUId and a smaller one.
+     */
     "positive compareTo using operators" {
         val client1 = ClientUId("clientid1")
         val client2 = ClientUId("clientid2")
@@ -97,8 +97,8 @@ class ClientUIdTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison (using operators) of two equal ClientUIds.
-    */
+     * This test evaluates the comparison (using operators) of two equal ClientUIds.
+     */
     "zero compareTo using operators" {
         val client1 = ClientUId("clientid1")
         val client2 = ClientUId("clientid1")
@@ -111,8 +111,8 @@ class ClientUIdTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON serialization.
-    **/
+     * This test evaluates JSON serialization.
+     **/
     "JSON serialization" {
         val client = ClientUId("clientid1")
 
@@ -122,8 +122,8 @@ class ClientUIdTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON deserialization.
-    **/
+     * This test evaluates JSON deserialization.
+     **/
     "JSON deserialization" {
         val client = ClientUId("clientid1")
 
