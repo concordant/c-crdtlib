@@ -72,7 +72,7 @@ class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
      * @param vv the context used as starting point to generate the delta.
      * @return the corresponding delta of operations.
      */
-    override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<Ratchet<T>> {
+    override fun generateDelta(vv: VersionVector): DeltaCRDT<Ratchet<T>> {
         return Ratchet(this.value)
     }
 
@@ -82,7 +82,7 @@ class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
      * A foreign value is kept iff it is greater than the local one.
      * @param delta the delta that should be merge with the local replica.
      */
-    override fun mergeProtected(delta: DeltaCRDT<Ratchet<T>>) {
+    override fun merge(delta: DeltaCRDT<Ratchet<T>>) {
         if (delta !is Ratchet) throw UnexpectedTypeException("Ratchet does not support merging with type: " + delta::class)
         if (this.value < delta.value) this.value = delta.value
     }

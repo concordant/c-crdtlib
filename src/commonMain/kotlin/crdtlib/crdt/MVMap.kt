@@ -274,7 +274,7 @@ class MVMap : DeltaCRDT<MVMap> {
      * @param vv the context used as starting point to generate the delta.
      * @return the corresponding delta of operations.
      */
-    override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<MVMap> {
+    override fun generateDelta(vv: VersionVector): DeltaCRDT<MVMap> {
         var delta = MVMap()
         for ((key, meta) in this.entries) {
             if (meta.any { !vv.contains(it.second) }) {
@@ -292,7 +292,7 @@ class MVMap : DeltaCRDT<MVMap> {
      * associated timestamp is not included in the local (foreign) causal context.
      * @param delta the delta that should be merged with the local replica.
      */
-    override fun mergeProtected(delta: DeltaCRDT<MVMap>) {
+    override fun merge(delta: DeltaCRDT<MVMap>) {
         if (delta !is MVMap)
             throw UnexpectedTypeException("MVMap does not support merging with type: " + delta::class)
 

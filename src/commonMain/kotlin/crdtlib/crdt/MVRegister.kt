@@ -120,7 +120,7 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
      * @param vv the context used as starting point to generate the delta.
      * @return the corresponding delta of operations.
      */
-    override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<MVRegister<T>> {
+    override fun generateDelta(vv: VersionVector): DeltaCRDT<MVRegister<T>> {
         return MVRegister(this)
     }
 
@@ -131,7 +131,7 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
      * associated timestamp is not included in the local (foreign) causal context.
      * @param delta the delta that should be merge with the local replica.
      */
-    override fun mergeProtected(delta: DeltaCRDT<MVRegister<T>>) {
+    override fun merge(delta: DeltaCRDT<MVRegister<T>>) {
         if (delta !is MVRegister) throw UnexpectedTypeException("MVRegister does not support merging with type: " + delta::class)
 
         val keptEntries = mutableSetOf<Pair<T, Timestamp>>()

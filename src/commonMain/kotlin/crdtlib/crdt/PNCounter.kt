@@ -138,7 +138,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
      * @param vv the context used as starting point to generate the delta.
      * @return the corresponding delta of operations.
      */
-    override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<PNCounter> {
+    override fun generateDelta(vv: VersionVector): DeltaCRDT<PNCounter> {
         val delta = PNCounter()
         for ((uid, meta) in increment) {
             if (!vv.contains(meta.second)) {
@@ -161,7 +161,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
      * present for this client.
      * @param delta the delta that should be merge with the local replica.
      */
-    override fun mergeProtected(delta: DeltaCRDT<PNCounter>) {
+    override fun merge(delta: DeltaCRDT<PNCounter>) {
         if (delta !is PNCounter) throw UnexpectedTypeException("PNCounter does not support merging with type:" + delta::class)
 
         for ((uid, meta) in delta.increment) {
