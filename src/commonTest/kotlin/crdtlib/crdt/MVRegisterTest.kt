@@ -31,9 +31,9 @@ import io.kotest.matchers.collections.*
 class MVRegisterTest : StringSpec({
 
     /**
-    * This test evaluates the scenario: create empty get.
-    * Call to get should return an empty set.
-    */
+     * This test evaluates the scenario: create empty get.
+     * Call to get should return an empty set.
+     */
     "create an empty register and get" {
         val reg = MVRegister<String>()
 
@@ -41,9 +41,9 @@ class MVRegisterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: create with value get.
-    * Call to get should return a set containing the value.
-    */
+     * This test evaluates the scenario: create with value get.
+     * Call to get should return a set containing the value.
+     */
     "create with a value and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -55,9 +55,9 @@ class MVRegisterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: create by copy get.
-    * Call to get should return a set containing the assigned in the first replica.
-    */
+     * This test evaluates the scenario: create by copy get.
+     * Call to get should return a set containing the assigned in the first replica.
+     */
     "copy with copy constructor and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -71,9 +71,9 @@ class MVRegisterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: create by copy(concurrent values) get.
-    * Call to get should return a set containing values assigned in first and second replicas.
-    */
+     * This test evaluates the scenario: create by copy(concurrent values) get.
+     * Call to get should return a set containing values assigned in first and second replicas.
+     */
     "copy with copy constructor a register with multi-values and get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -93,9 +93,9 @@ class MVRegisterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: assign assign get.
-    * Call to get should return last assigned value.
-    */
+     * This test evaluates the scenario: assign assign get.
+     * Call to get should return last assigned value.
+     */
     "create, assign, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -111,9 +111,9 @@ class MVRegisterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: assign assign(old timestamp) get.
-    * Call to get should return first assigned value.
-    */
+     * This test evaluates the scenario: assign assign(old timestamp) get.
+     * Call to get should return first assigned value.
+     */
     "create assign, assign with older timestamp, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -129,9 +129,9 @@ class MVRegisterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: assign || merge get.
-    * Call to get should return value assigned by the first replica.
-    */
+     * This test evaluates the scenario: assign || merge get.
+     * Call to get should return value assigned by the first replica.
+     */
     "R1: create with value; R2: create empty, merge, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -148,9 +148,9 @@ class MVRegisterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: assign || merge assign get.
-    * Call to get should return a set containing the value assigned by the second replica.
-    */
+     * This test evaluates the scenario: assign || merge assign get.
+     * Call to get should return a set containing the value assigned by the second replica.
+     */
     "R1: create with value; R2: create empty, merge, assign, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -170,9 +170,9 @@ class MVRegisterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: assign || assign merge get.
-    * Call to get should return a set containing the two values.
-    */
+     * This test evaluates the scenario: assign || assign merge get.
+     * Call to get should return a set containing the two values.
+     */
     "R1: create with value; R2: create empty, assign, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -192,10 +192,10 @@ class MVRegisterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: assign(before merge1) assign(before merge 2) || merge1
-    * merge2 get.
-    * Call to get should return a set containing the last value assigned by the first replica.
-    */
+     * This test evaluates the scenario: assign(before merge1) assign(before merge 2) || merge1
+     * merge2 get.
+     * Call to get should return a set containing the last value assigned by the first replica.
+     */
     "R1: create with value, assign; R2: craete empty, merge before assign, merge after assign, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -214,11 +214,11 @@ class MVRegisterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: assign(before merge1) assign(before merge 2) || assign
-    * merge1 merge2 get.
-    * Call to get should return a set containing the last value assigned by the first replica and
-    * value assigned by replica two.
-    */
+     * This test evaluates the scenario: assign(before merge1) assign(before merge 2) || assign
+     * merge1 merge2 get.
+     * Call to get should return a set containing the last value assigned by the first replica and
+     * value assigned by replica two.
+     */
     "R1: create with value, assign; R2: create with value, merge before assign, merge after assign, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -241,11 +241,11 @@ class MVRegisterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: assign || assign merge(from 3) || assign merge(from 1)
-    * merge(from 2) get.
-    * Call to get should return a set containing the value assigned by the first, second, and third
-    * replicas.
-    */
+     * This test evaluates the scenario: assign || assign merge(from 3) || assign merge(from 1)
+     * merge(from 2) get.
+     * Call to get should return a set containing the value assigned by the first, second, and third
+     * replicas.
+     */
     "R1: create with value; R2: create with value, merge R3; R3: create with value, merge R1, merge R2, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -271,12 +271,12 @@ class MVRegisterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: assign || merge(from 3) assign || assign merge(from 1)
-    * merge(from 2) get.
-    * Call to get should return a set containing the value assigned by the first and second
-    * replicas, the value assigned by replica three should not be present since it has been
-    * overrided by replica two.
-    */
+     * This test evaluates the scenario: assign || merge(from 3) assign || assign merge(from 1)
+     * merge(from 2) get.
+     * Call to get should return a set containing the value assigned by the first and second
+     * replicas, the value assigned by replica three should not be present since it has been
+     * overrided by replica two.
+     */
     "R1: create with value; R2: create empty, merge R3, assign; R3: create with value, merge R1, merge R2, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -303,9 +303,9 @@ class MVRegisterTest : StringSpec({
     }
 
     /**
-    * This test evaluates the use of delta return by call to assign method.
-    * Call to get should return a set containing the value assigned by the first replica.
-    */
+     * This test evaluates the use of delta return by call to assign method.
+     * Call to get should return a set containing the value assigned by the first replica.
+     */
     "use delta returned by assign" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -349,8 +349,8 @@ class MVRegisterTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON serialization of an empty mv register.
-    **/
+     * This test evaluates JSON serialization of an empty mv register.
+     **/
     "empty JSON serialization" {
         val reg = MVRegister<String>()
         val regJson = reg.toJson(String::class)
@@ -359,8 +359,8 @@ class MVRegisterTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON deserialization of an empty mv register.
-    **/
+     * This test evaluates JSON deserialization of an empty mv register.
+     **/
     "empty JSON deserialization" {
         val regJson = MVRegister.fromJson(String::class, """{"_type":"MVRegister","_metadata":{"entries":[],"causalContext":{"entries":[]}},"value":[]}""")
 
@@ -368,8 +368,8 @@ class MVRegisterTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON serialization of a mv register.
-    **/
+     * This test evaluates JSON serialization of a mv register.
+     **/
     "JSON serialization" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -390,8 +390,8 @@ class MVRegisterTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON deserialization of a mv register.
-    **/
+     * This test evaluates JSON deserialization of a mv register.
+     **/
     "JSON deserialization" {
         val regJson = MVRegister.fromJson(String::class, """{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"clientid2"},"cnt":-2147483647},{"uid":{"name":"clientid1"},"cnt":-2147483647}],"causalContext":{"entries":[{"name":"clientid2"},-2147483647,{"name":"clientid1"},-2147483647]}},"value":["value2","value1"]}""")
 

@@ -39,65 +39,65 @@ import kotlinx.serialization.json.jsonPrimitive
 * This class is a delta-based CRDT pn-counter.
 * It is serializable to JSON and respect the following schema:
 * {
-    "_type": "PNCounter",
-    "_metadata": {
-        "increment": [
-            (( ClientUId.toJson(), {
-                "first": $value, // $value is an integer
-                "second": Timestamp.toJson()
-            }, )*( ClientUId.toJson(), {
-                "first": $value, // $value is an integer
-                "second": Timestamp.toJson()
-            } ))?
-        ],
-        "decrement": [
-            (( ClientUId.toJson(), {
-                "first": $value, // $value is an integer
-                "second": Timestamp.toJson()
-            }, )*( ClientUId.toJson(), {
-                "first": $value, // $value is an integer
-                "second": Timestamp.toJson()
-            } ))?
-        ]
-    },
-    "value": $value // $value is an integer
+*   "_type": "PNCounter",
+*   "_metadata": {
+*       "increment": [
+*           (( ClientUId.toJson(), {
+*               "first": $value, // $value is an integer
+*               "second": Timestamp.toJson()
+*           }, )*( ClientUId.toJson(), {
+*               "first": $value, // $value is an integer
+*               "second": Timestamp.toJson()
+*           } ))?
+*       ],
+*       "decrement": [
+*           (( ClientUId.toJson(), {
+*               "first": $value, // $value is an integer
+*               "second": Timestamp.toJson()
+*           }, )*( ClientUId.toJson(), {
+*               "first": $value, // $value is an integer
+*               "second": Timestamp.toJson()
+*           } ))?
+*       ]
+*   },
+*   "value": $value // $value is an integer
 * }
 */
 @Serializable
 class PNCounter : DeltaCRDT<PNCounter> {
 
     /**
-    * A mutable map storing for each client metadata relative to increment operations.
-    */
+     * A mutable map storing for each client metadata relative to increment operations.
+     */
     @Required
     private val increment: MutableMap<ClientUId, Pair<Int, Timestamp>> = mutableMapOf()
 
     /**
-    * A mutable map storing for each client metadata relative to decrement operations.
-    */
+     * A mutable map storing for each client metadata relative to decrement operations.
+     */
     @Required
     private val decrement: MutableMap<ClientUId, Pair<Int, Timestamp>> = mutableMapOf()
 
     /**
-    * Default constructor.
-    */
+     * Default constructor.
+     */
     constructor() {
     }
 
     /**
-    * Gets the value of the counter.
-    * @return the value of the counter.
-    */
+     * Gets the value of the counter.
+     * @return the value of the counter.
+     */
     @Name("get")
     fun get(): Int {
         return this.increment.values.sumBy { it.first } - this.decrement.values.sumBy { it.first }
     }
 
     /**
-    * Increments the counter by the given amount.
-    * @param amount the value that should be added to the counter.
-    * @return the delta corresponding to this operation.
-    */
+     * Increments the counter by the given amount.
+     * @param amount the value that should be added to the counter.
+     * @return the delta corresponding to this operation.
+     */
     @Name("increment")
     fun increment(amount: Int, ts: Timestamp): PNCounter {
         val op = PNCounter()
@@ -114,10 +114,10 @@ class PNCounter : DeltaCRDT<PNCounter> {
     }
 
     /**
-    * Decrements the counter by the given amount.
-    * @param amount the value that should be removed to the counter.
-    * @return the delta corresponding to this operation.
-    */
+     * Decrements the counter by the given amount.
+     * @param amount the value that should be removed to the counter.
+     * @return the delta corresponding to this operation.
+     */
     @Name("decrement")
     fun decrement(amount: Int, ts: Timestamp): PNCounter {
         val op = PNCounter()
@@ -134,10 +134,10 @@ class PNCounter : DeltaCRDT<PNCounter> {
     }
 
     /**
-    * Generates a delta of operations recorded and not already present in a given context.
-    * @param vv the context used as starting point to generate the delta.
-    * @return the corresponding delta of operations.
-    */
+     * Generates a delta of operations recorded and not already present in a given context.
+     * @param vv the context used as starting point to generate the delta.
+     * @return the corresponding delta of operations.
+     */
     override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<PNCounter> {
         val delta = PNCounter()
         for ((uid, meta) in increment) {
@@ -154,13 +154,13 @@ class PNCounter : DeltaCRDT<PNCounter> {
     }
 
     /**
-    * Merges information contained in a given delta into the local replica, the merge is unilateral
-    * and only the local replica is modified.
-    * A foreign information (i.e., increment or decrement values) is applied if the last stored
-    * operation w.r.t to a given client is older than the foreign one, or no information is
-    * present for this client.
-    * @param delta the delta that should be merge with the local replica.
-    */
+     * Merges information contained in a given delta into the local replica, the merge is unilateral
+     * and only the local replica is modified.
+     * A foreign information (i.e., increment or decrement values) is applied if the last stored
+     * operation w.r.t to a given client is older than the foreign one, or no information is
+     * present for this client.
+     * @param delta the delta that should be merge with the local replica.
+     */
     override fun mergeProtected(delta: DeltaCRDT<PNCounter>) {
         if (delta !is PNCounter) throw UnexpectedTypeException("PNCounter does not support merging with type:" + delta::class)
 
@@ -179,9 +179,9 @@ class PNCounter : DeltaCRDT<PNCounter> {
     }
 
     /**
-    * Serializes this crdt counter to a json string.
-    * @return the resulted json string.
-    */
+     * Serializes this crdt counter to a json string.
+     * @return the resulted json string.
+     */
     @Name("toJson")
     fun toJson(): String {
         val jsonSerializer = JsonPNCounterSerializer(PNCounter.serializer())
@@ -190,10 +190,10 @@ class PNCounter : DeltaCRDT<PNCounter> {
 
     companion object {
         /**
-        * Deserializes a given json string in a crdt counter.
-        * @param json the given json string.
-        * @return the resulted crdt counter.
-        */
+         * Deserializes a given json string in a crdt counter.
+         * @param json the given json string.
+         * @return the resulted crdt counter.
+         */
         @Name("fromJson")
         fun fromJson(json: String): PNCounter {
             val jsonSerializer = JsonPNCounterSerializer(PNCounter.serializer())
@@ -206,7 +206,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
 * This class is a json transformer for PNCounter, it allows the separation between data and metadata.
 */
 class JsonPNCounterSerializer(private val serializer: KSerializer<PNCounter>) :
-        JsonTransformingSerializer<PNCounter>(serializer) {
+    JsonTransformingSerializer<PNCounter>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {
         val incValue = element.jsonObject["increment"]!!.jsonArray.filter {
@@ -215,10 +215,13 @@ class JsonPNCounterSerializer(private val serializer: KSerializer<PNCounter>) :
         val decValue = element.jsonObject["decrement"]!!.jsonArray.filter {
             it.jsonObject.containsKey("first")
         }.sumBy { it.jsonObject["first"]!!.jsonPrimitive.int }
-        return JsonObject(mapOf(
-            "_type" to JsonPrimitive("PNCounter"),
-            "_metadata" to element,
-            "value" to JsonPrimitive(incValue - decValue)))
+        return JsonObject(
+            mapOf(
+                "_type" to JsonPrimitive("PNCounter"),
+                "_metadata" to element,
+                "value" to JsonPrimitive(incValue - decValue)
+            )
+        )
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {

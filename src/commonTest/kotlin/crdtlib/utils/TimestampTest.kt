@@ -30,10 +30,10 @@ import io.kotest.matchers.comparables.*
 class TimestampTest : StringSpec({
 
     /**
-    * This test evaluates the comparison of a smaller timestamp and a greater one, with same
-    * client unique id and different counts.
-    * Call to compareTo should return negative value.
-    */
+     * This test evaluates the comparison of a smaller timestamp and a greater one, with same
+     * client unique id and different counts.
+     * Call to compareTo should return negative value.
+     */
     "negative compareTo same ClientUId and different count" {
         val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, 1)
@@ -45,10 +45,10 @@ class TimestampTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison of a smaller timestamp and a greater one, with different
-    * client unique ids and different counts.
-    * Call to compareTo should return negative value.
-    */
+     * This test evaluates the comparison of a smaller timestamp and a greater one, with different
+     * client unique ids and different counts.
+     * Call to compareTo should return negative value.
+     */
     "negative compareTo different ClientUId and different count" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -61,10 +61,10 @@ class TimestampTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison of a smaller timestamp and a greater one, with different
-    * client unique ids and same count.
-    * Call to compareTo should return negative value.
-    */
+     * This test evaluates the comparison of a smaller timestamp and a greater one, with different
+     * client unique ids and same count.
+     * Call to compareTo should return negative value.
+     */
     "negative compareTo different ClientUId and same count" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -77,10 +77,10 @@ class TimestampTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison of a greater timestamp and a smaller one, with same
-    * client unique id and different counts.
-    * Call to compareTo should return positive value.
-    */
+     * This test evaluates the comparison of a greater timestamp and a smaller one, with same
+     * client unique id and different counts.
+     * Call to compareTo should return positive value.
+     */
     "positive compareTo same ClientUId and different count" {
         val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, 1)
@@ -92,10 +92,10 @@ class TimestampTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison of a greater timestamp and a smaller one, with different
-    * client unique ids and different counts.
-    * Call to compareTo should return positive value.
-    */
+     * This test evaluates the comparison of a greater timestamp and a smaller one, with different
+     * client unique ids and different counts.
+     * Call to compareTo should return positive value.
+     */
     "positive compareTo different ClientUId and different count" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -108,10 +108,10 @@ class TimestampTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison of a greater timestamp and a smaller one, with different
-    * client unique ids and same count.
-    * Call to compareTo should return positive value.
-    */
+     * This test evaluates the comparison of a greater timestamp and a smaller one, with different
+     * client unique ids and same count.
+     * Call to compareTo should return positive value.
+     */
     "positive compareTo different ClientUId and same count" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -124,9 +124,9 @@ class TimestampTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison of two equal timestamps.
-    * Call to compareTo should return zero.
-    */
+     * This test evaluates the comparison of two equal timestamps.
+     * Call to compareTo should return zero.
+     */
     "zero compareTo" {
         val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, 1)
@@ -138,9 +138,9 @@ class TimestampTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison (using operators) of a smaller timestamp and a greater one,
-    * with same client unique id and different counts.
-    */
+     * This test evaluates the comparison (using operators) of a smaller timestamp and a greater one,
+     * with same client unique id and different counts.
+     */
     "negative compareTo with operators same ClientUId and different count" {
         val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, 1)
@@ -154,9 +154,9 @@ class TimestampTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison (using operators) of a smaller timestamp and a greater one,
-    * with different client unique ids and different counts.
-    */
+     * This test evaluates the comparison (using operators) of a smaller timestamp and a greater one,
+     * with different client unique ids and different counts.
+     */
     "negative compareTo with operators different ClientUId and different count" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -171,9 +171,9 @@ class TimestampTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison (using operators) of a smaller timestamp and a greater one,
-    * with different client unique ids and same count.
-    */
+     * This test evaluates the comparison (using operators) of a smaller timestamp and a greater one,
+     * with different client unique ids and same count.
+     */
     "negative compareTo with operators different ClientUId and same count" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -188,9 +188,9 @@ class TimestampTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison (using operators) of a greater timestamp and a smaller one,
-    * with same client unique id and different counts.
-    */
+     * This test evaluates the comparison (using operators) of a greater timestamp and a smaller one,
+     * with same client unique id and different counts.
+     */
     "positive compareTo with operators same ClientUId and different count" {
         val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, 1)
@@ -204,9 +204,9 @@ class TimestampTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison (using operators) of a greater timestamp and a smaller one,
-    * with different client unique  ids and different counts.
-    */
+     * This test evaluates the comparison (using operators) of a greater timestamp and a smaller one,
+     * with different client unique  ids and different counts.
+     */
     "positive compareTo with operators different ClientUId and different count" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -221,9 +221,9 @@ class TimestampTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison (using operators) of a greater timestamp and a smaller one,
-    * with different client unique ids and same count.
-    */
+     * This test evaluates the comparison (using operators) of a greater timestamp and a smaller one,
+     * with different client unique ids and same count.
+     */
     "positive compareTo with operators different ClientUId and same count" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -238,8 +238,8 @@ class TimestampTest : StringSpec({
     }
 
     /**
-    * This test evaluates the comparison (using operators) of two equal timestamps.
-    */
+     * This test evaluates the comparison (using operators) of two equal timestamps.
+     */
     "zero compareTo with operators" {
         val uid = ClientUId("clientid")
         val ts1 = Timestamp(uid, 1)
@@ -253,8 +253,8 @@ class TimestampTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON serialization.
-    **/
+     * This test evaluates JSON serialization.
+     **/
     "JSON serialization" {
         val ts = Timestamp(ClientUId("clientid1"), 3)
 
@@ -264,8 +264,8 @@ class TimestampTest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON deserialization.
-    **/
+     * This test evaluates JSON deserialization.
+     **/
     "JSON deserialization" {
         val ts = Timestamp(ClientUId("clientid1"), 3)
 

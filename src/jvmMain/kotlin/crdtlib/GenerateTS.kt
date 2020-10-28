@@ -31,31 +31,35 @@ fun main(args: Array<String>) {
     println()
     println("export namespace utils {")
     println()
-    println(TypeScriptGenerator(
-        rootClasses = setOf(
-            ClientUId::class,
-            Environment::class,
-            SimpleEnvironment::class,
-            Timestamp::class,
-            UnexpectedTypeException::class,
-            VersionVector::class
-        )
-    ).definitionsText)
+    println(
+        TypeScriptGenerator(
+            rootClasses = setOf(
+                ClientUId::class,
+                Environment::class,
+                SimpleEnvironment::class,
+                Timestamp::class,
+                UnexpectedTypeException::class,
+                VersionVector::class
+            )
+        ).definitionsText
+    )
     println("}")
     println()
     println("export namespace crdt {")
     println()
-    println(TypeScriptGenerator(
-        rootClasses = setOf(
-            DeltaCRDT::class,
-            LWWMap::class,
-            LWWRegister::class,
-            MVRegister::class,
-            PNCounter::class,
-            RGA::class,
-            Ratchet::class
-        )
-    ).definitionsText)
+    println(
+        TypeScriptGenerator(
+            rootClasses = setOf(
+                DeltaCRDT::class,
+                LWWMap::class,
+                LWWRegister::class,
+                MVRegister::class,
+                PNCounter::class,
+                RGA::class,
+                Ratchet::class
+            )
+        ).definitionsText
+    )
     println("}")
     println("}")
     println("}")

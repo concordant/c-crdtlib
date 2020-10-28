@@ -24,7 +24,6 @@ import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
-import kotlin.reflect.KClass
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.*
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -34,6 +33,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.internal.*
 import kotlinx.serialization.json.*
+import kotlin.reflect.KClass
 
 /**
 * Represents a unique identifier for RGA nodes. We use timestamps as uids since we assume they are
@@ -56,33 +56,33 @@ data class RGANode<T : Any>(val atom: T, val anchor: RGAUId?, val uid: RGAUId, v
 * This class is a delta-based CRDT Replicated Growable Array (RGA).
 * It is serializable to JSON and respect the following schema:
 * {
-    "_type": "RGA",
-    "_metadata": [
-        ({
-            ( "atom": T.toJson(), )? // If atom is present removed should be true.
-            "anchor": RGAUId.toJson(),
-            "uid": RGAUId.toJson(),
-            "ts": Timestamp.toJson(),
-            "removed" : ( true | false )
-        })
-    ],
-    "value": [
-        // Contains only values for which the corresponding metadata nodes have no atom field.
-        (( T.toJson(), )*( T.toJson() ))?
-    ]
+*   "_type": "RGA",
+*   "_metadata": [
+*       ({
+*           ( "atom": T.toJson(), )? // If atom is present removed should be true.
+*           "anchor": RGAUId.toJson(),
+*           "uid": RGAUId.toJson(),
+*           "ts": Timestamp.toJson(),
+*           "removed" : ( true | false )
+*       })
+*   ],
+*   "value": [
+*       // Contains only values for which the corresponding metadata nodes have no atom field.
+*       (( T.toJson(), )*( T.toJson() ))?
+*   ]
 * }
 */
 @Serializable(with = RGASerializer::class)
 class RGA<T : Any> : DeltaCRDT<RGA<T>> {
 
     /**
-    * An array list storing the different elements.
-    */
+     * An array list storing the different elements.
+     */
     val nodes: ArrayList<RGANode<T>> = arrayListOf<RGANode<T>>()
 
     /**
-    * Default constructor.
-    */
+     * Default constructor.
+     */
     constructor() {
     }
 
@@ -93,10 +93,10 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
     }
 
     /**
-    * Lookups for the real index of a given targeted index.
-    * @param index the targeted index.
-    * @return the real index.
-    */
+     * Lookups for the real index of a given targeted index.
+     * @param index the targeted index.
+     * @return the real index.
+     */
     private fun toRealIndex(index: Int): Int {
         if (index == -1) return -1
 
@@ -111,12 +111,12 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
     }
 
     /**
-    * Inserts a given atom at a given index.
-    * @param index the index where the atom should be inserted.
-    * @param atom the atom that ashould be inserted.
-    * @param ts the timestamp associated with the operation.
-    * @return the resulting delta operation.
-    */
+     * Inserts a given atom at a given index.
+     * @param index the index where the atom should be inserted.
+     * @param atom the atom that ashould be inserted.
+     * @param ts the timestamp associated with the operation.
+     * @return the resulting delta operation.
+     */
     @Name("insertAt")
     fun insertAt(index: Int, atom: T, ts: Timestamp): RGA<T> {
         val realIdx = this.toRealIndex(index - 1)
@@ -131,11 +131,11 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
     }
 
     /**
-    * Removes the atom presents a a given index.
-    * @param index the index where atom sould be removed.
-    * @param ts the timestamp associated with the operation.
-    * @return the resulting delta operation.
-    */
+     * Removes the atom presents a a given index.
+     * @param index the index where atom sould be removed.
+     * @param ts the timestamp associated with the operation.
+     * @return the resulting delta operation.
+     */
     @Name("removeAt")
     fun removeAt(index: Int, ts: Timestamp): RGA<T> {
         val realIdx = this.toRealIndex(index)
@@ -150,19 +150,19 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
     }
 
     /**
-    * Gets the value associated with the RGA.
-    * @return a list containning the values present in the RGA.
-    */
+     * Gets the value associated with the RGA.
+     * @return a list containning the values present in the RGA.
+     */
     @Name("get")
     fun get(): List<T> {
         return this.nodes.filter { it.removed == false }.map { it.atom }
     }
 
     /**
-    * Generates a delta of operations recorded and not already present in a given context.
-    * @param vv the context used as starting point to generate the delta.
-    * @return the corresponding delta of operations.
-    */
+     * Generates a delta of operations recorded and not already present in a given context.
+     * @param vv the context used as starting point to generate the delta.
+     * @return the corresponding delta of operations.
+     */
     override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<RGA<T>> {
         val delta = RGA<T>()
         for (node in this.nodes) {
@@ -174,18 +174,19 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
     }
 
     /**
-    * Merges information contained in a given delta into the local replica, the merge is unilateral
-    * and only local replica is modified.
-    * For each node in the delta: if the node already exists in the local replica, we update it by
-    * applying a last-remove-wins policy; else we insert it correctly. The correct place is at the
-    * right of the foreign node's anchor. If other nodes have the same anchor, higher timestamp
-    * wins: meaning that the delta's node will be either put at the left of the first weaker (with
-    * smaller timestamp) node found, or at the end of the array if no weaker node exists.
-    * @param delta the delta that should be merge with the local replica.
-    */
+     * Merges information contained in a given delta into the local replica, the merge is unilateral
+     * and only local replica is modified.
+     * For each node in the delta: if the node already exists in the local replica, we update it by
+     * applying a last-remove-wins policy; else we insert it correctly. The correct place is at the
+     * right of the foreign node's anchor. If other nodes have the same anchor, higher timestamp
+     * wins: meaning that the delta's node will be either put at the left of the first weaker (with
+     * smaller timestamp) node found, or at the end of the array if no weaker node exists.
+     * @param delta the delta that should be merge with the local replica.
+     */
     override fun mergeProtected(delta: DeltaCRDT<RGA<T>>) {
         if (delta !is RGA) throw UnexpectedTypeException(
-            "RGA does not support merging with type:" + delta::class)
+            "RGA does not support merging with type:" + delta::class
+        )
 
         for (node in delta.nodes) {
             val localNode = this.nodes.find { it.uid == node.uid }
@@ -195,7 +196,8 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
                 if (siblings.size > 0) {
                     // There exist nodes with the same anchor.
                     var firstWeakerSiblingNode = siblings.find {
-                        it.uid < node.uid }
+                        it.uid < node.uid
+                    }
                     if (firstWeakerSiblingNode != null) {
                         // insert before first weaker sibling
                         index = this.nodes.indexOf(firstWeakerSiblingNode)
@@ -204,16 +206,20 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
                         var currNode: RGANode<T> = node
                         while (currNode.anchor != null) {
                             val currAnchor = this.nodes.find {
-                                it.uid == currNode.anchor }
+                                it.uid == currNode.anchor
+                            }
                             if (currAnchor == null) {
                                 throw IllegalArgumentException(
-                                    "RGA can not merge a node with unknown anchor")
+                                    "RGA can not merge a node with unknown anchor"
+                                )
                             }
                             currNode = currAnchor
                             siblings = this.nodes.filter {
-                                it.anchor == currNode.anchor }
+                                it.anchor == currNode.anchor
+                            }
                             firstWeakerSiblingNode = siblings.find {
-                                it.uid < currNode.uid }
+                                it.uid < currNode.uid
+                            }
                             if (firstWeakerSiblingNode != null) {
                                 index = this.nodes.indexOf(firstWeakerSiblingNode)
                                 break
@@ -229,7 +235,8 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
                     index = this.nodes.indexOfFirst { it.uid == node.anchor } + 1
                     if (index == 0) {
                         throw IllegalArgumentException(
-                            "RGA can not merge a node with unknown anchor")
+                            "RGA can not merge a node with unknown anchor"
+                        )
                     }
                 } else {
                     // no sibling, no anchor: this is the first node
@@ -247,9 +254,9 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
     }
 
     /**
-    * Serializes this crdt rga to a json string.
-    * @return the resulted json string.
-    */
+     * Serializes this crdt rga to a json string.
+     * @return the resulted json string.
+     */
     @OptIn(kotlinx.serialization.InternalSerializationApi::class)
     @Name("toJson")
     fun toJson(kclass: KClass<T>): String {
@@ -259,10 +266,10 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
 
     companion object {
         /**
-        * Deserializes a given json string in a crdt rga.
-        * @param json the given json string.
-        * @return the resulted crdt rga.
-        */
+         * Deserializes a given json string in a crdt rga.
+         * @param json the given json string.
+         * @return the resulted crdt rga.
+         */
         @OptIn(kotlinx.serialization.InternalSerializationApi::class)
         @Name("fromJson")
         fun <T : Any> fromJson(kclass: KClass<T>, json: String): RGA<T> {
@@ -276,17 +283,17 @@ class RGA<T : Any> : DeltaCRDT<RGA<T>> {
 * This class is a serializer for generic RGANode.
 */
 class RGANodeSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
-        KSerializer<RGANode<T>> {
+    KSerializer<RGANode<T>> {
 
-        override val descriptor: SerialDescriptor =
-            buildClassSerialDescriptor("RGANodeSerializer") {
-        val dataDescriptor = dataSerializer.descriptor
-        element("atom", dataDescriptor)
-        element("anchor", RGAUId.serializer().descriptor)
-        element("uid", RGAUId.serializer().descriptor)
-        element("ts", Timestamp.serializer().descriptor)
-        element("removed", Boolean.serializer().descriptor)
-    }
+    override val descriptor: SerialDescriptor =
+        buildClassSerialDescriptor("RGANodeSerializer") {
+            val dataDescriptor = dataSerializer.descriptor
+            element("atom", dataDescriptor)
+            element("anchor", RGAUId.serializer().descriptor)
+            element("uid", RGAUId.serializer().descriptor)
+            element("ts", Timestamp.serializer().descriptor)
+            element("removed", Boolean.serializer().descriptor)
+        }
 
     override fun serialize(encoder: Encoder, value: RGANode<T>) {
         val output = encoder.beginStructure(descriptor)
@@ -359,7 +366,7 @@ class RGASerializer<T : Any>(private val dataSerializer: KSerializer<T>) : KSeri
 * This class is a json transformer for RGA, it allows the separation between data and metadata.
 */
 class JsonRGASerializer<T : Any>(private val serializer: KSerializer<RGA<T>>) :
-        JsonTransformingSerializer<RGA<T>>(serializer) {
+    JsonTransformingSerializer<RGA<T>>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {
         val metadata = mutableListOf<JsonElement>()

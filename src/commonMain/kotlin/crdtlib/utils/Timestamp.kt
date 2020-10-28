@@ -30,11 +30,11 @@ import kotlinx.serialization.*
 data class Timestamp(val uid: ClientUId, val cnt: Int) {
 
     /**
-    * Compares this timestamp to a given other timestamp.
-    * First comparison is made on their values and if equal on their client unique ids.
-    * @param other the other instance of timestamp.
-    * @return the results of the comparison between the two timestamp.
-    **/
+     * Compares this timestamp to a given other timestamp.
+     * First comparison is made on their values and if equal on their client unique ids.
+     * @param other the other instance of timestamp.
+     * @return the results of the comparison between the two timestamp.
+     **/
     @Name("compareTo")
     operator fun compareTo(other: Timestamp): Int {
         if (this.cnt != other.cnt)
@@ -43,9 +43,9 @@ data class Timestamp(val uid: ClientUId, val cnt: Int) {
     }
 
     /**
-    * Serializes this timestamp to a json string.
-    * @return the resulted json string.
-    */
+     * Serializes this timestamp to a json string.
+     * @return the resulted json string.
+     */
     @Name("toJson")
     fun toJson(): String {
         return Json.encodeToString(Timestamp.serializer(), this)
@@ -54,20 +54,20 @@ data class Timestamp(val uid: ClientUId, val cnt: Int) {
     companion object {
 
         /**
-        * Constant for timestamp counter minimum value
-        */
+         * Constant for timestamp counter minimum value
+         */
         const val CNT_MIN_VALUE = Int.MIN_VALUE
 
         /**
-        * Constant for timestamp counter maximum value
-        */
+         * Constant for timestamp counter maximum value
+         */
         const val CNT_MAX_VALUE = Int.MAX_VALUE
 
         /**
-        * Deserializes a given json string in a timestamp object.
-        * @param json the given json string.
-        * @return the resulted timestamp.
-        */
+         * Deserializes a given json string in a timestamp object.
+         * @param json the given json string.
+         * @return the resulted timestamp.
+         */
         @Name("fromJson")
         fun fromJson(json: String): Timestamp {
             return Json.decodeFromString(Timestamp.serializer(), json)

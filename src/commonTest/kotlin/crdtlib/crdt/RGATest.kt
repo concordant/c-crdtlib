@@ -32,18 +32,18 @@ import io.kotest.matchers.collections.*
 class RGATest : StringSpec({
 
     /**
-    * This test evaluates the scenario: create, get.
-    * Call to get should return an empty array.
-    */
+     * This test evaluates the scenario: create, get.
+     * Call to get should return an empty array.
+     */
     "create and get" {
         val rga = RGA<Char>()
         rga.get().shouldBeEmpty()
     }
 
     /**
-    * This test evaluates the scenario: insert at 0, get.
-    * Call to get should return an array containing the inserted value.
-    */
+     * This test evaluates the scenario: insert at 0, get.
+     * Call to get should return an array containing the inserted value.
+     */
     "insert at 0 and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -56,10 +56,10 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0 twice, get.
-    * Call to get should return an array containing the two inserted values.
-    * Second value should be at index 0 and first value at index 1.
-    */
+     * This test evaluates the scenario: insert at 0 twice, get.
+     * Call to get should return an array containing the two inserted values.
+     * Second value should be at index 0 and first value at index 1.
+     */
     "insert at 0, insert at 0, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -74,10 +74,10 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0, insert at 1, get.
-    * Call to get should return an array containing the two inserted values.
-    * First value should be at index 0 and second value at index 1.
-    */
+     * This test evaluates the scenario: insert at 0, insert at 1, get.
+     * Call to get should return an array containing the two inserted values.
+     * First value should be at index 0 and second value at index 1.
+     */
     "insert at 0, insert at 1, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -92,9 +92,9 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0, remove at 0, get.
-    * Call to get should return an empty array.
-    */
+     * This test evaluates the scenario: insert at 0, remove at 0, get.
+     * Call to get should return an empty array.
+     */
     "inser at 0, remove at 0, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -109,9 +109,9 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0 twice, remove at 0 twice, get.
-    * Call to get should return an empty array.
-    */
+     * This test evaluates the scenario: insert at 0 twice, remove at 0 twice, get.
+     * Call to get should return an empty array.
+     */
     "insert at 0, insert at 0, remove at 0, remove at 0, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -130,10 +130,10 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0, insert at 1, remove at 0, insert at 1, get.
-    * Call to get should return an array containing the two last inserted values.
-    * Second inserted value should be at index 0 and third inserted value at index 1.
-    */
+     * This test evaluates the scenario: insert at 0, insert at 1, remove at 0, insert at 1, get.
+     * Call to get should return an array containing the two last inserted values.
+     * Second inserted value should be at index 0 and third inserted value at index 1.
+     */
     "insert at 0, insert at 1, remove at 0, insert at 1, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -152,10 +152,10 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0, insert at 1, remove at 1, insert at 1, get.
-    * Call to get should return an array containing the first and third inserted values.
-    * First inserted value should be at index 0 and thrid inserted value at index 1.
-    */
+     * This test evaluates the scenario: insert at 0, insert at 1, remove at 1, insert at 1, get.
+     * Call to get should return an array containing the first and third inserted values.
+     * First inserted value should be at index 0 and thrid inserted value at index 1.
+     */
     "insert at 0, insert at 1, remove at 1, insert at 1, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -174,9 +174,9 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0 || merge, get.
-    * Call to get should return an array containing the value inserted in replica 1.
-    */
+     * This test evaluates the scenario: insert at 0 || merge, get.
+     * Call to get should return an array containing the value inserted in replica 1.
+     */
     "R1: insert at 1; R2: merge, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -191,9 +191,9 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0 twice || merge, get.
-    * Call to get should return an array containing the two values inserted in replica 1.
-    */
+     * This test evaluates the scenario: insert at 0 twice || merge, get.
+     * Call to get should return an array containing the two values inserted in replica 1.
+     */
     "R1: insert at 0, insert at 0; R2: merge, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -210,9 +210,9 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0, insert at 1, insert at 2 || merge, get.
-    * Call to get should return an array containing the three values inserted in replica 1.
-    */
+     * This test evaluates the scenario: insert at 0, insert at 1, insert at 2 || merge, get.
+     * Call to get should return an array containing the three values inserted in replica 1.
+     */
     "R1: insert at 0, insert at 1, insert at 2; R2: merge, get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -231,11 +231,11 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0 || insert at 0 (with greater timestamp), merge
-    * get.
-    * Call to get should return an array containing the two values. Value inserted in replica 2
-    * should be at index 0 and the one inserted at replica 1 at index 1.
-    */
+     * This test evaluates the scenario: insert at 0 || insert at 0 (with greater timestamp), merge
+     * get.
+     * Call to get should return an array containing the two values. Value inserted in replica 2
+     * should be at index 0 and the one inserted at replica 1 at index 1.
+     */
     "R1: insert at 0; R2: insert at 0 with greater timestamp, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -254,11 +254,11 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0 (with greater timestamp) || insert at 0, merge
-    * get.
-    * Call to get should return an array containing the two values. Value inserted in replica
-    * 1 should be at index 0 and the one inserted at replica 2 at index 1.
-    */
+     * This test evaluates the scenario: insert at 0 (with greater timestamp) || insert at 0, merge
+     * get.
+     * Call to get should return an array containing the two values. Value inserted in replica
+     * 1 should be at index 0 and the one inserted at replica 2 at index 1.
+     */
     "R1: insert at 0 with greater timestamp; R2: insert at 0, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -277,10 +277,10 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0 twice || insert at 0 twice, merge get.
-    * Call to get should return an array containing the four values. Values should be ordered
-    * according to decreasing order of their associated timestamp.
-    */
+     * This test evaluates the scenario: insert at 0 twice || insert at 0 twice, merge get.
+     * Call to get should return an array containing the four values. Values should be ordered
+     * according to decreasing order of their associated timestamp.
+     */
     "R1: insert at 0, insert at 0; R2: insert at 0, insert at 0, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -303,11 +303,11 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0 (with greater timestamp), insert at 1 || insert
-    * at 0, insert at 1, merge get.
-    * Call to get should return an array containing the four values. Values inserted in replica 1
-    * should be before the one inserted in replica 2.
-    */
+     * This test evaluates the scenario: insert at 0 (with greater timestamp), insert at 1 || insert
+     * at 0, insert at 1, merge get.
+     * Call to get should return an array containing the four values. Values inserted in replica 1
+     * should be before the one inserted in replica 2.
+     */
     "insert at 0 with greater timestamp, insert at 1; R2: insert at 0, insert at 1, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -330,11 +330,11 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0, insert at 1 || insert at 0 (with greater
-    * timestamp), insert at 1, merge get.
-    * Call to get should return an array containing the four values. Values inserted in replica 2
-    * should be before the one inserted in replica 1.
-    */
+     * This test evaluates the scenario: insert at 0, insert at 1 || insert at 0 (with greater
+     * timestamp), insert at 1, merge get.
+     * Call to get should return an array containing the four values. Values inserted in replica 2
+     * should be before the one inserted in replica 1.
+     */
     "R1: insert at 0, insert at 1; R2: insert at 0 with greater timestamp, insert at 1, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -357,11 +357,11 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert four times, remove at 1 || merge (after adds in
-    * replica 1), remove at 2, merge, get.
-    * Call to get should return an array containing the two values that have not been remove (the
-    * first and the fourth one).
-    */
+     * This test evaluates the scenario: insert four times, remove at 1 || merge (after adds in
+     * replica 1), remove at 2, merge, get.
+     * Call to get should return an array containing the two values that have not been remove (the
+     * first and the fourth one).
+     */
     "R1: insert four times, remove at 1; R2: merge after inserts, remove at 2, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -389,13 +389,13 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0 (with greater timestamp) insert at 1 || insert
-    * at 0 (with second greater timestamp), insert at 1 || insert at 0, insert at 1, merge from
-    * replica 1, merge from replica 2, get.
-    * Call to get should return an array containing the six values. Values inserted in replica 1
-    * should be before the one inserted in replica 2 which should be before those inserted at
-    * replica 3.
-    */
+     * This test evaluates the scenario: insert at 0 (with greater timestamp) insert at 1 || insert
+     * at 0 (with second greater timestamp), insert at 1 || insert at 0, insert at 1, merge from
+     * replica 1, merge from replica 2, get.
+     * Call to get should return an array containing the six values. Values inserted in replica 1
+     * should be before the one inserted in replica 2 which should be before those inserted at
+     * replica 3.
+     */
     "R1: insert at 0 with greater timestamp, insert at 1; R2: insert at 0 with second timestamp, insert at 1; R3: insert at 0, insert at 1, merge R1 and R2, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -426,13 +426,13 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0 (with greater timestamp) insert at 1 || insert
-    * at 0, insert at 1 || insert at 0 (with second greater timestamp), insert at 1, merge from
-    * replica 1, merge from replica 2, get.
-    * Call to get should return an array containing the six values. Values inserted in replica 1
-    * should be before the one inserted in replica 3 which should be before those inserted at
-    * replica 2.
-    */
+     * This test evaluates the scenario: insert at 0 (with greater timestamp) insert at 1 || insert
+     * at 0, insert at 1 || insert at 0 (with second greater timestamp), insert at 1, merge from
+     * replica 1, merge from replica 2, get.
+     * Call to get should return an array containing the six values. Values inserted in replica 1
+     * should be before the one inserted in replica 3 which should be before those inserted at
+     * replica 2.
+     */
     "R1: insert at 0 with greater timestamp, insert at 1; R2: insert at 0, insert at 1; R3: insert at 0 with second timestamp, insert at 1, merge R1 and R2, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -463,13 +463,13 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0 (with second greater timestamp) insert at 1 ||
-    * insert at 0 (with greater timestamp), insert at 1 || insert at 0, insert at 1, merge from
-    * replica 1, merge from replica 2, get.
-    * Call to get should return an array containing the six values. Values inserted in replica 2
-    * should be before the one inserted in replica 1 which should be before those inserted at
-    * replica 3.
-    */
+     * This test evaluates the scenario: insert at 0 (with second greater timestamp) insert at 1 ||
+     * insert at 0 (with greater timestamp), insert at 1 || insert at 0, insert at 1, merge from
+     * replica 1, merge from replica 2, get.
+     * Call to get should return an array containing the six values. Values inserted in replica 2
+     * should be before the one inserted in replica 1 which should be before those inserted at
+     * replica 3.
+     */
     "R1: insert at 0 with second timestamp, insert at 1; R2: insert at 0 with greater timestamp, insert at 1; R3: insert at 0, insert at 1, merge R1 and R2, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -500,13 +500,13 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0, insert at 1 || insert at 0 (with greater
-    * timestamp), insert at 1 || insert at 0 (with second greater timestamp), insert at 1, merge
-    * from replica 1, merge from replica 2, get.
-    * Call to get should return an array containing the six values. Values inserted in replica 2
-    * should be before the one inserted in replica 3 which should be before those inserted at
-    * replica 1.
-    */
+     * This test evaluates the scenario: insert at 0, insert at 1 || insert at 0 (with greater
+     * timestamp), insert at 1 || insert at 0 (with second greater timestamp), insert at 1, merge
+     * from replica 1, merge from replica 2, get.
+     * Call to get should return an array containing the six values. Values inserted in replica 2
+     * should be before the one inserted in replica 3 which should be before those inserted at
+     * replica 1.
+     */
     "R1: insert at 0, insert at 1; R2: insert at 0 with greater timestamp, insert at 1; R3: insert at 0 with second timestamp, insert at 1, merge R1 and R2, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -537,13 +537,13 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0, insert at 1 || insert at 0 (with second greater
-    * timestamp), insert at 1 || insert at 0 (with greater timestamp), insert at 1, merge from
-    * replica 1, merge from replica 2, get.
-    * Call to get should return an array containing the six values. Values inserted in replica 3
-    * should be before the one inserted in replica 2 which should be before those inserted at
-    * replica 1.
-    */
+     * This test evaluates the scenario: insert at 0, insert at 1 || insert at 0 (with second greater
+     * timestamp), insert at 1 || insert at 0 (with greater timestamp), insert at 1, merge from
+     * replica 1, merge from replica 2, get.
+     * Call to get should return an array containing the six values. Values inserted in replica 3
+     * should be before the one inserted in replica 2 which should be before those inserted at
+     * replica 1.
+     */
     "R1: insert at 0, insert at 1; R2: insert at 0 with second timestamp, insert at 1; R3: insert at 0 with greater timestamp, insert at 1, merge R1 and R2, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -574,13 +574,13 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the scenario: insert at 0 (with second greater timestamp) insert at 1 ||
-    * insert at 0, insert at 1 || insert at 0 (with greater timestamp), insert at 1, merge from
-    * replica 1, merge from replica 2, get.
-    * Call to get should return an array containing the six values. Values inserted in replica 3
-    * should be before the one inserted in replica 1 which should be before those inserted at
-    * replica 2.
-    */
+     * This test evaluates the scenario: insert at 0 (with second greater timestamp) insert at 1 ||
+     * insert at 0, insert at 1 || insert at 0 (with greater timestamp), insert at 1, merge from
+     * replica 1, merge from replica 2, get.
+     * Call to get should return an array containing the six values. Values inserted in replica 3
+     * should be before the one inserted in replica 1 which should be before those inserted at
+     * replica 2.
+     */
     "R1: insert at 0 with second timestamp, insert at 1; R2: insert at 0, insert at 1; R3: insert at 0 with greater timestamp, insert at 1, merge R1 and R2, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -611,9 +611,9 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the use of delta return by call to insertAt method.
-    * Call to get should return an array containing the value inserted in replica 1.
-    */
+     * This test evaluates the use of delta return by call to insertAt method.
+     * Call to get should return an array containing the value inserted in replica 1.
+     */
     "use delta returned by insert" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -630,9 +630,9 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the use of delta return by call to removeAt method.
-    * Call to get should return an empty array.
-    */
+     * This test evaluates the use of delta return by call to removeAt method.
+     * Call to get should return an empty array.
+     */
     "use delta returned by remove" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -652,9 +652,9 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the use of delta return by call to insertAt and removeAt methods.
-    * Call to get should return an empty array.
-    */
+     * This test evaluates the use of delta return by call to insertAt and removeAt methods.
+     * Call to get should return an empty array.
+     */
     "use delta returned by insert and remove" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -675,9 +675,9 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the merge of deltas returned by call to insertAt and removeAt methods.
-    * Call to get should return an empty array.
-    */
+     * This test evaluates the merge of deltas returned by call to insertAt and removeAt methods.
+     * Call to get should return an empty array.
+     */
     "merge from delta insert to delta remove" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -697,9 +697,9 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the merge of deltas returned by call to removeAt and insertAt methods.
-    * Call to get should return an empty array.
-    */
+     * This test evaluates the merge of deltas returned by call to removeAt and insertAt methods.
+     * Call to get should return an empty array.
+     */
     "merge from delta remove to delta import" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -719,10 +719,10 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates the generation of delta plus its merging into another replica.
-    * Call to get should return an array containing the values set yb insertAt w.r.t the given
-    * context.
-    */
+     * This test evaluates the generation of delta plus its merging into another replica.
+     * Call to get should return an array containing the values set yb insertAt w.r.t the given
+     * context.
+     */
     "generate delta" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -746,8 +746,8 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON serialization of an empty RGA.
-    **/
+     * This test evaluates JSON serialization of an empty RGA.
+     **/
     "empty JSON serialization" {
         val rga = RGA<Char>()
 
@@ -757,8 +757,8 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON deserialization of an empty RGA.
-    **/
+     * This test evaluates JSON deserialization of an empty RGA.
+     **/
     "empty JSON deserialization" {
         val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[],"value":[]}""")
 
@@ -766,8 +766,8 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON serialization of an RGA.
-    **/
+     * This test evaluates JSON serialization of an RGA.
+     **/
     "JSON serialization" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -787,8 +787,8 @@ class RGATest : StringSpec({
     }
 
     /**
-    * This test evaluates JSON deserialization of an RGA.
-    **/
+     * This test evaluates JSON deserialization of an RGA.
+     **/
     "JSON deserialization" {
         val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"clientid"},"cnt":-2147483647},"ts":{"uid":{"name":"clientid"},"cnt":-2147483647},"removed":false},{"anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483644},"ts":{"uid":{"name":"clientid"},"cnt":-2147483644},"removed":false},{"atom":"B","anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483646},"ts":{"uid":{"name":"clientid"},"cnt":-2147483645},"removed":true}],"value":["A","C"]}""")
 
