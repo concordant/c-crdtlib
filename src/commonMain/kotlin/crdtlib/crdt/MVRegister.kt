@@ -25,11 +25,6 @@ import crdtlib.utils.Timestamp
 import crdtlib.utils.VersionVector
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.*
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.buildClassSerialDescriptor
-import kotlinx.serialization.encoding.CompositeDecoder
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
 import kotlin.reflect.KClass
 
@@ -44,7 +39,7 @@ import kotlin.reflect.KClass
 *   ]
 * }
 */
-@Serializable(with = MVRegisterSerializer::class)
+@Serializable
 class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
 
     /**
@@ -170,41 +165,6 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
             val jsonSerializer = JsonMVRegisterSerializer(MVRegister.serializer(kclass.serializer()))
             return Json.decodeFromString(jsonSerializer, json)
         }
-    }
-}
-
-/**
-* This class is a serializer for generic MVRegister.
-*/
-class MVRegisterSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
-    KSerializer<MVRegister<T>> {
-
-    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("MVRegisterSerializer") {
-        element("entries", SetSerializer(PairSerializer(dataSerializer, Timestamp.serializer())).descriptor)
-        element("causalContext", VersionVector.serializer().descriptor)
-    }
-
-    override fun serialize(encoder: Encoder, value: MVRegister<T>) {
-        val output = encoder.beginStructure(descriptor)
-        output.encodeSerializableElement(descriptor, 0, SetSerializer(PairSerializer(dataSerializer, Timestamp.serializer())), value.entries)
-        output.encodeSerializableElement(descriptor, 1, VersionVector.serializer(), value.causalContext)
-        output.endStructure(descriptor)
-    }
-
-    override fun deserialize(decoder: Decoder): MVRegister<T> {
-        val input = decoder.beginStructure(descriptor)
-        lateinit var entries: Set<Pair<T, Timestamp>>
-        lateinit var causalContext: VersionVector
-        loop@ while (true) {
-            when (val idx = input.decodeElementIndex(descriptor)) {
-                CompositeDecoder.DECODE_DONE -> break@loop
-                0 -> entries = input.decodeSerializableElement(descriptor, idx, SetSerializer(PairSerializer(dataSerializer, Timestamp.serializer())))
-                1 -> causalContext = input.decodeSerializableElement(descriptor, idx, VersionVector.serializer())
-                else -> throw SerializationException("Unknown index $idx")
-            }
-        }
-        input.endStructure(descriptor)
-        return MVRegister<T>(entries, causalContext)
     }
 }
 

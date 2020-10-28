@@ -23,11 +23,6 @@ import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.VersionVector
 import kotlinx.serialization.*
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.buildClassSerialDescriptor
-import kotlinx.serialization.encoding.CompositeDecoder
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
 
 /**
@@ -42,7 +37,7 @@ import kotlinx.serialization.json.*
 * }
 * @property value the stored value.
 */
-@Serializable(with = RatchetSerializer::class)
+@Serializable
 class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
 
     /**
@@ -109,38 +104,6 @@ class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
             val jsonSerializer = JsonRatchetSerializer(Ratchet.serializer(T::class.serializer()))
             return Json.decodeFromString(jsonSerializer, json)
         }
-    }
-}
-
-/**
-* This class is a serializer for generic Ratchet.
-*/
-class RatchetSerializer<T : Comparable<T>>(private val dataSerializer: KSerializer<T>) :
-    KSerializer<Ratchet<T>> {
-
-    override val descriptor: SerialDescriptor =
-        buildClassSerialDescriptor("RatchetSerializer") {
-            element("value", dataSerializer.descriptor)
-        }
-
-    override fun serialize(encoder: Encoder, value: Ratchet<T>) {
-        val output = encoder.beginStructure(descriptor)
-        output.encodeSerializableElement(descriptor, 0, dataSerializer, value.value)
-        output.endStructure(descriptor)
-    }
-
-    override fun deserialize(decoder: Decoder): Ratchet<T> {
-        val input = decoder.beginStructure(descriptor)
-        lateinit var value: T
-        loop@ while (true) {
-            when (val idx = input.decodeElementIndex(descriptor)) {
-                CompositeDecoder.DECODE_DONE -> break@loop
-                0 -> value = input.decodeSerializableElement(descriptor, idx, dataSerializer)
-                else -> throw SerializationException("Unknown index $idx")
-            }
-        }
-        input.endStructure(descriptor)
-        return Ratchet<T>(value)
     }
 }
 

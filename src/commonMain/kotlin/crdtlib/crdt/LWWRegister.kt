@@ -25,11 +25,6 @@ import crdtlib.utils.Timestamp
 import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
 import kotlinx.serialization.*
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.descriptors.buildClassSerialDescriptor
-import kotlinx.serialization.encoding.CompositeDecoder
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
 
 /**
@@ -44,7 +39,7 @@ import kotlinx.serialization.json.*
 * @property value the value stored in the register.
 * @property value the timestamp associated to the value.
 */
-@Serializable(with = LWWRegisterSerializer::class)
+@Serializable
 class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegister<T>>() {
 
     init {
@@ -128,41 +123,6 @@ class LWWRegister<T : Any>(var value: T, var ts: Timestamp) : DeltaCRDT<LWWRegis
             val jsonSerializer = JsonLWWRegisterSerializer(LWWRegister.serializer(T::class.serializer()))
             return Json.decodeFromString(jsonSerializer, json)
         }
-    }
-}
-
-/**
-* This class is a serializer for generic LWWRegister.
-*/
-class LWWRegisterSerializer<T : Any>(private val dataSerializer: KSerializer<T>) :
-    KSerializer<LWWRegister<T>> {
-
-    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("LWWRegisterSerializer") {
-        element("value", dataSerializer.descriptor)
-        element("ts", Timestamp.serializer().descriptor)
-    }
-
-    override fun serialize(encoder: Encoder, value: LWWRegister<T>) {
-        val output = encoder.beginStructure(descriptor)
-        output.encodeSerializableElement(descriptor, 0, dataSerializer, value.value)
-        output.encodeSerializableElement(descriptor, 1, Timestamp.serializer(), value.ts)
-        output.endStructure(descriptor)
-    }
-
-    override fun deserialize(decoder: Decoder): LWWRegister<T> {
-        val input = decoder.beginStructure(descriptor)
-        lateinit var value: T
-        lateinit var ts: Timestamp
-        loop@ while (true) {
-            when (val idx = input.decodeElementIndex(descriptor)) {
-                CompositeDecoder.DECODE_DONE -> break@loop
-                0 -> value = input.decodeSerializableElement(descriptor, idx, dataSerializer)
-                1 -> ts = input.decodeSerializableElement(descriptor, idx, Timestamp.serializer())
-                else -> throw SerializationException("Unknown index $idx")
-            }
-        }
-        input.endStructure(descriptor)
-        return LWWRegister<T>(value, ts)
     }
 }
 
