@@ -84,8 +84,7 @@ class Ratchet(var value: String) : DeltaCRDT<Ratchet>() {
      * Serializes this crdt ratchet to a json string.
      * @return the resulted json string.
      */
-    @Name("toJson")
-    fun toJson(): String {
+    override fun toJson(): String {
         val jsonSerializer = JsonRatchetSerializer(Ratchet.serializer())
         return Json.encodeToString<Ratchet>(jsonSerializer, this)
     }

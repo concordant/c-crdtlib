@@ -147,8 +147,7 @@ class MVRegister : DeltaCRDT<MVRegister> {
      * Serializes this crdt MV register to a json string.
      * @return the resulted json string.
      */
-    @Name("toJson")
-    fun toJson(): String {
+    override fun toJson(): String {
         val jsonSerializer = JsonMVRegisterSerializer(MVRegister.serializer())
         return Json.encodeToString<MVRegister>(jsonSerializer, this)
     }

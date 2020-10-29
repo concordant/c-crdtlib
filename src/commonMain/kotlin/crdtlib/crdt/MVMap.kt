@@ -321,8 +321,7 @@ class MVMap : DeltaCRDT<MVMap> {
      * Serializes this crdt map to a json string.
      * @return the resulted json string.
      */
-    @Name("toJson")
-    fun toJson(): String {
+    override fun toJson(): String {
         val jsonSerializer = JsonMVMapSerializer(MVMap.serializer())
         return Json.encodeToString<MVMap>(jsonSerializer, this)
     }

@@ -98,8 +98,7 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT<LWWRegister>
      * Serializes this crdt LWW register to a json string.
      * @return the resulted json string.
      */
-    @Name("toJson")
-    fun toJson(): String {
+    override fun toJson(): String {
         val jsonSerializer = JsonLWWRegisterSerializer(LWWRegister.serializer())
         return Json.encodeToString<LWWRegister>(jsonSerializer, this)
     }

@@ -259,8 +259,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
      * Serializes this crdt map to a json string.
      * @return the resulted json string.
      */
-    @Name("toJson")
-    fun toJson(): String {
+    override fun toJson(): String {
         val jsonSerializer = JsonLWWMapSerializer(LWWMap.serializer())
         return Json.encodeToString<LWWMap>(jsonSerializer, this)
     }

@@ -246,8 +246,7 @@ class RGA : DeltaCRDT<RGA> {
      * Serializes this crdt rga to a json string.
      * @return the resulted json string.
      */
-    @Name("toJson")
-    fun toJson(): String {
+    override fun toJson(): String {
         val jsonSerializer = JsonRGASerializer(RGA.serializer())
         return Json.encodeToString<RGA>(jsonSerializer, this)
     }

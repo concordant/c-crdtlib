@@ -41,4 +41,7 @@ abstract class DeltaCRDT<T> {
      */
     @Name("merge")
     abstract fun merge(delta: T)
+
+    @Name("toJson")
+    abstract fun toJson(): String
 }

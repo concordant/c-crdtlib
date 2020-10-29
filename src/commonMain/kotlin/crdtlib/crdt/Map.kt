@@ -456,8 +456,7 @@ class Map : DeltaCRDT<Map> {
      * Serializes this crdt map to a json string.
      * @return the resulted json string.
      */
-    @Name("toJson")
-    fun toJson(): String {
+    override fun toJson(): String {
         val jsonSerializer = JsonMapSerializer(Map.serializer())
         return Json.encodeToString<Map>(jsonSerializer, this)
     }

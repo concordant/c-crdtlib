@@ -179,8 +179,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
      * Serializes this crdt counter to a json string.
      * @return the resulted json string.
      */
-    @Name("toJson")
-    fun toJson(): String {
+    override fun toJson(): String {
         val jsonSerializer = JsonPNCounterSerializer(PNCounter.serializer())
         return Json.encodeToString<PNCounter>(jsonSerializer, this)
     }
