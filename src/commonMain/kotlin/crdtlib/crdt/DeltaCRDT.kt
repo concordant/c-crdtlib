@@ -42,6 +42,10 @@ abstract class DeltaCRDT<T> {
     @Name("merge")
     abstract fun merge(delta: T)
 
+    /**
+     * Serializes this delta crdt to a json string.
+     * @return the resulted json string.
+     */
     @Name("toJson")
     abstract fun toJson(): String
 }
