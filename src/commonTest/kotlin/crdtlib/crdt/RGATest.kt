@@ -36,7 +36,7 @@ class RGATest : StringSpec({
      * Call to get should return an empty array.
      */
     "create and get" {
-        val rga = RGA<Char>()
+        val rga = RGA()
         rga.get().shouldBeEmpty()
     }
 
@@ -48,11 +48,11 @@ class RGATest : StringSpec({
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
-        val rga = RGA<Char>()
+        val rga = RGA()
 
-        rga.insertAt(0, 'A', ts)
+        rga.insertAt(0, "A", ts)
 
-        rga.get().shouldHaveSingleElement('A')
+        rga.get().shouldHaveSingleElement("A")
     }
 
     /**
@@ -65,12 +65,12 @@ class RGATest : StringSpec({
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
         val ts2 = client.tick()
-        val rga = RGA<Char>()
+        val rga = RGA()
 
-        rga.insertAt(0, 'B', ts1)
-        rga.insertAt(0, 'A', ts2)
+        rga.insertAt(0, "B", ts1)
+        rga.insertAt(0, "A", ts2)
 
-        rga.get().shouldContainExactly('A', 'B')
+        rga.get().shouldContainExactly("A", "B")
     }
 
     /**
@@ -83,12 +83,12 @@ class RGATest : StringSpec({
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
         val ts2 = client.tick()
-        val rga = RGA<Char>()
+        val rga = RGA()
 
-        rga.insertAt(0, 'A', ts1)
-        rga.insertAt(1, 'B', ts2)
+        rga.insertAt(0, "A", ts1)
+        rga.insertAt(1, "B", ts2)
 
-        rga.get().shouldContainExactly('A', 'B')
+        rga.get().shouldContainExactly("A", "B")
     }
 
     /**
@@ -100,9 +100,9 @@ class RGATest : StringSpec({
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
         val ts2 = client.tick()
-        val rga = RGA<Char>()
+        val rga = RGA()
 
-        rga.insertAt(0, 'A', ts1)
+        rga.insertAt(0, "A", ts1)
         rga.removeAt(0, ts2)
 
         rga.get().shouldBeEmpty()
@@ -119,10 +119,10 @@ class RGATest : StringSpec({
         val ts2 = client.tick()
         val ts3 = client.tick()
         val ts4 = client.tick()
-        val rga = RGA<Char>()
+        val rga = RGA()
 
-        rga.insertAt(0, 'A', ts1)
-        rga.insertAt(0, 'B', ts2)
+        rga.insertAt(0, "A", ts1)
+        rga.insertAt(0, "B", ts2)
         rga.removeAt(0, ts3)
         rga.removeAt(0, ts4)
 
@@ -141,14 +141,14 @@ class RGATest : StringSpec({
         val ts2 = client.tick()
         val ts3 = client.tick()
         val ts4 = client.tick()
-        val rga = RGA<Char>()
+        val rga = RGA()
 
-        rga.insertAt(0, 'A', ts1)
-        rga.insertAt(1, 'B', ts2)
+        rga.insertAt(0, "A", ts1)
+        rga.insertAt(1, "B", ts2)
         rga.removeAt(0, ts3)
-        rga.insertAt(1, 'C', ts4)
+        rga.insertAt(1, "C", ts4)
 
-        rga.get().shouldContainExactly('B', 'C')
+        rga.get().shouldContainExactly("B", "C")
     }
 
     /**
@@ -163,14 +163,14 @@ class RGATest : StringSpec({
         val ts2 = client.tick()
         val ts3 = client.tick()
         val ts4 = client.tick()
-        val rga = RGA<Char>()
+        val rga = RGA()
 
-        rga.insertAt(0, 'A', ts1)
-        rga.insertAt(1, 'B', ts2)
+        rga.insertAt(0, "A", ts1)
+        rga.insertAt(1, "B", ts2)
         rga.removeAt(1, ts3)
-        rga.insertAt(1, 'C', ts4)
+        rga.insertAt(1, "C", ts4)
 
-        rga.get().shouldContainExactly('A', 'C')
+        rga.get().shouldContainExactly("A", "C")
     }
 
     /**
@@ -181,13 +181,13 @@ class RGATest : StringSpec({
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
 
-        rga1.insertAt(0, 'A', ts)
+        rga1.insertAt(0, "A", ts)
         rga2.merge(rga1)
 
-        rga2.get().shouldHaveSingleElement('A')
+        rga2.get().shouldHaveSingleElement("A")
     }
 
     /**
@@ -199,14 +199,14 @@ class RGATest : StringSpec({
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
         val ts2 = client.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
 
-        rga1.insertAt(0, 'B', ts1)
-        rga1.insertAt(0, 'A', ts2)
+        rga1.insertAt(0, "B", ts1)
+        rga1.insertAt(0, "A", ts2)
         rga2.merge(rga1)
 
-        rga2.get().shouldContainExactly('A', 'B')
+        rga2.get().shouldContainExactly("A", "B")
     }
 
     /**
@@ -219,15 +219,15 @@ class RGATest : StringSpec({
         val ts1 = client.tick()
         val ts2 = client.tick()
         val ts3 = client.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
 
-        rga1.insertAt(0, 'A', ts1)
-        rga1.insertAt(1, 'B', ts2)
-        rga1.insertAt(2, 'C', ts3)
+        rga1.insertAt(0, "A", ts1)
+        rga1.insertAt(1, "B", ts2)
+        rga1.insertAt(2, "C", ts3)
         rga2.merge(rga1)
 
-        rga2.get().shouldContainExactly('A', 'B', 'C')
+        rga2.get().shouldContainExactly("A", "B", "C")
     }
 
     /**
@@ -243,14 +243,14 @@ class RGATest : StringSpec({
         val client2 = SimpleEnvironment(uid2)
         val ts1 = client1.tick()
         val ts2 = client2.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
 
-        rga1.insertAt(0, 'B', ts1)
-        rga2.insertAt(0, 'A', ts2)
+        rga1.insertAt(0, "B", ts1)
+        rga2.insertAt(0, "A", ts2)
         rga2.merge(rga1)
 
-        rga2.get().shouldContainExactly('A', 'B')
+        rga2.get().shouldContainExactly("A", "B")
     }
 
     /**
@@ -266,14 +266,14 @@ class RGATest : StringSpec({
         val client2 = SimpleEnvironment(uid2)
         val ts1 = client1.tick()
         val ts2 = client2.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
 
-        rga1.insertAt(0, 'A', ts2)
-        rga2.insertAt(0, 'B', ts1)
+        rga1.insertAt(0, "A", ts2)
+        rga2.insertAt(0, "B", ts1)
         rga2.merge(rga1)
 
-        rga2.get().shouldContainExactly('A', 'B')
+        rga2.get().shouldContainExactly("A", "B")
     }
 
     /**
@@ -290,16 +290,16 @@ class RGATest : StringSpec({
         val ts2 = client2.tick()
         val ts3 = client1.tick()
         val ts4 = client2.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
 
-        rga1.insertAt(0, 'D', ts1)
-        rga1.insertAt(0, 'B', ts3)
-        rga2.insertAt(0, 'C', ts2)
-        rga2.insertAt(0, 'A', ts4)
+        rga1.insertAt(0, "D", ts1)
+        rga1.insertAt(0, "B", ts3)
+        rga2.insertAt(0, "C", ts2)
+        rga2.insertAt(0, "A", ts4)
         rga2.merge(rga1)
 
-        rga2.get().shouldContainExactly('A', 'B', 'C', 'D')
+        rga2.get().shouldContainExactly("A", "B", "C", "D")
     }
 
     /**
@@ -317,16 +317,16 @@ class RGATest : StringSpec({
         val ts2 = client2.tick()
         val ts3 = client1.tick()
         val ts4 = client2.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
 
-        rga1.insertAt(0, 'C', ts1)
-        rga1.insertAt(1, 'D', ts3)
-        rga2.insertAt(0, 'A', ts2)
-        rga2.insertAt(1, 'B', ts4)
+        rga1.insertAt(0, "C", ts1)
+        rga1.insertAt(1, "D", ts3)
+        rga2.insertAt(0, "A", ts2)
+        rga2.insertAt(1, "B", ts4)
         rga1.merge(rga2)
 
-        rga1.get().shouldContainExactly('A', 'B', 'C', 'D')
+        rga1.get().shouldContainExactly("A", "B", "C", "D")
     }
 
     /**
@@ -344,16 +344,16 @@ class RGATest : StringSpec({
         val ts2 = client2.tick()
         val ts3 = client1.tick()
         val ts4 = client2.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
 
-        rga1.insertAt(0, 'C', ts1)
-        rga1.insertAt(1, 'D', ts3)
-        rga2.insertAt(0, 'A', ts2)
-        rga2.insertAt(1, 'B', ts4)
+        rga1.insertAt(0, "C", ts1)
+        rga1.insertAt(1, "D", ts3)
+        rga2.insertAt(0, "A", ts2)
+        rga2.insertAt(1, "B", ts4)
         rga2.merge(rga1)
 
-        rga2.get().shouldContainExactly('A', 'B', 'C', 'D')
+        rga2.get().shouldContainExactly("A", "B", "C", "D")
     }
 
     /**
@@ -373,19 +373,19 @@ class RGATest : StringSpec({
         val ts4 = client1.tick()
         val ts5 = client1.tick()
         val ts6 = client2.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
 
-        rga1.insertAt(0, 'A', ts1)
-        rga1.insertAt(1, 'B', ts2)
-        rga1.insertAt(2, 'C', ts3)
-        rga1.insertAt(3, 'D', ts4)
+        rga1.insertAt(0, "A", ts1)
+        rga1.insertAt(1, "B", ts2)
+        rga1.insertAt(2, "C", ts3)
+        rga1.insertAt(3, "D", ts4)
         rga2.merge(rga1)
         rga1.removeAt(1, ts5)
         rga2.removeAt(2, ts6)
         rga2.merge(rga1)
 
-        rga2.get().shouldContainExactly('A', 'D')
+        rga2.get().shouldContainExactly("A", "D")
     }
 
     /**
@@ -409,20 +409,20 @@ class RGATest : StringSpec({
         val ts4 = client1.tick()
         val ts5 = client2.tick()
         val ts6 = client3.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
-        val rga3 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
+        val rga3 = RGA()
 
-        rga1.insertAt(0, 'A', ts3)
-        rga1.insertAt(1, 'B', ts6)
-        rga2.insertAt(0, 'C', ts2)
-        rga2.insertAt(1, 'D', ts5)
-        rga3.insertAt(0, 'E', ts1)
-        rga3.insertAt(1, 'F', ts4)
+        rga1.insertAt(0, "A", ts3)
+        rga1.insertAt(1, "B", ts6)
+        rga2.insertAt(0, "C", ts2)
+        rga2.insertAt(1, "D", ts5)
+        rga3.insertAt(0, "E", ts1)
+        rga3.insertAt(1, "F", ts4)
         rga3.merge(rga1)
         rga3.merge(rga2)
 
-        rga3.get().shouldContainExactly('A', 'B', 'C', 'D', 'E', 'F')
+        rga3.get().shouldContainExactly("A", "B", "C", "D", "E", "F")
     }
 
     /**
@@ -446,20 +446,20 @@ class RGATest : StringSpec({
         val ts4 = client1.tick()
         val ts5 = client2.tick()
         val ts6 = client3.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
-        val rga3 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
+        val rga3 = RGA()
 
-        rga1.insertAt(0, 'A', ts3)
-        rga1.insertAt(1, 'B', ts6)
-        rga2.insertAt(0, 'E', ts1)
-        rga2.insertAt(1, 'F', ts4)
-        rga3.insertAt(0, 'C', ts2)
-        rga3.insertAt(1, 'D', ts5)
+        rga1.insertAt(0, "A", ts3)
+        rga1.insertAt(1, "B", ts6)
+        rga2.insertAt(0, "E", ts1)
+        rga2.insertAt(1, "F", ts4)
+        rga3.insertAt(0, "C", ts2)
+        rga3.insertAt(1, "D", ts5)
         rga3.merge(rga1)
         rga3.merge(rga2)
 
-        rga3.get().shouldContainExactly('A', 'B', 'C', 'D', 'E', 'F')
+        rga3.get().shouldContainExactly("A", "B", "C", "D", "E", "F")
     }
 
     /**
@@ -483,20 +483,20 @@ class RGATest : StringSpec({
         val ts4 = client1.tick()
         val ts5 = client2.tick()
         val ts6 = client3.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
-        val rga3 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
+        val rga3 = RGA()
 
-        rga1.insertAt(0, 'C', ts2)
-        rga1.insertAt(1, 'D', ts5)
-        rga2.insertAt(0, 'A', ts3)
-        rga2.insertAt(1, 'B', ts6)
-        rga3.insertAt(0, 'E', ts1)
-        rga3.insertAt(1, 'F', ts4)
+        rga1.insertAt(0, "C", ts2)
+        rga1.insertAt(1, "D", ts5)
+        rga2.insertAt(0, "A", ts3)
+        rga2.insertAt(1, "B", ts6)
+        rga3.insertAt(0, "E", ts1)
+        rga3.insertAt(1, "F", ts4)
         rga3.merge(rga1)
         rga3.merge(rga2)
 
-        rga3.get().shouldContainExactly('A', 'B', 'C', 'D', 'E', 'F')
+        rga3.get().shouldContainExactly("A", "B", "C", "D", "E", "F")
     }
 
     /**
@@ -520,20 +520,20 @@ class RGATest : StringSpec({
         val ts4 = client1.tick()
         val ts5 = client2.tick()
         val ts6 = client3.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
-        val rga3 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
+        val rga3 = RGA()
 
-        rga1.insertAt(0, 'E', ts1)
-        rga1.insertAt(1, 'F', ts4)
-        rga2.insertAt(0, 'A', ts3)
-        rga2.insertAt(1, 'B', ts6)
-        rga3.insertAt(0, 'C', ts2)
-        rga3.insertAt(1, 'D', ts5)
+        rga1.insertAt(0, "E", ts1)
+        rga1.insertAt(1, "F", ts4)
+        rga2.insertAt(0, "A", ts3)
+        rga2.insertAt(1, "B", ts6)
+        rga3.insertAt(0, "C", ts2)
+        rga3.insertAt(1, "D", ts5)
         rga3.merge(rga1)
         rga3.merge(rga2)
 
-        rga3.get().shouldContainExactly('A', 'B', 'C', 'D', 'E', 'F')
+        rga3.get().shouldContainExactly("A", "B", "C", "D", "E", "F")
     }
 
     /**
@@ -557,20 +557,20 @@ class RGATest : StringSpec({
         val ts4 = client1.tick()
         val ts5 = client2.tick()
         val ts6 = client3.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
-        val rga3 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
+        val rga3 = RGA()
 
-        rga1.insertAt(0, 'E', ts1)
-        rga1.insertAt(1, 'F', ts4)
-        rga2.insertAt(0, 'C', ts2)
-        rga2.insertAt(1, 'D', ts5)
-        rga3.insertAt(0, 'A', ts3)
-        rga3.insertAt(1, 'B', ts6)
+        rga1.insertAt(0, "E", ts1)
+        rga1.insertAt(1, "F", ts4)
+        rga2.insertAt(0, "C", ts2)
+        rga2.insertAt(1, "D", ts5)
+        rga3.insertAt(0, "A", ts3)
+        rga3.insertAt(1, "B", ts6)
         rga3.merge(rga1)
         rga3.merge(rga2)
 
-        rga3.get().shouldContainExactly('A', 'B', 'C', 'D', 'E', 'F')
+        rga3.get().shouldContainExactly("A", "B", "C", "D", "E", "F")
     }
 
     /**
@@ -594,20 +594,20 @@ class RGATest : StringSpec({
         val ts4 = client1.tick()
         val ts5 = client2.tick()
         val ts6 = client3.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
-        val rga3 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
+        val rga3 = RGA()
 
-        rga1.insertAt(0, 'C', ts2)
-        rga1.insertAt(1, 'D', ts5)
-        rga2.insertAt(0, 'E', ts1)
-        rga2.insertAt(1, 'F', ts4)
-        rga3.insertAt(0, 'A', ts3)
-        rga3.insertAt(1, 'B', ts6)
+        rga1.insertAt(0, "C", ts2)
+        rga1.insertAt(1, "D", ts5)
+        rga2.insertAt(0, "E", ts1)
+        rga2.insertAt(1, "F", ts4)
+        rga3.insertAt(0, "A", ts3)
+        rga3.insertAt(1, "B", ts6)
         rga3.merge(rga1)
         rga3.merge(rga2)
 
-        rga3.get().shouldContainExactly('A', 'B', 'C', 'D', 'E', 'F')
+        rga3.get().shouldContainExactly("A", "B", "C", "D", "E", "F")
     }
 
     /**
@@ -618,15 +618,15 @@ class RGATest : StringSpec({
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
 
-        val insertOp = rga1.insertAt(0, 'A', ts)
+        val insertOp = rga1.insertAt(0, "A", ts)
         rga2.merge(insertOp)
         rga2.merge(insertOp)
 
-        rga1.get().shouldHaveSingleElement('A')
-        rga2.get().shouldHaveSingleElement('A')
+        rga1.get().shouldHaveSingleElement("A")
+        rga2.get().shouldHaveSingleElement("A")
     }
 
     /**
@@ -638,10 +638,10 @@ class RGATest : StringSpec({
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
         val ts2 = client.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
 
-        rga1.insertAt(0, 'A', ts1)
+        rga1.insertAt(0, "A", ts1)
         rga2.merge(rga1)
         val removeOp = rga1.removeAt(0, ts2)
         rga1.merge(removeOp)
@@ -660,10 +660,10 @@ class RGATest : StringSpec({
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
         val ts2 = client.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
 
-        val insertOp = rga1.insertAt(0, 'A', ts1)
+        val insertOp = rga1.insertAt(0, "A", ts1)
         val removeOp = rga1.removeAt(0, ts2)
         rga1.merge(insertOp)
         rga1.merge(removeOp)
@@ -683,10 +683,10 @@ class RGATest : StringSpec({
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
         val ts2 = client.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
 
-        val op1 = rga1.insertAt(0, 'A', ts1)
+        val op1 = rga1.insertAt(0, "A", ts1)
         val op2 = rga1.removeAt(0, ts2)
         op1.merge(op2)
         rga1.merge(op1)
@@ -705,10 +705,10 @@ class RGATest : StringSpec({
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
         val ts2 = client.tick()
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
 
-        val op1 = rga1.insertAt(0, 'A', ts1)
+        val op1 = rga1.insertAt(0, "A", ts1)
         val op2 = rga1.removeAt(0, ts2)
         op2.merge(op1)
         rga1.merge(op2)
@@ -732,26 +732,26 @@ class RGATest : StringSpec({
         val ts4 = client.tick()
         val vv = VersionVector()
         vv.update(ts2)
-        val rga1 = RGA<Char>()
-        val rga2 = RGA<Char>()
+        val rga1 = RGA()
+        val rga2 = RGA()
 
-        rga1.insertAt(0, 'A', ts1)
-        rga1.insertAt(0, 'B', ts3)
-        rga1.insertAt(0, 'C', ts2)
-        rga1.insertAt(0, 'D', ts4)
+        rga1.insertAt(0, "A", ts1)
+        rga1.insertAt(0, "B", ts3)
+        rga1.insertAt(0, "C", ts2)
+        rga1.insertAt(0, "D", ts4)
         val delta = rga1.generateDelta(vv)
         rga2.merge(delta)
 
-        rga2.get().shouldContainExactly('D', 'B')
+        rga2.get().shouldContainExactly("D", "B")
     }
 
     /**
      * This test evaluates JSON serialization of an empty RGA.
      **/
     "empty JSON serialization" {
-        val rga = RGA<Char>()
+        val rga = RGA()
 
-        val rgaJson = rga.toJson(Char::class)
+        val rgaJson = rga.toJson()
 
         rgaJson.shouldBe("""{"_type":"RGA","_metadata":[],"value":[]}""")
     }
@@ -760,7 +760,7 @@ class RGATest : StringSpec({
      * This test evaluates JSON deserialization of an empty RGA.
      **/
     "empty JSON deserialization" {
-        val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[],"value":[]}""")
+        val rgaJson = RGA.fromJson("""{"_type":"RGA","_metadata":[],"value":[]}""")
 
         rgaJson.get().shouldBeEmpty()
     }
@@ -775,13 +775,13 @@ class RGATest : StringSpec({
         val ts2 = client.tick()
         val ts3 = client.tick()
         val ts4 = client.tick()
-        val rga = RGA<Char>()
+        val rga = RGA()
 
-        rga.insertAt(0, 'A', ts1)
-        rga.insertAt(1, 'B', ts2)
+        rga.insertAt(0, "A", ts1)
+        rga.insertAt(1, "B", ts2)
         rga.removeAt(1, ts3)
-        rga.insertAt(1, 'C', ts4)
-        val rgaJson = rga.toJson(Char::class)
+        rga.insertAt(1, "C", ts4)
+        val rgaJson = rga.toJson()
 
         rgaJson.shouldBe("""{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"clientid"},"cnt":-2147483647},"ts":{"uid":{"name":"clientid"},"cnt":-2147483647},"removed":false},{"anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483644},"ts":{"uid":{"name":"clientid"},"cnt":-2147483644},"removed":false},{"atom":"B","anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483646},"ts":{"uid":{"name":"clientid"},"cnt":-2147483645},"removed":true}],"value":["A","C"]}""")
     }
@@ -790,8 +790,8 @@ class RGATest : StringSpec({
      * This test evaluates JSON deserialization of an RGA.
      **/
     "JSON deserialization" {
-        val rgaJson = RGA.fromJson(Char::class, """{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"clientid"},"cnt":-2147483647},"ts":{"uid":{"name":"clientid"},"cnt":-2147483647},"removed":false},{"anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483644},"ts":{"uid":{"name":"clientid"},"cnt":-2147483644},"removed":false},{"atom":"B","anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483646},"ts":{"uid":{"name":"clientid"},"cnt":-2147483645},"removed":true}],"value":["A","C"]}""")
+        val rgaJson = RGA.fromJson("""{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"clientid"},"cnt":-2147483647},"ts":{"uid":{"name":"clientid"},"cnt":-2147483647},"removed":false},{"anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483644},"ts":{"uid":{"name":"clientid"},"cnt":-2147483644},"removed":false},{"atom":"B","anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483646},"ts":{"uid":{"name":"clientid"},"cnt":-2147483645},"removed":true}],"value":["A","C"]}""")
 
-        rgaJson.get().shouldContainExactly('A', 'C')
+        rgaJson.get().shouldContainExactly("A", "C")
     }
 })

@@ -33,19 +33,19 @@ import kotlinx.serialization.json.*
 * It is serializable to JSON and respect the following schema:
 * {
 *   "_type": "Ratchet",
-*   "value": T.toJson()
+*   "value": $value
 * }
 * @property value the stored value.
 */
 @Serializable
-class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
+class Ratchet(var value: String) : DeltaCRDT<Ratchet>() {
 
     /**
      * Gets the value stored in the ratchet.
      * @return the value stored in the ratchet.
      */
     @Name("get")
-    fun get(): T {
+    fun get(): String {
         return this.value
     }
 
@@ -56,7 +56,7 @@ class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
      * @return the delta corresponding to this operation.
      */
     @Name("set")
-    fun assign(value: T): Ratchet<T> {
+    fun assign(value: String): Ratchet {
         if (this.value < value) this.value = value
         return Ratchet(this.value)
     }
@@ -66,7 +66,7 @@ class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
      * @param vv the context used as starting point to generate the delta.
      * @return the corresponding delta of operations.
      */
-    override fun generateDelta(vv: VersionVector): Ratchet<T> {
+    override fun generateDelta(vv: VersionVector): Ratchet {
         return Ratchet(this.value)
     }
 
@@ -76,7 +76,7 @@ class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
      * A foreign value is kept iff it is greater than the local one.
      * @param delta the delta that should be merge with the local replica.
      */
-    override fun merge(delta: Ratchet<T>) {
+    override fun merge(delta: Ratchet) {
         if (this.value < delta.value) this.value = delta.value
     }
 
@@ -84,12 +84,10 @@ class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
      * Serializes this crdt ratchet to a json string.
      * @return the resulted json string.
      */
-    @OptIn(kotlinx.serialization.InternalSerializationApi::class)
     @Name("toJson")
     fun toJson(): String {
-        val jsonSerializer =
-            JsonRatchetSerializer(Ratchet.serializer(this.value::class.serializer() as KSerializer<T>))
-        return Json.encodeToString<Ratchet<T>>(jsonSerializer, this)
+        val jsonSerializer = JsonRatchetSerializer(Ratchet.serializer())
+        return Json.encodeToString<Ratchet>(jsonSerializer, this)
     }
 
     companion object {
@@ -98,10 +96,9 @@ class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
          * @param json the given json string.
          * @return the resulted ratchet.
          */
-        @OptIn(kotlinx.serialization.InternalSerializationApi::class)
         @Name("fromJson")
-        inline fun <reified T : Comparable<T>> fromJson(json: String): Ratchet<T> {
-            val jsonSerializer = JsonRatchetSerializer(Ratchet.serializer(T::class.serializer()))
+        fun fromJson(json: String): Ratchet {
+            val jsonSerializer = JsonRatchetSerializer(Ratchet.serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
     }
@@ -110,8 +107,8 @@ class Ratchet<T : Comparable<T>>(var value: T) : DeltaCRDT<Ratchet<T>>() {
 /**
 * This class is a json transformer for Ratchet, it allows the separation between data and metadata.
 */
-class JsonRatchetSerializer<T : Comparable<T>>(private val serializer: KSerializer<Ratchet<T>>) :
-    JsonTransformingSerializer<Ratchet<T>>(serializer) {
+class JsonRatchetSerializer(private val serializer: KSerializer<Ratchet>) :
+    JsonTransformingSerializer<Ratchet>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {
         return JsonObject(mapOf("_type" to JsonPrimitive("Ratchet"), "value" to element.jsonObject.get("value") as JsonElement))

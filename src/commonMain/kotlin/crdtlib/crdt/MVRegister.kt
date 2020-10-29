@@ -26,7 +26,6 @@ import crdtlib.utils.VersionVector
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.*
 import kotlinx.serialization.json.*
-import kotlin.reflect.KClass
 
 /**
 * This class is a delta-based CRDT multi-value register.
@@ -35,21 +34,23 @@ import kotlin.reflect.KClass
 *   "_type": "MVRegister",
 *   "_metadata": VersionVector.toJson(),
 *   "value": [
-*       (( T.toJson(), )*( T.toJson() ))?
+*       (( $value, )*( $value ))?
 *   ]
 * }
 */
 @Serializable
-class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
+class MVRegister : DeltaCRDT<MVRegister> {
 
     /**
      * A mutable set storing the different values with their associated timestamp.
      */
-    var entries: MutableSet<Pair<T, Timestamp>> = mutableSetOf()
+    @Required
+    var entries: MutableSet<Pair<String, Timestamp>> = mutableSetOf()
 
     /**
      * A version vector summarizing the entries seen by all values.
      */
+    @Required
     val causalContext: VersionVector = VersionVector()
 
     /**
@@ -63,8 +64,8 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
      * @param value the value to be put in the register.
      * @param ts the associated timestamp.
      */
-    constructor(value: T, ts: Timestamp) {
-        this.entries = mutableSetOf(Pair<T, Timestamp>(value, ts))
+    constructor(value: String, ts: Timestamp) {
+        this.entries = mutableSetOf(Pair(value, ts))
         this.causalContext.update(ts)
     }
 
@@ -72,12 +73,12 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
      * Constructor creating a copy of a given register.
      * @param other the register that should be copy.
      */
-    constructor(other: MVRegister<T>) {
+    constructor(other: MVRegister) {
         this.entries = other.entries.toMutableSet()
         this.causalContext.update(other.causalContext)
     }
 
-    constructor(entries: Set<Pair<T, Timestamp>>, causalContext: VersionVector) {
+    constructor(entries: Set<Pair<String, Timestamp>>, causalContext: VersionVector) {
         this.entries = entries.toMutableSet()
         this.causalContext.update(causalContext)
     }
@@ -87,7 +88,7 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
      * @return the set of values stored.
      */
     @Name("get")
-    fun get(): Set<T> {
+    fun get(): Set<String> {
         return this.entries.map { it.first }.toSet()
     }
 
@@ -100,10 +101,10 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
      * @return the delta corresponding to this operation.
      */
     @Name("set")
-    fun assign(value: T, ts: Timestamp): MVRegister<T> {
+    fun assign(value: String, ts: Timestamp): MVRegister {
         if (!this.causalContext.contains(ts)) {
             this.entries.clear()
-            this.entries.add(Pair<T, Timestamp>(value, ts))
+            this.entries.add(Pair(value, ts))
             this.causalContext.update(ts)
         }
         return MVRegister(this)
@@ -114,7 +115,7 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
      * @param vv the context used as starting point to generate the delta.
      * @return the corresponding delta of operations.
      */
-    override fun generateDelta(vv: VersionVector): MVRegister<T> {
+    override fun generateDelta(vv: VersionVector): MVRegister {
         return MVRegister(this)
     }
 
@@ -125,8 +126,8 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
      * associated timestamp is not included in the local (foreign) causal context.
      * @param delta the delta that should be merge with the local replica.
      */
-    override fun merge(delta: MVRegister<T>) {
-        val keptEntries = mutableSetOf<Pair<T, Timestamp>>()
+    override fun merge(delta: MVRegister) {
+        val keptEntries = mutableSetOf<Pair<String, Timestamp>>()
         for ((value, ts) in this.entries) {
             if (!delta.causalContext.contains(ts) || delta.entries.any { it.second == ts }) {
                 keptEntries.add(Pair(value, ts))
@@ -146,11 +147,10 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
      * Serializes this crdt MV register to a json string.
      * @return the resulted json string.
      */
-    @OptIn(kotlinx.serialization.InternalSerializationApi::class)
     @Name("toJson")
-    fun toJson(kclass: KClass<T>): String {
-        val jsonSerializer = JsonMVRegisterSerializer(MVRegister.serializer(kclass.serializer()))
-        return Json.encodeToString<MVRegister<T>>(jsonSerializer, this)
+    fun toJson(): String {
+        val jsonSerializer = JsonMVRegisterSerializer(MVRegister.serializer())
+        return Json.encodeToString<MVRegister>(jsonSerializer, this)
     }
 
     companion object {
@@ -159,10 +159,9 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
          * @param json the given json string.
          * @return the resulted MV register.
          */
-        @OptIn(kotlinx.serialization.InternalSerializationApi::class)
         @Name("fromJson")
-        fun <T : Any> fromJson(kclass: KClass<T>, json: String): MVRegister<T> {
-            val jsonSerializer = JsonMVRegisterSerializer(MVRegister.serializer(kclass.serializer()))
+        fun fromJson(json: String): MVRegister {
+            val jsonSerializer = JsonMVRegisterSerializer(MVRegister.serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
     }
@@ -171,8 +170,8 @@ class MVRegister<T : Any> : DeltaCRDT<MVRegister<T>> {
 /**
 * This class is a json transformer for MVRegister, it allows the separation between data and metadata.
 */
-class JsonMVRegisterSerializer<T : Any>(private val serializer: KSerializer<MVRegister<T>>) :
-    JsonTransformingSerializer<MVRegister<T>>(serializer) {
+class JsonMVRegisterSerializer(private val serializer: KSerializer<MVRegister>) :
+    JsonTransformingSerializer<MVRegister>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {
         val entries = mutableListOf<JsonElement>()

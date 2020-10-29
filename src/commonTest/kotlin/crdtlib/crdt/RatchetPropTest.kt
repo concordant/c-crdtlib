@@ -25,8 +25,8 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.*
 import io.kotest.property.forAll
 
-val RatchetIntArb = arb { rs ->
-    val vs = Arb.int().values(rs)
+val RatchetArb = arb { rs ->
+    val vs = Arb.string().values(rs)
     vs.map { v -> Ratchet(v.value) }
 }
 
@@ -36,17 +36,17 @@ enum class OpType {
 val OperationArb = arb { rs ->
     val typs = Arb.enum<OpType>().values(rs)
 
-    val vs = Arb.int().values(rs)
+    val vs = Arb.string().values(rs)
     typs.zip(vs).map { (t, v) -> Pair(t.value, v.value) }
 }
 
 class RatchetPropTest : StringSpec({
 
     "deserialize is inverse to serialize" {
-        forAll(RatchetIntArb) { r ->
-            r.get() == Ratchet.fromJson<Int>(r.toJson()).get()
+        forAll(RatchetArb) { r ->
+            r.get() == Ratchet.fromJson(r.toJson()).get()
             // TODO: After fixing equality, this should also work:
-            // r == Ratchet.fromJson<Int>(r.toJson())
+            // r == Ratchet.fromJson<String>(r.toJson())
         }
     }
     "get initial value" {
@@ -57,9 +57,9 @@ class RatchetPropTest : StringSpec({
     "arbitrary set and merge always yields largest element" {
         forAll(Arb.list(OperationArb)) { ops ->
             val maybeMaximum = ops.maxByOrNull { it.second }
-            val maximum = maybeMaximum?.second ?: Int.MIN_VALUE
+            val maximum = maybeMaximum?.second ?: ""
 
-            val r = Ratchet(Int.MIN_VALUE)
+            val r = Ratchet("")
             ops.map { op ->
                 when (op.first) {
                     OpType.ASSIGN -> r.assign(op.second)
@@ -71,18 +71,19 @@ class RatchetPropTest : StringSpec({
     }
 
     "merge with deltas" {
-        forAll(Arb.list(Arb.int()), Arb.list(Arb.int())) { ops1, ops2 ->
-            val m1 = ops1.maxOrNull() ?: Int.MIN_VALUE
-            val m2 = ops2.maxOrNull() ?: Int.MIN_VALUE
+        // Need to reduce range to 0..50 otherwise js test fails due to timeout (default is 0..100)
+        forAll(Arb.list(Arb.string(), 0..50), Arb.list(Arb.string(), 0..50)) { ops1, ops2 ->
+            val m1 = ops1.maxOrNull() ?: ""
+            val m2 = ops2.maxOrNull() ?: ""
 
-            val r1 = Ratchet(Int.MIN_VALUE)
-            val r2 = Ratchet(Int.MIN_VALUE)
+            val r1 = Ratchet("")
+            val r2 = Ratchet("")
             ops1.map { op -> r1.assign(op) }
             ops2.map { op -> r2.assign(op) }
 
             val d = r1.generateDelta(VersionVector())
             r2.merge(d)
-            r2.get() == maxOf(m1, m2)
+            r2.get().equals(maxOf(m1, m2))
         }
     }
 })
