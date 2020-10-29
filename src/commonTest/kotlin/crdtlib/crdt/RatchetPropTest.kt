@@ -49,13 +49,16 @@ class RatchetPropTest : StringSpec({
             // r == Ratchet.fromJson<String>(r.toJson())
         }
     }
+
     "get initial value" {
         forAll(Arb.string()) { s ->
             s == Ratchet(s).get()
         }
     }
+
     "arbitrary set and merge always yields largest element" {
-        forAll(Arb.list(OperationArb)) { ops ->
+        // Need to reduce range to 0..50 otherwise js test fails due to timeout (default is 0..100)
+        forAll(Arb.list(OperationArb, 0..50)) { ops ->
             val maybeMaximum = ops.maxByOrNull { it.second }
             val maximum = maybeMaximum?.second ?: ""
 
