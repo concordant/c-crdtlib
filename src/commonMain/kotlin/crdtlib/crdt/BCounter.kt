@@ -29,47 +29,65 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 
 /**
-* This class is a delta-based CRDT bounded-counter greater or equal 0.
-* It is serializable to JSON and respect the following schema:
-* {
- "_type": "BCounter",
- "_metadata": {
- "increment": [
- (( ClientUId.toJson(), {
- "first": $value, // $value is an integer
- "second": Timestamp.toJson()
- }, )*( ClientUId.toJson(), {
- "first": $value, // $value is an integer
- "second": Timestamp.toJson()
- } ))?
- ],
- "decrement": [
- (( ClientUId.toJson(), {
- "first": $value, // $value is an integer
- "second": Timestamp.toJson()
- }, )*( ClientUId.toJson(), {
- "first": $value, // $value is an integer
- "second": Timestamp.toJson()
- } ))?
- ]
- },
- "value": $value // $value is an integer
-* }
-*/
+* This class is a delta-based CRDT bounded-counter for invariant "greater or equal"" or "lower or equal".
+ * It is serializable to JSON and respect the following schema:
+ * {
+ *   "_type": "BCounter",
+ *   "_metadata": {
+ *       "type": $type, // $type is GEQ or LEQ
+ *       "bound": $value // $value is an integer
+ *       "increment": [
+ *          ({ClientUId.toJson()}, [
+ *              (( ClientUId.toJson(), {
+ *                  "first": $value, // $value is an integer
+ *                  "second": Timestamp.toJson()
+ *              }, )*( ClientUId.toJson(), {
+ *                      "first": $value, // $value is an integer
+ *                      "second": Timestamp.toJson()
+ *              } ))?
+ *          ])?
+ *       ],
+ *       "decrement": [
+ *           ({ ClientUId.toJson(), {
+ *               "first": $value, // $value is an integer
+ *               "second": Timestamp.toJson()
+ *           }, )*( ClientUId.toJson(), {
+ *               "first": $value, // $value is an integer
+ *               "second": Timestamp.toJson()
+ *           } })?
+ *       ]
+ *   },
+ *   "value": $value // $value is an integer
+ * }
+ */
 @Serializable
-class BCounter(val bound: Int) : DeltaCRDT<BCounter>() {
+class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
 
     /**
-     * A mutable map storing for each client metadata relative to increment operations.
+     * For GEQ : A mutable map storing for each client metadata relative to increment operations and local rights.
+     * For LEQ : A mutable map storing for each client metadata relative to decrement operations and local rights.
      */
     @Required
     private val increment: MutableMap<ClientUId, MutableMap<ClientUId, Pair<Int, Timestamp>>> = mutableMapOf()
 
     /**
-     * A mutable map storing for each client metadata relative to decrement operations.
+     * For GEQ : A mutable map storing for each client metadata relative to decrement operations.
+     * For LEQ : A mutable map storing for each client metadata relative to increment operations.
      */
     @Required
     private val decrement: MutableMap<ClientUId, Pair<Int, Timestamp>> = mutableMapOf()
+
+    /**
+     * Gets the sum of values from the variable increment minus the sum of values from the variable decrement.
+     * @return the sum of values from increment minus the sum of values from decrement.
+     */
+    private fun getGEQ(): Int {
+        var sum = 0
+        for ((k, v) in this.increment) {
+            sum += v[k]?.first ?: 0
+        }
+        return sum - this.decrement.values.sumBy { it.first }
+    }
 
     /**
      * Gets the value of the counter.
@@ -77,11 +95,7 @@ class BCounter(val bound: Int) : DeltaCRDT<BCounter>() {
      */
     @Name("get")
     fun get(): Int {
-        var sum = this.bound
-        for ((k, v) in this.increment) {
-            sum += v[k]?.first ?: 0
-        }
-        return sum - this.decrement.values.sumBy { it.first }
+        return if (this.type == BType.GEQ) this.bound + this.getGEQ() else this.bound - this.getGEQ()
     }
 
     /**
@@ -91,7 +105,7 @@ class BCounter(val bound: Int) : DeltaCRDT<BCounter>() {
     @Name("localRights")
     fun localRights(uid: ClientUId): Int {
         var rights = this.increment[uid]?.get(uid)?.first ?: 0
-        for ((k, v) in this.increment) {
+        for (v in this.increment.values) {
             rights += v[uid]?.first ?: 0
         }
         rights -= (this.increment[uid]?.values?.sumBy { it.first } ?: 0)
@@ -100,15 +114,14 @@ class BCounter(val bound: Int) : DeltaCRDT<BCounter>() {
     }
 
     /**
-     * Increments the counter by the given amount.
-     * @param amount the value that should be added to the counter.
+     * Increments the variable increment by the given amount.
+     * @param amount the value that should be added to the variable increment.
      * @return the delta corresponding to this operation.
      */
-    @Name("increment")
-    fun increment(amount: Int, ts: Timestamp): BCounter {
-        val op = BCounter(this.bound)
+    private fun incrementGEQ(amount: Int, ts: Timestamp): BCounter {
+        val op = BCounter(this.type, this.bound)
         if (amount == 0) return op
-        if (amount < 0) return this.decrement(-amount, ts)
+        if (amount < 0) return this.decrementGEQ(-amount, ts)
 
         val count = this.increment[ts.uid]?.get(ts.uid)?.first ?: 0
         if (Int.MAX_VALUE - count < amount - 1) {
@@ -126,15 +139,24 @@ class BCounter(val bound: Int) : DeltaCRDT<BCounter>() {
     }
 
     /**
-     * Decrements the counter by the given amount.
-     * @param amount the value that should be removed to the counter.
+     * Increments the counter by the given amount.
+     * @param amount the value that should be added to the counter.
      * @return the delta corresponding to this operation.
      */
-    @Name("decrement")
-    fun decrement(amount: Int, ts: Timestamp): BCounter {
-        val op = BCounter(this.bound)
+    @Name("increment")
+    fun increment(amount: Int, ts: Timestamp): BCounter {
+        return if (this.type == BType.GEQ) incrementGEQ(amount, ts) else decrementGEQ(amount, ts)
+    }
+
+    /**
+     * Decrements the variable decrement by the given amount.
+     * @param amount the value that should be removed to the variable decrement.
+     * @return the delta corresponding to this operation.
+     */
+    fun decrementGEQ(amount: Int, ts: Timestamp): BCounter {
+        val op = BCounter(this.type, this.bound)
         if (amount == 0) return op
-        if (amount < 0) return this.increment(-amount, ts)
+        if (amount < 0) return this.incrementGEQ(-amount, ts)
 
         if (amount > this.localRights(ts.uid)) {
             throw IllegalArgumentException("BCounter has not enough amount")
@@ -147,6 +169,16 @@ class BCounter(val bound: Int) : DeltaCRDT<BCounter>() {
         this.decrement[ts.uid] = Pair(count + amount, ts)
         op.decrement[ts.uid] = Pair(count + amount, ts)
         return op
+    }
+
+    /**
+     * Decrements the counter by the given amount.
+     * @param amount the value that should be removed to the counter.
+     * @return the delta corresponding to this operation.
+     */
+    @Name("decrement")
+    fun decrement(amount: Int, ts: Timestamp): BCounter {
+        return if (this.type == BType.GEQ) decrementGEQ(amount, ts) else incrementGEQ(amount, ts)
     }
 
     /**
@@ -169,7 +201,7 @@ class BCounter(val bound: Int) : DeltaCRDT<BCounter>() {
      * @return the corresponding delta of operations.
      */
     override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<BCounter> {
-        val delta = BCounter(this.bound)
+        val delta = BCounter(this.type, this.bound)
         for ((uid1, meta2) in increment) {
             for ((uid2, meta) in meta2) {
                 if (!vv.contains(meta.second)) {
@@ -220,10 +252,6 @@ class BCounter(val bound: Int) : DeltaCRDT<BCounter>() {
         }
     }
 
-    @Serializable
-    @SerialName("BCounter")
-    private class BCounterSurrogate(val _type: String, val _metadata: String, val value: Int)
-
     /**
      * Serializes this crdt counter to a json string.
      * @return the resulted json string.
@@ -231,7 +259,7 @@ class BCounter(val bound: Int) : DeltaCRDT<BCounter>() {
     @Name("toJson")
     fun toJson(): String {
         val jsonSerializer = JsonBCounterSerializer(BCounter.serializer())
-        return Json.encodeToString<BCounter>(jsonSerializer, this)
+        return Json.encodeToString(jsonSerializer, this)
     }
 
     companion object {
@@ -244,6 +272,10 @@ class BCounter(val bound: Int) : DeltaCRDT<BCounter>() {
         fun fromJson(json: String): BCounter {
             val jsonSerializer = JsonBCounterSerializer(BCounter.serializer())
             return Json.decodeFromString(jsonSerializer, json)
+        }
+
+        enum class BType {
+            GEQ, LEQ
         }
     }
 }
@@ -259,16 +291,13 @@ class JsonBCounterSerializer(private val serializer: KSerializer<BCounter>) :
 
         var incValue = 0
         val keys = element.jsonObject["increment"]!!.jsonArray
-//        println("mon array : $keys")
         for (i in 0 until keys.size / 2) {
             val id = keys[2 * i]
             val sec = keys[2 * i + 1].jsonArray
-//            println("${id.jsonObject["name"]}")
 
             for (j in 0 until sec.size / 2) {
                 if (sec[2 * j] == id) {
                     incValue += sec[2 * j + 1].jsonObject["first"]?.jsonPrimitive?.int ?: 0
-//                    println("$incValue")
                     break
                 }
             }
@@ -276,11 +305,15 @@ class JsonBCounterSerializer(private val serializer: KSerializer<BCounter>) :
         val decValue = element.jsonObject["decrement"]!!.jsonArray.filter {
             it.jsonObject.containsKey("first")
         }.sumBy { it.jsonObject["first"]!!.jsonPrimitive.int }
+
+        val a = element.jsonObject["type"]!!.jsonPrimitive.toString()
+        val value = if (element.jsonObject["type"]!!.jsonPrimitive.toString() == """"GEQ"""") bound + incValue - decValue else bound - incValue + decValue
+
         return JsonObject(
             mapOf(
                 "_type" to JsonPrimitive("BCounter"),
                 "_metadata" to element,
-                "value" to JsonPrimitive(bound + incValue - decValue)
+                "value" to JsonPrimitive(value)
             )
         )
     }
