@@ -30,13 +30,14 @@ import kotlinx.serialization.json.*
 
 /**
 * This class is a delta-based CRDT bounded-counter for invariant "greater or equal"" or "lower or equal".
+ * The initial value is the bound.
  * It is serializable to JSON and respect the following schema:
  * {
  *   "_type": "BCounter",
  *   "_metadata": {
  *       "type": $type, // $type is GEQ or LEQ
  *       "bound": $value // $value is an integer
- *       "increment": [
+ *       "rightsObtained": [
  *          ({ClientUId.toJson()}, [
  *              (( ClientUId.toJson(), {
  *                  "first": $value, // $value is an integer
@@ -47,7 +48,7 @@ import kotlinx.serialization.json.*
  *              } ))?
  *          ])?
  *       ],
- *       "decrement": [
+ *       "rightsConsumed": [
  *           ({ ClientUId.toJson(), {
  *               "first": $value, // $value is an integer
  *               "second": Timestamp.toJson()
@@ -64,29 +65,31 @@ import kotlinx.serialization.json.*
 class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
 
     /**
-     * For GEQ : A mutable map storing for each client metadata relative to increment operations and local rights.
-     * For LEQ : A mutable map storing for each client metadata relative to decrement operations and local rights.
+     * A mutable map of mutable map storing for each client metadata relative to rights obtained.
+     * For a "greater or equal" bounded counter, this map is storing each client metadata relative to increment operations and transferred rights.
+     * For a "lower or equal" bounded counter, this map is storing each client metadata relative to decrement operations and transferred rights.
      */
     @Required
-    private val increment: MutableMap<ClientUId, MutableMap<ClientUId, Pair<Int, Timestamp>>> = mutableMapOf()
+    private val rightsObtained: MutableMap<ClientUId, MutableMap<ClientUId, Pair<Int, Timestamp>>> = mutableMapOf()
 
     /**
-     * For GEQ : A mutable map storing for each client metadata relative to decrement operations.
-     * For LEQ : A mutable map storing for each client metadata relative to increment operations.
+     * A mutable map storing for each client metadata relative to rights consumed.
+     * For a "greater or equal" bounded counter, this map is storing each client metadata relative to decrement operations.
+     * For a "lower or equal" bounded counter, this map is storing each client metadata relative to increment operations.
      */
     @Required
-    private val decrement: MutableMap<ClientUId, Pair<Int, Timestamp>> = mutableMapOf()
+    private val rightsConsumed: MutableMap<ClientUId, Pair<Int, Timestamp>> = mutableMapOf()
 
     /**
-     * Gets the sum of values from the variable increment minus the sum of values from the variable decrement.
+     * Gets the sum of increments values minus the sum of decrements values.
      * @return the sum of values from increment minus the sum of values from decrement.
      */
-    private fun getGEQ(): Int {
+    private fun getValue(): Int {
         var sum = 0
-        for ((k, v) in this.increment) {
+        for ((k, v) in this.rightsObtained) {
             sum += v[k]?.first ?: 0
         }
-        return sum - this.decrement.values.sumBy { it.first }
+        return sum - this.rightsConsumed.values.sumBy { it.first }
     }
 
     /**
@@ -95,7 +98,7 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
      */
     @Name("get")
     fun get(): Int {
-        return if (this.type == BType.GEQ) this.bound + this.getGEQ() else this.bound - this.getGEQ()
+        return if (this.type == BType.GEQ) this.bound + this.getValue() else this.bound - this.getValue()
     }
 
     /**
@@ -104,12 +107,12 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
      */
     @Name("localRights")
     fun localRights(uid: ClientUId): Int {
-        var rights = this.increment[uid]?.get(uid)?.first ?: 0
-        for (v in this.increment.values) {
+        var rights = this.rightsObtained[uid]?.get(uid)?.first ?: 0
+        for (v in this.rightsObtained.values) {
             rights += v[uid]?.first ?: 0
         }
-        rights -= (this.increment[uid]?.values?.sumBy { it.first } ?: 0)
-        rights -= this.decrement[uid]?.first ?: 0
+        rights -= (this.rightsObtained[uid]?.values?.sumBy { it.first } ?: 0)
+        rights -= this.rightsConsumed[uid]?.first ?: 0
         return rights
     }
 
@@ -118,23 +121,23 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
      * @param amount the value that should be added to the variable increment.
      * @return the delta corresponding to this operation.
      */
-    private fun incrementGEQ(amount: Int, ts: Timestamp): BCounter {
+    private fun incrementLocalRight(amount: Int, ts: Timestamp): BCounter {
         val op = BCounter(this.type, this.bound)
         if (amount == 0) return op
-        if (amount < 0) return this.decrementGEQ(-amount, ts)
+        if (amount < 0) return this.decrementLocalRight(-amount, ts)
 
-        val count = this.increment[ts.uid]?.get(ts.uid)?.first ?: 0
+        val count = this.rightsObtained[ts.uid]?.get(ts.uid)?.first ?: 0
         if (Int.MAX_VALUE - count < amount - 1) {
             throw RuntimeException("BCounter has reached Int.MAX_VALUE")
         }
 
-        if (this.increment[ts.uid] == null) {
-            this.increment[ts.uid] = mutableMapOf(ts.uid to Pair(count + amount, ts))
+        if (this.rightsObtained[ts.uid] == null) {
+            this.rightsObtained[ts.uid] = mutableMapOf(ts.uid to Pair(count + amount, ts))
         } else {
-            this.increment[ts.uid]?.put(ts.uid, Pair(count + amount, ts))
+            this.rightsObtained[ts.uid]?.put(ts.uid, Pair(count + amount, ts))
         }
 
-        op.increment[ts.uid] = mutableMapOf(ts.uid to Pair(count + amount, ts))
+        op.rightsObtained[ts.uid] = mutableMapOf(ts.uid to Pair(count + amount, ts))
         return op
     }
 
@@ -145,7 +148,7 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
      */
     @Name("increment")
     fun increment(amount: Int, ts: Timestamp): BCounter {
-        return if (this.type == BType.GEQ) incrementGEQ(amount, ts) else decrementGEQ(amount, ts)
+        return if (this.type == BType.GEQ) incrementLocalRight(amount, ts) else decrementLocalRight(amount, ts)
     }
 
     /**
@@ -153,21 +156,21 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
      * @param amount the value that should be removed to the variable decrement.
      * @return the delta corresponding to this operation.
      */
-    fun decrementGEQ(amount: Int, ts: Timestamp): BCounter {
+    private fun decrementLocalRight(amount: Int, ts: Timestamp): BCounter {
         val op = BCounter(this.type, this.bound)
         if (amount == 0) return op
-        if (amount < 0) return this.incrementGEQ(-amount, ts)
+        if (amount < 0) return this.incrementLocalRight(-amount, ts)
 
         if (amount > this.localRights(ts.uid)) {
             throw IllegalArgumentException("BCounter has not enough amount")
         }
 
-        val count = this.decrement[ts.uid]?.first ?: 0
+        val count = this.rightsConsumed[ts.uid]?.first ?: 0
         if (Int.MAX_VALUE - count < amount - 1) {
             throw RuntimeException("BCounter has reached Int.MAX_VALUE")
         }
-        this.decrement[ts.uid] = Pair(count + amount, ts)
-        op.decrement[ts.uid] = Pair(count + amount, ts)
+        this.rightsConsumed[ts.uid] = Pair(count + amount, ts)
+        op.rightsConsumed[ts.uid] = Pair(count + amount, ts)
         return op
     }
 
@@ -178,12 +181,12 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
      */
     @Name("decrement")
     fun decrement(amount: Int, ts: Timestamp): BCounter {
-        return if (this.type == BType.GEQ) decrementGEQ(amount, ts) else incrementGEQ(amount, ts)
+        return if (this.type == BType.GEQ) decrementLocalRight(amount, ts) else incrementLocalRight(amount, ts)
     }
 
     /**
      * Transfers rights from the local replica to some other replica to.
-     * @param amount the rights that should be transferts from the local replica to replica to.
+     * @param amount the rights that should be transferred from the local replica to replica to.
      * @return true if the local replica have enough rights to transfers.
      */
     @Name("transfer")
@@ -191,7 +194,7 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
         if (localRights(ts.uid) < amount) {
             return false
         }
-        this.increment[ts.uid]?.put(to, Pair((this.increment[ts.uid]?.get(to)?.first ?: 0) + amount, ts))
+        this.rightsObtained[ts.uid]?.put(to, Pair((this.rightsObtained[ts.uid]?.get(to)?.first ?: 0) + amount, ts))
         return true
     }
 
@@ -202,20 +205,20 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
      */
     override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<BCounter> {
         val delta = BCounter(this.type, this.bound)
-        for ((uid1, meta2) in increment) {
+        for ((uid1, meta2) in this.rightsObtained) {
             for ((uid2, meta) in meta2) {
                 if (!vv.contains(meta.second)) {
-                    if (delta.increment[uid1] == null) {
-                        delta.increment[uid1] = mutableMapOf(uid2 to Pair(meta.first, meta.second))
+                    if (delta.rightsObtained[uid1] == null) {
+                        delta.rightsObtained[uid1] = mutableMapOf(uid2 to Pair(meta.first, meta.second))
                     } else {
-                        delta.increment[uid1]?.put(uid2, Pair(meta.first, meta.second))
+                        delta.rightsObtained[uid1]?.put(uid2, Pair(meta.first, meta.second))
                     }
                 }
             }
         }
-        for ((uid, meta) in decrement) {
+        for ((uid, meta) in this.rightsConsumed) {
             if (!vv.contains(meta.second)) {
-                delta.decrement[uid] = Pair(meta.first, meta.second)
+                delta.rightsConsumed[uid] = Pair(meta.first, meta.second)
             }
         }
         return delta
@@ -231,23 +234,23 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
      */
     override fun mergeProtected(delta: DeltaCRDT<BCounter>) {
         if (delta !is BCounter) throw UnexpectedTypeException("BCounter does not support merging with type:" + delta::class)
-        if (delta.bound != this.bound) throw IllegalArgumentException("Trying to merge replicas from differents BCounter")
+        if (delta.bound != this.bound) throw IllegalArgumentException("Trying to merge replicas from different BCounter")
 
-        for ((uid, meta2) in delta.increment) {
+        for ((uid, meta2) in delta.rightsObtained) {
             for ((uid2, meta) in meta2) {
-                if (this.increment[uid] == null) {
-                    this.increment[uid] = mutableMapOf(uid2 to Pair(meta.first, meta.second))
+                if (this.rightsObtained[uid] == null) {
+                    this.rightsObtained[uid] = mutableMapOf(uid2 to Pair(meta.first, meta.second))
                 }
-                val localMeta = this.increment[uid]?.get(uid2)
+                val localMeta = this.rightsObtained[uid]?.get(uid2)
                 if (localMeta == null || localMeta.first < meta.first) {
-                    this.increment[uid]?.put(uid2, Pair(meta.first, meta.second))
+                    this.rightsObtained[uid]?.put(uid2, Pair(meta.first, meta.second))
                 }
             }
         }
-        for ((uid, meta) in delta.decrement) {
-            val localMeta = this.decrement[uid]
+        for ((uid, meta) in delta.rightsConsumed) {
+            val localMeta = this.rightsConsumed[uid]
             if (localMeta == null || localMeta.first < meta.first) {
-                this.decrement[uid] = Pair(meta.first, meta.second)
+                this.rightsConsumed[uid] = Pair(meta.first, meta.second)
             }
         }
     }
@@ -290,7 +293,7 @@ class JsonBCounterSerializer(private val serializer: KSerializer<BCounter>) :
         val bound = element.jsonObject["bound"]!!.jsonPrimitive.int
 
         var incValue = 0
-        val keys = element.jsonObject["increment"]!!.jsonArray
+        val keys = element.jsonObject["rightsObtained"]!!.jsonArray
         for (i in 0 until keys.size / 2) {
             val id = keys[2 * i]
             val sec = keys[2 * i + 1].jsonArray
@@ -302,11 +305,10 @@ class JsonBCounterSerializer(private val serializer: KSerializer<BCounter>) :
                 }
             }
         }
-        val decValue = element.jsonObject["decrement"]!!.jsonArray.filter {
+        val decValue = element.jsonObject["rightsConsumed"]!!.jsonArray.filter {
             it.jsonObject.containsKey("first")
         }.sumBy { it.jsonObject["first"]!!.jsonPrimitive.int }
 
-        val a = element.jsonObject["type"]!!.jsonPrimitive.toString()
         val value = if (element.jsonObject["type"]!!.jsonPrimitive.toString() == """"GEQ"""") bound + incValue - decValue else bound - incValue + decValue
 
         return JsonObject(

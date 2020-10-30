@@ -1378,7 +1378,7 @@ class BCounterTest : StringSpec({
         val cnt = BCounter(BCounter.Companion.BType.GEQ, bound)
 
         val cntJson = cnt.toJson()
-        cntJson.shouldBe("""{"_type":"BCounter","_metadata":{"type":"GEQ","bound":10,"increment":[],"decrement":[]},"value":10}""")
+        cntJson.shouldBe("""{"_type":"BCounter","_metadata":{"type":"GEQ","bound":10,"rightsObtained":[],"rightsConsumed":[]},"value":10}""")
     }
 
     /**
@@ -1389,14 +1389,14 @@ class BCounterTest : StringSpec({
         val cnt = BCounter(BCounter.Companion.BType.LEQ, bound)
 
         val cntJson = cnt.toJson()
-        cntJson.shouldBe("""{"_type":"BCounter","_metadata":{"type":"LEQ","bound":10,"increment":[],"decrement":[]},"value":10}""")
+        cntJson.shouldBe("""{"_type":"BCounter","_metadata":{"type":"LEQ","bound":10,"rightsObtained":[],"rightsConsumed":[]},"value":10}""")
     }
 
     /**
      * This test evaluates JSON deserialization of an empty bcounter.
      **/
     "GEQ empty JSON deserialization" {
-        val cntJson = BCounter.fromJson("""{"_type":"BCounter","_metadata":{"type":"GEQ","bound":10,"increment":[],"decrement":[]},"value":10}""")
+        val cntJson = BCounter.fromJson("""{"_type":"BCounter","_metadata":{"type":"GEQ","bound":10,"rightsObtained":[],"rightsConsumed":[]},"value":10}""")
 
         cntJson.get().shouldBe(10)
     }
@@ -1405,7 +1405,7 @@ class BCounterTest : StringSpec({
      * This test evaluates JSON deserialization of an empty bcounter.
      **/
     "LEQ empty JSON deserialization" {
-        val cntJson = BCounter.fromJson("""{"_type":"BCounter","_metadata":{"type":"LEQ","bound":10,"increment":[],"decrement":[]},"value":10}""")
+        val cntJson = BCounter.fromJson("""{"_type":"BCounter","_metadata":{"type":"LEQ","bound":10,"rightsObtained":[],"rightsConsumed":[]},"value":10}""")
 
         cntJson.get().shouldBe(10)
     }
@@ -1439,7 +1439,7 @@ class BCounterTest : StringSpec({
         cnt1.merge(cnt2)
         val cntJson = cnt1.toJson()
 
-        cntJson.shouldBe("""{"_type":"BCounter","_metadata":{"type":"GEQ","bound":10,"increment":[{"name":"clientid1"},[{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}],{"name":"clientid2"},[{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":2,"second":{"uid":{"name":"clientid2"},"cnt":-2147483645}}]],"decrement":[{"name":"clientid1"},{"first":5,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}},{"name":"clientid2"},{"first":20,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}}]},"value":25}""")
+        cntJson.shouldBe("""{"_type":"BCounter","_metadata":{"type":"GEQ","bound":10,"rightsObtained":[{"name":"clientid1"},[{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}],{"name":"clientid2"},[{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":2,"second":{"uid":{"name":"clientid2"},"cnt":-2147483645}}]],"rightsConsumed":[{"name":"clientid1"},{"first":5,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}},{"name":"clientid2"},{"first":20,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}}]},"value":25}""")
     }
 
     /**
@@ -1471,14 +1471,14 @@ class BCounterTest : StringSpec({
         cnt1.merge(cnt2)
         val cntJson = cnt1.toJson()
 
-        cntJson.shouldBe("""{"_type":"BCounter","_metadata":{"type":"LEQ","bound":10,"increment":[{"name":"clientid1"},[{"name":"clientid1"},{"first":15,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}],{"name":"clientid2"},[{"name":"clientid2"},{"first":40,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":8,"second":{"uid":{"name":"clientid2"},"cnt":-2147483645}}]],"decrement":[{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}},{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}}]},"value":-5}""")
+        cntJson.shouldBe("""{"_type":"BCounter","_metadata":{"type":"LEQ","bound":10,"rightsObtained":[{"name":"clientid1"},[{"name":"clientid1"},{"first":15,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}],{"name":"clientid2"},[{"name":"clientid2"},{"first":40,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":8,"second":{"uid":{"name":"clientid2"},"cnt":-2147483645}}]],"rightsConsumed":[{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}},{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}}]},"value":-5}""")
     }
 
     /**
      * This test evaluates JSON deserialization of a bcounter.
      **/
     "GEQ JSON deserialization" {
-        val cntJson = BCounter.fromJson("""{"_type":"BCounter","_metadata":{"type":"GEQ","bound":10,"increment":[{"name":"clientid1"},[{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}],{"name":"clientid2"},[{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":2,"second":{"uid":{"name":"clientid2"},"cnt":-2147483645}}]],"decrement":[{"name":"clientid1"},{"first":5,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}},{"name":"clientid2"},{"first":20,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}}]},"value":25}""")
+        val cntJson = BCounter.fromJson("""{"_type":"BCounter","_metadata":{"type":"GEQ","bound":10,"rightsObtained":[{"name":"clientid1"},[{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}],{"name":"clientid2"},[{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":2,"second":{"uid":{"name":"clientid2"},"cnt":-2147483645}}]],"rightsConsumed":[{"name":"clientid1"},{"first":5,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}},{"name":"clientid2"},{"first":20,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}}]},"value":25}""")
 
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -1491,7 +1491,7 @@ class BCounterTest : StringSpec({
      * This test evaluates JSON deserialization of a bcounter.
      **/
     "LEQ JSON deserialization" {
-        val cntJson = BCounter.fromJson("""{"_type":"BCounter","_metadata":{"type":"LEQ","bound":10,"increment":[{"name":"clientid1"},[{"name":"clientid1"},{"first":15,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}],{"name":"clientid2"},[{"name":"clientid2"},{"first":40,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":8,"second":{"uid":{"name":"clientid2"},"cnt":-2147483645}}]],"decrement":[{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}},{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}}]},"value":-5}""")
+        val cntJson = BCounter.fromJson("""{"_type":"BCounter","_metadata":{"type":"LEQ","bound":10,"rightsObtained":[{"name":"clientid1"},[{"name":"clientid1"},{"first":15,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}],{"name":"clientid2"},[{"name":"clientid2"},{"first":40,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":8,"second":{"uid":{"name":"clientid2"},"cnt":-2147483645}}]],"rightsConsumed":[{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}},{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}}]},"value":-5}""")
 
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
