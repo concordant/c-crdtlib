@@ -124,7 +124,7 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
     private fun incrementRights(amount: Int, ts: Timestamp): BCounter {
         val op = BCounter(this.type, this.bound)
         if (amount == 0) return op
-        if (amount < 0) return this.decrementLocalRight(-amount, ts)
+        if (amount < 0) return this.decrementRights(-amount, ts)
 
         val count = this.rightsObtained[ts.uid]?.get(ts.uid)?.first ?: 0
         if (Int.MAX_VALUE - count < amount - 1) {
