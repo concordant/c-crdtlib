@@ -29,7 +29,7 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 
 /**
-* This class is a delta-based CRDT bounded-counter for invariant "greater or equal"" or "lower or equal".
+* This class is a delta-based CRDT bounded-counter for invariant "greater or equal" or "lower or equal".
  * The initial value is the bound.
  * It is serializable to JSON and respect the following schema:
  * {
@@ -117,11 +117,11 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
     }
 
     /**
-     * Increments the variable increment by the given amount.
-     * @param amount the value that should be added to the variable increment.
+     * Increments the variable rightsObtained by the given amount.
+     * @param amount the value that should be added to the variable rightsObtained.
      * @return the delta corresponding to this operation.
      */
-    private fun incrementLocalRight(amount: Int, ts: Timestamp): BCounter {
+    private fun incrementRights(amount: Int, ts: Timestamp): BCounter {
         val op = BCounter(this.type, this.bound)
         if (amount == 0) return op
         if (amount < 0) return this.decrementLocalRight(-amount, ts)
@@ -148,18 +148,18 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
      */
     @Name("increment")
     fun increment(amount: Int, ts: Timestamp): BCounter {
-        return if (this.type == BType.GEQ) incrementLocalRight(amount, ts) else decrementLocalRight(amount, ts)
+        return if (this.type == BType.GEQ) incrementRights(amount, ts) else decrementRights(amount, ts)
     }
 
     /**
-     * Decrements the variable decrement by the given amount.
-     * @param amount the value that should be removed to the variable decrement.
+     * Increments the variable rightsConsumed by the given amount.
+     * @param amount the value that should be added to the variable rightsConsumed.
      * @return the delta corresponding to this operation.
      */
-    private fun decrementLocalRight(amount: Int, ts: Timestamp): BCounter {
+    private fun decrementRights(amount: Int, ts: Timestamp): BCounter {
         val op = BCounter(this.type, this.bound)
         if (amount == 0) return op
-        if (amount < 0) return this.incrementLocalRight(-amount, ts)
+        if (amount < 0) return this.incrementRights(-amount, ts)
 
         if (amount > this.localRights(ts.uid)) {
             throw IllegalArgumentException("BCounter has not enough amount")
@@ -181,7 +181,7 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
      */
     @Name("decrement")
     fun decrement(amount: Int, ts: Timestamp): BCounter {
-        return if (this.type == BType.GEQ) decrementLocalRight(amount, ts) else incrementLocalRight(amount, ts)
+        return if (this.type == BType.GEQ) decrementRights(amount, ts) else incrementRights(amount, ts)
     }
 
     /**
