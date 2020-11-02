@@ -23,7 +23,7 @@ import crdtlib.crdt.*
 import crdtlib.utils.*
 import me.ntrrgc.tsGenerator.TypeScriptGenerator
 
-fun main(args: Array<String>) {
+fun main() {
     println("declare module 'c-crdtlib' {")
     println()
     println("export var crdtlib;")

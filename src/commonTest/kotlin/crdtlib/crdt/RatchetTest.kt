@@ -29,25 +29,13 @@ import io.kotest.matchers.*
 class RatchetTest : StringSpec({
 
     /**
-     * This test evaluates the scenario: create string value get.
+     * This test evaluates the scenario: create  ndget.
      * Call to get should return the value set by the constructor.
      */
     "create string ratchet then get" {
         val value = "value"
 
-        val rat = Ratchet<String>(value)
-
-        rat.get().shouldBe(value)
-    }
-
-    /**
-     * This test evaluates the scenario: create int value get.
-     * Call to get should return the value set by the constructor.
-     */
-    "create integer ratchet then get" {
-        val value = 42
-
-        val rat = Ratchet<Int>(value)
+        val rat = Ratchet(value)
 
         rat.get().shouldBe(value)
     }
@@ -57,10 +45,10 @@ class RatchetTest : StringSpec({
      * Call to get should return the value set by assign.
      */
     "create, assign greater value, get" {
-        val val1 = 42
-        val val2 = 100
+        val val1 = "AAA"
+        val val2 = "BBB"
 
-        val rat = Ratchet<Int>(val1)
+        val rat = Ratchet(val1)
         rat.assign(val2)
 
         rat.get().shouldBe(val2)
@@ -71,10 +59,10 @@ class RatchetTest : StringSpec({
      * Call to get should return the value set by the constructor.
      */
     "create, assign lower value, get" {
-        val val1 = 42
-        val val2 = 3
+        val val1 = "BBB"
+        val val2 = "AAA"
 
-        val rat = Ratchet<Int>(val1)
+        val rat = Ratchet(val1)
         rat.assign(val2)
 
         rat.get().shouldBe(val1)
@@ -85,11 +73,11 @@ class RatchetTest : StringSpec({
      * Call to get should return the value set by the second replica.
      */
     "R1: create; R2: create with greater value, merge, get" {
-        val val1 = 42
-        val val2 = 101
+        val val1 = "AAA"
+        val val2 = "BBB"
 
-        val rat1 = Ratchet<Int>(val1)
-        val rat2 = Ratchet<Int>(val2)
+        val rat1 = Ratchet(val1)
+        val rat2 = Ratchet(val2)
         rat2.merge(rat1)
 
         rat2.get().shouldBe(val2)
@@ -100,11 +88,11 @@ class RatchetTest : StringSpec({
      * Call to get should return the value set by the first replica.
      */
     "R1: create; R2: create with lower value, merge, get" {
-        val val1 = 42
-        val val2 = 41
+        val val1 = "BBB"
+        val val2 = "AAA"
 
-        val rat1 = Ratchet<Int>(val1)
-        val rat2 = Ratchet<Int>(val2)
+        val rat1 = Ratchet(val1)
+        val rat2 = Ratchet(val2)
         rat2.merge(rat1)
 
         rat2.get().shouldBe(val1)
@@ -120,9 +108,9 @@ class RatchetTest : StringSpec({
         val val2 = "CCC"
         val val3 = "AAA"
 
-        val rat1 = Ratchet<String>(val1)
+        val rat1 = Ratchet(val1)
         rat1.assign(val2)
-        val rat2 = Ratchet<String>(val3)
+        val rat2 = Ratchet(val3)
         rat2.merge(rat1)
 
         rat2.get().shouldBe(val2)
@@ -138,9 +126,9 @@ class RatchetTest : StringSpec({
         val val2 = "BBB"
         val val3 = "CCC"
 
-        val rat1 = Ratchet<String>(val1)
+        val rat1 = Ratchet(val1)
         rat1.assign(val2)
-        val rat2 = Ratchet<String>(val3)
+        val rat2 = Ratchet(val3)
         rat2.merge(rat1)
 
         rat2.get().shouldBe(val3)
@@ -156,9 +144,9 @@ class RatchetTest : StringSpec({
         val val2 = "AAA"
         val val3 = "BBB"
 
-        val rat1 = Ratchet<String>(val1)
+        val rat1 = Ratchet(val1)
         rat1.assign(val2)
-        val rat2 = Ratchet<String>(val3)
+        val rat2 = Ratchet(val3)
         rat2.merge(rat1)
 
         rat2.get().shouldBe(val1)
@@ -170,12 +158,12 @@ class RatchetTest : StringSpec({
      * Call to get should return the value set at initialization in the second replica.
      */
     "R1: create, merge before assign; r2: create with greatest value, assign, merge" {
-        val val1 = 4
-        val val2 = 5
-        val val3 = 2
+        val val1 = "BBB"
+        val val2 = "CCC"
+        val val3 = "AAA"
 
-        val rat1 = Ratchet<Int>(val1)
-        val rat2 = Ratchet<Int>(val2)
+        val rat1 = Ratchet(val1)
+        val rat2 = Ratchet(val2)
         rat1.merge(rat2)
         rat2.assign(val3)
         rat2.merge(rat1)
@@ -188,13 +176,13 @@ class RatchetTest : StringSpec({
      * Call to get should return value set at initialization in the first replica.
      */
     "use delta returned by assign" {
-        val val1 = 8
-        val val2 = 6
-        val val3 = 5
+        val val1 = "CCC"
+        val val2 = "BBB"
+        val val3 = "AAA"
 
-        val rat1 = Ratchet<Int>(val1)
+        val rat1 = Ratchet(val1)
         val assignOp = rat1.assign(val2)
-        val rat2 = Ratchet<Int>(val3)
+        val rat2 = Ratchet(val3)
         rat2.merge(assignOp)
 
         rat2.get().shouldBe(val1)
@@ -206,13 +194,13 @@ class RatchetTest : StringSpec({
     */
     "generate delta then merge" {
         val vv = VersionVector()
-        val val1 = 8
-        val val2 = 6
-        val val3 = 5
+        val val1 = "CCC"
+        val val2 = "BBB"
+        val val3 = "AAA"
 
-        val rat1 = Ratchet<Int>(val1)
+        val rat1 = Ratchet(val1)
         rat1.assign(val2)
-        val rat2 = Ratchet<Int>(val3)
+        val rat2 = Ratchet(val3)
         val delta = rat1.generateDelta(vv)
         rat2.merge(delta)
 
@@ -225,7 +213,7 @@ class RatchetTest : StringSpec({
     "JSON serialization" {
         val value = "VALUE"
 
-        val rat = Ratchet<String>(value)
+        val rat = Ratchet(value)
         val ratJson = rat.toJson()
 
         ratJson.shouldBe("""{"_type":"Ratchet","value":"VALUE"}""")
@@ -235,7 +223,7 @@ class RatchetTest : StringSpec({
      * This test evaluates JSON deserialization of a ratchet.
      **/
     "JSON deserialization" {
-        val ratJson = Ratchet.fromJson<String>("""{"_type":"Ratchet","value":"VALUE"}""")
+        val ratJson = Ratchet.fromJson("""{"_type":"Ratchet","value":"VALUE"}""")
 
         ratJson.get().shouldBe("VALUE")
     }

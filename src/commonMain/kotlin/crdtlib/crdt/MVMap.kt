@@ -22,7 +22,6 @@ package crdtlib.crdt
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
-import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
@@ -274,7 +273,7 @@ class MVMap : DeltaCRDT<MVMap> {
      * @param vv the context used as starting point to generate the delta.
      * @return the corresponding delta of operations.
      */
-    override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<MVMap> {
+    override fun generateDelta(vv: VersionVector): MVMap {
         var delta = MVMap()
         for ((key, meta) in this.entries) {
             if (meta.any { !vv.contains(it.second) }) {
@@ -292,10 +291,7 @@ class MVMap : DeltaCRDT<MVMap> {
      * associated timestamp is not included in the local (foreign) causal context.
      * @param delta the delta that should be merged with the local replica.
      */
-    override fun mergeProtected(delta: DeltaCRDT<MVMap>) {
-        if (delta !is MVMap)
-            throw UnexpectedTypeException("MVMap does not support merging with type: " + delta::class)
-
+    override fun merge(delta: MVMap) {
         for ((key, foreignEntries) in delta.entries) {
 
             val keptEntries = mutableSetOf<Pair<String?, Timestamp>>()
@@ -325,8 +321,7 @@ class MVMap : DeltaCRDT<MVMap> {
      * Serializes this crdt map to a json string.
      * @return the resulted json string.
      */
-    @Name("toJson")
-    fun toJson(): String {
+    override fun toJson(): String {
         val jsonSerializer = JsonMVMapSerializer(MVMap.serializer())
         return Json.encodeToString<MVMap>(jsonSerializer, this)
     }
