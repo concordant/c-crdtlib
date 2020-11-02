@@ -23,7 +23,6 @@ import crdtlib.utils.ClientUId
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
-import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
 import kotlinx.serialization.*
 import kotlinx.serialization.json.JsonElement
@@ -138,7 +137,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
      * @param vv the context used as starting point to generate the delta.
      * @return the corresponding delta of operations.
      */
-    override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<PNCounter> {
+    override fun generateDelta(vv: VersionVector): PNCounter {
         val delta = PNCounter()
         for ((uid, meta) in increment) {
             if (!vv.contains(meta.second)) {
@@ -161,9 +160,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
      * present for this client.
      * @param delta the delta that should be merge with the local replica.
      */
-    override fun mergeProtected(delta: DeltaCRDT<PNCounter>) {
-        if (delta !is PNCounter) throw UnexpectedTypeException("PNCounter does not support merging with type:" + delta::class)
-
+    override fun merge(delta: PNCounter) {
         for ((uid, meta) in delta.increment) {
             val localMeta = this.increment.get(uid)
             if (localMeta == null || localMeta.first < meta.first) {
@@ -182,8 +179,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
      * Serializes this crdt counter to a json string.
      * @return the resulted json string.
      */
-    @Name("toJson")
-    fun toJson(): String {
+    override fun toJson(): String {
         val jsonSerializer = JsonPNCounterSerializer(PNCounter.serializer())
         return Json.encodeToString<PNCounter>(jsonSerializer, this)
     }

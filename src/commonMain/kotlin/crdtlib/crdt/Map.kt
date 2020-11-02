@@ -22,7 +22,6 @@ package crdtlib.crdt
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
-import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
@@ -420,7 +419,7 @@ class Map : DeltaCRDT<Map> {
      * @param vv the context used as starting point to generate the delta.
      * @return the corresponding delta of operations.
      */
-    override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<Map> {
+    override fun generateDelta(vv: VersionVector): Map {
         var delta = Map()
 
         delta.lwwMap.merge(this.lwwMap.generateDelta(vv))
@@ -441,10 +440,7 @@ class Map : DeltaCRDT<Map> {
      * smaller timestamp compared to the foreign one, or there is no local operation recorded.
      * @param delta the delta that should be merged with the local replica.
      */
-    override fun mergeProtected(delta: DeltaCRDT<Map>) {
-        if (delta !is Map)
-            throw UnexpectedTypeException("Map does not support merging with type: " + delta::class)
-
+    override fun merge(delta: Map) {
         this.lwwMap.merge(delta.lwwMap)
         this.mvMap.merge(delta.mvMap)
 
@@ -460,8 +456,7 @@ class Map : DeltaCRDT<Map> {
      * Serializes this crdt map to a json string.
      * @return the resulted json string.
      */
-    @Name("toJson")
-    fun toJson(): String {
+    override fun toJson(): String {
         val jsonSerializer = JsonMapSerializer(Map.serializer())
         return Json.encodeToString<Map>(jsonSerializer, this)
     }

@@ -39,7 +39,7 @@ class LWWRegisterTest : StringSpec({
         val ts = client.tick()
         val value = "value"
 
-        val reg = LWWRegister<String>(value, ts)
+        val reg = LWWRegister(value, ts)
 
         reg.get().shouldBe(value)
     }
@@ -56,7 +56,7 @@ class LWWRegisterTest : StringSpec({
         val val1 = "value1"
         val val2 = "value2"
 
-        val reg = LWWRegister<String>(val1, ts1)
+        val reg = LWWRegister(val1, ts1)
         reg.assign(val2, ts2)
 
         reg.get().shouldBe(val2)
@@ -74,7 +74,7 @@ class LWWRegisterTest : StringSpec({
         val val1 = "value1"
         val val2 = "value2"
 
-        val reg = LWWRegister<String>(val1, ts2)
+        val reg = LWWRegister(val1, ts2)
         reg.assign(val2, ts1)
 
         reg.get().shouldBe(val1)
@@ -94,8 +94,8 @@ class LWWRegisterTest : StringSpec({
         val val1 = "value1"
         val val2 = "value2"
 
-        val reg1 = LWWRegister<String>(val1, ts1)
-        val reg2 = LWWRegister<String>(val2, ts2)
+        val reg1 = LWWRegister(val1, ts1)
+        val reg2 = LWWRegister(val2, ts2)
         reg1.merge(reg2)
         reg2.merge(reg1)
 
@@ -119,8 +119,8 @@ class LWWRegisterTest : StringSpec({
         val val2 = "value2"
         val val3 = "value3"
 
-        val reg1 = LWWRegister<String>(val1, ts1)
-        val reg2 = LWWRegister<String>(val2, ts2)
+        val reg1 = LWWRegister(val1, ts1)
+        val reg2 = LWWRegister(val2, ts2)
         reg2.merge(reg1)
         reg2.assign(val3, ts3)
 
@@ -145,8 +145,8 @@ class LWWRegisterTest : StringSpec({
         val val3 = "value3"
         val val4 = "value4"
 
-        val reg1 = LWWRegister<String>(val1, ts1)
-        val reg2 = LWWRegister<String>(val2, ts2)
+        val reg1 = LWWRegister(val1, ts1)
+        val reg2 = LWWRegister(val2, ts2)
         val assignOp1 = reg1.assign(val3, ts3)
         val assignOp2 = reg2.assign(val4, ts4)
 
@@ -173,8 +173,8 @@ class LWWRegisterTest : StringSpec({
         val val1 = "value1"
         val val2 = "value2"
 
-        val reg1 = LWWRegister<String>(val1, ts1)
-        val reg2 = LWWRegister<String>(val2, ts2)
+        val reg1 = LWWRegister(val1, ts1)
+        val reg2 = LWWRegister(val2, ts2)
         val delta2 = reg1.generateDelta(vv2)
         val delta1 = reg2.generateDelta(vv1)
 
@@ -194,7 +194,7 @@ class LWWRegisterTest : StringSpec({
         val ts = client.tick()
         val value = "value"
 
-        val reg = LWWRegister<String>(value, ts)
+        val reg = LWWRegister(value, ts)
         val regJson = reg.toJson()
 
         regJson.shouldBe("""{"_type":"LWWRegister","_metadata":{"uid":{"name":"clientid"},"cnt":-2147483647},"value":"value"}""")
@@ -204,7 +204,7 @@ class LWWRegisterTest : StringSpec({
      * This test evaluates JSON deserialization of a lww register.
      **/
     "JSON deserialization" {
-        val regJson = LWWRegister.fromJson<String>("""{"_type":"LWWRegister","_metadata":{"uid":{"name":"clientid"},"cnt":-2147483647},"value":"value"}""")
+        val regJson = LWWRegister.fromJson("""{"_type":"LWWRegister","_metadata":{"uid":{"name":"clientid"},"cnt":-2147483647},"value":"value"}""")
 
         regJson.get().shouldBe("value")
     }

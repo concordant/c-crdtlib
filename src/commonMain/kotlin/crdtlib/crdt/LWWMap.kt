@@ -22,7 +22,6 @@ package crdtlib.crdt
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
-import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
@@ -226,7 +225,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
      * @param vv the context used as starting point to generate the delta.
      * @return the corresponding delta of operations.
      */
-    override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<LWWMap> {
+    override fun generateDelta(vv: VersionVector): LWWMap {
         var delta = LWWMap()
         for ((key, meta) in this.entries) {
             val value = meta.first
@@ -245,10 +244,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
      * smaller timestamp compared to the foreign one, or there is no local operation recorded.
      * @param delta the delta that should be merged with the local replica.
      */
-    override fun mergeProtected(delta: DeltaCRDT<LWWMap>) {
-        if (delta !is LWWMap)
-            throw UnexpectedTypeException("LWWMap does not support merging with type: " + delta::class)
-
+    override fun merge(delta: LWWMap) {
         for ((key, meta) in delta.entries) {
             val value = meta.first
             val ts = meta.second
@@ -263,8 +259,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
      * Serializes this crdt map to a json string.
      * @return the resulted json string.
      */
-    @Name("toJson")
-    fun toJson(): String {
+    override fun toJson(): String {
         val jsonSerializer = JsonLWWMapSerializer(LWWMap.serializer())
         return Json.encodeToString<LWWMap>(jsonSerializer, this)
     }

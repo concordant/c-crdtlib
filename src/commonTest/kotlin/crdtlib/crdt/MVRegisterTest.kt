@@ -35,7 +35,7 @@ class MVRegisterTest : StringSpec({
      * Call to get should return an empty set.
      */
     "create an empty register and get" {
-        val reg = MVRegister<String>()
+        val reg = MVRegister()
 
         reg.get().shouldBeEmpty()
     }
@@ -49,7 +49,7 @@ class MVRegisterTest : StringSpec({
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
         val value = "value"
-        val reg = MVRegister<String>(value, ts)
+        val reg = MVRegister(value, ts)
 
         reg.get().shouldHaveSingleElement(value)
     }
@@ -63,9 +63,9 @@ class MVRegisterTest : StringSpec({
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
         val value = "value"
-        val reg1 = MVRegister<String>(value, ts)
+        val reg1 = MVRegister(value, ts)
 
-        val reg2 = MVRegister<String>(reg1)
+        val reg2 = MVRegister(reg1)
 
         reg2.get().shouldHaveSingleElement(value)
     }
@@ -83,11 +83,11 @@ class MVRegisterTest : StringSpec({
         val ts2 = client2.tick()
         val val1 = "value1"
         val val2 = "value2"
-        val reg1 = MVRegister<String>(val1, ts1)
-        val reg2 = MVRegister<String>(val2, ts2)
+        val reg1 = MVRegister(val1, ts1)
+        val reg2 = MVRegister(val2, ts2)
 
         reg2.merge(reg1)
-        val reg3 = MVRegister<String>(reg2)
+        val reg3 = MVRegister(reg2)
 
         reg3.get().shouldContainExactlyInAnyOrder(val1, val2)
     }
@@ -104,7 +104,7 @@ class MVRegisterTest : StringSpec({
         val val1 = "value1"
         val val2 = "value2"
 
-        val reg = MVRegister<String>(val1, ts1)
+        val reg = MVRegister(val1, ts1)
         reg.assign(val2, ts2)
 
         reg.get().shouldHaveSingleElement(val2)
@@ -122,7 +122,7 @@ class MVRegisterTest : StringSpec({
         val val1 = "value1"
         val val2 = "value2"
 
-        val reg = MVRegister<String>(val1, ts2)
+        val reg = MVRegister(val1, ts2)
         reg.assign(val2, ts1)
 
         reg.get().shouldHaveSingleElement(val1)
@@ -138,8 +138,8 @@ class MVRegisterTest : StringSpec({
         val ts = client.tick()
         val value = "value"
 
-        val reg1 = MVRegister<String>(value, ts)
-        val reg2 = MVRegister<String>()
+        val reg1 = MVRegister(value, ts)
+        val reg2 = MVRegister()
         reg1.merge(reg2)
         reg2.merge(reg1)
 
@@ -161,8 +161,8 @@ class MVRegisterTest : StringSpec({
         val val1 = "value1"
         val val2 = "value2"
 
-        val reg1 = MVRegister<String>(val1, ts1)
-        val reg2 = MVRegister<String>()
+        val reg1 = MVRegister(val1, ts1)
+        val reg2 = MVRegister()
         reg2.merge(reg1)
         reg2.assign(val2, ts2)
 
@@ -183,8 +183,8 @@ class MVRegisterTest : StringSpec({
         val val1 = "value1"
         val val2 = "value2"
 
-        val reg1 = MVRegister<String>(val1, ts1)
-        val reg2 = MVRegister<String>()
+        val reg1 = MVRegister(val1, ts1)
+        val reg2 = MVRegister()
         reg2.assign(val2, ts2)
         reg2.merge(reg1)
 
@@ -204,8 +204,8 @@ class MVRegisterTest : StringSpec({
         val val1 = "value1"
         val val2 = "value2"
 
-        val reg1 = MVRegister<String>(val1, ts1)
-        val reg2 = MVRegister<String>(val2, ts2)
+        val reg1 = MVRegister(val1, ts1)
+        val reg2 = MVRegister(val2, ts2)
         reg2.merge(reg1)
         reg1.assign(val2, ts2)
         reg2.merge(reg1)
@@ -231,8 +231,8 @@ class MVRegisterTest : StringSpec({
         val val2 = "value2"
         val val3 = "value3"
 
-        val reg1 = MVRegister<String>(val1, ts1)
-        val reg2 = MVRegister<String>(val2, ts2)
+        val reg1 = MVRegister(val1, ts1)
+        val reg2 = MVRegister(val2, ts2)
         reg2.merge(reg1)
         reg1.assign(val3, ts3)
         reg2.merge(reg1)
@@ -259,9 +259,9 @@ class MVRegisterTest : StringSpec({
         val val1 = "value1"
         val val2 = "value2"
         val val3 = "value3"
-        val reg1 = MVRegister<String>(val1, ts1)
-        val reg2 = MVRegister<String>(val2, ts2)
-        val reg3 = MVRegister<String>(val3, ts3)
+        val reg1 = MVRegister(val1, ts1)
+        val reg2 = MVRegister(val2, ts2)
+        val reg3 = MVRegister(val3, ts3)
 
         reg2.merge(reg3)
         reg3.merge(reg1)
@@ -290,9 +290,9 @@ class MVRegisterTest : StringSpec({
         val val1 = "value1"
         val val2 = "value2"
         val val3 = "value3"
-        val reg1 = MVRegister<String>(val1, ts1)
-        val reg2 = MVRegister<String>()
-        val reg3 = MVRegister<String>(val3, ts3)
+        val reg1 = MVRegister(val1, ts1)
+        val reg2 = MVRegister()
+        val reg3 = MVRegister(val3, ts3)
 
         reg2.merge(reg3)
         reg2.assign(val2, ts2)
@@ -311,8 +311,8 @@ class MVRegisterTest : StringSpec({
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
         val value = "value"
-        val reg1 = MVRegister<String>()
-        val reg2 = MVRegister<String>()
+        val reg1 = MVRegister()
+        val reg2 = MVRegister()
 
         val assignOp = reg1.assign(value, ts)
         reg1.merge(assignOp)
@@ -337,9 +337,9 @@ class MVRegisterTest : StringSpec({
         val vv = client1.getState()
         val val1 = "value1"
         val val2 = "value2"
-        val reg1 = MVRegister<String>(val1, ts1)
-        val reg2 = MVRegister<String>(val2, ts2)
-        val reg3 = MVRegister<String>()
+        val reg1 = MVRegister(val1, ts1)
+        val reg2 = MVRegister(val2, ts2)
+        val reg3 = MVRegister()
 
         reg2.merge(reg1)
         val delta = reg2.generateDelta(vv)
@@ -352,8 +352,8 @@ class MVRegisterTest : StringSpec({
      * This test evaluates JSON serialization of an empty mv register.
      **/
     "empty JSON serialization" {
-        val reg = MVRegister<String>()
-        val regJson = reg.toJson(String::class)
+        val reg = MVRegister()
+        val regJson = reg.toJson()
 
         regJson.shouldBe("""{"_type":"MVRegister","_metadata":{"entries":[],"causalContext":{"entries":[]}},"value":[]}""")
     }
@@ -362,7 +362,7 @@ class MVRegisterTest : StringSpec({
      * This test evaluates JSON deserialization of an empty mv register.
      **/
     "empty JSON deserialization" {
-        val regJson = MVRegister.fromJson(String::class, """{"_type":"MVRegister","_metadata":{"entries":[],"causalContext":{"entries":[]}},"value":[]}""")
+        val regJson = MVRegister.fromJson("""{"_type":"MVRegister","_metadata":{"entries":[],"causalContext":{"entries":[]}},"value":[]}""")
 
         regJson.get().shouldBeEmpty()
     }
@@ -380,11 +380,11 @@ class MVRegisterTest : StringSpec({
         val val1 = "value1"
         val val2 = "value2"
 
-        val reg1 = MVRegister<String>(val1, ts1)
-        val reg2 = MVRegister<String>()
+        val reg1 = MVRegister(val1, ts1)
+        val reg2 = MVRegister()
         reg2.assign(val2, ts2)
         reg2.merge(reg1)
-        val regJson = reg2.toJson(String::class)
+        val regJson = reg2.toJson()
 
         regJson.shouldBe("""{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"clientid2"},"cnt":-2147483647},{"uid":{"name":"clientid1"},"cnt":-2147483647}],"causalContext":{"entries":[{"name":"clientid2"},-2147483647,{"name":"clientid1"},-2147483647]}},"value":["value2","value1"]}""")
     }
@@ -393,7 +393,7 @@ class MVRegisterTest : StringSpec({
      * This test evaluates JSON deserialization of a mv register.
      **/
     "JSON deserialization" {
-        val regJson = MVRegister.fromJson(String::class, """{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"clientid2"},"cnt":-2147483647},{"uid":{"name":"clientid1"},"cnt":-2147483647}],"causalContext":{"entries":[{"name":"clientid2"},-2147483647,{"name":"clientid1"},-2147483647]}},"value":["value2","value1"]}""")
+        val regJson = MVRegister.fromJson("""{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"clientid2"},"cnt":-2147483647},{"uid":{"name":"clientid1"},"cnt":-2147483647}],"causalContext":{"entries":[{"name":"clientid2"},-2147483647,{"name":"clientid1"},-2147483647]}},"value":["value2","value1"]}""")
 
         regJson.get().shouldContainExactlyInAnyOrder("value1", "value2")
     }
