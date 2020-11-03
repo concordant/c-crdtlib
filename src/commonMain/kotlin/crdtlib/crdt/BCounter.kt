@@ -23,10 +23,10 @@ import crdtlib.utils.ClientUId
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
-import crdtlib.utils.UnexpectedTypeException
 import crdtlib.utils.VersionVector
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
+import kotlin.math.absoluteValue
 
 /**
 * This class is a delta-based CRDT bounded-counter for invariant "greater or equal" or "lower or equal".
@@ -62,10 +62,24 @@ import kotlinx.serialization.json.*
  * }
  */
 @Serializable
-class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
+class BCounter(val type: BType, var identifier: Timestamp, var bound: Int, var ts: Timestamp, var initial: Int? = null) : DeltaCRDT<BCounter>() {
+
+    init {
+        if (initial != null) {
+            if (type == BType.GEQ && initial!! > bound) {
+                this.increment(initial!! - bound, ts)
+            } else if (type == BType.LEQ && initial!! < bound) {
+                this.decrement(bound - initial!!, ts)
+            } else {
+                throw IllegalArgumentException("The initial value break the invariant.")
+            }
+        }
+    }
 
     /**
      * A mutable map of mutable map storing for each client metadata relative to rights obtained.
+     * rightsObtained[i][i] represent the rights increments by replica i.
+     * rightsObtained[i][j] with i!=j represent the rights transferred from replica i to replica j.
      * For a "greater or equal" bounded counter, this map is storing each client metadata relative to increment operations and transferred rights.
      * For a "lower or equal" bounded counter, this map is storing each client metadata relative to decrement operations and transferred rights.
      */
@@ -74,6 +88,7 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
 
     /**
      * A mutable map storing for each client metadata relative to rights consumed.
+     * rightsConsumed[i] represent the rights consumed by replica i.
      * For a "greater or equal" bounded counter, this map is storing each client metadata relative to decrement operations.
      * For a "lower or equal" bounded counter, this map is storing each client metadata relative to increment operations.
      */
@@ -98,7 +113,7 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
      */
     @Name("get")
     fun get(): Int {
-        return if (this.type == BType.GEQ) this.bound + this.getValue() else this.bound - this.getValue()
+        return if (this.type == BType.GEQ) this.initial ?: this.bound + this.getValue() else this.initial ?: this.bound - this.getValue()
     }
 
     /**
@@ -107,7 +122,8 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
      */
     @Name("localRights")
     fun localRights(uid: ClientUId): Int {
-        var rights = this.rightsObtained[uid]?.get(uid)?.first ?: 0
+        var rights = (this.initial ?: this.bound - this.bound).absoluteValue
+        rights += this.rightsObtained[uid]?.get(uid)?.first ?: 0
         for (v in this.rightsObtained.values) {
             rights += v[uid]?.first ?: 0
         }
@@ -122,7 +138,7 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
      * @return the delta corresponding to this operation.
      */
     private fun incrementRights(amount: Int, ts: Timestamp): BCounter {
-        val op = BCounter(this.type, this.bound)
+        val op = BCounter(this.type, this.identifier, this.bound, this.ts)
         if (amount == 0) return op
         if (amount < 0) return this.decrementRights(-amount, ts)
 
@@ -157,7 +173,7 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
      * @return the delta corresponding to this operation.
      */
     private fun decrementRights(amount: Int, ts: Timestamp): BCounter {
-        val op = BCounter(this.type, this.bound)
+        val op = BCounter(this.type, this.identifier, this.bound, this.ts)
         if (amount == 0) return op
         if (amount < 0) return this.incrementRights(-amount, ts)
 
@@ -203,8 +219,8 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
      * @param vv the context used as starting point to generate the delta.
      * @return the corresponding delta of operations.
      */
-    override fun generateDeltaProtected(vv: VersionVector): DeltaCRDT<BCounter> {
-        val delta = BCounter(this.type, this.bound)
+    override fun generateDelta(vv: VersionVector): BCounter {
+        val delta = BCounter(this.type, this.identifier, this.bound, this.ts)
         for ((uid1, meta2) in this.rightsObtained) {
             for ((uid2, meta) in meta2) {
                 if (!vv.contains(meta.second)) {
@@ -232,9 +248,21 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
      * present for this client.
      * @param delta the delta that should be merge with the local replica.
      */
-    override fun mergeProtected(delta: DeltaCRDT<BCounter>) {
-        if (delta !is BCounter) throw UnexpectedTypeException("BCounter does not support merging with type:" + delta::class)
-        if (delta.bound != this.bound) throw IllegalArgumentException("Trying to merge replicas from different BCounter")
+    override fun merge(delta: BCounter) {
+        if (delta.type != this.type) throw IllegalArgumentException("Trying to merge BCounter with different type of invariant")
+        if (this.identifier != delta.identifier) {
+            if (this.identifier <delta.identifier) {
+                this.identifier = delta.identifier
+                this.bound = delta.bound
+                this.ts = delta.ts
+                this.initial = delta.initial
+                this.rightsObtained.clear()
+                this.rightsConsumed.clear()
+                this.rightsObtained.putAll(delta.rightsObtained)
+                this.rightsConsumed.putAll(delta.rightsConsumed)
+            }
+            return
+        }
 
         for ((uid, meta2) in delta.rightsObtained) {
             for ((uid2, meta) in meta2) {
@@ -259,10 +287,17 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
      * Serializes this crdt counter to a json string.
      * @return the resulted json string.
      */
-    @Name("toJson")
-    fun toJson(): String {
+    override fun toJson(): String {
         val jsonSerializer = JsonBCounterSerializer(BCounter.serializer())
         return Json.encodeToString(jsonSerializer, this)
+    }
+
+    /**
+     * GEQ : Greater or equal -> lower bound
+     * LEQ : Lower or equal -> upper bound
+     */
+    enum class BType {
+        GEQ, LEQ
     }
 
     companion object {
@@ -275,10 +310,6 @@ class BCounter(val type: BType, val bound: Int) : DeltaCRDT<BCounter>() {
         fun fromJson(json: String): BCounter {
             val jsonSerializer = JsonBCounterSerializer(BCounter.serializer())
             return Json.decodeFromString(jsonSerializer, json)
-        }
-
-        enum class BType {
-            GEQ, LEQ
         }
     }
 }
