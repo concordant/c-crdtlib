@@ -80,7 +80,7 @@ class MVMap : DeltaCRDT<MVMap> {
      */
     @Name("getBoolean")
     fun getBoolean(key: String): Set<Boolean?>? {
-        val setOfValues = this.entries.get(key + MVMap.BOOLEAN)?.map { it.first?.toBoolean() }?.toSet()
+        val setOfValues = this.entries[key + MVMap.BOOLEAN]?.map { it.first?.toBoolean() }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
     }
@@ -93,7 +93,7 @@ class MVMap : DeltaCRDT<MVMap> {
      */
     @Name("getDouble")
     fun getDouble(key: String): Set<Double?>? {
-        val setOfValues = this.entries.get(key + MVMap.DOUBLE)?.map { it.first?.toDouble() }?.toSet()
+        val setOfValues = this.entries[key + MVMap.DOUBLE]?.map { it.first?.toDouble() }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
     }
@@ -106,7 +106,7 @@ class MVMap : DeltaCRDT<MVMap> {
      */
     @Name("getInt")
     fun getInt(key: String): Set<Int?>? {
-        val setOfValues = this.entries.get(key + MVMap.INTEGER)?.map { it.first?.toInt() }?.toSet()
+        val setOfValues = this.entries[key + MVMap.INTEGER]?.map { it.first?.toInt() }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
     }
@@ -119,7 +119,7 @@ class MVMap : DeltaCRDT<MVMap> {
      */
     @Name("getString")
     fun getString(key: String): Set<String?>? {
-        val setOfValues = this.entries.get(key + MVMap.STRING)?.map { it.first }?.toSet()
+        val setOfValues = this.entries[key + MVMap.STRING]?.map { it.first }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
     }
@@ -135,7 +135,7 @@ class MVMap : DeltaCRDT<MVMap> {
     fun put(key: String, value: Boolean?, ts: Timestamp): MVMap {
         val op = MVMap()
         if (!this.causalContext.contains(ts)) {
-            var meta = this.entries.get(key + MVMap.BOOLEAN)
+            var meta = this.entries[key + MVMap.BOOLEAN]
             if (meta == null) meta = mutableSetOf()
             else meta.clear()
             meta.add(Pair(value?.toString(), ts))
@@ -159,7 +159,7 @@ class MVMap : DeltaCRDT<MVMap> {
     fun put(key: String, value: Double?, ts: Timestamp): MVMap {
         val op = MVMap()
         if (!this.causalContext.contains(ts)) {
-            var meta = this.entries.get(key + MVMap.DOUBLE)
+            var meta = this.entries[key + MVMap.DOUBLE]
             if (meta == null) meta = mutableSetOf()
             else meta.clear()
             meta.add(Pair(value?.toString(), ts))
@@ -183,7 +183,7 @@ class MVMap : DeltaCRDT<MVMap> {
     fun put(key: String, value: Int?, ts: Timestamp): MVMap {
         val op = MVMap()
         if (!this.causalContext.contains(ts)) {
-            var meta = this.entries.get(key + MVMap.INTEGER)
+            var meta = this.entries[key + MVMap.INTEGER]
             if (meta == null) meta = mutableSetOf()
             else meta.clear()
             meta.add(Pair(value?.toString(), ts))
@@ -207,7 +207,7 @@ class MVMap : DeltaCRDT<MVMap> {
     fun put(key: String, value: String?, ts: Timestamp): MVMap {
         val op = MVMap()
         if (!this.causalContext.contains(ts)) {
-            var meta = this.entries.get(key + MVMap.STRING)
+            var meta = this.entries[key + MVMap.STRING]
             if (meta == null) meta = mutableSetOf()
             else meta.clear()
             meta.add(Pair(value, ts))
@@ -295,7 +295,7 @@ class MVMap : DeltaCRDT<MVMap> {
         for ((key, foreignEntries) in delta.entries) {
 
             val keptEntries = mutableSetOf<Pair<String?, Timestamp>>()
-            val localEntries = this.entries.get(key)
+            val localEntries = this.entries[key]
             if (localEntries != null) {
                 for ((value, ts) in localEntries) {
                     if (!delta.causalContext.contains(ts) || foreignEntries.any { it.second == ts }) {
@@ -379,14 +379,19 @@ class JsonMVMapSerializer(private val serializer: KSerializer<MVMap>) :
             val value = mutableListOf<JsonElement>()
             val meta = mutableListOf<JsonElement>()
             for (tmpPair in entry.jsonArray) {
-                if (key.endsWith(MVMap.BOOLEAN)) {
-                    value.add(JsonPrimitive(tmpPair.jsonObject["first"]?.jsonPrimitive?.booleanOrNull) as JsonElement)
-                } else if (key.endsWith(MVMap.DOUBLE)) {
-                    value.add(JsonPrimitive(tmpPair.jsonObject["first"]?.jsonPrimitive?.doubleOrNull) as JsonElement)
-                } else if (key.endsWith(MVMap.INTEGER)) {
-                    value.add(JsonPrimitive(tmpPair.jsonObject["first"]?.jsonPrimitive?.intOrNull) as JsonElement)
-                } else {
-                    value.add(tmpPair.jsonObject["first"] as JsonElement)
+                when {
+                    key.endsWith(MVMap.BOOLEAN) -> {
+                        value.add(JsonPrimitive(tmpPair.jsonObject["first"]?.jsonPrimitive?.booleanOrNull) as JsonElement)
+                    }
+                    key.endsWith(MVMap.DOUBLE) -> {
+                        value.add(JsonPrimitive(tmpPair.jsonObject["first"]?.jsonPrimitive?.doubleOrNull) as JsonElement)
+                    }
+                    key.endsWith(MVMap.INTEGER) -> {
+                        value.add(JsonPrimitive(tmpPair.jsonObject["first"]?.jsonPrimitive?.intOrNull) as JsonElement)
+                    }
+                    else -> {
+                        value.add(tmpPair.jsonObject["first"] as JsonElement)
+                    }
                 }
                 meta.add(tmpPair.jsonObject["second"]!!.jsonObject)
             }

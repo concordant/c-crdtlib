@@ -103,7 +103,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
         if (amount == 0) return op
         if (amount < 0) return this.decrement(-amount, ts)
 
-        val count = this.increment.get(ts.uid)?.first ?: 0
+        val count = this.increment[ts.uid]?.first ?: 0
         if (Int.MAX_VALUE - count < amount - 1) {
             throw RuntimeException("PNCounter has reached Int.MAX_VALUE")
         }
@@ -123,7 +123,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
         if (amount == 0) return op
         if (amount < 0) return this.increment(-amount, ts)
 
-        val count = this.decrement.get(ts.uid)?.first ?: 0
+        val count = this.decrement[ts.uid]?.first ?: 0
         if (Int.MAX_VALUE - count < amount - 1) {
             throw RuntimeException("PNCounter has reached Int.MAX_VALUE")
         }
@@ -162,13 +162,13 @@ class PNCounter : DeltaCRDT<PNCounter> {
      */
     override fun merge(delta: PNCounter) {
         for ((uid, meta) in delta.increment) {
-            val localMeta = this.increment.get(uid)
+            val localMeta = this.increment[uid]
             if (localMeta == null || localMeta.first < meta.first) {
                 this.increment.put(uid, Pair(meta.first, meta.second))
             }
         }
         for ((uid, meta) in delta.decrement) {
-            val localMeta = this.decrement.get(uid)
+            val localMeta = this.decrement[uid]
             if (localMeta == null || localMeta.first < meta.first) {
                 this.decrement.put(uid, Pair(meta.first, meta.second))
             }

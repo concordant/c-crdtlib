@@ -110,10 +110,10 @@ class JsonRatchetSerializer(private val serializer: KSerializer<Ratchet>) :
     JsonTransformingSerializer<Ratchet>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {
-        return JsonObject(mapOf("_type" to JsonPrimitive("Ratchet"), "value" to element.jsonObject.get("value") as JsonElement))
+        return JsonObject(mapOf("_type" to JsonPrimitive("Ratchet"), "value" to element.jsonObject["value"] as JsonElement))
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
-        return JsonObject(mapOf("value" to element.jsonObject.get("value") as JsonElement))
+        return JsonObject(mapOf("value" to element.jsonObject["value"] as JsonElement))
     }
 }

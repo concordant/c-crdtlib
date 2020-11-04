@@ -169,7 +169,7 @@ class Map : DeltaCRDT<Map> {
      */
     @Name("getCntInt")
     fun getCntInt(key: String): Int? {
-        return this.cntMap.get(key)?.get()
+        return this.cntMap[key]?.get()
     }
 
     /**
@@ -286,7 +286,7 @@ class Map : DeltaCRDT<Map> {
 
     fun increment(key: String, inc: Int, ts: Timestamp): Map {
         val op = Map()
-        var cnt = this.cntMap.get(key)
+        var cnt = this.cntMap[key]
         if (cnt == null) cnt = PNCounter()
         op.cntMap.put(key, cnt.increment(inc, ts))
         this.cntMap.put(key, cnt)
@@ -295,7 +295,7 @@ class Map : DeltaCRDT<Map> {
 
     fun decrement(key: String, dec: Int, ts: Timestamp): Map {
         val op = Map()
-        var cnt = this.cntMap.get(key)
+        var cnt = this.cntMap[key]
         if (cnt == null) cnt = PNCounter()
         op.cntMap.put(key, cnt.decrement(dec, ts))
         this.cntMap.put(key, cnt)
@@ -445,7 +445,7 @@ class Map : DeltaCRDT<Map> {
         this.mvMap.merge(delta.mvMap)
 
         for ((key, cnt) in delta.cntMap) {
-            var localCnt = this.cntMap.get(key)
+            var localCnt = this.cntMap[key]
             if (localCnt == null) localCnt = PNCounter()
             localCnt.merge(cnt)
             this.cntMap.put(key, localCnt)
@@ -508,12 +508,16 @@ class JsonMapSerializer(private val serializer: KSerializer<Map>) :
         val lwwEntries = mutableMapOf<String, JsonElement>()
         for ((key, entry) in lww["entries"]!!.jsonObject) {
             var value = entry.jsonObject["first"]!!.jsonPrimitive
-            if (key.endsWith(LWWMap.BOOLEAN)) {
-                value = JsonPrimitive(value.booleanOrNull)
-            } else if (key.endsWith(LWWMap.DOUBLE)) {
-                value = JsonPrimitive(value.doubleOrNull)
-            } else if (key.endsWith(LWWMap.INTEGER)) {
-                value = JsonPrimitive(value.intOrNull)
+            when {
+                key.endsWith(LWWMap.BOOLEAN) -> {
+                    value = JsonPrimitive(value.booleanOrNull)
+                }
+                key.endsWith(LWWMap.DOUBLE) -> {
+                    value = JsonPrimitive(value.doubleOrNull)
+                }
+                key.endsWith(LWWMap.INTEGER) -> {
+                    value = JsonPrimitive(value.intOrNull)
+                }
             }
             values.put(key + Map.LWWREGISTER, value as JsonElement)
             lwwEntries.put(key, entry.jsonObject["second"]!!.jsonObject)
@@ -527,14 +531,19 @@ class JsonMapSerializer(private val serializer: KSerializer<Map>) :
             val value = mutableListOf<JsonElement>()
             val meta = mutableListOf<JsonElement>()
             for (tmpPair in entry.jsonArray) {
-                if (key.endsWith(MVMap.BOOLEAN)) {
-                    value.add(JsonPrimitive(tmpPair.jsonObject["first"]!!.jsonPrimitive.booleanOrNull) as JsonElement)
-                } else if (key.endsWith(MVMap.DOUBLE)) {
-                    value.add(JsonPrimitive(tmpPair.jsonObject["first"]!!.jsonPrimitive.doubleOrNull) as JsonElement)
-                } else if (key.endsWith(MVMap.INTEGER)) {
-                    value.add(JsonPrimitive(tmpPair.jsonObject["first"]!!.jsonPrimitive.intOrNull) as JsonElement)
-                } else {
-                    value.add(tmpPair.jsonObject.get("first") as JsonElement)
+                when {
+                    key.endsWith(MVMap.BOOLEAN) -> {
+                        value.add(JsonPrimitive(tmpPair.jsonObject["first"]!!.jsonPrimitive.booleanOrNull) as JsonElement)
+                    }
+                    key.endsWith(MVMap.DOUBLE) -> {
+                        value.add(JsonPrimitive(tmpPair.jsonObject["first"]!!.jsonPrimitive.doubleOrNull) as JsonElement)
+                    }
+                    key.endsWith(MVMap.INTEGER) -> {
+                        value.add(JsonPrimitive(tmpPair.jsonObject["first"]!!.jsonPrimitive.intOrNull) as JsonElement)
+                    }
+                    else -> {
+                        value.add(tmpPair.jsonObject["first"] as JsonElement)
+                    }
                 }
                 meta.add(tmpPair.jsonObject["second"]!!.jsonObject)
             }
