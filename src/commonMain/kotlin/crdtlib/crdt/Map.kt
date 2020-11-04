@@ -457,7 +457,7 @@ class Map : DeltaCRDT<Map> {
      */
     override fun toJson(): String {
         val jsonSerializer = JsonMapSerializer(serializer())
-        return Json.encodeToString<Map>(jsonSerializer, this)
+        return Json.encodeToString(jsonSerializer, this)
     }
 
     companion object {

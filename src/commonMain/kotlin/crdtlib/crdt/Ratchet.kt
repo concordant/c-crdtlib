@@ -86,7 +86,7 @@ class Ratchet(var value: String) : DeltaCRDT<Ratchet>() {
      */
     override fun toJson(): String {
         val jsonSerializer = JsonRatchetSerializer(serializer())
-        return Json.encodeToString<Ratchet>(jsonSerializer, this)
+        return Json.encodeToString(jsonSerializer, this)
     }
 
     companion object {

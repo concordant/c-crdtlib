@@ -260,7 +260,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
      */
     override fun toJson(): String {
         val jsonSerializer = JsonLWWMapSerializer(serializer())
-        return Json.encodeToString<LWWMap>(jsonSerializer, this)
+        return Json.encodeToString(jsonSerializer, this)
     }
 
     companion object {

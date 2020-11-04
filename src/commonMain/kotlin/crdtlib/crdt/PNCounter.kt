@@ -180,7 +180,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
      */
     override fun toJson(): String {
         val jsonSerializer = JsonPNCounterSerializer(serializer())
-        return Json.encodeToString<PNCounter>(jsonSerializer, this)
+        return Json.encodeToString(jsonSerializer, this)
     }
 
     companion object {

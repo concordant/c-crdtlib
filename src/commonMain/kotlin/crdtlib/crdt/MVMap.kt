@@ -322,7 +322,7 @@ class MVMap : DeltaCRDT<MVMap> {
      */
     override fun toJson(): String {
         val jsonSerializer = JsonMVMapSerializer(serializer())
-        return Json.encodeToString<MVMap>(jsonSerializer, this)
+        return Json.encodeToString(jsonSerializer, this)
     }
 
     companion object {

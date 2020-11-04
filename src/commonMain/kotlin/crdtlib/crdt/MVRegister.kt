@@ -149,7 +149,7 @@ class MVRegister : DeltaCRDT<MVRegister> {
      */
     override fun toJson(): String {
         val jsonSerializer = JsonMVRegisterSerializer(serializer())
-        return Json.encodeToString<MVRegister>(jsonSerializer, this)
+        return Json.encodeToString(jsonSerializer, this)
     }
 
     companion object {

@@ -99,7 +99,7 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT<LWWRegister>
      */
     override fun toJson(): String {
         val jsonSerializer = JsonLWWRegisterSerializer(serializer())
-        return Json.encodeToString<LWWRegister>(jsonSerializer, this)
+        return Json.encodeToString(jsonSerializer, this)
     }
 
     companion object {

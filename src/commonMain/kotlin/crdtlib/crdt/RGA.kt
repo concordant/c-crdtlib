@@ -72,7 +72,7 @@ class RGA : DeltaCRDT<RGA> {
      * An array list storing the different elements.
      */
     @Required
-    val nodes: ArrayList<RGANode> = arrayListOf<RGANode>()
+    val nodes: ArrayList<RGANode> = arrayListOf()
 
     /**
      * Default constructor.
@@ -148,7 +148,7 @@ class RGA : DeltaCRDT<RGA> {
      */
     @Name("get")
     fun get(): List<String> {
-        return this.nodes.filter { it.removed == false }.map { it.atom }
+        return this.nodes.filter { !it.removed }.map { it.atom }
     }
 
     /**
@@ -182,7 +182,7 @@ class RGA : DeltaCRDT<RGA> {
             if (localNode == null) { // First time this node is seen.
                 var index = 0
                 var siblings = this.nodes.filter { it.anchor == node.anchor }
-                if (siblings.size > 0) {
+                if (siblings.isNotEmpty()) {
                     // There exist nodes with the same anchor.
                     var firstWeakerSiblingNode = siblings.find {
                         it.uid < node.uid
@@ -234,7 +234,7 @@ class RGA : DeltaCRDT<RGA> {
                 this.nodes.add(index, node.copy())
             } else if (node.removed) {
                 // This node already exists and foreign node is a tombstone.
-                if (localNode.removed == false) { // Remove-wins.
+                if (!localNode.removed) { // Remove-wins.
                     val index = this.nodes.indexOf(localNode)
                     this.nodes[index] = node.copy()
                 }
@@ -248,7 +248,7 @@ class RGA : DeltaCRDT<RGA> {
      */
     override fun toJson(): String {
         val jsonSerializer = JsonRGASerializer(serializer())
-        return Json.encodeToString<RGA>(jsonSerializer, this)
+        return Json.encodeToString(jsonSerializer, this)
     }
 
     companion object {
@@ -277,7 +277,7 @@ class JsonRGASerializer(private val serializer: KSerializer<RGA>) :
         for (tmpNode in element.jsonObject["nodes"]!!.jsonArray) {
             val removed = tmpNode.jsonObject["removed"]!!.jsonPrimitive.boolean
             var transformedNode = tmpNode
-            if (removed == false) {
+            if (!removed) {
                 transformedNode = JsonObject(tmpNode.jsonObject.filterNot { it.key == "atom" })
                 value.add(tmpNode.jsonObject["atom"] as JsonElement)
             }
@@ -293,7 +293,7 @@ class JsonRGASerializer(private val serializer: KSerializer<RGA>) :
         for (tmpNode in element.jsonObject["_metadata"]!!.jsonArray) {
             val removed = tmpNode.jsonObject["removed"]!!.jsonPrimitive.boolean
             var transformedNode = tmpNode
-            if (removed == false) {
+            if (!removed) {
                 transformedNode = JsonObject(tmpNode.jsonObject.plus("atom" to value[idxValue]))
                 idxValue++
             }
