@@ -57,8 +57,8 @@ class RatchetPropTest : StringSpec({
     }
 
     "arbitrary set and merge always yields largest element" {
-        // Need to reduce range to 0..50 otherwise js test fails due to timeout (default is 0..100)
-        forAll(Arb.list(OperationArb, 0..50)) { ops ->
+        // Need to reduce range to 0..25 otherwise js test fails due to timeout (default is 0..100)
+        forAll(Arb.list(OperationArb, 0..25)) { ops ->
             val maybeMaximum = ops.maxByOrNull { it.second }
             val maximum = maybeMaximum?.second ?: ""
 
