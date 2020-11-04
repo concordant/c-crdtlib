@@ -118,12 +118,12 @@ class BCounter : DeltaCRDT<BCounter>() {
         }
 
         if (this.increment[ts.uid] == null) {
-            this.increment[ts.uid] = mutableMapOf(ts.uid to Pair(count + amount, ts))
+            this.increment.put(ts.uid, mutableMapOf(ts.uid to Pair(count + amount, ts)))
         } else {
             this.increment[ts.uid]?.put(ts.uid, Pair(count + amount, ts))
         }
 
-        op.increment[ts.uid] = mutableMapOf(ts.uid to Pair(count + amount, ts))
+        op.increment.put(ts.uid, mutableMapOf(ts.uid to Pair(count + amount, ts)))
         return op
     }
 
@@ -146,8 +146,8 @@ class BCounter : DeltaCRDT<BCounter>() {
         if (Int.MAX_VALUE - count < amount - 1) {
             throw RuntimeException("BCounter has reached Int.MAX_VALUE")
         }
-        this.decrement[ts.uid] = Pair(count + amount, ts)
-        op.decrement[ts.uid] = Pair(count + amount, ts)
+        this.decrement.put(ts.uid, Pair(count + amount, ts))
+        op.decrement.put(ts.uid, Pair(count + amount, ts))
         return op
     }
 
@@ -176,7 +176,7 @@ class BCounter : DeltaCRDT<BCounter>() {
             for ((uid2, meta) in meta2) {
                 if (!vv.contains(meta.second)) {
                     if (delta.increment[uid1] == null) {
-                        delta.increment[uid1] = mutableMapOf(uid2 to Pair(meta.first, meta.second))
+                        delta.increment.put(uid1, mutableMapOf(uid2 to Pair(meta.first, meta.second)))
                     } else {
                         delta.increment[uid1]?.put(uid2, Pair(meta.first, meta.second))
                     }
@@ -185,7 +185,7 @@ class BCounter : DeltaCRDT<BCounter>() {
         }
         for ((uid, meta) in this.decrement) {
             if (!vv.contains(meta.second)) {
-                delta.decrement[uid] = Pair(meta.first, meta.second)
+                delta.decrement.put(uid, Pair(meta.first, meta.second))
             }
         }
         return delta
@@ -203,7 +203,7 @@ class BCounter : DeltaCRDT<BCounter>() {
         for ((uid, meta2) in delta.increment) {
             for ((uid2, meta) in meta2) {
                 if (this.increment[uid] == null) {
-                    this.increment[uid] = mutableMapOf(uid2 to Pair(meta.first, meta.second))
+                    this.increment.put(uid, mutableMapOf(uid2 to Pair(meta.first, meta.second)))
                 }
                 val localMeta = this.increment[uid]?.get(uid2)
                 if (localMeta == null || localMeta.first < meta.first) {
@@ -214,7 +214,7 @@ class BCounter : DeltaCRDT<BCounter>() {
         for ((uid, meta) in delta.decrement) {
             val localMeta = this.decrement[uid]
             if (localMeta == null || localMeta.first < meta.first) {
-                this.decrement[uid] = Pair(meta.first, meta.second)
+                this.decrement.put(uid, Pair(meta.first, meta.second))
             }
         }
     }
