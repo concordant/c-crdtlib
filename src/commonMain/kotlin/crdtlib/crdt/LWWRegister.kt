@@ -44,8 +44,7 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT<LWWRegister>
      * Constructor creating a copy of a given register.
      * @param other the register that should be copy.
      */
-    constructor(other: LWWRegister) : this(other.value, other.ts) {
-    }
+    constructor(other: LWWRegister) : this(other.value, other.ts)
 
     /**
      * Gets the value currently stored in the register.
@@ -99,7 +98,7 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT<LWWRegister>
      * @return the resulted json string.
      */
     override fun toJson(): String {
-        val jsonSerializer = JsonLWWRegisterSerializer(LWWRegister.serializer())
+        val jsonSerializer = JsonLWWRegisterSerializer(serializer())
         return Json.encodeToString<LWWRegister>(jsonSerializer, this)
     }
 
@@ -111,7 +110,7 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT<LWWRegister>
          */
         @Name("fromJson")
         fun fromJson(json: String): LWWRegister {
-            val jsonSerializer = JsonLWWRegisterSerializer(LWWRegister.serializer())
+            val jsonSerializer = JsonLWWRegisterSerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
     }

@@ -62,8 +62,7 @@ class MVMap : DeltaCRDT<MVMap> {
     /**
      * Default constructor.
      */
-    constructor() {
-    }
+    constructor()
 
     /**
      * Constructor initializing the causal context.
@@ -80,7 +79,7 @@ class MVMap : DeltaCRDT<MVMap> {
      */
     @Name("getBoolean")
     fun getBoolean(key: String): Set<Boolean?>? {
-        val setOfValues = this.entries[key + MVMap.BOOLEAN]?.map { it.first?.toBoolean() }?.toSet()
+        val setOfValues = this.entries[key + BOOLEAN]?.map { it.first?.toBoolean() }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
     }
@@ -93,7 +92,7 @@ class MVMap : DeltaCRDT<MVMap> {
      */
     @Name("getDouble")
     fun getDouble(key: String): Set<Double?>? {
-        val setOfValues = this.entries[key + MVMap.DOUBLE]?.map { it.first?.toDouble() }?.toSet()
+        val setOfValues = this.entries[key + DOUBLE]?.map { it.first?.toDouble() }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
     }
@@ -106,7 +105,7 @@ class MVMap : DeltaCRDT<MVMap> {
      */
     @Name("getInt")
     fun getInt(key: String): Set<Int?>? {
-        val setOfValues = this.entries[key + MVMap.INTEGER]?.map { it.first?.toInt() }?.toSet()
+        val setOfValues = this.entries[key + INTEGER]?.map { it.first?.toInt() }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
     }
@@ -119,7 +118,7 @@ class MVMap : DeltaCRDT<MVMap> {
      */
     @Name("getString")
     fun getString(key: String): Set<String?>? {
-        val setOfValues = this.entries[key + MVMap.STRING]?.map { it.first }?.toSet()
+        val setOfValues = this.entries[key + STRING]?.map { it.first }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
     }
@@ -135,13 +134,13 @@ class MVMap : DeltaCRDT<MVMap> {
     fun put(key: String, value: Boolean?, ts: Timestamp): MVMap {
         val op = MVMap()
         if (!this.causalContext.contains(ts)) {
-            var meta = this.entries[key + MVMap.BOOLEAN]
+            var meta = this.entries[key + BOOLEAN]
             if (meta == null) meta = mutableSetOf()
             else meta.clear()
             meta.add(Pair(value?.toString(), ts))
 
-            this.entries.put(key + MVMap.BOOLEAN, meta)
-            op.entries.put(key + MVMap.BOOLEAN, meta.toMutableSet())
+            this.entries.put(key + BOOLEAN, meta)
+            op.entries.put(key + BOOLEAN, meta.toMutableSet())
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
@@ -159,13 +158,13 @@ class MVMap : DeltaCRDT<MVMap> {
     fun put(key: String, value: Double?, ts: Timestamp): MVMap {
         val op = MVMap()
         if (!this.causalContext.contains(ts)) {
-            var meta = this.entries[key + MVMap.DOUBLE]
+            var meta = this.entries[key + DOUBLE]
             if (meta == null) meta = mutableSetOf()
             else meta.clear()
             meta.add(Pair(value?.toString(), ts))
 
-            this.entries.put(key + MVMap.DOUBLE, meta)
-            op.entries.put(key + MVMap.DOUBLE, meta.toMutableSet())
+            this.entries.put(key + DOUBLE, meta)
+            op.entries.put(key + DOUBLE, meta.toMutableSet())
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
@@ -183,13 +182,13 @@ class MVMap : DeltaCRDT<MVMap> {
     fun put(key: String, value: Int?, ts: Timestamp): MVMap {
         val op = MVMap()
         if (!this.causalContext.contains(ts)) {
-            var meta = this.entries[key + MVMap.INTEGER]
+            var meta = this.entries[key + INTEGER]
             if (meta == null) meta = mutableSetOf()
             else meta.clear()
             meta.add(Pair(value?.toString(), ts))
 
-            this.entries.put(key + MVMap.INTEGER, meta)
-            op.entries.put(key + MVMap.INTEGER, meta.toMutableSet())
+            this.entries.put(key + INTEGER, meta)
+            op.entries.put(key + INTEGER, meta.toMutableSet())
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
@@ -207,13 +206,13 @@ class MVMap : DeltaCRDT<MVMap> {
     fun put(key: String, value: String?, ts: Timestamp): MVMap {
         val op = MVMap()
         if (!this.causalContext.contains(ts)) {
-            var meta = this.entries[key + MVMap.STRING]
+            var meta = this.entries[key + STRING]
             if (meta == null) meta = mutableSetOf()
             else meta.clear()
             meta.add(Pair(value, ts))
 
-            this.entries.put(key + MVMap.STRING, meta)
-            op.entries.put(key + MVMap.STRING, meta.toMutableSet())
+            this.entries.put(key + STRING, meta)
+            op.entries.put(key + STRING, meta.toMutableSet())
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
@@ -322,7 +321,7 @@ class MVMap : DeltaCRDT<MVMap> {
      * @return the resulted json string.
      */
     override fun toJson(): String {
-        val jsonSerializer = JsonMVMapSerializer(MVMap.serializer())
+        val jsonSerializer = JsonMVMapSerializer(serializer())
         return Json.encodeToString<MVMap>(jsonSerializer, this)
     }
 
@@ -330,27 +329,27 @@ class MVMap : DeltaCRDT<MVMap> {
         /**
          * Constant value for key fields' separator.
          */
-        const val SEPARATOR = "%"
+        private const val SEPARATOR = "%"
 
         /**
          * Constant suffix value for key associated to a value of type Boolean.
          */
-        const val BOOLEAN = MVMap.SEPARATOR + "BOOLEAN"
+        const val BOOLEAN = SEPARATOR + "BOOLEAN"
 
         /**
          * Constant suffix value for key associated to a value of type double.
          */
-        const val DOUBLE = MVMap.SEPARATOR + "DOUBLE"
+        const val DOUBLE = SEPARATOR + "DOUBLE"
 
         /**
          * Constant suffix value for key associated to a value of type integer.
          */
-        const val INTEGER = MVMap.SEPARATOR + "INTEGER"
+        const val INTEGER = SEPARATOR + "INTEGER"
 
         /**
          * Constant suffix value for key associated to a value of type string.
          */
-        const val STRING = MVMap.SEPARATOR + "STRING"
+        const val STRING = SEPARATOR + "STRING"
 
         /**
          * Deserializes a given json string in a crdt map.
@@ -359,7 +358,7 @@ class MVMap : DeltaCRDT<MVMap> {
          */
         @Name("fromJson")
         fun fromJson(json: String): MVMap {
-            val jsonSerializer = JsonMVMapSerializer(MVMap.serializer())
+            val jsonSerializer = JsonMVMapSerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
     }

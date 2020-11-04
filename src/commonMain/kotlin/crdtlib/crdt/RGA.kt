@@ -23,8 +23,9 @@ import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
 import crdtlib.utils.VersionVector
-import kotlinx.serialization.*
-import kotlinx.serialization.builtins.*
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Required
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 
 /**
@@ -76,8 +77,7 @@ class RGA : DeltaCRDT<RGA> {
     /**
      * Default constructor.
      */
-    constructor() {
-    }
+    constructor()
 
     constructor(nodes: List<RGANode>) {
         for (node in nodes) {
@@ -247,7 +247,7 @@ class RGA : DeltaCRDT<RGA> {
      * @return the resulted json string.
      */
     override fun toJson(): String {
-        val jsonSerializer = JsonRGASerializer(RGA.serializer())
+        val jsonSerializer = JsonRGASerializer(serializer())
         return Json.encodeToString<RGA>(jsonSerializer, this)
     }
 
@@ -259,7 +259,7 @@ class RGA : DeltaCRDT<RGA> {
          */
         @Name("fromJson")
         fun fromJson(json: String): RGA {
-            val jsonSerializer = JsonRGASerializer(RGA.serializer())
+            val jsonSerializer = JsonRGASerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
     }

@@ -70,8 +70,7 @@ class Map : DeltaCRDT<Map> {
     /**
      * Default constructor.
      */
-    constructor() {
-    }
+    constructor()
 
     /**
      * Gets the Boolean value corresponding to a given key.
@@ -457,7 +456,7 @@ class Map : DeltaCRDT<Map> {
      * @return the resulted json string.
      */
     override fun toJson(): String {
-        val jsonSerializer = JsonMapSerializer(Map.serializer())
+        val jsonSerializer = JsonMapSerializer(serializer())
         return Json.encodeToString<Map>(jsonSerializer, this)
     }
 
@@ -465,22 +464,22 @@ class Map : DeltaCRDT<Map> {
         /**
          * Constant value for key fields' separator.
          */
-        const val SEPARATOR = "%"
+        private const val SEPARATOR = "%"
 
         /**
          * Constant suffix value for key associated to a last writer wins value.
          */
-        const val LWWREGISTER = Map.SEPARATOR + "LWW"
+        const val LWWREGISTER = SEPARATOR + "LWW"
 
         /**
          * Constant suffix value for key associated to a multi-value.
          */
-        const val MVREGISTER = Map.SEPARATOR + "MV"
+        const val MVREGISTER = SEPARATOR + "MV"
 
         /**
          * Constant suffix value for key associated to a counter value.
          */
-        const val PNCOUNTER = Map.SEPARATOR + "CNT"
+        const val PNCOUNTER = SEPARATOR + "CNT"
 
         /**
          * Deserializes a given json string in a crdt map.
@@ -489,7 +488,7 @@ class Map : DeltaCRDT<Map> {
          */
         @Name("fromJson")
         fun fromJson(json: String): Map {
-            val jsonSerializer = JsonMapSerializer(Map.serializer())
+            val jsonSerializer = JsonMapSerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
     }

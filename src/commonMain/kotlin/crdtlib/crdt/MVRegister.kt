@@ -23,8 +23,9 @@ import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
 import crdtlib.utils.VersionVector
-import kotlinx.serialization.*
-import kotlinx.serialization.builtins.*
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Required
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 
 /**
@@ -56,8 +57,7 @@ class MVRegister : DeltaCRDT<MVRegister> {
     /**
      * Default constructor creating a empty register.
      */
-    constructor() {
-    }
+    constructor()
 
     /**
      * Constructor creating a register initialized with a given value.
@@ -148,7 +148,7 @@ class MVRegister : DeltaCRDT<MVRegister> {
      * @return the resulted json string.
      */
     override fun toJson(): String {
-        val jsonSerializer = JsonMVRegisterSerializer(MVRegister.serializer())
+        val jsonSerializer = JsonMVRegisterSerializer(serializer())
         return Json.encodeToString<MVRegister>(jsonSerializer, this)
     }
 
@@ -160,7 +160,7 @@ class MVRegister : DeltaCRDT<MVRegister> {
          */
         @Name("fromJson")
         fun fromJson(json: String): MVRegister {
-            val jsonSerializer = JsonMVRegisterSerializer(MVRegister.serializer())
+            val jsonSerializer = JsonMVRegisterSerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
     }

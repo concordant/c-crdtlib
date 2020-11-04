@@ -80,8 +80,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
     /**
      * Default constructor.
      */
-    constructor() {
-    }
+    constructor()
 
     /**
      * Gets the value of the counter.
@@ -180,7 +179,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
      * @return the resulted json string.
      */
     override fun toJson(): String {
-        val jsonSerializer = JsonPNCounterSerializer(PNCounter.serializer())
+        val jsonSerializer = JsonPNCounterSerializer(serializer())
         return Json.encodeToString<PNCounter>(jsonSerializer, this)
     }
 
@@ -192,7 +191,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
          */
         @Name("fromJson")
         fun fromJson(json: String): PNCounter {
-            val jsonSerializer = JsonPNCounterSerializer(PNCounter.serializer())
+            val jsonSerializer = JsonPNCounterSerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
     }
