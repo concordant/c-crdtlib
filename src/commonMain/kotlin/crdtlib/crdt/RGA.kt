@@ -235,7 +235,7 @@ class RGA : DeltaCRDT<RGA> {
             } else if (node.removed) {
                 // This node already exists and foreign node is a tombstone.
                 if (localNode.removed == false) { // Remove-wins.
-                    var index = this.nodes.indexOf(localNode)
+                    val index = this.nodes.indexOf(localNode)
                     this.nodes[index] = node.copy()
                 }
             }

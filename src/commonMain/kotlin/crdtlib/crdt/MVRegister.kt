@@ -187,10 +187,8 @@ class JsonMVRegisterSerializer(private val serializer: KSerializer<MVRegister>) 
         val entries = mutableListOf<JsonElement>()
         val metadata = element.jsonObject["_metadata"]!!.jsonObject
         val value = element.jsonObject["value"]!!.jsonArray
-        var idxValue = 0
-        for (tmpEntry in metadata["entries"]!!.jsonArray) {
+        for ((idxValue, tmpEntry) in metadata["entries"]!!.jsonArray.withIndex()) {
             entries.add(JsonObject(mapOf("first" to value[idxValue], "second" to tmpEntry)))
-            idxValue++
         }
         val causalContext = metadata["causalContext"]!!.jsonObject
         return JsonObject(mapOf("entries" to JsonArray(entries), "causalContext" to causalContext))

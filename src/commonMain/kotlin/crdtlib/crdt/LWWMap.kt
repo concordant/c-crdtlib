@@ -225,7 +225,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
      * @return the corresponding delta of operations.
      */
     override fun generateDelta(vv: VersionVector): LWWMap {
-        var delta = LWWMap()
+        val delta = LWWMap()
         for ((key, meta) in this.entries) {
             val value = meta.first
             val ts = meta.second

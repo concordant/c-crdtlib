@@ -419,7 +419,7 @@ class Map : DeltaCRDT<Map> {
      * @return the corresponding delta of operations.
      */
     override fun generateDelta(vv: VersionVector): Map {
-        var delta = Map()
+        val delta = Map()
 
         delta.lwwMap.merge(this.lwwMap.generateDelta(vv))
         delta.mvMap.merge(this.mvMap.generateDelta(vv))
@@ -585,15 +585,13 @@ class JsonMapSerializer(private val serializer: KSerializer<Map>) :
         for ((key, meta) in mvMetadata["entries"]!!.jsonObject) {
             val values = element.jsonObject[key + Map.MVREGISTER]!!.jsonArray
             val tmpEntries = mutableListOf<JsonElement>()
-            var idx = 0
-            for (ts in meta.jsonArray) {
+            for ((idx, ts) in meta.jsonArray.withIndex()) {
                 var value = values[idx]
                 if (value !is JsonNull && !key.endsWith(MVMap.STRING)) {
                     value = JsonPrimitive(value.toString())
                 }
                 val tmpEntry = JsonObject(mapOf("first" to value, "second" to ts))
                 tmpEntries.add(tmpEntry)
-                idx++
             }
             mvEntries.put(key, JsonArray(tmpEntries))
         }
