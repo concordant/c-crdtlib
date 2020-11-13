@@ -22,45 +22,50 @@ package crdtlib
 import crdtlib.crdt.*
 import crdtlib.utils.*
 import me.ntrrgc.tsGenerator.TypeScriptGenerator
+import java.io.File
 
 fun main() {
-    println("declare module 'c-crdtlib' {")
-    println()
-    println("export var crdtlib;")
-    println("export namespace crdtlib {")
-    println()
-    println("export namespace utils {")
-    println()
-    println(
-        TypeScriptGenerator(
-            rootClasses = setOf(
-                ClientUId::class,
-                Environment::class,
-                SimpleEnvironment::class,
-                Timestamp::class,
-                UnexpectedTypeException::class,
-                VersionVector::class
+    File("build/js/packages/c-crdtlib-nodeJs/kotlin/c-crdtlib.d.ts").printWriter().use {
+        with(it) {
+            println("declare module 'c-crdtlib' {")
+            println()
+            println("export var crdtlib;")
+            println("export namespace crdtlib {")
+            println()
+            println("export namespace utils {")
+            println()
+            println(
+                TypeScriptGenerator(
+                    rootClasses = setOf(
+                        ClientUId::class,
+                        Environment::class,
+                        SimpleEnvironment::class,
+                        Timestamp::class,
+                        UnexpectedTypeException::class,
+                        VersionVector::class
+                    )
+                ).definitionsText
             )
-        ).definitionsText
-    )
-    println("}")
-    println()
-    println("export namespace crdt {")
-    println()
-    println(
-        TypeScriptGenerator(
-            rootClasses = setOf(
-                DeltaCRDT::class,
-                LWWMap::class,
-                LWWRegister::class,
-                MVRegister::class,
-                PNCounter::class,
-                RGA::class,
-                Ratchet::class
+            println("}")
+            println()
+            println("export namespace crdt {")
+            println()
+            println(
+                TypeScriptGenerator(
+                    rootClasses = setOf(
+                        DeltaCRDT::class,
+                        LWWMap::class,
+                        LWWRegister::class,
+                        MVRegister::class,
+                        PNCounter::class,
+                        RGA::class,
+                        Ratchet::class
+                    )
+                ).definitionsText
             )
-        ).definitionsText
-    )
-    println("}")
-    println("}")
-    println("}")
+            println("}")
+            println("}")
+            println("}")
+        }
+    }
 }
