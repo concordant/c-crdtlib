@@ -17,7 +17,8 @@
 
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-version = "0.0.6"
+group = "concordant"
+version = "0.0.1"
 
 plugins {
     kotlin("multiplatform") version "1.4.10"
@@ -133,7 +134,6 @@ kotlin {
             // Kotlin does not support octal litterals
             fileMode = 7 * 64 + 7 * 8 + 7
         }
-
     }
 }
 
@@ -148,6 +148,13 @@ tasks.withType<KotlinCompile> {
 }
 
 npmPublishing {
+    organization = group as String
+    repositories {
+        repository("Gitlab") {
+            registry = uri("https://gitlab.inria.fr/api/v4/projects/${System.getenv("CI_PROJECT_ID")}/packages/npm")
+            authToken = System.getenv("CI_JOB_TOKEN")
+        }
+    }
     publications {
         val nodeJs by getting {
             packageJson {

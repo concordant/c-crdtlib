@@ -1,9 +1,18 @@
 image: gradle:latest
 
+cache: &global_cache
+  # per-branch cache
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .gradle/
+
 build:
   stage: build
   script:
-    - gradle assemble
+    - gradle assemble --build-cache
+  artifacts:
+    paths:
+      - build/
 
 test:
   stage: test
@@ -14,6 +23,18 @@ test:
       - build/reports/
     when: always
 
+publish:
+  stage: deploy
+  when: manual
+  script:
+    - gradle publish
+  cache:
+    # only pull global_cache
+    <<: *global_cache
+    policy: pull
+  # use only artifacts from build job
+  dependencies:
+    - build
 
 pages:
   stage: deploy
@@ -25,3 +46,10 @@ pages:
       - public
   only:
     - master
+  cache:
+    # only pull global_cache
+    <<: *global_cache
+    policy: pull
+  # use only artifacts from build job
+  dependencies:
+    - build

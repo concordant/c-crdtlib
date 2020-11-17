@@ -27,7 +27,7 @@ import java.io.File
 fun main() {
     File("build/js/packages/c-crdtlib-nodeJs/kotlin/c-crdtlib.d.ts").printWriter().use {
         with(it) {
-            println("declare module 'c-crdtlib' {")
+            println("declare module '@concordant/c-crdtlib' {")
             println()
             println("export var crdtlib;")
             println("export namespace crdtlib {")
