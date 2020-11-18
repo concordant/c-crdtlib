@@ -106,7 +106,7 @@ class Ratchet(var value: String) : DeltaCRDT<Ratchet>() {
 /**
 * This class is a json transformer for Ratchet, it allows the separation between data and metadata.
 */
-class JsonRatchetSerializer(private val serializer: KSerializer<Ratchet>) :
+class JsonRatchetSerializer(serializer: KSerializer<Ratchet>) :
     JsonTransformingSerializer<Ratchet>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {

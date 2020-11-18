@@ -305,7 +305,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
 /**
 * This class is a json transformer for LWWMap, it allows the separation between data and metadata.
 */
-class JsonLWWMapSerializer(private val serializer: KSerializer<LWWMap>) :
+class JsonLWWMapSerializer(serializer: KSerializer<LWWMap>) :
     JsonTransformingSerializer<LWWMap>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {

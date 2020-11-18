@@ -497,7 +497,7 @@ class Map : DeltaCRDT<Map> {
 /**
 * This class is a json transformer for Map, it allows the separation between data and metadata.
 */
-class JsonMapSerializer(private val serializer: KSerializer<Map>) :
+class JsonMapSerializer(serializer: KSerializer<Map>) :
     JsonTransformingSerializer<Map>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {

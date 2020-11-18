@@ -200,7 +200,7 @@ class PNCounter : DeltaCRDT<PNCounter> {
 /**
 * This class is a json transformer for PNCounter, it allows the separation between data and metadata.
 */
-class JsonPNCounterSerializer(private val serializer: KSerializer<PNCounter>) :
+class JsonPNCounterSerializer(serializer: KSerializer<PNCounter>) :
     JsonTransformingSerializer<PNCounter>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {

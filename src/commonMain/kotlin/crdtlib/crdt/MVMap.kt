@@ -367,7 +367,7 @@ class MVMap : DeltaCRDT<MVMap> {
 /**
 * This class is a json transformer for MVMap, it allows the separation between data and metadata.
 */
-class JsonMVMapSerializer(private val serializer: KSerializer<MVMap>) :
+class JsonMVMapSerializer(serializer: KSerializer<MVMap>) :
     JsonTransformingSerializer<MVMap>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {

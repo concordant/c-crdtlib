@@ -169,7 +169,7 @@ class MVRegister : DeltaCRDT<MVRegister> {
 /**
 * This class is a json transformer for MVRegister, it allows the separation between data and metadata.
 */
-class JsonMVRegisterSerializer(private val serializer: KSerializer<MVRegister>) :
+class JsonMVRegisterSerializer(serializer: KSerializer<MVRegister>) :
     JsonTransformingSerializer<MVRegister>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {

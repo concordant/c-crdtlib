@@ -58,7 +58,7 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT<LWWRegister>
     /**
      * Assigns a given value to the register.
      * Assign is not effective if the associated timestamp is smaller (older) than the current one.
-     * @param value the value that should be assigned.
+     * @param v the value that should be assigned.
      * @param ts the timestamp associated to the operation.
      * @return the delta corresponding to this operation.
      */
@@ -119,7 +119,7 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT<LWWRegister>
 /**
 * This class is a json transformer for LWWRegister, it allows the separation between data and metadata.
 */
-class JsonLWWRegisterSerializer(private val serializer: KSerializer<LWWRegister>) :
+class JsonLWWRegisterSerializer(serializer: KSerializer<LWWRegister>) :
     JsonTransformingSerializer<LWWRegister>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {

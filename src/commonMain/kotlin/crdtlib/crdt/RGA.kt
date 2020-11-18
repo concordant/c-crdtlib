@@ -196,12 +196,9 @@ class RGA : DeltaCRDT<RGA> {
                         while (currNode.anchor != null) {
                             val currAnchor = this.nodes.find {
                                 it.uid == currNode.anchor
-                            }
-                            if (currAnchor == null) {
-                                throw IllegalArgumentException(
-                                    "RGA can not merge a node with unknown anchor"
-                                )
-                            }
+                            } ?: throw IllegalArgumentException(
+                                "RGA can not merge a node with unknown anchor"
+                            )
                             currNode = currAnchor
                             siblings = this.nodes.filter {
                                 it.anchor == currNode.anchor
@@ -268,7 +265,7 @@ class RGA : DeltaCRDT<RGA> {
 /**
 * This class is a json transformer for RGA, it allows the separation between data and metadata.
 */
-class JsonRGASerializer(private val serializer: KSerializer<RGA>) :
+class JsonRGASerializer(serializer: KSerializer<RGA>) :
     JsonTransformingSerializer<RGA>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {
