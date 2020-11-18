@@ -9,6 +9,10 @@ test:
   stage: test
   script:
     - gradle allTests
+  artifacts:
+    paths:
+      - build/reports/
+    when: always
 
 
 pages:
