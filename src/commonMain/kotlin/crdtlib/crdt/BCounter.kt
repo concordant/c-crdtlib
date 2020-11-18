@@ -224,7 +224,7 @@ class BCounter : DeltaCRDT<BCounter>() {
      * @return the resulted json string.
      */
     override fun toJson(): String {
-        val jsonSerializer = JsonBCounterSerializer(BCounter.serializer())
+        val jsonSerializer = JsonBCounterSerializer(serializer())
         return Json.encodeToString(jsonSerializer, this)
     }
 
@@ -236,7 +236,7 @@ class BCounter : DeltaCRDT<BCounter>() {
          */
         @Name("fromJson")
         fun fromJson(json: String): BCounter {
-            val jsonSerializer = JsonBCounterSerializer(BCounter.serializer())
+            val jsonSerializer = JsonBCounterSerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
     }
