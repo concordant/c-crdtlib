@@ -17,6 +17,7 @@
 
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+description = "Concordant Conflict-Free Replicated Datatypes (CRDT) library"
 group = "concordant"
 version = "0.0.1"
 
@@ -159,6 +160,7 @@ npmPublishing {
         val nodeJs by getting {
             packageJson {
                 types = "c-crdtlib.d.ts"
+                "description" to project.description
             }
         }
     }
