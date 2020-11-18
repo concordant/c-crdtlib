@@ -124,7 +124,11 @@ kotlin {
 }
 tasks.getByPath("assemble").dependsOn("installGitHook")
 
-tasks.withType<Test> { useJUnitPlatform() }
+tasks.withType<Test> {
+    useJUnitPlatform()
+    systemProperty("kotest.framework.timeout", 5000)
+    systemProperty("kotest.framework.invocation.timeout", 4000)
+}
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
