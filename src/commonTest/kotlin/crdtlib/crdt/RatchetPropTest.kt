@@ -25,19 +25,15 @@ import io.kotest.property.Arb
 import io.kotest.property.arbitrary.*
 import io.kotest.property.forAll
 
-val RatchetArb = arb { rs ->
-    val vs = Arb.string().values(rs)
-    vs.map { v -> Ratchet(v.value) }
+val RatchetArb = arbitrary { rs ->
+    Ratchet(Arb.string().next(rs))
 }
 
 enum class OpType {
     ASSIGN, MERGE
 }
-val OperationArb = arb { rs ->
-    val typs = Arb.enum<OpType>().values(rs)
-
-    val vs = Arb.string().values(rs)
-    typs.zip(vs).map { (t, v) -> Pair(t.value, v.value) }
+val OperationArb = arbitrary { rs ->
+    Pair(Arb.enum<OpType>().next(rs), Arb.string().next(rs))
 }
 
 class RatchetPropTest : StringSpec({
