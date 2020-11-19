@@ -39,8 +39,8 @@ publish:
 pages:
   stage: deploy
   script:
-    - gradle dokka
-    - mv build/docs public
+    - gradle dokkaHtml
+    - mv build/dokka/html public
   artifacts:
     paths:
       - public

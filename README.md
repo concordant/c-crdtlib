@@ -74,9 +74,10 @@ JVM Bytecode and to Javascript in the form of a Node.js package.
 - publish the NPM package to the Gitlab Packages registry
   (requires authentication ; better use it via CI pipelines).
 
-*gradle dokka*:
+*gradle dokkaHtml*:
 - creates the documentation from code comments;
-- documentation is accessible at *build/docs/crdtlib-kotlin/index.html*.
+- documentation is accessible at *build/dokka/html/crdtlib/index.html*.
+See `gradle tasks` for variants other than HTML.
 
 *gradle clean*:
 - cleans the project.
