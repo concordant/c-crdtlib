@@ -24,7 +24,7 @@ version = "0.0.1"
 plugins {
     kotlin("multiplatform") version "1.4.10"
     kotlin("plugin.serialization") version "1.4.10"
-    id("org.jetbrains.dokka") version "0.10.0"
+    id("org.jetbrains.dokka") version "1.4.10.2"
     id("lt.petuska.npm.publish") version "1.0.2"
 }
 
@@ -96,14 +96,6 @@ kotlin {
     }
 
     tasks {
-        dokka {
-            outputFormat = "html"
-            outputDirectory = "$buildDir/docs"
-
-            multiplatform {
-                register("common") {}
-            }
-        }
         register<JavaExec>("tsgen") {
             group = "build"
             description = "Generate .d.ts description file"
