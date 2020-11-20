@@ -62,8 +62,7 @@ class MVMap : DeltaCRDT<MVMap> {
     /**
      * Default constructor.
      */
-    constructor() {
-    }
+    constructor()
 
     /**
      * Constructor initializing the causal context.
@@ -80,7 +79,7 @@ class MVMap : DeltaCRDT<MVMap> {
      */
     @Name("getBoolean")
     fun getBoolean(key: String): Set<Boolean?>? {
-        val setOfValues = this.entries.get(key + MVMap.BOOLEAN)?.map { it.first?.toBoolean() }?.toSet()
+        val setOfValues = this.entries[key + BOOLEAN]?.map { it.first?.toBoolean() }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
     }
@@ -93,7 +92,7 @@ class MVMap : DeltaCRDT<MVMap> {
      */
     @Name("getDouble")
     fun getDouble(key: String): Set<Double?>? {
-        val setOfValues = this.entries.get(key + MVMap.DOUBLE)?.map { it.first?.toDouble() }?.toSet()
+        val setOfValues = this.entries[key + DOUBLE]?.map { it.first?.toDouble() }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
     }
@@ -106,7 +105,7 @@ class MVMap : DeltaCRDT<MVMap> {
      */
     @Name("getInt")
     fun getInt(key: String): Set<Int?>? {
-        val setOfValues = this.entries.get(key + MVMap.INTEGER)?.map { it.first?.toInt() }?.toSet()
+        val setOfValues = this.entries[key + INTEGER]?.map { it.first?.toInt() }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
     }
@@ -119,7 +118,7 @@ class MVMap : DeltaCRDT<MVMap> {
      */
     @Name("getString")
     fun getString(key: String): Set<String?>? {
-        val setOfValues = this.entries.get(key + MVMap.STRING)?.map { it.first }?.toSet()
+        val setOfValues = this.entries[key + STRING]?.map { it.first }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
     }
@@ -135,13 +134,13 @@ class MVMap : DeltaCRDT<MVMap> {
     fun put(key: String, value: Boolean?, ts: Timestamp): MVMap {
         val op = MVMap()
         if (!this.causalContext.contains(ts)) {
-            var meta = this.entries.get(key + MVMap.BOOLEAN)
+            var meta = this.entries[key + BOOLEAN]
             if (meta == null) meta = mutableSetOf()
             else meta.clear()
             meta.add(Pair(value?.toString(), ts))
 
-            this.entries.put(key + MVMap.BOOLEAN, meta)
-            op.entries.put(key + MVMap.BOOLEAN, meta.toMutableSet())
+            this.entries.put(key + BOOLEAN, meta)
+            op.entries.put(key + BOOLEAN, meta.toMutableSet())
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
@@ -159,13 +158,13 @@ class MVMap : DeltaCRDT<MVMap> {
     fun put(key: String, value: Double?, ts: Timestamp): MVMap {
         val op = MVMap()
         if (!this.causalContext.contains(ts)) {
-            var meta = this.entries.get(key + MVMap.DOUBLE)
+            var meta = this.entries[key + DOUBLE]
             if (meta == null) meta = mutableSetOf()
             else meta.clear()
             meta.add(Pair(value?.toString(), ts))
 
-            this.entries.put(key + MVMap.DOUBLE, meta)
-            op.entries.put(key + MVMap.DOUBLE, meta.toMutableSet())
+            this.entries.put(key + DOUBLE, meta)
+            op.entries.put(key + DOUBLE, meta.toMutableSet())
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
@@ -183,13 +182,13 @@ class MVMap : DeltaCRDT<MVMap> {
     fun put(key: String, value: Int?, ts: Timestamp): MVMap {
         val op = MVMap()
         if (!this.causalContext.contains(ts)) {
-            var meta = this.entries.get(key + MVMap.INTEGER)
+            var meta = this.entries[key + INTEGER]
             if (meta == null) meta = mutableSetOf()
             else meta.clear()
             meta.add(Pair(value?.toString(), ts))
 
-            this.entries.put(key + MVMap.INTEGER, meta)
-            op.entries.put(key + MVMap.INTEGER, meta.toMutableSet())
+            this.entries.put(key + INTEGER, meta)
+            op.entries.put(key + INTEGER, meta.toMutableSet())
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
@@ -207,13 +206,13 @@ class MVMap : DeltaCRDT<MVMap> {
     fun put(key: String, value: String?, ts: Timestamp): MVMap {
         val op = MVMap()
         if (!this.causalContext.contains(ts)) {
-            var meta = this.entries.get(key + MVMap.STRING)
+            var meta = this.entries[key + STRING]
             if (meta == null) meta = mutableSetOf()
             else meta.clear()
             meta.add(Pair(value, ts))
 
-            this.entries.put(key + MVMap.STRING, meta)
-            op.entries.put(key + MVMap.STRING, meta.toMutableSet())
+            this.entries.put(key + STRING, meta)
+            op.entries.put(key + STRING, meta.toMutableSet())
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
@@ -274,7 +273,7 @@ class MVMap : DeltaCRDT<MVMap> {
      * @return the corresponding delta of operations.
      */
     override fun generateDelta(vv: VersionVector): MVMap {
-        var delta = MVMap()
+        val delta = MVMap()
         for ((key, meta) in this.entries) {
             if (meta.any { !vv.contains(it.second) }) {
                 delta.entries.put(key, meta.toMutableSet())
@@ -295,7 +294,7 @@ class MVMap : DeltaCRDT<MVMap> {
         for ((key, foreignEntries) in delta.entries) {
 
             val keptEntries = mutableSetOf<Pair<String?, Timestamp>>()
-            val localEntries = this.entries.get(key)
+            val localEntries = this.entries[key]
             if (localEntries != null) {
                 for ((value, ts) in localEntries) {
                     if (!delta.causalContext.contains(ts) || foreignEntries.any { it.second == ts }) {
@@ -322,35 +321,35 @@ class MVMap : DeltaCRDT<MVMap> {
      * @return the resulted json string.
      */
     override fun toJson(): String {
-        val jsonSerializer = JsonMVMapSerializer(MVMap.serializer())
-        return Json.encodeToString<MVMap>(jsonSerializer, this)
+        val jsonSerializer = JsonMVMapSerializer(serializer())
+        return Json.encodeToString(jsonSerializer, this)
     }
 
     companion object {
         /**
          * Constant value for key fields' separator.
          */
-        const val SEPARATOR = "%"
+        private const val SEPARATOR = "%"
 
         /**
          * Constant suffix value for key associated to a value of type Boolean.
          */
-        const val BOOLEAN = MVMap.SEPARATOR + "BOOLEAN"
+        const val BOOLEAN = SEPARATOR + "BOOLEAN"
 
         /**
          * Constant suffix value for key associated to a value of type double.
          */
-        const val DOUBLE = MVMap.SEPARATOR + "DOUBLE"
+        const val DOUBLE = SEPARATOR + "DOUBLE"
 
         /**
          * Constant suffix value for key associated to a value of type integer.
          */
-        const val INTEGER = MVMap.SEPARATOR + "INTEGER"
+        const val INTEGER = SEPARATOR + "INTEGER"
 
         /**
          * Constant suffix value for key associated to a value of type string.
          */
-        const val STRING = MVMap.SEPARATOR + "STRING"
+        const val STRING = SEPARATOR + "STRING"
 
         /**
          * Deserializes a given json string in a crdt map.
@@ -359,7 +358,7 @@ class MVMap : DeltaCRDT<MVMap> {
          */
         @Name("fromJson")
         fun fromJson(json: String): MVMap {
-            val jsonSerializer = JsonMVMapSerializer(MVMap.serializer())
+            val jsonSerializer = JsonMVMapSerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
     }
@@ -368,7 +367,7 @@ class MVMap : DeltaCRDT<MVMap> {
 /**
 * This class is a json transformer for MVMap, it allows the separation between data and metadata.
 */
-class JsonMVMapSerializer(private val serializer: KSerializer<MVMap>) :
+class JsonMVMapSerializer(serializer: KSerializer<MVMap>) :
     JsonTransformingSerializer<MVMap>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {
@@ -379,14 +378,19 @@ class JsonMVMapSerializer(private val serializer: KSerializer<MVMap>) :
             val value = mutableListOf<JsonElement>()
             val meta = mutableListOf<JsonElement>()
             for (tmpPair in entry.jsonArray) {
-                if (key.endsWith(MVMap.BOOLEAN)) {
-                    value.add(JsonPrimitive(tmpPair.jsonObject["first"]?.jsonPrimitive?.booleanOrNull) as JsonElement)
-                } else if (key.endsWith(MVMap.DOUBLE)) {
-                    value.add(JsonPrimitive(tmpPair.jsonObject["first"]?.jsonPrimitive?.doubleOrNull) as JsonElement)
-                } else if (key.endsWith(MVMap.INTEGER)) {
-                    value.add(JsonPrimitive(tmpPair.jsonObject["first"]?.jsonPrimitive?.intOrNull) as JsonElement)
-                } else {
-                    value.add(tmpPair.jsonObject["first"] as JsonElement)
+                when {
+                    key.endsWith(MVMap.BOOLEAN) -> {
+                        value.add(JsonPrimitive(tmpPair.jsonObject["first"]?.jsonPrimitive?.booleanOrNull) as JsonElement)
+                    }
+                    key.endsWith(MVMap.DOUBLE) -> {
+                        value.add(JsonPrimitive(tmpPair.jsonObject["first"]?.jsonPrimitive?.doubleOrNull) as JsonElement)
+                    }
+                    key.endsWith(MVMap.INTEGER) -> {
+                        value.add(JsonPrimitive(tmpPair.jsonObject["first"]?.jsonPrimitive?.intOrNull) as JsonElement)
+                    }
+                    else -> {
+                        value.add(tmpPair.jsonObject["first"] as JsonElement)
+                    }
                 }
                 meta.add(tmpPair.jsonObject["second"]!!.jsonObject)
             }
@@ -404,15 +408,13 @@ class JsonMVMapSerializer(private val serializer: KSerializer<MVMap>) :
         for ((key, meta) in metadata["entries"]!!.jsonObject) {
             val values = element.jsonObject[key]!!.jsonArray
             val tmpEntries = mutableListOf<JsonElement>()
-            var idx = 0
-            for (ts in meta.jsonArray) {
+            for ((idx, ts) in meta.jsonArray.withIndex()) {
                 var value = values[idx]
                 if (value !is JsonNull && !key.endsWith(MVMap.STRING)) {
                     value = JsonPrimitive(value.toString())
                 }
                 val tmpEntry = JsonObject(mapOf("first" to value, "second" to ts))
                 tmpEntries.add(tmpEntry)
-                idx++
             }
             entries.put(key, JsonArray(tmpEntries))
         }

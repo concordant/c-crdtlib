@@ -23,8 +23,9 @@ import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
 import crdtlib.utils.VersionVector
-import kotlinx.serialization.*
-import kotlinx.serialization.builtins.*
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Required
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 
 /**
@@ -56,8 +57,7 @@ class MVRegister : DeltaCRDT<MVRegister> {
     /**
      * Default constructor creating a empty register.
      */
-    constructor() {
-    }
+    constructor()
 
     /**
      * Constructor creating a register initialized with a given value.
@@ -148,8 +148,8 @@ class MVRegister : DeltaCRDT<MVRegister> {
      * @return the resulted json string.
      */
     override fun toJson(): String {
-        val jsonSerializer = JsonMVRegisterSerializer(MVRegister.serializer())
-        return Json.encodeToString<MVRegister>(jsonSerializer, this)
+        val jsonSerializer = JsonMVRegisterSerializer(serializer())
+        return Json.encodeToString(jsonSerializer, this)
     }
 
     companion object {
@@ -160,7 +160,7 @@ class MVRegister : DeltaCRDT<MVRegister> {
          */
         @Name("fromJson")
         fun fromJson(json: String): MVRegister {
-            val jsonSerializer = JsonMVRegisterSerializer(MVRegister.serializer())
+            val jsonSerializer = JsonMVRegisterSerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
     }
@@ -169,7 +169,7 @@ class MVRegister : DeltaCRDT<MVRegister> {
 /**
 * This class is a json transformer for MVRegister, it allows the separation between data and metadata.
 */
-class JsonMVRegisterSerializer(private val serializer: KSerializer<MVRegister>) :
+class JsonMVRegisterSerializer(serializer: KSerializer<MVRegister>) :
     JsonTransformingSerializer<MVRegister>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {
@@ -187,10 +187,8 @@ class JsonMVRegisterSerializer(private val serializer: KSerializer<MVRegister>) 
         val entries = mutableListOf<JsonElement>()
         val metadata = element.jsonObject["_metadata"]!!.jsonObject
         val value = element.jsonObject["value"]!!.jsonArray
-        var idxValue = 0
-        for (tmpEntry in metadata["entries"]!!.jsonArray) {
+        for ((idxValue, tmpEntry) in metadata["entries"]!!.jsonArray.withIndex()) {
             entries.add(JsonObject(mapOf("first" to value[idxValue], "second" to tmpEntry)))
-            idxValue++
         }
         val causalContext = metadata["causalContext"]!!.jsonObject
         return JsonObject(mapOf("entries" to JsonArray(entries), "causalContext" to causalContext))

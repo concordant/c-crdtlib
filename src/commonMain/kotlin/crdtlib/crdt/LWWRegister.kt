@@ -44,8 +44,7 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT<LWWRegister>
      * Constructor creating a copy of a given register.
      * @param other the register that should be copy.
      */
-    constructor(other: LWWRegister) : this(other.value, other.ts) {
-    }
+    constructor(other: LWWRegister) : this(other.value, other.ts)
 
     /**
      * Gets the value currently stored in the register.
@@ -59,7 +58,7 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT<LWWRegister>
     /**
      * Assigns a given value to the register.
      * Assign is not effective if the associated timestamp is smaller (older) than the current one.
-     * @param value the value that should be assigned.
+     * @param v the value that should be assigned.
      * @param ts the timestamp associated to the operation.
      * @return the delta corresponding to this operation.
      */
@@ -99,8 +98,8 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT<LWWRegister>
      * @return the resulted json string.
      */
     override fun toJson(): String {
-        val jsonSerializer = JsonLWWRegisterSerializer(LWWRegister.serializer())
-        return Json.encodeToString<LWWRegister>(jsonSerializer, this)
+        val jsonSerializer = JsonLWWRegisterSerializer(serializer())
+        return Json.encodeToString(jsonSerializer, this)
     }
 
     companion object {
@@ -111,7 +110,7 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT<LWWRegister>
          */
         @Name("fromJson")
         fun fromJson(json: String): LWWRegister {
-            val jsonSerializer = JsonLWWRegisterSerializer(LWWRegister.serializer())
+            val jsonSerializer = JsonLWWRegisterSerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
     }
@@ -120,7 +119,7 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT<LWWRegister>
 /**
 * This class is a json transformer for LWWRegister, it allows the separation between data and metadata.
 */
-class JsonLWWRegisterSerializer(private val serializer: KSerializer<LWWRegister>) :
+class JsonLWWRegisterSerializer(serializer: KSerializer<LWWRegister>) :
     JsonTransformingSerializer<LWWRegister>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {

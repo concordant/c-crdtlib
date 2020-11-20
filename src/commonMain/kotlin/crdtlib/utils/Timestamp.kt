@@ -48,7 +48,7 @@ data class Timestamp(val uid: ClientUId, val cnt: Int) {
      */
     @Name("toJson")
     fun toJson(): String {
-        return Json.encodeToString(Timestamp.serializer(), this)
+        return Json.encodeToString(serializer(), this)
     }
 
     companion object {
@@ -70,7 +70,7 @@ data class Timestamp(val uid: ClientUId, val cnt: Int) {
          */
         @Name("fromJson")
         fun fromJson(json: String): Timestamp {
-            return Json.decodeFromString(Timestamp.serializer(), json)
+            return Json.decodeFromString(serializer(), json)
         }
     }
 }
