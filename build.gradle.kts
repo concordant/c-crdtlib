@@ -17,10 +17,15 @@
 
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+description = "Concordant Conflict-Free Replicated Datatypes (CRDT) library"
+group = "concordant"
+version = "0.0.1"
+
 plugins {
     kotlin("multiplatform") version "1.4.10"
     kotlin("plugin.serialization") version "1.4.10"
     id("org.jetbrains.dokka") version "0.10.0"
+    id("lt.petuska.npm.publish") version "1.0.2"
 }
 
 repositories {
@@ -36,23 +41,21 @@ dependencies {
     "ktlint"("com.pinterest:ktlint:0.39.0")
 }
 
+// Kotlin build config, per target
 kotlin {
+    // do not remove, even if empty
     jvm() {
-        withJava()
-        val jvmJar by tasks.getting(org.gradle.jvm.tasks.Jar::class) {
-            doFirst {
-                manifest {
-                    attributes["Main-Class"] = "crdtlib.GenerateTSKt"
-                }
-                from(configurations.getByName("runtimeClasspath").map { if (it.isDirectory) it else zipTree(it) })
-            }
-        }
+        // uncomment if project contains Java source files
+        //        withJava()
     }
 
+    // Define "nodeJS" platform
     js("nodeJs") {
+        // build for nodeJS
         nodejs {}
     }
 
+    // Dependencies, per source set
     sourceSets {
 
         all {
@@ -101,6 +104,16 @@ kotlin {
                 register("common") {}
             }
         }
+        register<JavaExec>("tsgen") {
+            group = "build"
+            description = "Generate .d.ts description file"
+            dependsOn("compileKotlinJvm")
+            dependsOn("compileKotlinNodeJs")
+            val mainClasses = kotlin.targets["jvm"].compilations["main"]
+            classpath = configurations["jvmRuntimeClasspath"] + mainClasses.output.classesDirs
+            main = "crdtlib.GenerateTSKt"
+            outputs.file("$buildDir/js/packages/c-crdtlib-nodeJs/kotlin/c-crdtlib.d.ts")
+        }
         register<JavaExec>("ktlint") {
             group = "verification"
             description = "Ktlint: check"
@@ -115,6 +128,8 @@ kotlin {
             args("-F")
         }
         register<Copy>("installGitHook") {
+            group = "verification"
+            description = "Install Pre-commit linting hook"
             from("pre-commit")
             into(".git/hooks")
             // Kotlin does not support octal litterals
@@ -122,7 +137,6 @@ kotlin {
         }
     }
 }
-tasks.getByPath("assemble").dependsOn("installGitHook")
 
 tasks.withType<Test> {
     useJUnitPlatform()
@@ -132,4 +146,32 @@ tasks.withType<Test> {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+npmPublishing {
+    organization = group as String
+    repositories {
+        repository("Gitlab") {
+            registry = uri("https://gitlab.inria.fr/api/v4/projects/${System.getenv("CI_PROJECT_ID")}/packages/npm")
+            authToken = System.getenv("CI_JOB_TOKEN")
+        }
+    }
+    publications {
+        val nodeJs by getting {
+            packageJson {
+                types = "c-crdtlib.d.ts"
+                "description" to project.description
+            }
+        }
+    }
+}
+
+// tasks dependencies
+tasks {
+    named("nodeJsMainClasses") {
+        dependsOn("tsgen")
+    }
+    assemble {
+        dependsOn("installGitHook")
+    }
 }
