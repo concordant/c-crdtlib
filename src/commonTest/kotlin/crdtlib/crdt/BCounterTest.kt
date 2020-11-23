@@ -32,20 +32,12 @@ import io.kotest.matchers.shouldBe
 * Represents a suite test for BCounter.
 **/
 class BCounterTest : StringSpec({
-    /**
-     * This test evaluates the scenario: get.
-     * Call to get should return 0.
-     */
     "create and get value" {
         val cnt = BCounter()
 
         cnt.get().shouldBeZero()
     }
 
-    /**
-     * This test evaluates the scenario: localRights.
-     * Call to localRights should return 0.
-     */
     "create and localRights value" {
         val uid = ClientUId("clientid")
 
@@ -54,11 +46,6 @@ class BCounterTest : StringSpec({
         cnt.localRights(uid).shouldBeZero()
     }
 
-    /**
-     * This test evaluates the scenario: increment get/localRights.
-     * Call to get should return the value set by increment.
-     * Call to localRights should return the value set by increment.
-     */
     "increment and get/localRights" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -72,13 +59,7 @@ class BCounterTest : StringSpec({
         cnt.localRights(uid).shouldBe(10)
     }
 
-    /**
-     * This test evaluates the scenario: decrement get/localRights.
-     * Call to decrement should raise an exception.
-     * Call to get should return 0.
-     * Call to localRights should return 0.
-     */
-    "decrement and get/localRights" {
+    "failing decrement and get/localRights" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
@@ -93,11 +74,6 @@ class BCounterTest : StringSpec({
         cnt.localRights(uid).shouldBeZero()
     }
 
-    /**
-     * This test evaluates the scenario: increment decrement get/localRights.
-     * Call to get should return the value set by increment minus the value set by decrement.
-     * Call to localRights should return the value set by increment minus the value set by decrement.
-     */
     "increment decrement and get/localRights" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -114,13 +90,7 @@ class BCounterTest : StringSpec({
         cnt.localRights(uid).shouldBe(9)
     }
 
-    /**
-     * This test evaluates the scenario: increment(with a negative value) get.
-     * Call to get should raise an exception.
-     * Call to get should return 0.
-     * Call to localRights should return 0.
-     */
-    "increment with negative amount and get" {
+    "failing negative increment and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
@@ -135,12 +105,7 @@ class BCounterTest : StringSpec({
         cnt.localRights(uid).shouldBeZero()
     }
 
-    /**
-     * This test evaluates the scenario: increment(with a positive value) increment(with a negative value) get.
-     * Call to get should return the value set by both increment.
-     * Call to localRights should return 5.
-     */
-    "increment with positive amount, increment with negative amount and get" {
+    "positive increment, negative increment and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -156,12 +121,7 @@ class BCounterTest : StringSpec({
         cnt.localRights(uid).shouldBe(7)
     }
 
-    /**
-     * This test evaluates the scenario: decrement(with a negative value) get.
-     * Call to get should return the inverse of value set by decrement.
-     * Call to localRights should return the inverse of value set by decrement.
-     */
-    "decrement with negative amount and get" {
+    "negative decrement and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
@@ -174,10 +134,6 @@ class BCounterTest : StringSpec({
         cnt.localRights(uid).shouldBe(15)
     }
 
-    /**
-     * This test evaluates the scenario: incremement(multiple times) get.
-     * Call to get should return the sum of values set by calls to increment.
-     */
     "multiple increments and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -197,11 +153,7 @@ class BCounterTest : StringSpec({
         cnt.localRights(uid).shouldBe(111)
     }
 
-    /**
-     * This test evaluates the scenario: decremement(multiple times) get.
-     * Call to get should return the inverse of the sum of values set by calls to decrement.
-     */
-    "multiple decrements and get" {
+    "multiple failing decrements and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -214,7 +166,11 @@ class BCounterTest : StringSpec({
 
         shouldThrow<IllegalArgumentException> {
             cnt.decrement(dec1, ts1)
+        }
+        shouldThrow<IllegalArgumentException> {
             cnt.decrement(dec2, ts2)
+        }
+        shouldThrow<IllegalArgumentException> {
             cnt.decrement(dec3, ts3)
         }
 
@@ -222,10 +178,6 @@ class BCounterTest : StringSpec({
         cnt.localRights(uid).shouldBeZero()
     }
 
-    /**
-     * This test evaluates the scenario: increment(one) decremement(multiple times) get.
-     * Call to get should return the inverse of the sum of values set by calls to decrement.
-     */
     "one increment, multiple decrements and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -248,11 +200,7 @@ class BCounterTest : StringSpec({
         cnt.localRights(uid).shouldBe(39)
     }
 
-    /**
-     * This test evaluates the scenario: multiple increment and decrement.
-     * Call to get should return the sum of increments minus the sum of decrements.
-     */
-    "increment, decrement" {
+    "multiple (increment, decrement)" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -288,10 +236,8 @@ class BCounterTest : StringSpec({
         }
     }
 
-    /**
-     * This test evaluates the scenario: increment || merge get.
-     * Call to get should return the value set by increment in the first replica.
-     */
+    /* Merging */
+
     "R1: increment; R2: merge and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -310,10 +256,6 @@ class BCounterTest : StringSpec({
         cnt2.localRights(uid).shouldBe(11)
     }
 
-    /**
-     * This test evaluates the scenario: increment || increment merge get.
-     * Call to get should return the sum of the two increment values.
-     */
     "R1: increment; R2: increment, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -335,10 +277,6 @@ class BCounterTest : StringSpec({
         cnt2.localRights(uid2).shouldBe(1)
     }
 
-    /**
-     * This test evaluates the scenario: increment || merge increment get.
-     * Call to get should return the sum of the two increment values.
-     */
     "R1: increment; R2: merge, increment, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -360,10 +298,6 @@ class BCounterTest : StringSpec({
         cnt2.localRights(uid2).shouldBe(1)
     }
 
-    /**
-     * This test evaluates the scenario: some operations || some operations merge get.
-     * Call to get should return the sum of increment values minus the sum of the decrement values.
-     */
     "R1: multiple operations; R2: multiple operations, merge, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -414,10 +348,6 @@ class BCounterTest : StringSpec({
         }
     }
 
-    /**
-     * This test evaluates the scenario: some operations || merge some operations get.
-     * Call to get should return the sum of increment values minus the sum of the decrement values.
-     */
     "R1: multiple operations; R2: merge, multiple operations, get" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -457,10 +387,8 @@ class BCounterTest : StringSpec({
         cnt2.localRights(uid2).shouldBe(50)
     }
 
-    /**
-     * This test evaluates the use of delta return by call to increment method.
-     * Call to get should return the increment value set in the first replica.
-     */
+    /* Deltas */
+
     "use delta returned by increment" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -478,10 +406,6 @@ class BCounterTest : StringSpec({
         cnt2.localRights(uid).shouldBe(11)
     }
 
-    /**
-     * This test evaluates the use of delta return by call to increment and decrement methods.
-     * Call to get should return the sum of increment values minus the sum of decrement values.
-     */
     "use delta returned by increment and decrement" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -505,10 +429,6 @@ class BCounterTest : StringSpec({
         cnt2.localRights(uid).shouldBe(4)
     }
 
-    /**
-     * This test evaluates the generation of delta plus its merging into another replica.
-     * Call to get should return the sum of increment values minus the sum of decrement values.
-     */
     "generate delta" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -536,11 +456,9 @@ class BCounterTest : StringSpec({
         cnt2.localRights(uid).shouldBe(14)
     }
 
-    /**
-     * This test evaluates the transfer of rights to another replica.
-     * Call to localRights should return the increment value minus the sended rights amount or the received rights amount.
-     */
-    "one transfer, one way" {
+    /* Rights transfer */
+
+    "rights transfer, one way" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -562,11 +480,7 @@ class BCounterTest : StringSpec({
         cnt2.localRights(uid2).shouldBe(5)
     }
 
-    /**
-     * This test evaluates the transfer of rights to another replica.
-     * Call to localRights should return the increment value minus the sended rights amount or the received rights amount.
-     */
-    "two transfer, one way" {
+    "two rights transfers, one way" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -597,11 +511,7 @@ class BCounterTest : StringSpec({
         cnt2.localRights(uid2).shouldBe(trans1 + trans2)
     }
 
-    /**
-     * This test evaluates the transfer of rights to another replica.
-     * Call to localRights should return the increment value minus the sended rights amount or the received rights amount.
-     */
-    "two transfer, one way, not enough rights" {
+    "two rights transfers (one failing), one way" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -640,9 +550,6 @@ class BCounterTest : StringSpec({
         cnt1.localRights(uid1).shouldBe(5)
     }
 
-    /**
-     * This test evaluates the transfer of rights to and from another replica.
-     */
     "two way transfer" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -684,9 +591,8 @@ class BCounterTest : StringSpec({
         cnt2.localRights(uid2).shouldBe(15)
     }
 
-    /**
-     * This test evaluates JSON serialization of an empty bcounter.
-     **/
+    /* Serialization */
+
     "empty JSON serialization" {
         val cnt = BCounter()
 
@@ -694,18 +600,12 @@ class BCounterTest : StringSpec({
         cntJson.shouldBe("""{"_type":"BCounter","_metadata":{"increment":[],"decrement":[]},"value":0}""")
     }
 
-    /**
-     * This test evaluates JSON deserialization of an empty bcounter.
-     **/
     "empty JSON deserialization" {
         val cntJson = BCounter.fromJson("""{"_type":"BCounter","_metadata":{"increment":[],"decrement":[]},"value":0}""")
 
         cntJson.get().shouldBe(0)
     }
 
-    /**
-     * This test evaluates JSON serialization of a bcounter.
-     **/
     "JSON serialization" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -734,9 +634,6 @@ class BCounterTest : StringSpec({
         cntJson.shouldBe("""{"_type":"BCounter","_metadata":{"increment":[{"name":"clientid1"},[{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}],{"name":"clientid2"},[{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":2,"second":{"uid":{"name":"clientid2"},"cnt":-2147483645}}]],"decrement":[{"name":"clientid1"},{"first":5,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}},{"name":"clientid2"},{"first":20,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}}]},"value":15}""")
     }
 
-    /**
-     * This test evaluates JSON deserialization of a bcounter.
-     **/
     "JSON deserialization" {
         val cntJson = BCounter.fromJson("""{"_type":"BCounter","_metadata":{"increment":[{"name":"clientid1"},[{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}],{"name":"clientid2"},[{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":2,"second":{"uid":{"name":"clientid2"},"cnt":-2147483645}}]],"decrement":[{"name":"clientid1"},{"first":5,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}},{"name":"clientid2"},{"first":20,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}}]},"value":15}""")
 
