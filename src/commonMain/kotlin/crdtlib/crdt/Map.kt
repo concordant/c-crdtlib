@@ -70,8 +70,7 @@ class Map : DeltaCRDT<Map> {
     /**
      * Default constructor.
      */
-    constructor() {
-    }
+    constructor()
 
     /**
      * Gets the Boolean value corresponding to a given key.
@@ -169,7 +168,7 @@ class Map : DeltaCRDT<Map> {
      */
     @Name("getCntInt")
     fun getCntInt(key: String): Int? {
-        return this.cntMap.get(key)?.get()
+        return this.cntMap[key]?.get()
     }
 
     /**
@@ -286,7 +285,7 @@ class Map : DeltaCRDT<Map> {
 
     fun increment(key: String, inc: Int, ts: Timestamp): Map {
         val op = Map()
-        var cnt = this.cntMap.get(key)
+        var cnt = this.cntMap[key]
         if (cnt == null) cnt = PNCounter()
         op.cntMap.put(key, cnt.increment(inc, ts))
         this.cntMap.put(key, cnt)
@@ -295,7 +294,7 @@ class Map : DeltaCRDT<Map> {
 
     fun decrement(key: String, dec: Int, ts: Timestamp): Map {
         val op = Map()
-        var cnt = this.cntMap.get(key)
+        var cnt = this.cntMap[key]
         if (cnt == null) cnt = PNCounter()
         op.cntMap.put(key, cnt.decrement(dec, ts))
         this.cntMap.put(key, cnt)
@@ -420,7 +419,7 @@ class Map : DeltaCRDT<Map> {
      * @return the corresponding delta of operations.
      */
     override fun generateDelta(vv: VersionVector): Map {
-        var delta = Map()
+        val delta = Map()
 
         delta.lwwMap.merge(this.lwwMap.generateDelta(vv))
         delta.mvMap.merge(this.mvMap.generateDelta(vv))
@@ -445,7 +444,7 @@ class Map : DeltaCRDT<Map> {
         this.mvMap.merge(delta.mvMap)
 
         for ((key, cnt) in delta.cntMap) {
-            var localCnt = this.cntMap.get(key)
+            var localCnt = this.cntMap[key]
             if (localCnt == null) localCnt = PNCounter()
             localCnt.merge(cnt)
             this.cntMap.put(key, localCnt)
@@ -457,30 +456,30 @@ class Map : DeltaCRDT<Map> {
      * @return the resulted json string.
      */
     override fun toJson(): String {
-        val jsonSerializer = JsonMapSerializer(Map.serializer())
-        return Json.encodeToString<Map>(jsonSerializer, this)
+        val jsonSerializer = JsonMapSerializer(serializer())
+        return Json.encodeToString(jsonSerializer, this)
     }
 
     companion object {
         /**
          * Constant value for key fields' separator.
          */
-        const val SEPARATOR = "%"
+        private const val SEPARATOR = "%"
 
         /**
          * Constant suffix value for key associated to a last writer wins value.
          */
-        const val LWWREGISTER = Map.SEPARATOR + "LWW"
+        const val LWWREGISTER = SEPARATOR + "LWW"
 
         /**
          * Constant suffix value for key associated to a multi-value.
          */
-        const val MVREGISTER = Map.SEPARATOR + "MV"
+        const val MVREGISTER = SEPARATOR + "MV"
 
         /**
          * Constant suffix value for key associated to a counter value.
          */
-        const val PNCOUNTER = Map.SEPARATOR + "CNT"
+        const val PNCOUNTER = SEPARATOR + "CNT"
 
         /**
          * Deserializes a given json string in a crdt map.
@@ -489,7 +488,7 @@ class Map : DeltaCRDT<Map> {
          */
         @Name("fromJson")
         fun fromJson(json: String): Map {
-            val jsonSerializer = JsonMapSerializer(Map.serializer())
+            val jsonSerializer = JsonMapSerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
     }
@@ -498,7 +497,7 @@ class Map : DeltaCRDT<Map> {
 /**
 * This class is a json transformer for Map, it allows the separation between data and metadata.
 */
-class JsonMapSerializer(private val serializer: KSerializer<Map>) :
+class JsonMapSerializer(serializer: KSerializer<Map>) :
     JsonTransformingSerializer<Map>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {
@@ -508,12 +507,16 @@ class JsonMapSerializer(private val serializer: KSerializer<Map>) :
         val lwwEntries = mutableMapOf<String, JsonElement>()
         for ((key, entry) in lww["entries"]!!.jsonObject) {
             var value = entry.jsonObject["first"]!!.jsonPrimitive
-            if (key.endsWith(LWWMap.BOOLEAN)) {
-                value = JsonPrimitive(value.booleanOrNull)
-            } else if (key.endsWith(LWWMap.DOUBLE)) {
-                value = JsonPrimitive(value.doubleOrNull)
-            } else if (key.endsWith(LWWMap.INTEGER)) {
-                value = JsonPrimitive(value.intOrNull)
+            when {
+                key.endsWith(LWWMap.BOOLEAN) -> {
+                    value = JsonPrimitive(value.booleanOrNull)
+                }
+                key.endsWith(LWWMap.DOUBLE) -> {
+                    value = JsonPrimitive(value.doubleOrNull)
+                }
+                key.endsWith(LWWMap.INTEGER) -> {
+                    value = JsonPrimitive(value.intOrNull)
+                }
             }
             values.put(key + Map.LWWREGISTER, value as JsonElement)
             lwwEntries.put(key, entry.jsonObject["second"]!!.jsonObject)
@@ -527,14 +530,19 @@ class JsonMapSerializer(private val serializer: KSerializer<Map>) :
             val value = mutableListOf<JsonElement>()
             val meta = mutableListOf<JsonElement>()
             for (tmpPair in entry.jsonArray) {
-                if (key.endsWith(MVMap.BOOLEAN)) {
-                    value.add(JsonPrimitive(tmpPair.jsonObject["first"]!!.jsonPrimitive.booleanOrNull) as JsonElement)
-                } else if (key.endsWith(MVMap.DOUBLE)) {
-                    value.add(JsonPrimitive(tmpPair.jsonObject["first"]!!.jsonPrimitive.doubleOrNull) as JsonElement)
-                } else if (key.endsWith(MVMap.INTEGER)) {
-                    value.add(JsonPrimitive(tmpPair.jsonObject["first"]!!.jsonPrimitive.intOrNull) as JsonElement)
-                } else {
-                    value.add(tmpPair.jsonObject.get("first") as JsonElement)
+                when {
+                    key.endsWith(MVMap.BOOLEAN) -> {
+                        value.add(JsonPrimitive(tmpPair.jsonObject["first"]!!.jsonPrimitive.booleanOrNull) as JsonElement)
+                    }
+                    key.endsWith(MVMap.DOUBLE) -> {
+                        value.add(JsonPrimitive(tmpPair.jsonObject["first"]!!.jsonPrimitive.doubleOrNull) as JsonElement)
+                    }
+                    key.endsWith(MVMap.INTEGER) -> {
+                        value.add(JsonPrimitive(tmpPair.jsonObject["first"]!!.jsonPrimitive.intOrNull) as JsonElement)
+                    }
+                    else -> {
+                        value.add(tmpPair.jsonObject["first"] as JsonElement)
+                    }
                 }
                 meta.add(tmpPair.jsonObject["second"]!!.jsonObject)
             }
@@ -577,15 +585,13 @@ class JsonMapSerializer(private val serializer: KSerializer<Map>) :
         for ((key, meta) in mvMetadata["entries"]!!.jsonObject) {
             val values = element.jsonObject[key + Map.MVREGISTER]!!.jsonArray
             val tmpEntries = mutableListOf<JsonElement>()
-            var idx = 0
-            for (ts in meta.jsonArray) {
+            for ((idx, ts) in meta.jsonArray.withIndex()) {
                 var value = values[idx]
                 if (value !is JsonNull && !key.endsWith(MVMap.STRING)) {
                     value = JsonPrimitive(value.toString())
                 }
                 val tmpEntry = JsonObject(mapOf("first" to value, "second" to ts))
                 tmpEntries.add(tmpEntry)
-                idx++
             }
             mvEntries.put(key, JsonArray(tmpEntries))
         }

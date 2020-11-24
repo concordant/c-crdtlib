@@ -26,30 +26,61 @@ The code is in the directory *src/*. This directory contains multiple directorie
 - *jsMain*: contains specific source code for JavaScript target;
 - *jsTest*: contains specific source code for JavaScript target tests.
 
+## Usage
+
+This library is delivered as a NPM package in [Gitlab Packages](
+https://gitlab.inria.fr/concordant/software/c-crdtlib/-/packages)
+(as a private registry).
+
+Get a deploy token or personal access token from Gitlab,
+with at least the read_package_registry scope.  
+Then setup authentication:
+``` shell
+$ npm config set @concordant:registry "https://gitlab.inria.fr/api/v4/packages/npm/"
+$ npm config set '//gitlab.inria.fr/api/v4/packages/npm/:_authToken' "<deployOrPersonalToken>"
+```
+
+Install the package:
+``` shell
+$ npm i @concordant/c-crdtlib
+```
+
+And use it:
+``` typescript
+import * from @concordant/c-crdtlib;
+```
+
 ## Build project
 
 The building is managed through the use of Gradle. Kotlin sources (code and tests) are compiled to
-JVM Bytecode and to Javascript in the form of a Node.js package. To simplify stuffs, a *Makefile*
-is provided.
+JVM Bytecode and to Javascript in the form of a Node.js package.
 
-*make build*:
+*gradle assemble*:
 - compiles code and tests to JVM Bytecode;
 - compiles code and tests to Javascript (Node.js package);
-- creates a TypeScript interface.
+- creates a TypeScript interface
+- assembles a NPM package
 
-*make test*:
+*gradle allTests*:
 - runs JVM test suite;
 - runs Node.js test suite in a server like manner;
 - a report containing all tests results can be found in the file
   *build/reports/tests/allTests/index.html*.
 
-*make deploy*:
-- creates a npm package ready to be used;
-- the package is in the *deploy/npm/* directory.
+*gradle pack*:
+- pack the NPM package
 
-*make doc*:
+*gradle publish*:
+- publish the NPM package to the Gitlab Packages registry
+  (requires authentication ; better use it via CI pipelines).
+
+*gradle dokkaHtml*:
 - creates the documentation from code comments;
-- documentation is accessible at *build/docs/crdtlib-kotlin/index.html*.
+- documentation is accessible at *build/dokka/html/crdtlib/index.html*.
+See `gradle tasks` for variants other than HTML.
 
-*make clean*:
+*gradle clean*:
 - cleans the project.
+
+*gradle tasks*:
+- show all available tasks with descriptions.

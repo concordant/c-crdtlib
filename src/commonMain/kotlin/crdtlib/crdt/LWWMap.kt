@@ -53,8 +53,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
     /**
      * Default constructor.
      */
-    constructor() {
-    }
+    constructor()
 
     /**
      * Gets the Boolean value corresponding to a given key.
@@ -64,7 +63,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
      */
     @Name("getBoolean")
     fun getBoolean(key: String): Boolean? {
-        return this.entries.get(key + LWWMap.BOOLEAN)?.first?.toBoolean()
+        return this.entries[key + BOOLEAN]?.first?.toBoolean()
     }
 
     /**
@@ -75,7 +74,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
      */
     @Name("getDouble")
     fun getDouble(key: String): Double? {
-        return this.entries.get(key + LWWMap.DOUBLE)?.first?.toDoubleOrNull()
+        return this.entries[key + DOUBLE]?.first?.toDoubleOrNull()
     }
 
     /**
@@ -86,7 +85,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
      */
     @Name("getInt")
     fun getInt(key: String): Int? {
-        return this.entries.get(key + LWWMap.INTEGER)?.first?.toIntOrNull()
+        return this.entries[key + INTEGER]?.first?.toIntOrNull()
     }
 
     /**
@@ -97,7 +96,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
      */
     @Name("getString")
     fun getString(key: String): String? {
-        return this.entries.get(key + LWWMap.STRING)?.first
+        return this.entries[key + STRING]?.first
     }
 
     /**
@@ -110,10 +109,10 @@ class LWWMap : DeltaCRDT<LWWMap> {
     @Name("setBoolean")
     fun put(key: String, value: Boolean?, ts: Timestamp): LWWMap {
         val op = LWWMap()
-        val currentTs = this.entries.get(key + LWWMap.BOOLEAN)?.second
+        val currentTs = this.entries[key + BOOLEAN]?.second
         if (currentTs == null || currentTs < ts) {
-            this.entries.put(key + LWWMap.BOOLEAN, Pair(value?.toString(), ts))
-            op.entries.put(key + LWWMap.BOOLEAN, Pair(value?.toString(), ts))
+            this.entries.put(key + BOOLEAN, Pair(value?.toString(), ts))
+            op.entries.put(key + BOOLEAN, Pair(value?.toString(), ts))
         }
         return op
     }
@@ -128,10 +127,10 @@ class LWWMap : DeltaCRDT<LWWMap> {
     @Name("setDouble")
     fun put(key: String, value: Double?, ts: Timestamp): LWWMap {
         val op = LWWMap()
-        val currentTs = this.entries.get(key + LWWMap.DOUBLE)?.second
+        val currentTs = this.entries[key + DOUBLE]?.second
         if (currentTs == null || currentTs < ts) {
-            this.entries.put(key + LWWMap.DOUBLE, Pair(value?.toString(), ts))
-            op.entries.put(key + LWWMap.DOUBLE, Pair(value?.toString(), ts))
+            this.entries.put(key + DOUBLE, Pair(value?.toString(), ts))
+            op.entries.put(key + DOUBLE, Pair(value?.toString(), ts))
         }
         return op
     }
@@ -146,10 +145,10 @@ class LWWMap : DeltaCRDT<LWWMap> {
     @Name("setInt")
     fun put(key: String, value: Int?, ts: Timestamp): LWWMap {
         val op = LWWMap()
-        val currentTs = this.entries.get(key + LWWMap.INTEGER)?.second
+        val currentTs = this.entries[key + INTEGER]?.second
         if (currentTs == null || currentTs < ts) {
-            this.entries.put(key + LWWMap.INTEGER, Pair(value?.toString(), ts))
-            op.entries.put(key + LWWMap.INTEGER, Pair(value?.toString(), ts))
+            this.entries.put(key + INTEGER, Pair(value?.toString(), ts))
+            op.entries.put(key + INTEGER, Pair(value?.toString(), ts))
         }
         return op
     }
@@ -164,10 +163,10 @@ class LWWMap : DeltaCRDT<LWWMap> {
     @Name("setString")
     fun put(key: String, value: String?, ts: Timestamp): LWWMap {
         val op = LWWMap()
-        val currentTs = this.entries.get(key + LWWMap.STRING)?.second
+        val currentTs = this.entries[key + STRING]?.second
         if (currentTs == null || currentTs < ts) {
-            this.entries.put(key + LWWMap.STRING, Pair(value, ts))
-            op.entries.put(key + LWWMap.STRING, Pair(value, ts))
+            this.entries.put(key + STRING, Pair(value, ts))
+            op.entries.put(key + STRING, Pair(value, ts))
         }
         return op
     }
@@ -226,7 +225,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
      * @return the corresponding delta of operations.
      */
     override fun generateDelta(vv: VersionVector): LWWMap {
-        var delta = LWWMap()
+        val delta = LWWMap()
         for ((key, meta) in this.entries) {
             val value = meta.first
             val ts = meta.second
@@ -248,7 +247,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
         for ((key, meta) in delta.entries) {
             val value = meta.first
             val ts = meta.second
-            val localTs = this.entries.get(key)?.second
+            val localTs = this.entries[key]?.second
             if (localTs == null || localTs < ts) {
                 this.entries.put(key, Pair(value, ts))
             }
@@ -260,35 +259,35 @@ class LWWMap : DeltaCRDT<LWWMap> {
      * @return the resulted json string.
      */
     override fun toJson(): String {
-        val jsonSerializer = JsonLWWMapSerializer(LWWMap.serializer())
-        return Json.encodeToString<LWWMap>(jsonSerializer, this)
+        val jsonSerializer = JsonLWWMapSerializer(serializer())
+        return Json.encodeToString(jsonSerializer, this)
     }
 
     companion object {
         /**
          * Constant value for key fields' separator.
          */
-        const val SEPARATOR = "%"
+        private const val SEPARATOR = "%"
 
         /**
          * Constant suffix value for key associated to a value of type Boolean.
          */
-        const val BOOLEAN = LWWMap.SEPARATOR + "BOOLEAN"
+        const val BOOLEAN = SEPARATOR + "BOOLEAN"
 
         /**
          * Constant suffix value for key associated to a value of type double.
          */
-        const val DOUBLE = LWWMap.SEPARATOR + "DOUBLE"
+        const val DOUBLE = SEPARATOR + "DOUBLE"
 
         /**
          * Constant suffix value for key associated to a value of type integer.
          */
-        const val INTEGER = LWWMap.SEPARATOR + "INTEGER"
+        const val INTEGER = SEPARATOR + "INTEGER"
 
         /**
          * Constant suffix value for key associated to a value of type string.
          */
-        const val STRING = LWWMap.SEPARATOR + "STRING"
+        const val STRING = SEPARATOR + "STRING"
 
         /**
          * Deserializes a given json string in a crdt map.
@@ -297,7 +296,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
          */
         @Name("fromJson")
         fun fromJson(json: String): LWWMap {
-            val jsonSerializer = JsonLWWMapSerializer(LWWMap.serializer())
+            val jsonSerializer = JsonLWWMapSerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
     }
@@ -306,33 +305,37 @@ class LWWMap : DeltaCRDT<LWWMap> {
 /**
 * This class is a json transformer for LWWMap, it allows the separation between data and metadata.
 */
-class JsonLWWMapSerializer(private val serializer: KSerializer<LWWMap>) :
+class JsonLWWMapSerializer(serializer: KSerializer<LWWMap>) :
     JsonTransformingSerializer<LWWMap>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {
         val values = mutableMapOf<String, JsonElement>()
         val entries = mutableMapOf<String, JsonElement>()
-        for ((key, entry) in element.jsonObject.get("entries")!!.jsonObject) {
-            var value = entry.jsonObject.get("first")!!.jsonPrimitive
-            if (key.endsWith(LWWMap.BOOLEAN)) {
-                value = JsonPrimitive(value.booleanOrNull)
-            } else if (key.endsWith(LWWMap.DOUBLE)) {
-                value = JsonPrimitive(value.doubleOrNull)
-            } else if (key.endsWith(LWWMap.INTEGER)) {
-                value = JsonPrimitive(value.intOrNull)
+        for ((key, entry) in element.jsonObject["entries"]!!.jsonObject) {
+            var value = entry.jsonObject["first"]!!.jsonPrimitive
+            when {
+                key.endsWith(LWWMap.BOOLEAN) -> {
+                    value = JsonPrimitive(value.booleanOrNull)
+                }
+                key.endsWith(LWWMap.DOUBLE) -> {
+                    value = JsonPrimitive(value.doubleOrNull)
+                }
+                key.endsWith(LWWMap.INTEGER) -> {
+                    value = JsonPrimitive(value.intOrNull)
+                }
             }
             values.put(key, value as JsonElement)
-            entries.put(key, entry.jsonObject.get("second")!!.jsonObject)
+            entries.put(key, entry.jsonObject["second"]!!.jsonObject)
         }
         val metadata = JsonObject(mapOf("entries" to JsonObject(entries.toMap())))
         return JsonObject(mapOf("_type" to JsonPrimitive("LWWMap"), "_metadata" to metadata).plus(values))
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
-        val metadata = element.jsonObject.get("_metadata")!!.jsonObject
+        val metadata = element.jsonObject["_metadata"]!!.jsonObject
         val entries = mutableMapOf<String, JsonElement>()
-        for ((key, entry) in metadata.get("entries")!!.jsonObject) {
-            var value = element.jsonObject.get(key)!!.jsonPrimitive
+        for ((key, entry) in metadata["entries"]!!.jsonObject) {
+            var value = element.jsonObject[key]!!.jsonPrimitive
             if (value !is JsonNull && !key.endsWith(LWWMap.STRING)) {
                 value = JsonPrimitive(value.toString())
             }

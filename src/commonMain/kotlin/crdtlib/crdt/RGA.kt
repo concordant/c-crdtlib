@@ -23,8 +23,9 @@ import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
 import crdtlib.utils.VersionVector
-import kotlinx.serialization.*
-import kotlinx.serialization.builtins.*
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Required
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 
 /**
@@ -71,13 +72,12 @@ class RGA : DeltaCRDT<RGA> {
      * An array list storing the different elements.
      */
     @Required
-    val nodes: ArrayList<RGANode> = arrayListOf<RGANode>()
+    val nodes: ArrayList<RGANode> = arrayListOf()
 
     /**
      * Default constructor.
      */
-    constructor() {
-    }
+    constructor()
 
     constructor(nodes: List<RGANode>) {
         for (node in nodes) {
@@ -98,7 +98,7 @@ class RGA : DeltaCRDT<RGA> {
         do {
             realIdx++
             if (realIdx == this.nodes.size) break
-            if (this.nodes.get(realIdx).removed) nRemoved++
+            if (this.nodes[realIdx].removed) nRemoved++
         } while (realIdx - nRemoved != index)
         return realIdx
     }
@@ -132,10 +132,10 @@ class RGA : DeltaCRDT<RGA> {
     @Name("removeAt")
     fun removeAt(index: Int, ts: Timestamp): RGA {
         val realIdx = this.toRealIndex(index)
-        val node = this.nodes.get(realIdx)
+        val node = this.nodes[realIdx]
         val newNode = RGANode(node.atom, node.anchor, node.uid, ts, true)
 
-        this.nodes.set(realIdx, newNode)
+        this.nodes[realIdx] = newNode
 
         val delta = RGA()
         delta.nodes.add(newNode)
@@ -148,7 +148,7 @@ class RGA : DeltaCRDT<RGA> {
      */
     @Name("get")
     fun get(): List<String> {
-        return this.nodes.filter { it.removed == false }.map { it.atom }
+        return this.nodes.filter { !it.removed }.map { it.atom }
     }
 
     /**
@@ -182,7 +182,7 @@ class RGA : DeltaCRDT<RGA> {
             if (localNode == null) { // First time this node is seen.
                 var index = 0
                 var siblings = this.nodes.filter { it.anchor == node.anchor }
-                if (siblings.size > 0) {
+                if (siblings.isNotEmpty()) {
                     // There exist nodes with the same anchor.
                     var firstWeakerSiblingNode = siblings.find {
                         it.uid < node.uid
@@ -196,12 +196,9 @@ class RGA : DeltaCRDT<RGA> {
                         while (currNode.anchor != null) {
                             val currAnchor = this.nodes.find {
                                 it.uid == currNode.anchor
-                            }
-                            if (currAnchor == null) {
-                                throw IllegalArgumentException(
-                                    "RGA can not merge a node with unknown anchor"
-                                )
-                            }
+                            } ?: throw IllegalArgumentException(
+                                "RGA can not merge a node with unknown anchor"
+                            )
                             currNode = currAnchor
                             siblings = this.nodes.filter {
                                 it.anchor == currNode.anchor
@@ -234,9 +231,9 @@ class RGA : DeltaCRDT<RGA> {
                 this.nodes.add(index, node.copy())
             } else if (node.removed) {
                 // This node already exists and foreign node is a tombstone.
-                if (localNode.removed == false) { // Remove-wins.
-                    var index = this.nodes.indexOf(localNode)
-                    this.nodes.set(index, node.copy())
+                if (!localNode.removed) { // Remove-wins.
+                    val index = this.nodes.indexOf(localNode)
+                    this.nodes[index] = node.copy()
                 }
             }
         }
@@ -247,8 +244,8 @@ class RGA : DeltaCRDT<RGA> {
      * @return the resulted json string.
      */
     override fun toJson(): String {
-        val jsonSerializer = JsonRGASerializer(RGA.serializer())
-        return Json.encodeToString<RGA>(jsonSerializer, this)
+        val jsonSerializer = JsonRGASerializer(serializer())
+        return Json.encodeToString(jsonSerializer, this)
     }
 
     companion object {
@@ -259,7 +256,7 @@ class RGA : DeltaCRDT<RGA> {
          */
         @Name("fromJson")
         fun fromJson(json: String): RGA {
-            val jsonSerializer = JsonRGASerializer(RGA.serializer())
+            val jsonSerializer = JsonRGASerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
     }
@@ -268,18 +265,18 @@ class RGA : DeltaCRDT<RGA> {
 /**
 * This class is a json transformer for RGA, it allows the separation between data and metadata.
 */
-class JsonRGASerializer(private val serializer: KSerializer<RGA>) :
+class JsonRGASerializer(serializer: KSerializer<RGA>) :
     JsonTransformingSerializer<RGA>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {
         val metadata = mutableListOf<JsonElement>()
         val value = mutableListOf<JsonElement>()
-        for (tmpNode in element.jsonObject.get("nodes")!!.jsonArray) {
-            val removed = tmpNode.jsonObject.get("removed")!!.jsonPrimitive.boolean
+        for (tmpNode in element.jsonObject["nodes"]!!.jsonArray) {
+            val removed = tmpNode.jsonObject["removed"]!!.jsonPrimitive.boolean
             var transformedNode = tmpNode
-            if (removed == false) {
+            if (!removed) {
                 transformedNode = JsonObject(tmpNode.jsonObject.filterNot { it.key == "atom" })
-                value.add(tmpNode.jsonObject.get("atom") as JsonElement)
+                value.add(tmpNode.jsonObject["atom"] as JsonElement)
             }
             metadata.add(transformedNode)
         }
@@ -287,13 +284,13 @@ class JsonRGASerializer(private val serializer: KSerializer<RGA>) :
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
-        val value = element.jsonObject.get("value")!!.jsonArray
+        val value = element.jsonObject["value"]!!.jsonArray
         val nodes = mutableListOf<JsonElement>()
         var idxValue = 0
-        for (tmpNode in element.jsonObject.get("_metadata")!!.jsonArray) {
-            val removed = tmpNode.jsonObject.get("removed")!!.jsonPrimitive.boolean
+        for (tmpNode in element.jsonObject["_metadata"]!!.jsonArray) {
+            val removed = tmpNode.jsonObject["removed"]!!.jsonPrimitive.boolean
             var transformedNode = tmpNode
-            if (removed == false) {
+            if (!removed) {
                 transformedNode = JsonObject(tmpNode.jsonObject.plus("atom" to value[idxValue]))
                 idxValue++
             }

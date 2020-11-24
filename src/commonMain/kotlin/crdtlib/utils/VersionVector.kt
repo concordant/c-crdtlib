@@ -34,14 +34,13 @@ class VersionVector {
     private val entries: MutableMap<ClientUId, Int> = mutableMapOf()
 
     private fun get(uid: ClientUId): Int {
-        return this.entries.get(uid) ?: Timestamp.CNT_MIN_VALUE
+        return this.entries[uid] ?: Timestamp.CNT_MIN_VALUE
     }
 
     /**
      * Default constructor.
      */
-    constructor() {
-    }
+    constructor()
 
     /**
      * Copy constructor.
@@ -160,7 +159,7 @@ class VersionVector {
      */
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (!(other is VersionVector)) return false
+        if (other !is VersionVector) return false
 
         if (entries != other.entries) return false
         return true
@@ -226,7 +225,7 @@ class VersionVector {
      */
     @Name("toJson")
     fun toJson(): String {
-        return Json.encodeToString(VersionVector.serializer(), this)
+        return Json.encodeToString(serializer(), this)
     }
 
     companion object {
@@ -237,7 +236,7 @@ class VersionVector {
          */
         @Name("fromJson")
         fun fromJson(json: String): VersionVector {
-            return Json.decodeFromString(VersionVector.serializer(), json)
+            return Json.decodeFromString(serializer(), json)
         }
     }
 }

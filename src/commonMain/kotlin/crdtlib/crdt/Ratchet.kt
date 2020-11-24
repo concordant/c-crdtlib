@@ -85,8 +85,8 @@ class Ratchet(var value: String) : DeltaCRDT<Ratchet>() {
      * @return the resulted json string.
      */
     override fun toJson(): String {
-        val jsonSerializer = JsonRatchetSerializer(Ratchet.serializer())
-        return Json.encodeToString<Ratchet>(jsonSerializer, this)
+        val jsonSerializer = JsonRatchetSerializer(serializer())
+        return Json.encodeToString(jsonSerializer, this)
     }
 
     companion object {
@@ -97,7 +97,7 @@ class Ratchet(var value: String) : DeltaCRDT<Ratchet>() {
          */
         @Name("fromJson")
         fun fromJson(json: String): Ratchet {
-            val jsonSerializer = JsonRatchetSerializer(Ratchet.serializer())
+            val jsonSerializer = JsonRatchetSerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
     }
@@ -106,14 +106,14 @@ class Ratchet(var value: String) : DeltaCRDT<Ratchet>() {
 /**
 * This class is a json transformer for Ratchet, it allows the separation between data and metadata.
 */
-class JsonRatchetSerializer(private val serializer: KSerializer<Ratchet>) :
+class JsonRatchetSerializer(serializer: KSerializer<Ratchet>) :
     JsonTransformingSerializer<Ratchet>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {
-        return JsonObject(mapOf("_type" to JsonPrimitive("Ratchet"), "value" to element.jsonObject.get("value") as JsonElement))
+        return JsonObject(mapOf("_type" to JsonPrimitive("Ratchet"), "value" to element.jsonObject["value"] as JsonElement))
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
-        return JsonObject(mapOf("value" to element.jsonObject.get("value") as JsonElement))
+        return JsonObject(mapOf("value" to element.jsonObject["value"] as JsonElement))
     }
 }
