@@ -28,6 +28,12 @@ import kotlinx.serialization.json.*
 /**
 * This class is a delta-based CRDT bounded-counter for invariant greater or equal to 0.
  * The initial value is 0.
+ *
+ * Following design from  V. Balegas et al., "Extending
+ * Eventually Consistent Cloud Databases for Enforcing Numeric Invariants,"
+ * 2015 IEEE 34th Symposium on Reliable Distributed Systems (SRDS),
+ * Montreal, QC, 2015, pp. 31-36, doi: 10.1109/SRDS.2015.32.
+ *
  * It is serializable to JSON and respect the following schema:
  * {
  *   "_type": "BCounter",
@@ -69,6 +75,9 @@ class BCounter : DeltaCRDT<BCounter>() {
     /**
      * A mutable map storing each client metadata relative to decrement operations.
      * decrement[i] represent the rights consumed by replica i.
+     * Invariant:
+     * dec[i] ≤ inc[i][i] + 𝚺_{i≠j} inc[j][i] - 𝚺_{i≠j} inc[i][j]
+     *  ( local increment + rights given to i  - rights given by i )
      */
     @Required
     private val decrement: MutableMap<ClientUId, Pair<Int, Timestamp>> = mutableMapOf()
