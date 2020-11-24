@@ -23,8 +23,6 @@ import crdtlib.utils.ClientUId
 import crdtlib.utils.SimpleEnvironment
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
-import io.kotest.matchers.booleans.shouldBeFalse
-import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.ints.shouldBeZero
 import io.kotest.matchers.shouldBe
 
@@ -472,7 +470,7 @@ class BCounterTest : StringSpec({
         val cnt2 = BCounter()
 
         cnt1.increment(inc, ts1)
-        cnt1.transfer(trans1, uid2, ts2).shouldBeTrue()
+        cnt1.transfer(trans1, uid2, ts2)
         cnt2.merge(cnt1)
         cnt1.get().shouldBe(20)
         cnt2.get().shouldBe(20)
@@ -496,14 +494,14 @@ class BCounterTest : StringSpec({
         val cnt2 = BCounter()
 
         cnt1.increment(inc, ts1)
-        cnt1.transfer(trans1, uid2, ts2).shouldBeTrue()
+        cnt1.transfer(trans1, uid2, ts2)
         cnt2.merge(cnt1)
         cnt1.get().shouldBe(10)
         cnt2.get().shouldBe(10)
         cnt1.localRights(uid1).shouldBe(inc - trans1)
         cnt2.localRights(uid2).shouldBe(trans1)
 
-        cnt1.transfer(trans2, uid2, ts3).shouldBeTrue()
+        cnt1.transfer(trans2, uid2, ts3)
         cnt2.merge(cnt1)
         cnt1.get().shouldBe(10)
         cnt2.get().shouldBe(10)
@@ -537,14 +535,16 @@ class BCounterTest : StringSpec({
         cnt1.localRights(uid1).shouldBe(10)
         cnt2.localRights(uid2).shouldBe(30)
 
-        cnt1.transfer(5, uid2, ts3).shouldBeTrue()
+        cnt1.transfer(5, uid2, ts3)
         cnt2.merge(cnt1)
         cnt1.get().shouldBe(40)
         cnt2.get().shouldBe(40)
         cnt1.localRights(uid1).shouldBe(5)
         cnt2.localRights(uid2).shouldBe(35)
 
-        cnt1.transfer(10, uid2, ts4).shouldBeFalse()
+        shouldThrow<IllegalArgumentException> {
+            cnt1.transfer(10, uid2, ts4)
+        }
         cnt1.get().shouldBe(40)
         cnt2.get().shouldBe(40)
         cnt1.localRights(uid1).shouldBe(5)
@@ -576,19 +576,97 @@ class BCounterTest : StringSpec({
         cnt1.localRights(uid1).shouldBe(10)
         cnt2.localRights(uid2).shouldBe(30)
 
-        cnt1.transfer(5, uid2, ts3).shouldBeTrue()
+        cnt1.transfer(5, uid2, ts3)
         cnt2.merge(cnt1)
         cnt1.get().shouldBe(40)
         cnt2.get().shouldBe(40)
         cnt1.localRights(uid1).shouldBe(5)
         cnt2.localRights(uid2).shouldBe(35)
 
-        cnt2.transfer(20, uid1, ts4).shouldBeTrue()
+        cnt2.transfer(20, uid1, ts4)
         cnt1.merge(cnt2)
         cnt1.get().shouldBe(40)
         cnt2.get().shouldBe(40)
         cnt1.localRights(uid1).shouldBe(25)
         cnt2.localRights(uid2).shouldBe(15)
+    }
+
+    /* Overflow errors */
+
+    "overflowing increment" {
+        val uid = ClientUId("clientid")
+        val client = SimpleEnvironment(uid)
+
+        val cnt = BCounter()
+
+        cnt.increment(Int.MAX_VALUE, client.tick())
+
+        shouldThrow<ArithmeticException> {
+            cnt.increment(1, client.tick())
+        }
+
+        cnt.get().shouldBe(Int.MAX_VALUE)
+    }
+
+    "R1: increment; R2: increment, merge, overflowing get" {
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+
+        val cnt1 = BCounter()
+        val cnt2 = BCounter()
+
+        cnt1.increment(Int.MAX_VALUE, client1.tick())
+        cnt2.increment(1, client2.tick())
+        cnt2.merge(cnt1)
+
+        shouldThrow<ArithmeticException> {
+            cnt2.get()
+        }
+    }
+
+    "overflowing rights transfer" {
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+
+        val cnt1 = BCounter()
+        val cnt2 = BCounter()
+        cnt1.increment(Int.MAX_VALUE, client1.tick())
+        cnt2.increment(1, client2.tick())
+
+        cnt2.transfer(1, uid1, client2.tick())
+        cnt1.merge(cnt2)
+        shouldThrow<ArithmeticException> {
+            cnt1.localRights(uid1)
+        }
+        cnt1.transfer(1, uid2, client1.tick())
+
+        cnt1.merge(cnt2)
+        cnt1.localRights(uid1).shouldBe(Int.MAX_VALUE)
+        cnt1.localRights(uid2).shouldBe(1)
+    }
+
+    "rights transfer, overflowing decrement" {
+        val uid1 = ClientUId("clientid1")
+        val uid2 = ClientUId("clientid2")
+        val client1 = SimpleEnvironment(uid1)
+        val client2 = SimpleEnvironment(uid2)
+
+        val cnt1 = BCounter()
+        val cnt2 = BCounter()
+        cnt1.increment(Int.MAX_VALUE, client1.tick())
+        cnt2.increment(1, client2.tick())
+        cnt2.transfer(1, uid1, client2.tick())
+        cnt1.merge(cnt2)
+
+        cnt1.decrement(1, client1.tick())
+        shouldThrow<ArithmeticException> {
+            cnt1.decrement(Int.MAX_VALUE, client1.tick())
+        }
+        cnt1.get().shouldBe(Int.MAX_VALUE)
     }
 
     /* Serialization */

@@ -79,11 +79,16 @@ class BCounter : DeltaCRDT<BCounter>() {
      */
     @Name("get")
     fun get(): Int {
-        var sum = 0
-        for ((k, v) in this.increment) {
-            sum += v[k]?.first ?: 0
-        }
-        return sum - this.decrement.values.sumBy { it.first }
+        return checkedSum(
+            this.increment.asSequence().map {
+                (k, v) ->
+                v[k]?.first ?: 0
+            },
+            this.decrement.asSequence().map {
+                (_, v) ->
+                v.first
+            }
+        )
     }
 
     /**
@@ -92,13 +97,20 @@ class BCounter : DeltaCRDT<BCounter>() {
      */
     @Name("localRights")
     fun localRights(uid: ClientUId): Int {
-        var rights = this.increment[uid]?.get(uid)?.first ?: 0
-        for (v in this.increment.values) {
-            rights += v[uid]?.first ?: 0
-        }
-        rights -= (this.increment[uid]?.values?.sumBy { it.first } ?: 0)
-        rights -= this.decrement[uid]?.first ?: 0
-        return rights
+        return checkedSum(
+            this.increment.asSequence().map {
+                (_, v) ->
+                v[uid]?.first ?: 0
+            } +
+                (this.increment[uid]?.get(uid)?.first ?: 0),
+            (
+                this.increment[uid]?.asSequence()?.map {
+                    (_, v) ->
+                    v.first
+                } ?: sequenceOf<Int>()
+                ) +
+                (this.decrement[uid]?.first ?: 0)
+        )
     }
 
     /**
@@ -112,18 +124,11 @@ class BCounter : DeltaCRDT<BCounter>() {
         if (amount == 0) return op
         if (amount < 0) return this.decrement(-amount, ts)
 
-        val count = this.increment[ts.uid]?.get(ts.uid)?.first ?: 0
-        if (Int.MAX_VALUE - count < amount - 1) {
-            throw RuntimeException("BCounter has reached Int.MAX_VALUE")
-        }
+        val thisLine = this.increment.getOrPut(ts.uid, { mutableMapOf() })
+        val count = checkedSum(thisLine[ts.uid]?.first ?: 0, amount)
+        thisLine[ts.uid] = Pair(count, ts)
 
-        if (this.increment[ts.uid] == null) {
-            this.increment[ts.uid] = mutableMapOf(ts.uid to Pair(count + amount, ts))
-        } else {
-            this.increment[ts.uid]?.put(ts.uid, Pair(count + amount, ts))
-        }
-
-        op.increment[ts.uid] = mutableMapOf(ts.uid to Pair(count + amount, ts))
+        op.increment[ts.uid] = mutableMapOf(ts.uid to Pair(count, ts))
         return op
     }
 
@@ -138,16 +143,17 @@ class BCounter : DeltaCRDT<BCounter>() {
         if (amount == 0) return op
         if (amount < 0) return this.increment(-amount, ts)
 
-        if (amount > this.localRights(ts.uid)) {
-            throw IllegalArgumentException("BCounter has not enough amount")
+        try {
+            if (amount > this.localRights(ts.uid)) {
+                throw IllegalArgumentException("BCounter has not enough rights")
+            }
+        } catch (e: ArithmeticException) {
+            // localRights overflowed, so it is larger than amount
         }
+        val count = checkedSum(this.decrement[ts.uid]?.first ?: 0, amount)
 
-        val count = this.decrement[ts.uid]?.first ?: 0
-        if (Int.MAX_VALUE - count < amount - 1) {
-            throw RuntimeException("BCounter has reached Int.MAX_VALUE")
-        }
-        this.decrement[ts.uid] = Pair(count + amount, ts)
-        op.decrement[ts.uid] = Pair(count + amount, ts)
+        this.decrement[ts.uid] = Pair(count, ts)
+        op.decrement[ts.uid] = Pair(count, ts)
         return op
     }
 
@@ -157,12 +163,25 @@ class BCounter : DeltaCRDT<BCounter>() {
      * @return true if the local replica have enough rights to transfers.
      */
     @Name("transfer")
-    fun transfer(amount: Int, to: ClientUId, ts: Timestamp): Boolean {
-        if (localRights(ts.uid) < amount) {
-            return false
+    fun transfer(amount: Int, to: ClientUId, ts: Timestamp): BCounter {
+        try {
+            if (amount > this.localRights(ts.uid)) {
+                throw IllegalArgumentException("BCounter has not enough rights")
+            }
+        } catch (e: ArithmeticException) {
+            // localRights overflowed, so it is larger than amount
         }
-        this.increment[ts.uid]?.put(to, Pair((this.increment[ts.uid]?.get(to)?.first ?: 0) + amount, ts))
-        return true
+
+        val op = BCounter()
+        if (amount == 0) return op
+        val rights = checkedSum(
+            this.increment[ts.uid]?.get(to)?.first ?: 0,
+            amount
+        )
+
+        this.increment[ts.uid]?.put(to, Pair(rights, ts))
+        op.increment[ts.uid]?.put(to, Pair(rights, ts))
+        return op
     }
 
     /**
