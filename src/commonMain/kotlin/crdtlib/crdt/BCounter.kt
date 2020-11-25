@@ -116,7 +116,7 @@ class BCounter : DeltaCRDT<BCounter>() {
                 this.increment[uid]?.asSequence()?.map {
                     (_, v) ->
                     v.first
-                } ?: sequenceOf<Int>()
+                } ?: sequenceOf()
                 ) +
                 (this.decrement[uid]?.first ?: 0)
         )

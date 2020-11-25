@@ -139,8 +139,8 @@ class MVMap : DeltaCRDT<MVMap> {
             else meta.clear()
             meta.add(Pair(value?.toString(), ts))
 
-            this.entries.put(key + BOOLEAN, meta)
-            op.entries.put(key + BOOLEAN, meta.toMutableSet())
+            this.entries[key + BOOLEAN] = meta
+            op.entries[key + BOOLEAN] = meta.toMutableSet()
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
@@ -163,8 +163,8 @@ class MVMap : DeltaCRDT<MVMap> {
             else meta.clear()
             meta.add(Pair(value?.toString(), ts))
 
-            this.entries.put(key + DOUBLE, meta)
-            op.entries.put(key + DOUBLE, meta.toMutableSet())
+            this.entries[key + DOUBLE] = meta
+            op.entries[key + DOUBLE] = meta.toMutableSet()
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
@@ -187,8 +187,8 @@ class MVMap : DeltaCRDT<MVMap> {
             else meta.clear()
             meta.add(Pair(value?.toString(), ts))
 
-            this.entries.put(key + INTEGER, meta)
-            op.entries.put(key + INTEGER, meta.toMutableSet())
+            this.entries[key + INTEGER] = meta
+            op.entries[key + INTEGER] = meta.toMutableSet()
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
@@ -211,8 +211,8 @@ class MVMap : DeltaCRDT<MVMap> {
             else meta.clear()
             meta.add(Pair(value, ts))
 
-            this.entries.put(key + STRING, meta)
-            op.entries.put(key + STRING, meta.toMutableSet())
+            this.entries[key + STRING] = meta
+            op.entries[key + STRING] = meta.toMutableSet()
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
@@ -276,7 +276,7 @@ class MVMap : DeltaCRDT<MVMap> {
         val delta = MVMap()
         for ((key, meta) in this.entries) {
             if (meta.any { !vv.contains(it.second) }) {
-                delta.entries.put(key, meta.toMutableSet())
+                delta.entries[key] = meta.toMutableSet()
             }
         }
         delta.causalContext.update(this.causalContext)
@@ -311,7 +311,7 @@ class MVMap : DeltaCRDT<MVMap> {
                     keptEntries.add(Pair(value, ts))
                 }
             }
-            this.entries.put(key, keptEntries)
+            this.entries[key] = keptEntries
         }
         this.causalContext.update(delta.causalContext)
     }
@@ -394,8 +394,8 @@ class JsonMVMapSerializer(serializer: KSerializer<MVMap>) :
                 }
                 meta.add(tmpPair.jsonObject["second"]!!.jsonObject)
             }
-            values.put(key, JsonArray(value))
-            entries.put(key, JsonArray(meta))
+            values[key] = JsonArray(value)
+            entries[key] = JsonArray(meta)
         }
         val metadata = JsonObject(mapOf("entries" to JsonObject(entries.toMap()), "causalContext" to causalContext))
         return JsonObject(mapOf("_type" to JsonPrimitive("MVMap"), "_metadata" to metadata).plus(values))
@@ -416,7 +416,7 @@ class JsonMVMapSerializer(serializer: KSerializer<MVMap>) :
                 val tmpEntry = JsonObject(mapOf("first" to value, "second" to ts))
                 tmpEntries.add(tmpEntry)
             }
-            entries.put(key, JsonArray(tmpEntries))
+            entries[key] = JsonArray(tmpEntries)
         }
         return JsonObject(mapOf("entries" to JsonObject(entries), "causalContext" to causalContext))
     }

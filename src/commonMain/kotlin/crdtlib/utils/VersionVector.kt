@@ -76,7 +76,7 @@ class VersionVector {
     @Name("updateTs")
     fun update(ts: Timestamp) {
         val curCnt = this.get(ts.uid)
-        if (curCnt < ts.cnt) this.entries.put(ts.uid, ts.cnt)
+        if (curCnt < ts.cnt) this.entries[ts.uid] = ts.cnt
     }
 
     /**
@@ -88,7 +88,7 @@ class VersionVector {
     fun update(vv: VersionVector) {
         for ((k, v) in vv.entries) {
             val curCnt = this.get(k)
-            if (curCnt < v) this.entries.put(k, v)
+            if (curCnt < v) this.entries[k] = v
         }
     }
 

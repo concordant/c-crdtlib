@@ -106,8 +106,8 @@ class PNCounter : DeltaCRDT<PNCounter> {
         if (Int.MAX_VALUE - count < amount - 1) {
             throw RuntimeException("PNCounter has reached Int.MAX_VALUE")
         }
-        this.increment.put(ts.uid, Pair(count + amount, ts))
-        op.increment.put(ts.uid, Pair(count + amount, ts))
+        this.increment[ts.uid] = Pair(count + amount, ts)
+        op.increment[ts.uid] = Pair(count + amount, ts)
         return op
     }
 
@@ -126,8 +126,8 @@ class PNCounter : DeltaCRDT<PNCounter> {
         if (Int.MAX_VALUE - count < amount - 1) {
             throw RuntimeException("PNCounter has reached Int.MAX_VALUE")
         }
-        this.decrement.put(ts.uid, Pair(count + amount, ts))
-        op.decrement.put(ts.uid, Pair(count + amount, ts))
+        this.decrement[ts.uid] = Pair(count + amount, ts)
+        op.decrement[ts.uid] = Pair(count + amount, ts)
         return op
     }
 
@@ -140,12 +140,12 @@ class PNCounter : DeltaCRDT<PNCounter> {
         val delta = PNCounter()
         for ((uid, meta) in increment) {
             if (!vv.contains(meta.second)) {
-                delta.increment.put(uid, Pair(meta.first, meta.second))
+                delta.increment[uid] = Pair(meta.first, meta.second)
             }
         }
         for ((uid, meta) in decrement) {
             if (!vv.contains(meta.second)) {
-                delta.decrement.put(uid, Pair(meta.first, meta.second))
+                delta.decrement[uid] = Pair(meta.first, meta.second)
             }
         }
         return delta
@@ -163,13 +163,13 @@ class PNCounter : DeltaCRDT<PNCounter> {
         for ((uid, meta) in delta.increment) {
             val localMeta = this.increment[uid]
             if (localMeta == null || localMeta.first < meta.first) {
-                this.increment.put(uid, Pair(meta.first, meta.second))
+                this.increment[uid] = Pair(meta.first, meta.second)
             }
         }
         for ((uid, meta) in delta.decrement) {
             val localMeta = this.decrement[uid]
             if (localMeta == null || localMeta.first < meta.first) {
-                this.decrement.put(uid, Pair(meta.first, meta.second))
+                this.decrement[uid] = Pair(meta.first, meta.second)
             }
         }
     }
