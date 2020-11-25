@@ -111,8 +111,8 @@ class LWWMap : DeltaCRDT<LWWMap> {
         val op = LWWMap()
         val currentTs = this.entries[key + BOOLEAN]?.second
         if (currentTs == null || currentTs < ts) {
-            this.entries.put(key + BOOLEAN, Pair(value?.toString(), ts))
-            op.entries.put(key + BOOLEAN, Pair(value?.toString(), ts))
+            this.entries[key + BOOLEAN] = Pair(value?.toString(), ts)
+            op.entries[key + BOOLEAN] = Pair(value?.toString(), ts)
         }
         return op
     }
@@ -129,8 +129,8 @@ class LWWMap : DeltaCRDT<LWWMap> {
         val op = LWWMap()
         val currentTs = this.entries[key + DOUBLE]?.second
         if (currentTs == null || currentTs < ts) {
-            this.entries.put(key + DOUBLE, Pair(value?.toString(), ts))
-            op.entries.put(key + DOUBLE, Pair(value?.toString(), ts))
+            this.entries[key + DOUBLE] = Pair(value?.toString(), ts)
+            op.entries[key + DOUBLE] = Pair(value?.toString(), ts)
         }
         return op
     }
@@ -147,8 +147,8 @@ class LWWMap : DeltaCRDT<LWWMap> {
         val op = LWWMap()
         val currentTs = this.entries[key + INTEGER]?.second
         if (currentTs == null || currentTs < ts) {
-            this.entries.put(key + INTEGER, Pair(value?.toString(), ts))
-            op.entries.put(key + INTEGER, Pair(value?.toString(), ts))
+            this.entries[key + INTEGER] = Pair(value?.toString(), ts)
+            op.entries[key + INTEGER] = Pair(value?.toString(), ts)
         }
         return op
     }
@@ -165,8 +165,8 @@ class LWWMap : DeltaCRDT<LWWMap> {
         val op = LWWMap()
         val currentTs = this.entries[key + STRING]?.second
         if (currentTs == null || currentTs < ts) {
-            this.entries.put(key + STRING, Pair(value, ts))
-            op.entries.put(key + STRING, Pair(value, ts))
+            this.entries[key + STRING] = Pair(value, ts)
+            op.entries[key + STRING] = Pair(value, ts)
         }
         return op
     }
@@ -230,7 +230,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
             val value = meta.first
             val ts = meta.second
             if (!vv.contains(ts)) {
-                delta.entries.put(key, Pair(value, ts))
+                delta.entries[key] = Pair(value, ts)
             }
         }
         return delta
@@ -249,7 +249,7 @@ class LWWMap : DeltaCRDT<LWWMap> {
             val ts = meta.second
             val localTs = this.entries[key]?.second
             if (localTs == null || localTs < ts) {
-                this.entries.put(key, Pair(value, ts))
+                this.entries[key] = Pair(value, ts)
             }
         }
     }
@@ -324,8 +324,8 @@ class JsonLWWMapSerializer(serializer: KSerializer<LWWMap>) :
                     value = JsonPrimitive(value.intOrNull)
                 }
             }
-            values.put(key, value as JsonElement)
-            entries.put(key, entry.jsonObject["second"]!!.jsonObject)
+            values[key] = value as JsonElement
+            entries[key] = entry.jsonObject["second"]!!.jsonObject
         }
         val metadata = JsonObject(mapOf("entries" to JsonObject(entries.toMap())))
         return JsonObject(mapOf("_type" to JsonPrimitive("LWWMap"), "_metadata" to metadata).plus(values))
@@ -340,7 +340,7 @@ class JsonLWWMapSerializer(serializer: KSerializer<LWWMap>) :
                 value = JsonPrimitive(value.toString())
             }
             val tmpEntry = JsonObject(mapOf("first" to value as JsonElement, "second" to entry))
-            entries.put(key, tmpEntry)
+            entries[key] = tmpEntry
         }
         return JsonObject(mapOf("entries" to JsonObject(entries)))
     }

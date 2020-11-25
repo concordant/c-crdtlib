@@ -287,8 +287,8 @@ class Map : DeltaCRDT<Map> {
         val op = Map()
         var cnt = this.cntMap[key]
         if (cnt == null) cnt = PNCounter()
-        op.cntMap.put(key, cnt.increment(inc, ts))
-        this.cntMap.put(key, cnt)
+        op.cntMap[key] = cnt.increment(inc, ts)
+        this.cntMap[key] = cnt
         return op
     }
 
@@ -296,8 +296,8 @@ class Map : DeltaCRDT<Map> {
         val op = Map()
         var cnt = this.cntMap[key]
         if (cnt == null) cnt = PNCounter()
-        op.cntMap.put(key, cnt.decrement(dec, ts))
-        this.cntMap.put(key, cnt)
+        op.cntMap[key] = cnt.decrement(dec, ts)
+        this.cntMap[key] = cnt
         return op
     }
 
@@ -427,7 +427,7 @@ class Map : DeltaCRDT<Map> {
         for ((key, cnt) in this.cntMap) {
             val deltaCnt = PNCounter()
             deltaCnt.merge(cnt.generateDelta(vv))
-            delta.cntMap.put(key, deltaCnt)
+            delta.cntMap[key] = deltaCnt
         }
         return delta
     }
@@ -447,7 +447,7 @@ class Map : DeltaCRDT<Map> {
             var localCnt = this.cntMap[key]
             if (localCnt == null) localCnt = PNCounter()
             localCnt.merge(cnt)
-            this.cntMap.put(key, localCnt)
+            this.cntMap[key] = localCnt
         }
     }
 
@@ -518,8 +518,8 @@ class JsonMapSerializer(serializer: KSerializer<Map>) :
                     value = JsonPrimitive(value.intOrNull)
                 }
             }
-            values.put(key + Map.LWWREGISTER, value as JsonElement)
-            lwwEntries.put(key, entry.jsonObject["second"]!!.jsonObject)
+            values[key + Map.LWWREGISTER] = value as JsonElement
+            lwwEntries[key] = entry.jsonObject["second"]!!.jsonObject
         }
         val lwwMetadata = JsonObject(mapOf("entries" to JsonObject(lwwEntries.toMap())))
 
@@ -546,8 +546,8 @@ class JsonMapSerializer(serializer: KSerializer<Map>) :
                 }
                 meta.add(tmpPair.jsonObject["second"]!!.jsonObject)
             }
-            values.put(key + Map.MVREGISTER, JsonArray(value))
-            mvEntries.put(key, JsonArray(meta))
+            values[key + Map.MVREGISTER] = JsonArray(value)
+            mvEntries[key] = JsonArray(meta)
         }
         val mvMetadata = JsonObject(mapOf("entries" to JsonObject(mvEntries.toMap()), "causalContext" to causalContext))
 
@@ -556,8 +556,8 @@ class JsonMapSerializer(serializer: KSerializer<Map>) :
         for ((key, meta) in cnt) {
             val incValue = meta.jsonObject["increment"]!!.jsonArray.filter { it.jsonObject.containsKey("first") }.sumBy { it.jsonObject["first"]!!.jsonPrimitive.int }
             val decValue = meta.jsonObject["decrement"]!!.jsonArray.filter { it.jsonObject.containsKey("first") }.sumBy { it.jsonObject["first"]!!.jsonPrimitive.int }
-            cntMetadata.put(key, meta)
-            values.put(key + Map.PNCOUNTER, JsonPrimitive(incValue - decValue))
+            cntMetadata[key] = meta
+            values[key + Map.PNCOUNTER] = JsonPrimitive(incValue - decValue)
         }
 
         val metadata = JsonObject(mapOf("lwwMap" to lwwMetadata, "mvMap" to mvMetadata, "cntMap" to JsonObject(cntMetadata)))
@@ -575,7 +575,7 @@ class JsonMapSerializer(serializer: KSerializer<Map>) :
                 value = JsonPrimitive(value.toString())
             }
             val tmpEntry = JsonObject(mapOf("first" to value as JsonElement, "second" to entry))
-            lwwEntries.put(key, tmpEntry)
+            lwwEntries[key] = tmpEntry
         }
         val lww = JsonObject(mapOf("entries" to JsonObject(lwwEntries)))
 
@@ -593,7 +593,7 @@ class JsonMapSerializer(serializer: KSerializer<Map>) :
                 val tmpEntry = JsonObject(mapOf("first" to value, "second" to ts))
                 tmpEntries.add(tmpEntry)
             }
-            mvEntries.put(key, JsonArray(tmpEntries))
+            mvEntries[key] = JsonArray(tmpEntries)
         }
         val mv = JsonObject(mapOf("entries" to JsonObject(mvEntries), "causalContext" to causalContext))
 
