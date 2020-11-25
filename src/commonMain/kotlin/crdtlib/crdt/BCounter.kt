@@ -169,7 +169,7 @@ class BCounter : DeltaCRDT<BCounter>() {
     /**
      * Transfers rights from the local replica to some other replica to.
      * @param amount the rights that should be transferred from the local replica to replica to.
-     * @return true if the local replica have enough rights to transfers.
+     * @return the delta corresponding to this operation.
      */
     @Name("transfer")
     fun transfer(amount: Int, to: ClientUId, ts: Timestamp): BCounter {
