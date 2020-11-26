@@ -25,7 +25,7 @@ import crdtlib.utils.VersionVector
 /**
 * Interface for delta based CRDT
 */
-abstract class DeltaCRDT<T> {
+abstract class DeltaCRDT {
 
     /**
      * Generates the delta from a given version vector by calling the protected abstract method.
@@ -33,14 +33,14 @@ abstract class DeltaCRDT<T> {
      * @return the delta from the version vector.
      */
     @Name("generateDelta")
-    abstract fun generateDelta(vv: VersionVector): T
+    abstract fun generateDelta(vv: VersionVector): DeltaCRDT
 
     /**
      * Merges a given delta into this CRDT by calling the protected method.
      * @param delta the delta to be merge.
      */
     @Name("merge")
-    abstract fun merge(delta: T)
+    abstract fun merge(delta: DeltaCRDT)
 
     /**
      * Serializes this delta crdt to a json string.
