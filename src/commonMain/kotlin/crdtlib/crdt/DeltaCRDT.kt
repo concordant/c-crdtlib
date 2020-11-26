@@ -48,4 +48,49 @@ abstract class DeltaCRDT {
      */
     @Name("toJson")
     abstract fun toJson(): String
+
+    companion object {
+        /**
+         * Deserializes a given json string in the correpsonding crdt type.
+         * @param json the given json string.
+         * @return the resulted delta crdt.
+         */
+        fun fromJson(json: String): DeltaCRDT {
+            val regex = """"_type":"(\w+)",""".toRegex()
+            val matchResult = regex.find(json)
+            val crdtType = matchResult?.groups?.get(1)?.value
+            when (crdtType) {
+                "PNCounter" -> {
+                    return PNCounter.fromJson(json)
+                }
+                "BCounter" -> {
+                    return BCounter.fromJson(json)
+                }
+                "LWWRegister" -> {
+                    return LWWRegister.fromJson(json)
+                }
+                "MVRegister" -> {
+                    return MVRegister.fromJson(json)
+                }
+                "Ratchet" -> {
+                    return Ratchet.fromJson(json)
+                }
+                "RGA" -> {
+                    return RGA.fromJson(json)
+                }
+                "LWWMap" -> {
+                    return LWWMap.fromJson(json)
+                }
+                "MVMap" -> {
+                    return MVMap.fromJson(json)
+                }
+                "Map" -> {
+                    return Map.fromJson(json)
+                }
+                else -> {
+                    throw IllegalArgumentException("DeltaCRDT cannot deserialize type: " + crdtType)
+                }
+            }
+        }
+    }
 }
