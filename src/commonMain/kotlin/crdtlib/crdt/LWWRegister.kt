@@ -38,7 +38,7 @@ import kotlinx.serialization.json.*
 * @property value the timestamp associated to the value.
 */
 @Serializable
-class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT<LWWRegister>() {
+class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT() {
 
     /**
      * Constructor creating a copy of a given register.
@@ -86,7 +86,9 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT<LWWRegister>
      * The foreign value wins iff its associated timestamp is greater than the current one.
      * @param delta the delta that should be merge with the local replica.
      */
-    override fun merge(delta: LWWRegister) {
+    override fun merge(delta: DeltaCRDT) {
+        if (delta !is LWWRegister) throw IllegalArgumentException("LWWRegister unsupported merge argument")
+
         if (this.ts < delta.ts) {
             this.value = delta.value
             this.ts = delta.ts

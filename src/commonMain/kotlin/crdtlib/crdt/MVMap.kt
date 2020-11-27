@@ -45,7 +45,7 @@ import kotlinx.serialization.json.*
 * }
 */
 @Serializable
-class MVMap : DeltaCRDT<MVMap> {
+class MVMap : DeltaCRDT {
 
     /**
      * A mutable map storing metadata relative to each key.
@@ -290,7 +290,9 @@ class MVMap : DeltaCRDT<MVMap> {
      * associated timestamp is not included in the local (foreign) causal context.
      * @param delta the delta that should be merged with the local replica.
      */
-    override fun merge(delta: MVMap) {
+    override fun merge(delta: DeltaCRDT) {
+        if (delta !is MVMap) throw IllegalArgumentException("MVMap unsupported merge argument")
+
         for ((key, foreignEntries) in delta.entries) {
 
             val keptEntries = mutableSetOf<Pair<String?, Timestamp>>()

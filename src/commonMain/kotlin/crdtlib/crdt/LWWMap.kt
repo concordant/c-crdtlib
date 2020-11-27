@@ -42,7 +42,7 @@ import kotlinx.serialization.json.*
 * }
 */
 @Serializable
-class LWWMap : DeltaCRDT<LWWMap> {
+class LWWMap : DeltaCRDT {
 
     /**
      * A mutable map storing metadata relative to each key.
@@ -243,7 +243,9 @@ class LWWMap : DeltaCRDT<LWWMap> {
      * smaller timestamp compared to the foreign one, or there is no local operation recorded.
      * @param delta the delta that should be merged with the local replica.
      */
-    override fun merge(delta: LWWMap) {
+    override fun merge(delta: DeltaCRDT) {
+        if (delta !is LWWMap) throw IllegalArgumentException("LWWMap unsupported merge argument")
+
         for ((key, meta) in delta.entries) {
             val value = meta.first
             val ts = meta.second
