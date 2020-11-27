@@ -25,7 +25,7 @@ import crdtlib.utils.VersionVector
 /**
 * Interface for delta based CRDT
 */
-abstract class DeltaCRDT<T> {
+abstract class DeltaCRDT {
 
     /**
      * Generates the delta from a given version vector by calling the protected abstract method.
@@ -33,14 +33,14 @@ abstract class DeltaCRDT<T> {
      * @return the delta from the version vector.
      */
     @Name("generateDelta")
-    abstract fun generateDelta(vv: VersionVector): T
+    abstract fun generateDelta(vv: VersionVector): DeltaCRDT
 
     /**
      * Merges a given delta into this CRDT by calling the protected method.
      * @param delta the delta to be merge.
      */
     @Name("merge")
-    abstract fun merge(delta: T)
+    abstract fun merge(delta: DeltaCRDT)
 
     /**
      * Serializes this delta crdt to a json string.
@@ -48,4 +48,49 @@ abstract class DeltaCRDT<T> {
      */
     @Name("toJson")
     abstract fun toJson(): String
+
+    companion object {
+        /**
+         * Deserializes a given json string in the correpsonding crdt type.
+         * @param json the given json string.
+         * @return the resulted delta crdt.
+         */
+        fun fromJson(json: String): DeltaCRDT {
+            val regex = """"_type":"(\w+)",""".toRegex()
+            val matchResult = regex.find(json)
+            val crdtType = matchResult?.groups?.get(1)?.value
+            when (crdtType) {
+                "PNCounter" -> {
+                    return PNCounter.fromJson(json)
+                }
+                "BCounter" -> {
+                    return BCounter.fromJson(json)
+                }
+                "LWWRegister" -> {
+                    return LWWRegister.fromJson(json)
+                }
+                "MVRegister" -> {
+                    return MVRegister.fromJson(json)
+                }
+                "Ratchet" -> {
+                    return Ratchet.fromJson(json)
+                }
+                "RGA" -> {
+                    return RGA.fromJson(json)
+                }
+                "LWWMap" -> {
+                    return LWWMap.fromJson(json)
+                }
+                "MVMap" -> {
+                    return MVMap.fromJson(json)
+                }
+                "Map" -> {
+                    return Map.fromJson(json)
+                }
+                else -> {
+                    throw IllegalArgumentException("DeltaCRDT cannot deserialize type: " + crdtType)
+                }
+            }
+        }
+    }
 }

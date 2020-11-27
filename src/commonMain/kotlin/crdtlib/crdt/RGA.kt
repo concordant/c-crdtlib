@@ -66,7 +66,7 @@ data class RGANode(val atom: String, val anchor: RGAUId?, val uid: RGAUId, val t
 * }
 */
 @Serializable
-class RGA : DeltaCRDT<RGA> {
+class RGA : DeltaCRDT {
 
     /**
      * An array list storing the different elements.
@@ -176,7 +176,9 @@ class RGA : DeltaCRDT<RGA> {
      * smaller timestamp) node found, or at the end of the array if no weaker node exists.
      * @param delta the delta that should be merge with the local replica.
      */
-    override fun merge(delta: RGA) {
+    override fun merge(delta: DeltaCRDT) {
+        if (delta !is RGA) throw IllegalArgumentException("RGA unsupported merge argument")
+
         for (node in delta.nodes) {
             val localNode = this.nodes.find { it.uid == node.uid }
             if (localNode == null) { // First time this node is seen.
