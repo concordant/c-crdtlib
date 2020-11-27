@@ -24,6 +24,8 @@ import crdtlib.utils.SimpleEnvironment
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.*
 import io.kotest.matchers.collections.*
+import io.kotest.matchers.iterator.shouldBeEmpty
+import io.kotest.matchers.iterator.shouldHaveNext
 
 /**
 * Represents a test suite for MVRegister.
@@ -31,20 +33,23 @@ import io.kotest.matchers.collections.*
 class MVRegisterTest : StringSpec({
 
     /**
-     * This test evaluates the scenario: create empty get.
+     * This test evaluates the scenario: create empty get/iterator.
      * Call to get should return an empty set.
+     * Call to iterator should return an empty iterator.
      */
-    "create an empty register and get" {
+    "create an empty register and get/iterator" {
         val reg = MVRegister()
 
         reg.get().shouldBeEmpty()
+        reg.iterator().shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: create with value get.
+     * This test evaluates the scenario: create with value get/iterator.
      * Call to get should return a set containing the value.
+     * Call to iterator should return an iterator containing the value.
      */
-    "create with a value and get" {
+    "create with a value and get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
@@ -52,13 +57,19 @@ class MVRegisterTest : StringSpec({
         val reg = MVRegister(value, ts)
 
         reg.get().shouldHaveSingleElement(value)
+
+        val it = reg.iterator()
+        it.shouldHaveNext()
+        it.next().shouldBe(value)
+        it.shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: create by copy get.
-     * Call to get should return a set containing the assigned in the first replica.
+     * This test evaluates the scenario: create by copy get/iterator.
+     * Call to get should return a set containing the assigned value in the first replica.
+     * Call to iterator should return an iterator containing the assigned value in the first replica.
      */
-    "copy with copy constructor and get" {
+    "copy with copy constructor and get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
@@ -68,13 +79,19 @@ class MVRegisterTest : StringSpec({
         val reg2 = MVRegister(reg1)
 
         reg2.get().shouldHaveSingleElement(value)
+
+        val it = reg2.iterator()
+        it.shouldHaveNext()
+        it.next().shouldBe(value)
+        it.shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: create by copy(concurrent values) get.
+     * This test evaluates the scenario: create by copy(concurrent values) get/iterator.
      * Call to get should return a set containing values assigned in first and second replicas.
+     * Call to iterator should return an iterator containing values assigned in first and second replicas.
      */
-    "copy with copy constructor a register with multi-values and get" {
+    "copy with copy constructor a register with multi-values and get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -90,13 +107,21 @@ class MVRegisterTest : StringSpec({
         val reg3 = MVRegister(reg2)
 
         reg3.get().shouldContainExactlyInAnyOrder(val1, val2)
+
+        val it = reg3.iterator()
+        for (value in reg3.get()) {
+            it.shouldHaveNext()
+            it.next().shouldBe(value)
+        }
+        it.shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: assign assign get.
+     * This test evaluates the scenario: assign assign get/iterator.
      * Call to get should return last assigned value.
+     * Call to iterator should return an iterator containing the last assigned value.
      */
-    "create, assign, get" {
+    "create, assign, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -108,13 +133,19 @@ class MVRegisterTest : StringSpec({
         reg.assign(val2, ts2)
 
         reg.get().shouldHaveSingleElement(val2)
+
+        val it = reg.iterator()
+        it.shouldHaveNext()
+        it.next().shouldBe(val2)
+        it.shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: assign assign(old timestamp) get.
+     * This test evaluates the scenario: assign assign(old timestamp) get/iterator.
      * Call to get should return first assigned value.
+     * Call to iterator should return an iterator containing the first assigned value.
      */
-    "create assign, assign with older timestamp, get" {
+    "create assign, assign with older timestamp, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -126,13 +157,19 @@ class MVRegisterTest : StringSpec({
         reg.assign(val2, ts1)
 
         reg.get().shouldHaveSingleElement(val1)
+
+        val it = reg.iterator()
+        it.shouldHaveNext()
+        it.next().shouldBe(val1)
+        it.shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: assign || merge get.
+     * This test evaluates the scenario: assign || merge get/iterator.
      * Call to get should return value assigned by the first replica.
+     * Call to iterator should return an iterator containing the value assigned by the first replica.
      */
-    "R1: create with value; R2: create empty, merge, get" {
+    "R1: create with value; R2: create empty, merge, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
@@ -145,13 +182,23 @@ class MVRegisterTest : StringSpec({
 
         reg1.get().shouldHaveSingleElement(value)
         reg2.get().shouldHaveSingleElement(value)
+
+        val it1 = reg1.iterator()
+        it1.shouldHaveNext()
+        it1.next().shouldBe(value)
+        it1.shouldBeEmpty()
+        val it2 = reg2.iterator()
+        it2.shouldHaveNext()
+        it2.next().shouldBe(value)
+        it2.shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: assign || merge assign get.
+     * This test evaluates the scenario: assign || merge assign get/iterator.
      * Call to get should return a set containing the value assigned by the second replica.
+     * Call to iterator should return an iterator containing the value assigned by the second replica.
      */
-    "R1: create with value; R2: create empty, merge, assign, get" {
+    "R1: create with value; R2: create empty, merge, assign, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -167,13 +214,19 @@ class MVRegisterTest : StringSpec({
         reg2.assign(val2, ts2)
 
         reg2.get().shouldHaveSingleElement(val2)
+
+        val it = reg2.iterator()
+        it.shouldHaveNext()
+        it.next().shouldBe(val2)
+        it.shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: assign || assign merge get.
+     * This test evaluates the scenario: assign || assign merge get/iterator.
      * Call to get should return a set containing the two values.
+     * Call to iterator should return an iterator containing the two values.
      */
-    "R1: create with value; R2: create empty, assign, merge, get" {
+    "R1: create with value; R2: create empty, assign, merge, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -189,14 +242,22 @@ class MVRegisterTest : StringSpec({
         reg2.merge(reg1)
 
         reg2.get().shouldContainExactlyInAnyOrder(val1, val2)
+
+        val it = reg2.iterator()
+        for (value in reg2.get()) {
+            it.shouldHaveNext()
+            it.next().shouldBe(value)
+        }
+        it.shouldBeEmpty()
     }
 
     /**
      * This test evaluates the scenario: assign(before merge1) assign(before merge 2) || merge1
-     * merge2 get.
+     * merge2 get/iterator.
      * Call to get should return a set containing the last value assigned by the first replica.
+     * Call to iterator should return an iterator containing the last value assigned by the first replica.
      */
-    "R1: create with value, assign; R2: craete empty, merge before assign, merge after assign, get" {
+    "R1: create with value, assign; R2: create empty, merge before assign, merge after assign, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -211,15 +272,22 @@ class MVRegisterTest : StringSpec({
         reg2.merge(reg1)
 
         reg2.get().shouldHaveSingleElement(val2)
+
+        val it = reg2.iterator()
+        it.shouldHaveNext()
+        it.next().shouldBe(val2)
+        it.shouldBeEmpty()
     }
 
     /**
      * This test evaluates the scenario: assign(before merge1) assign(before merge 2) || assign
-     * merge1 merge2 get.
+     * merge1 merge2 get/iterator.
      * Call to get should return a set containing the last value assigned by the first replica and
      * value assigned by replica two.
+     * Call to iterator should return an iterator containing the last value assigned by the first replica and
+     * value assigned by replica two.
      */
-    "R1: create with value, assign; R2: create with value, merge before assign, merge after assign, get" {
+    "R1: create with value, assign; R2: create with value, merge before assign, merge after assign, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -238,15 +306,24 @@ class MVRegisterTest : StringSpec({
         reg2.merge(reg1)
 
         reg2.get().shouldContainExactlyInAnyOrder(val2, val3)
+
+        val it = reg2.iterator()
+        for (value in reg2.get()) {
+            it.shouldHaveNext()
+            it.next().shouldBe(value)
+        }
+        it.shouldBeEmpty()
     }
 
     /**
      * This test evaluates the scenario: assign || assign merge(from 3) || assign merge(from 1)
-     * merge(from 2) get.
+     * merge(from 2) get/iterator.
      * Call to get should return a set containing the value assigned by the first, second, and third
      * replicas.
+     * Call to iterator should return an iterator containing the value assigned by the first, second, and third
+     * replicas.
      */
-    "R1: create with value; R2: create with value, merge R3; R3: create with value, merge R1, merge R2, get" {
+    "R1: create with value; R2: create with value, merge R3; R3: create with value, merge R1, merge R2, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val uid3 = ClientUId("clientid3")
@@ -268,16 +345,25 @@ class MVRegisterTest : StringSpec({
         reg3.merge(reg2)
 
         reg3.get().shouldContainExactlyInAnyOrder(val1, val2, val3)
+
+        val it = reg3.iterator()
+        for (value in reg3.get()) {
+            it.shouldHaveNext()
+            it.next().shouldBe(value)
+        }
+        it.shouldBeEmpty()
     }
 
     /**
      * This test evaluates the scenario: assign || merge(from 3) assign || assign merge(from 1)
-     * merge(from 2) get.
+     * merge(from 2) get/iterator.
      * Call to get should return a set containing the value assigned by the first and second
      * replicas, the value assigned by replica three should not be present since it has been
-     * overrided by replica two.
+     * overrode by replica two.
+     * Call to iterator should return an iterator containing the value assigned by the first and second
+     * replicas.
      */
-    "R1: create with value; R2: create empty, merge R3, assign; R3: create with value, merge R1, merge R2, get" {
+    "R1: create with value; R2: create empty, merge R3, assign; R3: create with value, merge R1, merge R2, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val uid3 = ClientUId("clientid3")
@@ -300,11 +386,19 @@ class MVRegisterTest : StringSpec({
         reg3.merge(reg2)
 
         reg3.get().shouldContainExactlyInAnyOrder(val1, val2)
+
+        val it = reg3.iterator()
+        for (value in reg3.get()) {
+            it.shouldHaveNext()
+            it.next().shouldBe(value)
+        }
+        it.shouldBeEmpty()
     }
 
     /**
      * This test evaluates the use of delta return by call to assign method.
      * Call to get should return a set containing the value assigned by the first replica.
+     * Call to iterator should return an iterator containing the value assigned by the first replica.
      */
     "use delta returned by assign" {
         val uid = ClientUId("clientid")
@@ -320,13 +414,24 @@ class MVRegisterTest : StringSpec({
 
         reg1.get().shouldHaveSingleElement(value)
         reg2.get().shouldHaveSingleElement(value)
+
+        val it1 = reg1.iterator()
+        it1.shouldHaveNext()
+        it1.next().shouldBe(value)
+        it1.shouldBeEmpty()
+        val it2 = reg2.iterator()
+        it2.shouldHaveNext()
+        it2.next().shouldBe(value)
+        it2.shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the generation of delta plus its merging into another replica.
-    * Call to value should return a set containing values assigned by operations registered in the
-    * first and second replicas.
-    */
+    /**
+     * This test evaluates the generation of delta plus its merging into another replica.
+     * Call to value should return a set containing values assigned by operations registered in the
+     * first and second replicas.
+     * Call to iterator should return an iterator containing values assigned by operations registered in the
+     * first and second replicas.
+     */
     "generate delta then merge" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -346,6 +451,13 @@ class MVRegisterTest : StringSpec({
         reg3.merge(delta)
 
         reg3.get().shouldContainExactlyInAnyOrder(val1, val2)
+
+        val it = reg3.iterator()
+        for (value in reg3.get()) {
+            it.shouldHaveNext()
+            it.next().shouldBe(value)
+        }
+        it.shouldBeEmpty()
     }
 
     /**
