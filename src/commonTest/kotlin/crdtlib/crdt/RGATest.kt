@@ -278,8 +278,8 @@ class RGATest : StringSpec({
     /**
      * This test evaluates the scenario: insert at 0 twice || merge, get/iterator.
      * Call to get should return an array containing the two values inserted in replica 1.
-     * Call to get at 0 should return the first value inserted in replica 1.
-     * Call to get at 1 should return the second value inserted in replica 1.
+     * Call to get at 0 should return the second value inserted in replica 1.
+     * Call to get at 1 should return the first value inserted in replica 1.
      * Call to iterator should return an iterator containing the two values inserted in replica 1.
      */
     "R1: insert at 0, insert at 0; R2: merge, get/iterator" {
@@ -416,8 +416,8 @@ class RGATest : StringSpec({
      * Call to get should return an array containing the four values. Values should be ordered
      * according to decreasing order of their associated timestamp.
      * Call to get at 0 should return the second value inserted in replica 2.
-     * Call to get at 1 should return the first value inserted in replica 2.
-     * Call to get at 2 should return the second value inserted in replica 1.
+     * Call to get at 1 should return the second value inserted in replica 1.
+     * Call to get at 2 should return the first value inserted in replica 2.
      * Call to get at 3 should return the first value inserted in replica 1.
      * Call to iterator should return an iterator containing the four values.
      */
@@ -501,10 +501,10 @@ class RGATest : StringSpec({
      * timestamp), insert at 1, merge, get/iterator.
      * Call to get should return an array containing the four values. Values inserted in replica 2
      * should be before the one inserted in replica 1.
-     * Call to get at 0 should return the second value inserted in replica 2.
-     * Call to get at 1 should return the first value inserted in replica 2.
-     * Call to get at 2 should return the second value inserted in replica 1.
-     * Call to get at 3 should return the first value inserted in replica 1.
+     * Call to get at 0 should return the first value inserted in replica 2.
+     * Call to get at 1 should return the second value inserted in replica 2.
+     * Call to get at 2 should return the first value inserted in replica 1.
+     * Call to get at 3 should return the second value inserted in replica 1.
      * Call to iterator should return an iterator containing the four values.
      */
     "R1: insert at 0, insert at 1; R2: insert at 0 with greater timestamp, insert at 1, merge, get/iterator" {
@@ -540,7 +540,7 @@ class RGATest : StringSpec({
     }
 
     /**
-     * This test evaluates the scenario: insert four times, remove /iteraat 1 || merge (after adds in
+     * This test evaluates the scenario: insert four times, remove at 1 || merge (after adds in
      * replica 1), remove at 2, merge, get/iterator.
      * Call to get should return an array containing the two values that have not been remove (the
      * first and the fourth one).
