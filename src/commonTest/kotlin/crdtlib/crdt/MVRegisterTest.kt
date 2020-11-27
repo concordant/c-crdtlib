@@ -359,7 +359,7 @@ class MVRegisterTest : StringSpec({
      * merge(from 2) get/iterator.
      * Call to get should return a set containing the value assigned by the first and second
      * replicas, the value assigned by replica three should not be present since it has been
-     * overriden by replica two.
+     * overridden by replica two.
      * Call to iterator should return an iterator containing the value assigned by the first and second
      * replicas.
      */
