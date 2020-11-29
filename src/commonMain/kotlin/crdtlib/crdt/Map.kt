@@ -172,6 +172,87 @@ class Map : DeltaCRDT {
     }
 
     /**
+     * Gets an iterator containing the Boolean value currently stored in the map.
+     * @return an iterator over the Boolean value stored in the map.
+     */
+    @Name("iteratorLWWBoolean")
+    fun iteratorLWWBoolean(): Iterator<Pair<String, Boolean>> {
+        return this.lwwMap.iteratorBoolean()
+    }
+
+    /**
+     * Gets an iterator containing the double value currently stored in the map.
+     * @return an iterator over the double value stored in the map.
+     */
+    @Name("iteratorLWWDouble")
+    fun iteratorLWWDouble(): Iterator<Pair<String, Double>> {
+        return this.lwwMap.iteratorDouble()
+    }
+
+    /**
+     * Gets an iterator containing the integer value currently stored in the map.
+     * @return an iterator over the integer value stored in the map.
+     */
+    @Name("iteratorLWWInt")
+    fun iteratorLWWInt(): Iterator<Pair<String, Int>> {
+        return this.lwwMap.iteratorInt()
+    }
+
+    /**
+     * Gets an iterator containing the string value currently stored in the map.
+     * @return an iterator over the string value stored in the map.
+     */
+    @Name("iteratorLWWString")
+    fun iteratorLWWString(): Iterator<Pair<String, String>> {
+        return this.lwwMap.iteratorString()
+    }
+
+    /**
+     * Gets an iterator containing the Boolean values currently stored in the map.
+     * @return an iterator over the Boolean values stored in the map.
+     */
+    @Name("iteratorMVBoolean")
+    fun iteratorMVBoolean(): Iterator<Pair<String, Set<Boolean>>> {
+        return this.mvMap.iteratorBoolean()
+    }
+
+    /**
+     * Gets an iterator containing the double values currently stored in the map.
+     * @return an iterator over the double values stored in the map.
+     */
+    @Name("iteratorMVDouble")
+    fun iteratorMVDouble(): Iterator<Pair<String, Set<Double>>> {
+        return this.mvMap.iteratorDouble()
+    }
+
+    /**
+     * Gets an iterator containing the integer values currently stored in the map.
+     * @return an iterator over the integer values stored in the map.
+     */
+    @Name("iteratorMVInt")
+    fun iteratorMVInt(): Iterator<Pair<String, Set<Int>>> {
+        return this.mvMap.iteratorInt()
+    }
+
+    /**
+     * Gets an iterator containing the string values currently stored in the map.
+     * @return an iterator over the string values stored in the map.
+     */
+    @Name("iteratorMVString")
+    fun iteratorMVString(): Iterator<Pair<String, Set<String>>> {
+        return this.mvMap.iteratorString()
+    }
+
+    /**
+     * Gets an iterator containing the integer values currently stored in the map.
+     * @return an iterator over the integer values stored in the map.
+     */
+    @Name("iteratorCntInt")
+    fun iteratorCntInt(): Iterator<Pair<String, Int>> {
+        return this.cntMap.map { (k, v) -> Pair(k, v.get()) }.iterator()
+    }
+
+    /**
      * Puts a key / Boolean value pair into the map.
      * @param key the key that is targeted.
      * @param value the Boolean value that should be assigned to the key.
