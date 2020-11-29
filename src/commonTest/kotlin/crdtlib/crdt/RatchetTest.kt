@@ -29,7 +29,7 @@ import io.kotest.matchers.*
 class RatchetTest : StringSpec({
 
     /**
-     * This test evaluates the scenario: create  ndget.
+     * This test evaluates the scenario: create ratchet get.
      * Call to get should return the value set by the constructor.
      */
     "create string ratchet then get" {
