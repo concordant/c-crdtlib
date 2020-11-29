@@ -124,6 +124,54 @@ class MVMap : DeltaCRDT {
     }
 
     /**
+     * Gets an iterator containing the Boolean values currently stored in the map.
+     * @return an iterator over the Boolean values stored in the map.
+     */
+    @Name("iteratorBoolean")
+    fun iteratorBoolean(): Iterator<Pair<String, Set<Boolean>>> {
+        return this.entries.filter { (k, _) -> k.endsWith(BOOLEAN) }
+            .mapValues { it.value.filter { it2 -> it2.first != null } }
+            .filter { it.value.isNotEmpty() }
+            .map { (k, v) -> Pair(k.removeSuffix(BOOLEAN), v.map { it.first!!.toBoolean() }.toSet()) }.iterator()
+    }
+
+    /**
+     * Gets an iterator containing the double values currently stored in the map.
+     * @return an iterator over the double values stored in the map.
+     */
+    @Name("iteratorDouble")
+    fun iteratorDouble(): Iterator<Pair<String, Set<Double>>> {
+        return this.entries.filter { (k, _) -> k.endsWith(DOUBLE) }
+            .mapValues { it.value.filter { it2 -> it2.first != null } }
+            .filter { it.value.isNotEmpty() }
+            .map { (k, v) -> Pair(k.removeSuffix(DOUBLE), v.map { it.first!!.toDouble() }.toSet()) }.iterator()
+    }
+
+    /**
+     * Gets an iterator containing the integer values currently stored in the map.
+     * @return an iterator over the integer values stored in the map.
+     */
+    @Name("iteratorInt")
+    fun iteratorInt(): Iterator<Pair<String, Set<Int>>> {
+        return this.entries.filter { (k, _) -> k.endsWith(INTEGER) }
+            .mapValues { it.value.filter { it2 -> it2.first != null } }
+            .filter { it.value.isNotEmpty() }
+            .map { (k, v) -> Pair(k.removeSuffix(INTEGER), v.map { it.first!!.toInt() }.toSet()) }.iterator()
+    }
+
+    /**
+     * Gets an iterator containing the string values currently stored in the map.
+     * @return an iterator over the string values stored in the map.
+     */
+    @Name("iteratorString")
+    fun iteratorString(): Iterator<Pair<String, Set<String>>> {
+        return this.entries.filter { (k, _) -> k.endsWith(STRING) }
+            .mapValues { it.value.filter { it2 -> it2.first != null } }
+            .filter { it.value.isNotEmpty() }
+            .map { (k, v) -> Pair(k.removeSuffix(STRING), v.map { it.first!! }.toSet()) }.iterator()
+    }
+
+    /**
      * Puts a key / Boolean value pair into the map.
      * @param key the key that is targeted.
      * @param value the Boolean value that should be assigned to the key.

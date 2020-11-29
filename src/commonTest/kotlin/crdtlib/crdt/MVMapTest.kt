@@ -25,18 +25,21 @@ import crdtlib.utils.VersionVector
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.*
 import io.kotest.matchers.collections.*
+import io.kotest.matchers.iterator.shouldBeEmpty
+import io.kotest.matchers.iterator.shouldHaveNext
 import io.kotest.matchers.nulls.*
 
 /**
-* Represents a suite test for MVMap.
-**/
+ * Represents a suite test for MVMap.
+ */
 class MVMapTest : StringSpec({
 
     /**
-     * This test evaluates the scenario: get.
+     * This test evaluates the scenario: get/iterator.
      * Call to get should return null.
+     * Call to iterator should return an empty iterator.
      */
-    "create and get" {
+    "create and get/iterator" {
         val key = "key"
         val map = MVMap()
 
@@ -44,13 +47,19 @@ class MVMapTest : StringSpec({
         map.getDouble(key).shouldBeNull()
         map.getInt(key).shouldBeNull()
         map.getString(key).shouldBeNull()
+
+        map.iteratorBoolean().shouldBeEmpty()
+        map.iteratorDouble().shouldBeEmpty()
+        map.iteratorInt().shouldBeEmpty()
+        map.iteratorString().shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: put get.
+     * This test evaluates the scenario: put get/iterator.
      * Call to get should return the value set by the put.
+     * Call to iterator should return an iterator containing the value set by the put.
      */
-    "put and get" {
+    "put and get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -73,13 +82,34 @@ class MVMapTest : StringSpec({
         map.getDouble(key)!!.shouldHaveSingleElement(valueDouble)
         map.getInt(key)!!.shouldHaveSingleElement(valueInt)
         map.getString(key)!!.shouldHaveSingleElement(valueString)
+
+        val iteratorBoolean = map.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key, setOf(valueBoolean)))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key, setOf(valueDouble)))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key, setOf(valueInt)))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key, setOf(valueString)))
+        iteratorString.shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: put del get.
+     * This test evaluates the scenario: put del get/iterator.
      * Call to get should return null.
+     * Call to iterator should return an empty iterator.
      */
-    "put, delete, get" {
+    "put, delete, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -110,13 +140,19 @@ class MVMapTest : StringSpec({
         map.getDouble(key).shouldBeNull()
         map.getInt(key).shouldBeNull()
         map.getString(key).shouldBeNull()
+
+        map.iteratorBoolean().shouldBeEmpty()
+        map.iteratorDouble().shouldBeEmpty()
+        map.iteratorInt().shouldBeEmpty()
+        map.iteratorString().shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: del get.
+     * This test evaluates the scenario: del get/iterator.
      * Call to get should return null.
+     * Call to iterator should return an empty iterator.
      */
-    "delete and get" {
+    "delete and get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -135,13 +171,19 @@ class MVMapTest : StringSpec({
         map.getDouble(key).shouldBeNull()
         map.getInt(key).shouldBeNull()
         map.getString(key).shouldBeNull()
+
+        map.iteratorBoolean().shouldBeEmpty()
+        map.iteratorDouble().shouldBeEmpty()
+        map.iteratorInt().shouldBeEmpty()
+        map.iteratorString().shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: put put get.
+     * This test evaluates the scenario: put put get/iterator.
      * Call to get should return the value set by the second put.
+     * Call to iterator should return an iterator containing the value set by the second put.
      */
-    "put, put, get" {
+    "put, put, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -176,13 +218,34 @@ class MVMapTest : StringSpec({
         map.getDouble(key)!!.shouldHaveSingleElement(valDouble2)
         map.getInt(key)!!.shouldHaveSingleElement(valInt2)
         map.getString(key)!!.shouldHaveSingleElement(valString2)
+
+        val iteratorBoolean = map.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean2)))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble2)))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key, setOf(valInt2)))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key, setOf(valString2)))
+        iteratorString.shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: put put del get.
+     * This test evaluates the scenario: put put del get/iterator.
      * Call to get should return null.
+     * Call to iterator should return an empty iterator.
      */
-    "put, put, del, get" {
+    "put, put, del, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -225,13 +288,19 @@ class MVMapTest : StringSpec({
         map.getDouble(key).shouldBeNull()
         map.getInt(key).shouldBeNull()
         map.getString(key).shouldBeNull()
+
+        map.iteratorBoolean().shouldBeEmpty()
+        map.iteratorDouble().shouldBeEmpty()
+        map.iteratorInt().shouldBeEmpty()
+        map.iteratorString().shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: put || merge get.
+     * This test evaluates the scenario: put || merge get/iterator.
      * Call to get should return the value set by the put registered in the first replica.
+     * Call to iterator should return an iterator containing the value set by the put registered in the first replica.
      */
-    "R1: put; R2: merge and get" {
+    "R1: put; R2: merge and get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -261,13 +330,54 @@ class MVMapTest : StringSpec({
         map2.getDouble(key)!!.shouldHaveSingleElement(valueDouble)
         map2.getInt(key)!!.shouldHaveSingleElement(valueInt)
         map2.getString(key)!!.shouldHaveSingleElement(valueString)
+
+        val iteratorBoolean1 = map1.iteratorBoolean()
+        iteratorBoolean1.shouldHaveNext()
+        iteratorBoolean1.next().shouldBe(Pair(key, setOf(valueBoolean)))
+        iteratorBoolean1.shouldBeEmpty()
+
+        val iteratorDouble1 = map1.iteratorDouble()
+        iteratorDouble1.shouldHaveNext()
+        iteratorDouble1.next().shouldBe(Pair(key, setOf(valueDouble)))
+        iteratorDouble1.shouldBeEmpty()
+
+        val iteratorInt1 = map1.iteratorInt()
+        iteratorInt1.shouldHaveNext()
+        iteratorInt1.next().shouldBe(Pair(key, setOf(valueInt)))
+        iteratorInt1.shouldBeEmpty()
+
+        val iteratorString1 = map1.iteratorString()
+        iteratorString1.shouldHaveNext()
+        iteratorString1.next().shouldBe(Pair(key, setOf(valueString)))
+        iteratorString1.shouldBeEmpty()
+
+        val iteratorBoolean2 = map2.iteratorBoolean()
+        iteratorBoolean2.shouldHaveNext()
+        iteratorBoolean2.next().shouldBe(Pair(key, setOf(valueBoolean)))
+        iteratorBoolean2.shouldBeEmpty()
+
+        val iteratorDouble2 = map2.iteratorDouble()
+        iteratorDouble2.shouldHaveNext()
+        iteratorDouble2.next().shouldBe(Pair(key, setOf(valueDouble)))
+        iteratorDouble2.shouldBeEmpty()
+
+        val iteratorInt2 = map2.iteratorInt()
+        iteratorInt2.shouldHaveNext()
+        iteratorInt2.next().shouldBe(Pair(key, setOf(valueInt)))
+        iteratorInt2.shouldBeEmpty()
+
+        val iteratorString2 = map2.iteratorString()
+        iteratorString2.shouldHaveNext()
+        iteratorString2.next().shouldBe(Pair(key, setOf(valueString)))
+        iteratorString2.shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: put || merge put get.
+     * This test evaluates the scenario: put || merge put get/iterator.
      * Call to get should return the value set by put registered in the second replica.
+     * Call to iterator should return an iterator containing the value set by the put registered in the second replica.
      */
-    "R1: put; R2: merge, put, get" {
+    "R1: put; R2: merge, put, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -306,13 +416,34 @@ class MVMapTest : StringSpec({
         map2.getDouble(key)!!.shouldHaveSingleElement(valDouble2)
         map2.getInt(key)!!.shouldHaveSingleElement(valInt2)
         map2.getString(key)!!.shouldHaveSingleElement(valString2)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean2)))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble2)))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key, setOf(valInt2)))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key, setOf(valString2)))
+        iteratorString.shouldBeEmpty()
     }
 
     /**
      * This test evaluates the scenario: put || put merge get
-     * Call to get should return a set containing the two concurently put values.
+     * Call to get should return a set containing the two concurrently put values.
+     * Call to iterator should return an iterator containing the two concurrently put values.
      */
-    "R1: put; R2: put, merge, get" {
+    "R1: put; R2: put, merge, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -351,13 +482,34 @@ class MVMapTest : StringSpec({
         map2.getDouble(key)!!.shouldContainExactlyInAnyOrder(valDouble1, valDouble2)
         map2.getInt(key)!!.shouldContainExactlyInAnyOrder(valInt1, valInt2)
         map2.getString(key)!!.shouldContainExactlyInAnyOrder(valString1, valString2)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean1, valBoolean2)))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble1, valDouble2)))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key, setOf(valInt1, valInt2)))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key, setOf(valString1, valString2)))
+        iteratorString.shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: put del || put(with older timestamp) merge get.
+     * This test evaluates the scenario: put del || put(with older timestamp) merge get/iterator.
      * Call to get should return a set containing the value set in the second replica and null.
+     * Call to iterator should return an iterator containing the value set in the second replica.
      */
-    "R1: put, delete; R2: put with older timestamp, merge, get" {
+    "R1: put, delete; R2: put with older timestamp, merge, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -404,14 +556,35 @@ class MVMapTest : StringSpec({
         map2.getDouble(key)!!.shouldContainExactlyInAnyOrder(valDouble2, null)
         map2.getInt(key)!!.shouldContainExactlyInAnyOrder(valInt2, null)
         map2.getString(key)!!.shouldContainExactlyInAnyOrder(valString2, null)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean2)))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble2)))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key, setOf(valInt2)))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key, setOf(valString2)))
+        iteratorString.shouldBeEmpty()
     }
 
     /**
      * This test evaluates the scenario: put del || put(with older timestamp) merge(before del)
-     * merge(after del) get.
+     * merge(after del) get/iterator.
      * Call to get should return a set containing the value set in the second replica and null.
+     * Call to iterator should return an iterator containing the value set in the second replica.
      */
-    "R1: put, delete; R2: put with older timestamp, merge before delete, merge after delete, get" {
+    "R1: put, delete; R2: put with older timestamp, merge before delete, merge after delete, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -459,13 +632,34 @@ class MVMapTest : StringSpec({
         map2.getDouble(key)!!.shouldContainExactlyInAnyOrder(valDouble2, null)
         map2.getInt(key)!!.shouldContainExactlyInAnyOrder(valInt2, null)
         map2.getString(key)!!.shouldContainExactlyInAnyOrder(valString2, null)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean2)))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble2)))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key, setOf(valInt2)))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key, setOf(valString2)))
+        iteratorString.shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the scenario: put del || put(with newer timestamp) merge get.
-    * Call to get should return the value set by put registered in the second replica and null.
-    */
-    "R1: put, delete; R2: put with newer timestamp, merge, get" {
+    /**
+     * This test evaluates the scenario: put del || put(with newer timestamp) merge get/iterator.
+     * Call to get should return the value set by put registered in the second replica and null.
+     * Call to iterator should return an iterator containing the value set by put registered in the second replica.
+     */
+    "R1: put, delete; R2: put with newer timestamp, merge, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -516,14 +710,35 @@ class MVMapTest : StringSpec({
         map2.getDouble(key)!!.shouldContainExactlyInAnyOrder(valDouble2, null)
         map2.getInt(key)!!.shouldContainExactlyInAnyOrder(valInt2, null)
         map2.getString(key)!!.shouldContainExactlyInAnyOrder(valString2, null)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean2)))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble2)))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key, setOf(valInt2)))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key, setOf(valString2)))
+        iteratorString.shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the scenario: put del || put(with newer timstamp) merge(before del)
-    * merge(after del) get.
-    * Call to get should return the value set by put registered in the second replica and null.
-    */
-    "R1: put, delete; R2: put with newer timestamp, merge before delete, merge after delete, get" {
+    /**
+     * This test evaluates the scenario: put del || put(with newer timestamp) merge(before del)
+     * merge(after del) get/iterator.
+     * Call to get should return the value set by put registered in the second replica and null.
+     * Call to iterator should return an iterator containing the value set by put registered in the second replica.
+     */
+    "R1: put, delete; R2: put with newer timestamp, merge before delete, merge after delete, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -575,13 +790,34 @@ class MVMapTest : StringSpec({
         map2.getDouble(key)!!.shouldContainExactlyInAnyOrder(valDouble2, null)
         map2.getInt(key)!!.shouldContainExactlyInAnyOrder(valInt2, null)
         map2.getString(key)!!.shouldContainExactlyInAnyOrder(valString2, null)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean2)))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble2)))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key, setOf(valInt2)))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key, setOf(valString2)))
+        iteratorString.shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the scenario: put || put || merge1 del merge2 get.
-    * Call to get should return the value set by put registered in the second replica.
-    */
-    "R1: put; R2: put; R3: merge R1, delete, merge R2 ,get" {
+    /**
+     * This test evaluates the scenario: put || put || merge1 del merge2 get/iterator.
+     * Call to get should return the value set by put registered in the second replica.
+     * Call to iterator should return an iterator containing the value set by put registered in the second replica.
+     */
+    "R1: put; R2: put; R3: merge R1, delete, merge R2 ,get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val uid3 = ClientUId("clientid3")
@@ -632,12 +868,33 @@ class MVMapTest : StringSpec({
         map3.getBoolean(key)!!.shouldContainExactlyInAnyOrder(valBoolean2, null)
         map3.getInt(key)!!.shouldContainExactlyInAnyOrder(valInt2, null)
         map3.getString(key)!!.shouldContainExactlyInAnyOrder(valString2, null)
+
+        val iteratorBoolean = map3.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean2)))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map3.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble2)))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map3.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key, setOf(valInt2)))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map3.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key, setOf(valString2)))
+        iteratorString.shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the use of deltas return by call to put method.
-    * Call to get should return the value set by put registered in the first replica.
-    */
+    /**
+     * This test evaluates the use of deltas return by call to put method.
+     * Call to get should return the value set by put registered in the first replica.
+     * Call to iterator should return an iterator containing the value set by put registered in the first replica.
+     */
     "use deltas returned by put" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -674,13 +931,54 @@ class MVMapTest : StringSpec({
         map2.getDouble(key)!!.shouldHaveSingleElement(valueDouble)
         map2.getInt(key)!!.shouldHaveSingleElement(valueInt)
         map2.getString(key)!!.shouldHaveSingleElement(valueString)
+
+        val iteratorBoolean1 = map1.iteratorBoolean()
+        iteratorBoolean1.shouldHaveNext()
+        iteratorBoolean1.next().shouldBe(Pair(key, setOf(valueBoolean)))
+        iteratorBoolean1.shouldBeEmpty()
+
+        val iteratorDouble1 = map1.iteratorDouble()
+        iteratorDouble1.shouldHaveNext()
+        iteratorDouble1.next().shouldBe(Pair(key, setOf(valueDouble)))
+        iteratorDouble1.shouldBeEmpty()
+
+        val iteratorInt1 = map1.iteratorInt()
+        iteratorInt1.shouldHaveNext()
+        iteratorInt1.next().shouldBe(Pair(key, setOf(valueInt)))
+        iteratorInt1.shouldBeEmpty()
+
+        val iteratorString1 = map1.iteratorString()
+        iteratorString1.shouldHaveNext()
+        iteratorString1.next().shouldBe(Pair(key, setOf(valueString)))
+        iteratorString1.shouldBeEmpty()
+
+        val iteratorBoolean2 = map2.iteratorBoolean()
+        iteratorBoolean2.shouldHaveNext()
+        iteratorBoolean2.next().shouldBe(Pair(key, setOf(valueBoolean)))
+        iteratorBoolean2.shouldBeEmpty()
+
+        val iteratorDouble2 = map2.iteratorDouble()
+        iteratorDouble2.shouldHaveNext()
+        iteratorDouble2.next().shouldBe(Pair(key, setOf(valueDouble)))
+        iteratorDouble2.shouldBeEmpty()
+
+        val iteratorInt2 = map2.iteratorInt()
+        iteratorInt2.shouldHaveNext()
+        iteratorInt2.next().shouldBe(Pair(key, setOf(valueInt)))
+        iteratorInt2.shouldBeEmpty()
+
+        val iteratorString2 = map2.iteratorString()
+        iteratorString2.shouldHaveNext()
+        iteratorString2.next().shouldBe(Pair(key, setOf(valueString)))
+        iteratorString2.shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the use of deltas return by call to put and delete methods.
-    * Call to get should return null.
-    */
-    "use deltas returned by put and delelte" {
+    /**
+     * This test evaluates the use of deltas return by call to put and delete methods.
+     * Call to get should return null.
+     * Call to iterator should return an empty iterator.
+     */
+    "use deltas returned by put and delete" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -732,12 +1030,22 @@ class MVMapTest : StringSpec({
         map2.getDouble(key).shouldBeNull()
         map2.getInt(key).shouldBeNull()
         map2.getString(key).shouldBeNull()
+
+        map1.iteratorBoolean().shouldBeEmpty()
+        map1.iteratorDouble().shouldBeEmpty()
+        map1.iteratorInt().shouldBeEmpty()
+        map1.iteratorString().shouldBeEmpty()
+        map2.iteratorBoolean().shouldBeEmpty()
+        map2.iteratorDouble().shouldBeEmpty()
+        map2.iteratorInt().shouldBeEmpty()
+        map2.iteratorString().shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the merge of deltas return by call to put method.
-    * Call to get should return the values set by puts registered in the first replica.
-    */
+    /**
+     * This test evaluates the merge of deltas return by call to put method.
+     * Call to get should return the values set by puts registered in the first replica.
+     * Call to iterator should return an iterator contaning the values set by puts registered in the first replica.
+     */
     "merge deltas returned by put operations" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -800,12 +1108,41 @@ class MVMapTest : StringSpec({
         map2.getDouble(key2)!!.shouldHaveSingleElement(valDouble1)
         map2.getInt(key2)!!.shouldHaveSingleElement(valInt1)
         map2.getString(key2)!!.shouldHaveSingleElement(valString1)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key1, setOf(valBoolean2)))
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key2, setOf(valBoolean1)))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key1, setOf(valDouble2)))
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key2, setOf(valDouble1)))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key1, setOf(valInt2)))
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key2, setOf(valInt1)))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key1, setOf(valString2)))
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key2, setOf(valString1)))
+        iteratorString.shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the merge of deltas return by call to put and delete methods.
-    * Call to get should return the value set by put or null if it has been deleted.
-    */
+    /**
+     * This test evaluates the merge of deltas return by call to put and delete methods.
+     * Call to get should return the value set by put or null if it has been deleted.
+     * Call to iterator should return an iterator the value set by put if it has not been deleted.
+     */
     "merge deltas returned by put and delete operations" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -864,13 +1201,35 @@ class MVMapTest : StringSpec({
         map2.getDouble(key2)!!.shouldHaveSingleElement(valueDouble)
         map2.getInt(key2)!!.shouldHaveSingleElement(valueInt)
         map2.getString(key2)!!.shouldHaveSingleElement(valueString)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key2, setOf(valueBoolean)))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key2, setOf(valueDouble)))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key2, setOf(valueInt)))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key2, setOf(valueString)))
+        iteratorString.shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the generation of delta (only put) plus its merging into another replica.
-    * Call to get should return the values set by puts registered in the first replica after w.r.t
-    * the given context.
-    */
+    /**
+     * This test evaluates the generation of delta (only put) plus its merging into another replica.
+     * Call to get should return the values set by puts registered in the first replica after w.r.t
+     * the given context.
+     * Call to iterator should return an iterator containing the values set by puts registered in the first replica
+     * after w.r.t the given context.
+     */
     "generate delta" {
         val uid = ClientUId("clientid1")
         val client = SimpleEnvironment(uid)
@@ -938,12 +1297,42 @@ class MVMapTest : StringSpec({
         map2.getDouble(key4)!!.shouldHaveSingleElement(valueDouble)
         map2.getInt(key4)!!.shouldHaveSingleElement(valueInt)
         map2.getString(key4)!!.shouldHaveSingleElement(valueString)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key3, setOf(valueBoolean)))
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key4, setOf(valueBoolean)))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key3, setOf(valueDouble)))
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key4, setOf(valueDouble)))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key3, setOf(valueInt)))
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key4, setOf(valueInt)))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key3, setOf(valueString)))
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key4, setOf(valueString)))
+        iteratorString.shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the generation of delta (including delete) plus its merging into another replica.
-    * Call to get should return the values set by puts or null set by delete w.r.t the given context.
-    */
+    /**
+     * This test evaluates the generation of delta (including delete) plus its merging into another replica.
+     * Call to get should return the values set by puts or null set by delete w.r.t the given context.
+     * Call to iterator should return an iterator containing the values set by puts if it has not been deleted
+     * w.r.t the given context.
+     */
     "generate delta with delete" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -1006,11 +1395,31 @@ class MVMapTest : StringSpec({
         map2.getDouble(key3)!!.shouldHaveSingleElement(valueDouble)
         map2.getInt(key3)!!.shouldHaveSingleElement(valueInt)
         map2.getString(key3)!!.shouldHaveSingleElement(valueString)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key3, setOf(valueBoolean)))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key3, setOf(valueDouble)))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key3, setOf(valueInt)))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key3, setOf(valueString)))
+        iteratorString.shouldBeEmpty()
     }
 
     /**
      * This test evaluates JSON serialization an empty MV map.
-     **/
+     */
     "empty JSON serialization" {
         val map = MVMap()
 
@@ -1021,7 +1430,7 @@ class MVMapTest : StringSpec({
 
     /**
      * This test evaluates JSON deserialization of an empty MV map.
-     **/
+     */
     "empty JSON deserialization" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -1037,7 +1446,7 @@ class MVMapTest : StringSpec({
 
     /**
      * This test evaluates JSON serialization of a MV map.
-     **/
+     */
     "JSON serialization" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
@@ -1078,7 +1487,7 @@ class MVMapTest : StringSpec({
 
     /**
      * This test evaluates JSON deserialization of a MV map.
-     **/
+     */
     "JSON deserialization" {
         val mapJson = MVMap.fromJson("""{"_type":"MVMap","_metadata":{"entries":{"key1%INTEGER":[{"uid":{"name":"clientid1"},"cnt":-2147483647}],"key2%STRING":[{"uid":{"name":"clientid1"},"cnt":-2147483645}],"key3%STRING":[{"uid":{"name":"clientid1"},"cnt":-2147483644},{"uid":{"name":"clientid2"},"cnt":-2147483647}],"key4%BOOLEAN":[{"uid":{"name":"clientid1"},"cnt":-2147483643}],"key5%DOUBLE":[{"uid":{"name":"clientid1"},"cnt":-2147483642}]},"causalContext":{"entries":[{"name":"clientid1"},-2147483642,{"name":"clientid2"},-2147483647]}},"key1%INTEGER":[1],"key2%STRING":[null],"key3%STRING":["value3","value2"],"key4%BOOLEAN":[true],"key5%DOUBLE":[3.14159]}""")
 
