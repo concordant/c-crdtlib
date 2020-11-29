@@ -1044,7 +1044,7 @@ class MVMapTest : StringSpec({
     /**
      * This test evaluates the merge of deltas return by call to put method.
      * Call to get should return the values set by puts registered in the first replica.
-     * Call to iterator should return an iterator contaning the values set by puts registered in the first replica.
+     * Call to iterator should return an iterator containing the values set by puts registered in the first replica.
      */
     "merge deltas returned by put operations" {
         val uid = ClientUId("clientid")
