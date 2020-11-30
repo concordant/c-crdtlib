@@ -104,7 +104,7 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-     * This test evaluates the scenario: incremement(multiple times) get.
+     * This test evaluates the scenario: increment(multiple times) get.
      * Call to get should return the sum of values set by calls to increment.
      */
     "multiple increments and get" {
@@ -126,7 +126,7 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-     * This test evaluates the scenario: decremement(multiple times) get.
+     * This test evaluates the scenario: decrement(multiple times) get.
      * Call to get should return the inverse of the sum of values set by calls to decrement.
      */
     "multiple decrements and get" {
@@ -451,7 +451,7 @@ class PNCounterTest : StringSpec({
     }
 
     /**
-     * This test evaluates the use of delta return by call to incremetn and decrement methods.
+     * This test evaluates the use of delta return by call to increment and decrement methods.
      * Call to get should return the sum of increment values minus the sum of decrement values.
      */
     "use delta returned by increment and decrement" {

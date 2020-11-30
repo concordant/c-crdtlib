@@ -63,7 +63,7 @@ class SimpleEnvironmentTest : StringSpec({
      * generated timestamp has a client unique id equals to the one associated with the
      * environment and a count equals to the update timestamp count plus 1.
      **/
-    "update with local timstamp then generate new timstamp" {
+    "update with local timestamp then generate new timestamp" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
 
@@ -78,7 +78,7 @@ class SimpleEnvironmentTest : StringSpec({
      * generated timestamp has a client unique id equals to the one associated with the
      * environment and a count equals to the update timestamp count plus 1.
      **/
-    "update with foriegn timstamp then generate new timstamp" {
+    "update with foreign timestamp then generate new timestamp" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client = SimpleEnvironment(uid1)
@@ -93,7 +93,7 @@ class SimpleEnvironmentTest : StringSpec({
      * This test evaluates that after updating the environment with a local timestamp having a
      * MAX_VALUE counter, the next generation of timestamp throws an exception.
      **/
-    "update with local timstamp then generate new timstamp and overflow" {
+    "update with local timestamp then generate new timestamp and overflow" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
 
@@ -108,7 +108,7 @@ class SimpleEnvironmentTest : StringSpec({
      * This test evaluates that after updating the environment with a foreign timestamp having a
      * MAX_VALUE counter, the next generation of timestamp throws an exception.
      **/
-    "update with foreign timstamp then generate new timstamp and overflow" {
+    "update with foreign timestamp then generate new timestamp and overflow" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client = SimpleEnvironment(uid1)
@@ -125,7 +125,7 @@ class SimpleEnvironmentTest : StringSpec({
      * the next generated timestamp has a client unique id equals to the one associated with the
      * environment and a count equals to the max of update timestamp counts plus 1.
      **/
-    "update with local and foreign timstamp then generate timstamp" {
+    "update with local and foreign timestamp then generate timestamp" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client = SimpleEnvironment(uid1)
@@ -141,7 +141,7 @@ class SimpleEnvironmentTest : StringSpec({
      * This test evaluates that after updating the environment with a local timestamp, the current
      * state associated with the environment is a version vector containing the update timestamp.
      **/
-    "update with local timstamp then get current state" {
+    "update with local timestamp then get current state" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts = Timestamp(uid, 7)
@@ -159,7 +159,7 @@ class SimpleEnvironmentTest : StringSpec({
      * This test evaluates that after updating the environment with a foreign timestamp, the current
      * state associated with the environment is a version vector containing the update timestamp.
      **/
-    "update with foreign timstamp then get current state" {
+    "update with foreign timestamp then get current state" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client = SimpleEnvironment(uid1)
@@ -179,7 +179,7 @@ class SimpleEnvironmentTest : StringSpec({
      * the current state associated with the environment is a version vector containing the update
      * timestamps.
      **/
-    "update with local and foreign timstamp then get current state" {
+    "update with local and foreign timestamp then get current state" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client = SimpleEnvironment(uid1)
@@ -202,7 +202,7 @@ class SimpleEnvironmentTest : StringSpec({
      * generated timestamp has a client unique id equals to the one associated with the
      * environment and a count equals to the max value in the update version vector plus 1.
      **/
-    "update with version vector then generate timstamp" {
+    "update with version vector then generate timestamp" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client = SimpleEnvironment(uid1)

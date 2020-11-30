@@ -20,7 +20,7 @@
 package crdtlib.utils
 
 /**
-* Return the sum of two Ints, checking for overflow
+* Return the sum of two integers, checking for overflow
 *
 * @param a an Int operand
 * @param b an Int operand
@@ -38,14 +38,14 @@ fun checkedSum(a: Int, b: Int): Int {
 }
 
 /**
-* Add and substract non-negative Ints, checking for overflow
+* Add and subtract non-negative integers, checking for overflow
 *
 * Compute add[*] - sub[*], ensuring an exception is thrown
 * iff the final result overflows
 * (and not because of an intermediate overflowing result).
 *
-* @param add a Sequence of non-negative Ints to add
-* @param sub a Sequence of non-negative Ints to substract
+* @param add a Sequence of non-negative integers to add
+* @param sub a Sequence of non-negative integers to subtract
 * @return add[*] - sub[*]
 * @throws ArithmeticException on overflow
 **/

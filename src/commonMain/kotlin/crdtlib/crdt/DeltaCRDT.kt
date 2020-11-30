@@ -51,7 +51,7 @@ abstract class DeltaCRDT {
 
     companion object {
         /**
-         * Deserializes a given json string in the correpsonding crdt type.
+         * Deserializes a given json string in the corresponding crdt type.
          * @param json the given json string.
          * @return the resulted delta crdt.
          */
@@ -88,7 +88,7 @@ abstract class DeltaCRDT {
                     return Map.fromJson(json)
                 }
                 else -> {
-                    throw IllegalArgumentException("DeltaCRDT cannot deserialize type: " + crdtType)
+                    throw IllegalArgumentException("DeltaCRDT cannot deserialize type: $crdtType")
                 }
             }
         }
