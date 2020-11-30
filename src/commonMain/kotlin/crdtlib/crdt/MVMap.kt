@@ -129,10 +129,9 @@ class MVMap : DeltaCRDT {
      */
     @Name("iteratorBoolean")
     fun iteratorBoolean(): Iterator<Pair<String, Set<Boolean>>> {
-        return this.entries.filter { (k, _) -> k.endsWith(BOOLEAN) }
-            .mapValues { it.value.filter { it2 -> it2.first != null } }
-            .filter { it.value.isNotEmpty() }
-            .map { (k, v) -> Pair(k.removeSuffix(BOOLEAN), v.map { it.first!!.toBoolean() }.toSet()) }.iterator()
+        return this.entries.asSequence().filter { (k, _) -> k.endsWith(BOOLEAN) }
+                .map { (k, v) -> Pair(k.removeSuffix(BOOLEAN), v.filter { it.first != null }.map { it.first!!.toBoolean() }.toSet()) }
+                .filter { (_, v) -> v.isNotEmpty() }.iterator()
     }
 
     /**
@@ -141,10 +140,9 @@ class MVMap : DeltaCRDT {
      */
     @Name("iteratorDouble")
     fun iteratorDouble(): Iterator<Pair<String, Set<Double>>> {
-        return this.entries.filter { (k, _) -> k.endsWith(DOUBLE) }
-            .mapValues { it.value.filter { it2 -> it2.first != null } }
-            .filter { it.value.isNotEmpty() }
-            .map { (k, v) -> Pair(k.removeSuffix(DOUBLE), v.map { it.first!!.toDouble() }.toSet()) }.iterator()
+        return this.entries.asSequence().filter { (k, _) -> k.endsWith(DOUBLE) }
+                .map { (k, v) -> Pair(k.removeSuffix(DOUBLE), v.filter { it.first != null }.map { it.first!!.toDouble() }.toSet()) }
+                .filter { (_, v) -> v.isNotEmpty() }.iterator()
     }
 
     /**
@@ -153,10 +151,9 @@ class MVMap : DeltaCRDT {
      */
     @Name("iteratorInt")
     fun iteratorInt(): Iterator<Pair<String, Set<Int>>> {
-        return this.entries.filter { (k, _) -> k.endsWith(INTEGER) }
-            .mapValues { it.value.filter { it2 -> it2.first != null } }
-            .filter { it.value.isNotEmpty() }
-            .map { (k, v) -> Pair(k.removeSuffix(INTEGER), v.map { it.first!!.toInt() }.toSet()) }.iterator()
+        return this.entries.asSequence().filter { (k, _) -> k.endsWith(INTEGER) }
+                .map { (k, v) -> Pair(k.removeSuffix(INTEGER), v.filter { it.first != null }.map { it.first!!.toInt() }.toSet()) }
+                .filter { (_, v) -> v.isNotEmpty() }.iterator()
     }
 
     /**
@@ -165,10 +162,9 @@ class MVMap : DeltaCRDT {
      */
     @Name("iteratorString")
     fun iteratorString(): Iterator<Pair<String, Set<String>>> {
-        return this.entries.filter { (k, _) -> k.endsWith(STRING) }
-            .mapValues { it.value.filter { it2 -> it2.first != null } }
-            .filter { it.value.isNotEmpty() }
-            .map { (k, v) -> Pair(k.removeSuffix(STRING), v.map { it.first!! }.toSet()) }.iterator()
+        return this.entries.asSequence().filter { (k, _) -> k.endsWith(STRING) }
+            .map { (k, v) -> Pair(k.removeSuffix(STRING), v.filter { it.first != null }.map { it.first!! }.toSet()) }
+            .filter { (_, v) -> v.isNotEmpty() }.iterator()
     }
 
     /**

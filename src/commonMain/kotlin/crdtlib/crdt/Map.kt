@@ -249,7 +249,7 @@ class Map : DeltaCRDT {
      */
     @Name("iteratorCntInt")
     fun iteratorCntInt(): Iterator<Pair<String, Int>> {
-        return this.cntMap.map { (k, v) -> Pair(k, v.get()) }.iterator()
+        return this.cntMap.asSequence().map { (k, v) -> Pair(k, v.get()) }.iterator()
     }
 
     /**

@@ -105,7 +105,7 @@ class LWWMap : DeltaCRDT {
      */
     @Name("iteratorBoolean")
     fun iteratorBoolean(): Iterator<Pair<String, Boolean>> {
-        return this.entries.filter { (k, v) -> k.endsWith(BOOLEAN) && v.first != null }
+        return this.entries.asSequence().filter { (k, v) -> k.endsWith(BOOLEAN) && v.first != null }
             .map { (k, v) -> Pair(k.removeSuffix(BOOLEAN), v.first.toBoolean()) }.iterator()
     }
 
@@ -115,7 +115,7 @@ class LWWMap : DeltaCRDT {
      */
     @Name("iteratorDouble")
     fun iteratorDouble(): Iterator<Pair<String, Double>> {
-        return this.entries.filter { (k, v) -> k.endsWith(DOUBLE) && v.first != null }
+        return this.entries.asSequence().filter { (k, v) -> k.endsWith(DOUBLE) && v.first != null }
             .map { (k, v) -> Pair(k.removeSuffix(DOUBLE), v.first!!.toDouble()) }.iterator()
     }
 
@@ -125,7 +125,7 @@ class LWWMap : DeltaCRDT {
      */
     @Name("iteratorInt")
     fun iteratorInt(): Iterator<Pair<String, Int>> {
-        return this.entries.filter { (k, v) -> k.endsWith(INTEGER) && v.first != null }
+        return this.entries.asSequence().filter { (k, v) -> k.endsWith(INTEGER) && v.first != null }
             .map { (k, v) -> Pair(k.removeSuffix(INTEGER), v.first!!.toInt()) }.iterator()
     }
 
@@ -135,7 +135,7 @@ class LWWMap : DeltaCRDT {
      */
     @Name("iteratorString")
     fun iteratorString(): Iterator<Pair<String, String>> {
-        return this.entries.filter { (k, v) -> k.endsWith(STRING) && v.first != null }
+        return this.entries.asSequence().filter { (k, v) -> k.endsWith(STRING) && v.first != null }
             .map { (k, v) -> Pair(k.removeSuffix(STRING), v.first!!) }.iterator()
     }
 
