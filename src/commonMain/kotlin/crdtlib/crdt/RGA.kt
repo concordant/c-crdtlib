@@ -66,7 +66,7 @@ data class RGANode(val atom: String, val anchor: RGAUId?, val uid: RGAUId, val t
 * }
 */
 @Serializable
-class RGA : DeltaCRDT {
+class RGA : DeltaCRDT, Iterable<String> {
 
     /**
      * An array list storing the different elements.
@@ -86,7 +86,7 @@ class RGA : DeltaCRDT {
     }
 
     /**
-     * Lookups for the real index of a given targeted index.
+     * Looks up for the real index of a given targeted index.
      * @param index the targeted index.
      * @return the real index.
      */
@@ -106,7 +106,7 @@ class RGA : DeltaCRDT {
     /**
      * Inserts a given atom at a given index.
      * @param index the index where the atom should be inserted.
-     * @param atom the atom that ashould be inserted.
+     * @param atom the atom that should be inserted.
      * @param ts the timestamp associated with the operation.
      * @return the resulting delta operation.
      */
@@ -125,7 +125,7 @@ class RGA : DeltaCRDT {
 
     /**
      * Removes the atom presents a a given index.
-     * @param index the index where atom sould be removed.
+     * @param index the index where atom should be removed.
      * @param ts the timestamp associated with the operation.
      * @return the resulting delta operation.
      */
@@ -144,11 +144,21 @@ class RGA : DeltaCRDT {
 
     /**
      * Gets the value associated with the RGA.
-     * @return a list containning the values present in the RGA.
+     * @return a list containing the values present in the RGA.
      */
     @Name("get")
     fun get(): List<String> {
         return this.nodes.filter { !it.removed }.map { it.atom }
+    }
+
+    /**
+     * Gets the value present at the specified index in the RGA.
+     * @return the element at the specified index in the RGA.
+     */
+    @Name("getAt")
+    fun get(index: Int): String {
+        val realIndex = toRealIndex(index)
+        return this.nodes[realIndex].atom
     }
 
     /**
@@ -261,6 +271,14 @@ class RGA : DeltaCRDT {
             val jsonSerializer = JsonRGASerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
+    }
+
+    /**
+     * Gets an iterator containing the values associated with the RGA.
+     * @return an iterator over the values present in the RGA.
+     */
+    override fun iterator(): Iterator<String> {
+        return this.nodes.asSequence().filter { !it.removed }.map { it.atom }.iterator()
     }
 }
 
