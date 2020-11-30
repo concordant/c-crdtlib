@@ -40,7 +40,7 @@ import kotlinx.serialization.json.*
 * }
 */
 @Serializable
-class MVRegister : DeltaCRDT {
+class MVRegister : DeltaCRDT, Iterable<String> {
 
     /**
      * A mutable set storing the different values with their associated timestamp.
@@ -165,6 +165,14 @@ class MVRegister : DeltaCRDT {
             val jsonSerializer = JsonMVRegisterSerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
+    }
+
+    /**
+     * Gets an iterator containing the values currently stored in the register.
+     * @return an iterator over the values stored in the register.
+     */
+    override fun iterator(): Iterator<String> {
+        return this.entries.asSequence().map { it.first }.iterator()
     }
 }
 
