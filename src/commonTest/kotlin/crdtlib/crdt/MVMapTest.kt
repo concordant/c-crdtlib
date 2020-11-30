@@ -559,22 +559,22 @@ class MVMapTest : StringSpec({
 
         val iteratorBoolean = map2.iteratorBoolean()
         iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean2)))
+        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean2, null)))
         iteratorBoolean.shouldBeEmpty()
 
         val iteratorDouble = map2.iteratorDouble()
         iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble2)))
+        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble2, null)))
         iteratorDouble.shouldBeEmpty()
 
         val iteratorInt = map2.iteratorInt()
         iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key, setOf(valInt2)))
+        iteratorInt.next().shouldBe(Pair(key, setOf(valInt2, null)))
         iteratorInt.shouldBeEmpty()
 
         val iteratorString = map2.iteratorString()
         iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key, setOf(valString2)))
+        iteratorString.next().shouldBe(Pair(key, setOf(valString2, null)))
         iteratorString.shouldBeEmpty()
     }
 
@@ -635,22 +635,22 @@ class MVMapTest : StringSpec({
 
         val iteratorBoolean = map2.iteratorBoolean()
         iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean2)))
+        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean2, null)))
         iteratorBoolean.shouldBeEmpty()
 
         val iteratorDouble = map2.iteratorDouble()
         iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble2)))
+        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble2, null)))
         iteratorDouble.shouldBeEmpty()
 
         val iteratorInt = map2.iteratorInt()
         iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key, setOf(valInt2)))
+        iteratorInt.next().shouldBe(Pair(key, setOf(valInt2, null)))
         iteratorInt.shouldBeEmpty()
 
         val iteratorString = map2.iteratorString()
         iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key, setOf(valString2)))
+        iteratorString.next().shouldBe(Pair(key, setOf(valString2, null)))
         iteratorString.shouldBeEmpty()
     }
 
@@ -713,22 +713,22 @@ class MVMapTest : StringSpec({
 
         val iteratorBoolean = map2.iteratorBoolean()
         iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean2)))
+        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean2, null)))
         iteratorBoolean.shouldBeEmpty()
 
         val iteratorDouble = map2.iteratorDouble()
         iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble2)))
+        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble2, null)))
         iteratorDouble.shouldBeEmpty()
 
         val iteratorInt = map2.iteratorInt()
         iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key, setOf(valInt2)))
+        iteratorInt.next().shouldBe(Pair(key, setOf(valInt2, null)))
         iteratorInt.shouldBeEmpty()
 
         val iteratorString = map2.iteratorString()
         iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key, setOf(valString2)))
+        iteratorString.next().shouldBe(Pair(key, setOf(valString2, null)))
         iteratorString.shouldBeEmpty()
     }
 
@@ -793,22 +793,22 @@ class MVMapTest : StringSpec({
 
         val iteratorBoolean = map2.iteratorBoolean()
         iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean2)))
+        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean2, null)))
         iteratorBoolean.shouldBeEmpty()
 
         val iteratorDouble = map2.iteratorDouble()
         iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble2)))
+        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble2, null)))
         iteratorDouble.shouldBeEmpty()
 
         val iteratorInt = map2.iteratorInt()
         iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key, setOf(valInt2)))
+        iteratorInt.next().shouldBe(Pair(key, setOf(valInt2, null)))
         iteratorInt.shouldBeEmpty()
 
         val iteratorString = map2.iteratorString()
         iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key, setOf(valString2)))
+        iteratorString.next().shouldBe(Pair(key, setOf(valString2, null)))
         iteratorString.shouldBeEmpty()
     }
 
@@ -871,22 +871,22 @@ class MVMapTest : StringSpec({
 
         val iteratorBoolean = map3.iteratorBoolean()
         iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean2)))
+        iteratorBoolean.next().shouldBe(Pair(key, setOf(valBoolean2, null)))
         iteratorBoolean.shouldBeEmpty()
 
         val iteratorDouble = map3.iteratorDouble()
         iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble2)))
+        iteratorDouble.next().shouldBe(Pair(key, setOf(valDouble2, null)))
         iteratorDouble.shouldBeEmpty()
 
         val iteratorInt = map3.iteratorInt()
         iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key, setOf(valInt2)))
+        iteratorInt.next().shouldBe(Pair(key, setOf(valInt2, null)))
         iteratorInt.shouldBeEmpty()
 
         val iteratorString = map3.iteratorString()
         iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key, setOf(valString2)))
+        iteratorString.next().shouldBe(Pair(key, setOf(valString2, null)))
         iteratorString.shouldBeEmpty()
     }
 

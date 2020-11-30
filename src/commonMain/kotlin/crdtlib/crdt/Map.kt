@@ -212,7 +212,7 @@ class Map : DeltaCRDT {
      * @return an iterator over the Boolean values stored in the map.
      */
     @Name("iteratorMVBoolean")
-    fun iteratorMVBoolean(): Iterator<Pair<String, Set<Boolean>>> {
+    fun iteratorMVBoolean(): Iterator<Pair<String, Set<Boolean?>>> {
         return this.mvMap.iteratorBoolean()
     }
 
@@ -221,7 +221,7 @@ class Map : DeltaCRDT {
      * @return an iterator over the double values stored in the map.
      */
     @Name("iteratorMVDouble")
-    fun iteratorMVDouble(): Iterator<Pair<String, Set<Double>>> {
+    fun iteratorMVDouble(): Iterator<Pair<String, Set<Double?>>> {
         return this.mvMap.iteratorDouble()
     }
 
@@ -230,7 +230,7 @@ class Map : DeltaCRDT {
      * @return an iterator over the integer values stored in the map.
      */
     @Name("iteratorMVInt")
-    fun iteratorMVInt(): Iterator<Pair<String, Set<Int>>> {
+    fun iteratorMVInt(): Iterator<Pair<String, Set<Int?>>> {
         return this.mvMap.iteratorInt()
     }
 
@@ -239,7 +239,7 @@ class Map : DeltaCRDT {
      * @return an iterator over the string values stored in the map.
      */
     @Name("iteratorMVString")
-    fun iteratorMVString(): Iterator<Pair<String, Set<String>>> {
+    fun iteratorMVString(): Iterator<Pair<String, Set<String?>>> {
         return this.mvMap.iteratorString()
     }
 
