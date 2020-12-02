@@ -24,17 +24,21 @@ import crdtlib.utils.SimpleEnvironment
 import crdtlib.utils.VersionVector
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.*
+import io.kotest.matchers.iterator.shouldBeEmpty
+import io.kotest.matchers.iterator.shouldHaveNext
 import io.kotest.matchers.nulls.*
 
 /**
-* Represents a suite test for LWWMap.
-**/
+ * Represents a suite test for LWWMap.
+ */
 class LWWMapTest : StringSpec({
     /**
-     * This test evaluates the scenario: get.
-     * Call to get should return null
+     * This test evaluates the scenario: get/iterator.
+     * Call to get should return null.
+     * Call to iterator should return an empty iterator.
+     *
      */
-    "create and get" {
+    "create and get/iterator" {
         val key = "key"
         val map = LWWMap()
 
@@ -42,13 +46,19 @@ class LWWMapTest : StringSpec({
         map.getDouble(key).shouldBeNull()
         map.getInt(key).shouldBeNull()
         map.getString(key).shouldBeNull()
+
+        map.iteratorBoolean().shouldBeEmpty()
+        map.iteratorDouble().shouldBeEmpty()
+        map.iteratorInt().shouldBeEmpty()
+        map.iteratorString().shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: put get.
+     * This test evaluates the scenario: put get/iterator.
      * Call to get should return the value set by the put.
+     * Call to iterator should return an iterator containing the value set by the put.
      */
-    "put and get" {
+    "put and get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -71,13 +81,34 @@ class LWWMapTest : StringSpec({
         map.getDouble(key).shouldBe(valueDouble)
         map.getInt(key).shouldBe(valueInt)
         map.getString(key).shouldBe(valueString)
+
+        val iteratorBoolean = map.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key, valueBoolean))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key, valueDouble))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key, valueInt))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key, valueString))
+        iteratorString.shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: put del get.
+     * This test evaluates the scenario: put del get/iterator.
      * Call to get should return null.
+     * Call to iterator should return an empty iterator.
      */
-    "put, delete, get" {
+    "put, delete, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -108,13 +139,19 @@ class LWWMapTest : StringSpec({
         map.getDouble(key).shouldBeNull()
         map.getInt(key).shouldBeNull()
         map.getString(key).shouldBeNull()
+
+        map.iteratorBoolean().shouldBeEmpty()
+        map.iteratorDouble().shouldBeEmpty()
+        map.iteratorInt().shouldBeEmpty()
+        map.iteratorString().shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: del get.
+     * This test evaluates the scenario: del get/iterator.
      * Call to get should return null.
+     * Call to iterator should return an empty iterator.
      */
-    "delete and get" {
+    "delete and get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -133,13 +170,19 @@ class LWWMapTest : StringSpec({
         map.getDouble(key).shouldBeNull()
         map.getInt(key).shouldBeNull()
         map.getString(key).shouldBeNull()
+
+        map.iteratorBoolean().shouldBeEmpty()
+        map.iteratorDouble().shouldBeEmpty()
+        map.iteratorInt().shouldBeEmpty()
+        map.iteratorString().shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: put put get
+     * This test evaluates the scenario: put put get/iterator.
      * Call to get should return the value set by the second put.
+     * Call to iterator should return an iterator containing the value set by the second put.
      */
-    "put, put, get" {
+    "put, put, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -174,13 +217,34 @@ class LWWMapTest : StringSpec({
         map.getDouble(key).shouldBe(valDouble2)
         map.getInt(key).shouldBe(valInt2)
         map.getString(key).shouldBe(valString2)
+
+        val iteratorBoolean = map.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key, valBoolean2))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key, valDouble2))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key, valInt2))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key, valString2))
+        iteratorString.shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: put put del get.
+     * This test evaluates the scenario: put put del get/iterator.
      * Call to get should return null.
+     * Call to iterator should return an empty iterator.
      */
-    "put, put, del, get" {
+    "put, put, del, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -223,13 +287,19 @@ class LWWMapTest : StringSpec({
         map.getDouble(key).shouldBeNull()
         map.getInt(key).shouldBeNull()
         map.getString(key).shouldBeNull()
+
+        map.iteratorBoolean().shouldBeEmpty()
+        map.iteratorDouble().shouldBeEmpty()
+        map.iteratorInt().shouldBeEmpty()
+        map.iteratorString().shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: put || merge get.
+     * This test evaluates the scenario: put || merge get/iterator.
      * Call to get should return the value set by the put registered in the first replica.
+     * Call to iterator should return an iterator containing the value set by the put registered in the first replica.
      */
-    "R1: put; R2: merge and get" {
+    "R1: put; R2: merge and get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
         val ts1 = client.tick()
@@ -259,13 +329,54 @@ class LWWMapTest : StringSpec({
         map2.getDouble(key).shouldBe(valueDouble)
         map2.getInt(key).shouldBe(valueInt)
         map2.getString(key).shouldBe(valueString)
+
+        val iteratorBoolean1 = map1.iteratorBoolean()
+        iteratorBoolean1.shouldHaveNext()
+        iteratorBoolean1.next().shouldBe(Pair(key, valueBoolean))
+        iteratorBoolean1.shouldBeEmpty()
+
+        val iteratorDouble1 = map1.iteratorDouble()
+        iteratorDouble1.shouldHaveNext()
+        iteratorDouble1.next().shouldBe(Pair(key, valueDouble))
+        iteratorDouble1.shouldBeEmpty()
+
+        val iteratorInt1 = map1.iteratorInt()
+        iteratorInt1.shouldHaveNext()
+        iteratorInt1.next().shouldBe(Pair(key, valueInt))
+        iteratorInt1.shouldBeEmpty()
+
+        val iteratorString1 = map1.iteratorString()
+        iteratorString1.shouldHaveNext()
+        iteratorString1.next().shouldBe(Pair(key, valueString))
+        iteratorString1.shouldBeEmpty()
+
+        val iteratorBoolean2 = map2.iteratorBoolean()
+        iteratorBoolean2.shouldHaveNext()
+        iteratorBoolean2.next().shouldBe(Pair(key, valueBoolean))
+        iteratorBoolean2.shouldBeEmpty()
+
+        val iteratorDouble2 = map2.iteratorDouble()
+        iteratorDouble2.shouldHaveNext()
+        iteratorDouble2.next().shouldBe(Pair(key, valueDouble))
+        iteratorDouble2.shouldBeEmpty()
+
+        val iteratorInt2 = map2.iteratorInt()
+        iteratorInt2.shouldHaveNext()
+        iteratorInt2.next().shouldBe(Pair(key, valueInt))
+        iteratorInt2.shouldBeEmpty()
+
+        val iteratorString2 = map2.iteratorString()
+        iteratorString2.shouldHaveNext()
+        iteratorString2.next().shouldBe(Pair(key, valueString))
+        iteratorString2.shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: put || merge putLWW get.
+     * This test evaluates the scenario: put || merge putLWW get/iterator.
      * Call to get should return the value set by put registered in the second replica.
+     * Call to iterator should return an iterator containing the value set by the put registered in the second replica.
      */
-    "R1: put; R2: merge, put LWW, get" {
+    "R1: put; R2: merge, put LWW, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -304,13 +415,34 @@ class LWWMapTest : StringSpec({
         map2.getDouble(key).shouldBe(valDouble2)
         map2.getInt(key).shouldBe(valInt2)
         map2.getString(key).shouldBe(valString2)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key, valBoolean2))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key, valDouble2))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key, valInt2))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key, valString2))
+        iteratorString.shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: put || putLWW merge get
+     * This test evaluates the scenario: put || putLWW merge get/iterator.
      * Call to get should return the value set by put registered in the second replica.
+     * Call to iterator should return an iterator containing the value set by put registered in the second replica.
      */
-    "R1: put; R2: put LWW, merge, get" {
+    "R1: put; R2: put LWW, merge, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -349,13 +481,34 @@ class LWWMapTest : StringSpec({
         map2.getDouble(key).shouldBe(valDouble2)
         map2.getInt(key).shouldBe(valInt2)
         map2.getString(key).shouldBe(valString2)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key, valBoolean2))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key, valDouble2))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key, valInt2))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key, valString2))
+        iteratorString.shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: putLWW || put merge get.
+     * This test evaluates the scenario: putLWW || put merge get/iterator.
      * Call to get should return the value set by put registered in the first replica.
+     * Call to iterator should return an iterator containing the value set by the put registered in the first replica.
      */
-    "R1: put LWW; R2: put, merge, get" {
+    "R1: put LWW; R2: put, merge, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -394,13 +547,34 @@ class LWWMapTest : StringSpec({
         map2.getDouble(key).shouldBe(valDouble1)
         map2.getInt(key).shouldBe(valInt1)
         map2.getString(key).shouldBe(valString1)
+
+        val iteratorBoolean2 = map2.iteratorBoolean()
+        iteratorBoolean2.shouldHaveNext()
+        iteratorBoolean2.next().shouldBe(Pair(key, valBoolean1))
+        iteratorBoolean2.shouldBeEmpty()
+
+        val iteratorDouble2 = map2.iteratorDouble()
+        iteratorDouble2.shouldHaveNext()
+        iteratorDouble2.next().shouldBe(Pair(key, valDouble1))
+        iteratorDouble2.shouldBeEmpty()
+
+        val iteratorInt2 = map2.iteratorInt()
+        iteratorInt2.shouldHaveNext()
+        iteratorInt2.next().shouldBe(Pair(key, valInt1))
+        iteratorInt2.shouldBeEmpty()
+
+        val iteratorString2 = map2.iteratorString()
+        iteratorString2.shouldHaveNext()
+        iteratorString2.next().shouldBe(Pair(key, valString1))
+        iteratorString2.shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: put delLWW || put merge get.
+     * This test evaluates the scenario: put delLWW || put merge get/iterator.
      * Call to get should return null.
+     * Call to iterator should return an empty iterator.
      */
-    "R1: put, delete LWW; R2: put, merge, get" {
+    "R1: put, delete LWW; R2: put, merge, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -447,13 +621,19 @@ class LWWMapTest : StringSpec({
         map2.getDouble(key).shouldBeNull()
         map2.getInt(key).shouldBeNull()
         map2.getString(key).shouldBeNull()
+
+        map2.iteratorBoolean().shouldBeEmpty()
+        map2.iteratorDouble().shouldBeEmpty()
+        map2.iteratorInt().shouldBeEmpty()
+        map2.iteratorString().shouldBeEmpty()
     }
 
     /**
-     * This test evaluates the scenario: put delLWW || put merge(before del) merge(after del) get.
+     * This test evaluates the scenario: put delLWW || put merge(before del) merge(after del) get/iterator.
      * Call to get should return null.
+     * Call to iterator should return an empty iterator.
      */
-    "R1: put, delete LWW; R2: put, merge before delete, merge after delelte, get" {
+    "R1: put, delete LWW; R2: put, merge before delete, merge after delete, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -501,13 +681,19 @@ class LWWMapTest : StringSpec({
         map2.getDouble(key).shouldBeNull()
         map2.getInt(key).shouldBeNull()
         map2.getString(key).shouldBeNull()
+
+        map2.iteratorBoolean().shouldBeEmpty()
+        map2.iteratorDouble().shouldBeEmpty()
+        map2.iteratorInt().shouldBeEmpty()
+        map2.iteratorString().shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the scenario: put del || putLWW merge get.
-    * Call to get should return the value set by put registered in the second replica.
-    */
-    "R1: put, delete; R2: put LWW, merge, get" {
+    /**
+     * This test evaluates the scenario: put del || putLWW merge get/iterator.
+     * Call to get should return the value set by put registered in the second replica.
+     * Call to iterator should return an iterator containing the value set by the put registered in the second replica.
+     */
+    "R1: put, delete; R2: put LWW, merge, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -558,13 +744,34 @@ class LWWMapTest : StringSpec({
         map2.getDouble(key).shouldBe(valDouble2)
         map2.getInt(key).shouldBe(valInt2)
         map2.getString(key).shouldBe(valString2)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key, valBoolean2))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key, valDouble2))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key, valInt2))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key, valString2))
+        iteratorString.shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the scenario: put del || putLWW merge(before del) merge(after del) get.
-    * Call to get should return the value set by put registered in the second replica.
-    */
-    "R1: put, delete; R2: put LWW, merge before delete, merge after delete, get" {
+    /**
+     * This test evaluates the scenario: put del || putLWW merge(before del) merge(after del) get/iterator.
+     * Call to get should return the value set by put registered in the second replica.
+     * Call to iterator should return an iterator containing the value set by the put registered in the second replica.
+     */
+    "R1: put, delete; R2: put LWW, merge before delete, merge after delete, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
@@ -616,13 +823,34 @@ class LWWMapTest : StringSpec({
         map2.getDouble(key).shouldBe(valDouble2)
         map2.getInt(key).shouldBe(valInt2)
         map2.getString(key).shouldBe(valString2)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key, valBoolean2))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key, valDouble2))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key, valInt2))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key, valString2))
+        iteratorString.shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the scenario: put || put || merge1 delLWW merge2 get.
-    * Call to get should return null.
-    */
-    "R1: put; R2: put; R3: merge R1, delete LWW, merge R2, get" {
+    /**
+     * This test evaluates the scenario: put || put || merge1 delLWW merge2 get/iterator.
+     * Call to get should return null.
+     * Call to iterator should return an empty iterator.
+     */
+    "R1: put; R2: put; R3: merge R1, delete LWW, merge R2, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val uid3 = ClientUId("clientid3")
@@ -673,13 +901,19 @@ class LWWMapTest : StringSpec({
         map3.getDouble(key).shouldBeNull()
         map3.getInt(key).shouldBeNull()
         map3.getString(key).shouldBeNull()
+
+        map3.iteratorBoolean().shouldBeEmpty()
+        map3.iteratorDouble().shouldBeEmpty()
+        map3.iteratorInt().shouldBeEmpty()
+        map3.iteratorString().shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the scenario: put || putLWW || merge1 del merge2 get.
-    * Call to get should return the value set by put registered in the second replica.
-    */
-    "R1: put; R2: put LWW; R3: merge R1, delete, merge R2, get" {
+    /**
+     * This test evaluates the scenario: put || putLWW || merge1 del merge2 get/iterator.
+     * Call to get should return the value set by put registered in the second replica.
+     * Call to iterator should return an iterator containing the value set by the put registered in the second replica.
+     */
+    "R1: put; R2: put LWW; R3: merge R1, delete, merge R2, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val uid3 = ClientUId("clientid3")
@@ -730,12 +964,33 @@ class LWWMapTest : StringSpec({
         map3.getDouble(key).shouldBe(valDouble2)
         map3.getInt(key).shouldBe(valInt2)
         map3.getString(key).shouldBe(valString2)
+
+        val iteratorBoolean = map3.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key, valBoolean2))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map3.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key, valDouble2))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map3.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key, valInt2))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map3.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key, valString2))
+        iteratorString.shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the use of deltas return by call to put method.
-    * Call to get should return the value set by put registered in the first replica.
-    */
+    /**
+     * This test evaluates the use of deltas return by call to put method.
+     * Call to get should return the value set by put registered in the first replica.
+     * Call to iterator should return an iterator containing the value set by the put registered in the first replica.
+     */
     "use deltas returned by put" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -772,12 +1027,53 @@ class LWWMapTest : StringSpec({
         map2.getDouble(key).shouldBe(valueDouble)
         map2.getInt(key).shouldBe(valueInt)
         map2.getString(key).shouldBe(valueString)
+
+        val iteratorBoolean1 = map1.iteratorBoolean()
+        iteratorBoolean1.shouldHaveNext()
+        iteratorBoolean1.next().shouldBe(Pair(key, valueBoolean))
+        iteratorBoolean1.shouldBeEmpty()
+
+        val iteratorDouble1 = map1.iteratorDouble()
+        iteratorDouble1.shouldHaveNext()
+        iteratorDouble1.next().shouldBe(Pair(key, valueDouble))
+        iteratorDouble1.shouldBeEmpty()
+
+        val iteratorInt1 = map1.iteratorInt()
+        iteratorInt1.shouldHaveNext()
+        iteratorInt1.next().shouldBe(Pair(key, valueInt))
+        iteratorInt1.shouldBeEmpty()
+
+        val iteratorString1 = map1.iteratorString()
+        iteratorString1.shouldHaveNext()
+        iteratorString1.next().shouldBe(Pair(key, valueString))
+        iteratorString1.shouldBeEmpty()
+
+        val iteratorBoolean2 = map2.iteratorBoolean()
+        iteratorBoolean2.shouldHaveNext()
+        iteratorBoolean2.next().shouldBe(Pair(key, valueBoolean))
+        iteratorBoolean2.shouldBeEmpty()
+
+        val iteratorDouble2 = map2.iteratorDouble()
+        iteratorDouble2.shouldHaveNext()
+        iteratorDouble2.next().shouldBe(Pair(key, valueDouble))
+        iteratorDouble2.shouldBeEmpty()
+
+        val iteratorInt2 = map2.iteratorInt()
+        iteratorInt2.shouldHaveNext()
+        iteratorInt2.next().shouldBe(Pair(key, valueInt))
+        iteratorInt2.shouldBeEmpty()
+
+        val iteratorString2 = map2.iteratorString()
+        iteratorString2.shouldHaveNext()
+        iteratorString2.next().shouldBe(Pair(key, valueString))
+        iteratorString2.shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the use of deltas return by call to put and delete methods.
-    * Call to get should return null.
-    */
+    /**
+     * This test evaluates the use of deltas return by call to put and delete methods.
+     * Call to get should return null.
+     * Call to iterator should return an empty iterator.
+     */
     "use deltas returned by put and delete" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -830,12 +1126,22 @@ class LWWMapTest : StringSpec({
         map2.getDouble(key).shouldBeNull()
         map2.getInt(key).shouldBeNull()
         map2.getString(key).shouldBeNull()
+
+        map1.iteratorBoolean().shouldBeEmpty()
+        map1.iteratorDouble().shouldBeEmpty()
+        map1.iteratorInt().shouldBeEmpty()
+        map1.iteratorString().shouldBeEmpty()
+        map2.iteratorBoolean().shouldBeEmpty()
+        map2.iteratorDouble().shouldBeEmpty()
+        map2.iteratorInt().shouldBeEmpty()
+        map2.iteratorString().shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the merge of deltas return by call to put method.
-    * Call to get should return the values set by puts registered in the first replica.
-    */
+    /**
+     * This test evaluates the merge of deltas return by call to put method.
+     * Call to get should return the values set by puts registered in the first replica.
+     * Call to iterator should return an iterator containing the values set by the puts registered in the first replica.
+     */
     "merge deltas returned by put operations" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -898,12 +1204,41 @@ class LWWMapTest : StringSpec({
         map2.getDouble(key2).shouldBe(valDouble1)
         map2.getInt(key2).shouldBe(valInt1)
         map2.getString(key2).shouldBe(valString1)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key1, valBoolean2))
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key2, valBoolean1))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key1, valDouble2))
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key2, valDouble1))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key1, valInt2))
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key2, valInt1))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key1, valString2))
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key2, valString1))
+        iteratorString.shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the merge of deltas return by call to put and delete methods.
-    * Call to get should return the value set by put or null if it has been deleted.
-    */
+    /**
+     * This test evaluates the merge of deltas return by call to put and delete methods.
+     * Call to get should return the value set by put or null if it has been deleted.
+     * Call to iterator should return an iterator containing the value set by put with key2.
+     */
     "merge deltas returned by put and delete operations" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -962,13 +1297,35 @@ class LWWMapTest : StringSpec({
         map2.getDouble(key2).shouldBe(valueDouble)
         map2.getInt(key2).shouldBe(valueInt)
         map2.getString(key2).shouldBe(valueString)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key2, valueBoolean))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key2, valueDouble))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key2, valueInt))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key2, valueString))
+        iteratorString.shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the generation of delta (only put) plus its merging into another replica.
-    * Call to get should return the values set by puts registered in the first replica after w.r.t
-    * the given context.
-    */
+    /**
+     * This test evaluates the generation of delta (only put) plus its merging into another replica.
+     * Call to get should return the values set by puts registered in the first replica after w.r.t
+     * the given context.
+     * Call to iterator should return an iterator containing the values set by puts registered in the first replica
+     * after w.r.t the given context.
+     */
     "generate delta" {
         val uid = ClientUId("clientid1")
         val client = SimpleEnvironment(uid)
@@ -1036,12 +1393,41 @@ class LWWMapTest : StringSpec({
         map2.getDouble(key4).shouldBe(valueDouble)
         map2.getInt(key4).shouldBe(valueInt)
         map2.getString(key4).shouldBe(valueString)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key3, valueBoolean))
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key4, valueBoolean))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key3, valueDouble))
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key4, valueDouble))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key3, valueInt))
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key4, valueInt))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key3, valueString))
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key4, valueString))
+        iteratorString.shouldBeEmpty()
     }
 
-    /*
-    * This test evaluates the generation of delta (including delete) plus its merging into another replica.
-    * Call to get should return the values set by puts or null set by delete w.r.t the given context.
-    */
+    /**
+     * This test evaluates the generation of delta (including delete) plus its merging into another replica.
+     * Call to get should return the values set by puts or null set by delete w.r.t the given context.
+     * Call to iterator should return an iterator containing the values set by puts w.r.t the given context.
+     */
     "generate delta with delete" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -1104,11 +1490,31 @@ class LWWMapTest : StringSpec({
         map2.getDouble(key3).shouldBe(valueDouble)
         map2.getInt(key3).shouldBe(valueInt)
         map2.getString(key3).shouldBe(valueString)
+
+        val iteratorBoolean = map2.iteratorBoolean()
+        iteratorBoolean.shouldHaveNext()
+        iteratorBoolean.next().shouldBe(Pair(key3, valueBoolean))
+        iteratorBoolean.shouldBeEmpty()
+
+        val iteratorDouble = map2.iteratorDouble()
+        iteratorDouble.shouldHaveNext()
+        iteratorDouble.next().shouldBe(Pair(key3, valueDouble))
+        iteratorDouble.shouldBeEmpty()
+
+        val iteratorInt = map2.iteratorInt()
+        iteratorInt.shouldHaveNext()
+        iteratorInt.next().shouldBe(Pair(key3, valueInt))
+        iteratorInt.shouldBeEmpty()
+
+        val iteratorString = map2.iteratorString()
+        iteratorString.shouldHaveNext()
+        iteratorString.next().shouldBe(Pair(key3, valueString))
+        iteratorString.shouldBeEmpty()
     }
 
     /**
      * This test evaluates JSON serialization an empty LWW map.
-     **/
+     */
     "empty JSON serialization" {
         val map = LWWMap()
 
@@ -1119,7 +1525,7 @@ class LWWMapTest : StringSpec({
 
     /**
      * This test evaluates JSON deserialization of an empty LWW map.
-     **/
+     */
     "empty JSON deserialization" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -1135,7 +1541,7 @@ class LWWMapTest : StringSpec({
 
     /**
      * This test evaluates JSON serialization of a LWW map.
-     **/
+     */
     "JSON serialization" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -1170,7 +1576,7 @@ class LWWMapTest : StringSpec({
 
     /**
      * This test evaluates JSON deserialization of a LWW map.
-     **/
+     */
     "JSON deserialization" {
         val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"clientid"},"cnt":-2147483648},"key2%STRING":{"uid":{"name":"clientid"},"cnt":-2147483646},"key3%STRING":{"uid":{"name":"clientid"},"cnt":-2147483645},"key4%BOOLEAN":{"uid":{"name":"clientid"},"cnt":-2147483644},"key5%DOUBLE":{"uid":{"name":"clientid"},"cnt":-2147483643}}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""")
 

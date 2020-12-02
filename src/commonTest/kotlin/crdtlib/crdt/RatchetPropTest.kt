@@ -82,7 +82,7 @@ class RatchetPropTest : StringSpec({
 
             val d = r1.generateDelta(VersionVector())
             r2.merge(d)
-            r2.get().equals(maxOf(m1, m2))
+            r2.get() == maxOf(m1, m2)
         }
     }
 })

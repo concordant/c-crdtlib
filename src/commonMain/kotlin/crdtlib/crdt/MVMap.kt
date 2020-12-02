@@ -45,7 +45,7 @@ import kotlinx.serialization.json.*
 * }
 */
 @Serializable
-class MVMap : DeltaCRDT<MVMap> {
+class MVMap : DeltaCRDT {
 
     /**
      * A mutable map storing metadata relative to each key.
@@ -121,6 +121,50 @@ class MVMap : DeltaCRDT<MVMap> {
         val setOfValues = this.entries[key + STRING]?.map { it.first }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
+    }
+
+    /**
+     * Gets an iterator containing the Boolean values currently stored in the map.
+     * @return an iterator over the Boolean values stored in the map.
+     */
+    @Name("iteratorBoolean")
+    fun iteratorBoolean(): Iterator<Pair<String, Set<Boolean?>>> {
+        return this.entries.asSequence().filter { (k, _) -> k.endsWith(BOOLEAN) }
+            .map { (k, v) -> Pair(k.removeSuffix(BOOLEAN), v.map { it.first?.toBoolean() }.toSet()) }
+            .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
+    }
+
+    /**
+     * Gets an iterator containing the double values currently stored in the map.
+     * @return an iterator over the double values stored in the map.
+     */
+    @Name("iteratorDouble")
+    fun iteratorDouble(): Iterator<Pair<String, Set<Double?>>> {
+        return this.entries.asSequence().filter { (k, _) -> k.endsWith(DOUBLE) }
+            .map { (k, v) -> Pair(k.removeSuffix(DOUBLE), v.map { it.first?.toDouble() }.toSet()) }
+            .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
+    }
+
+    /**
+     * Gets an iterator containing the integer values currently stored in the map.
+     * @return an iterator over the integer values stored in the map.
+     */
+    @Name("iteratorInt")
+    fun iteratorInt(): Iterator<Pair<String, Set<Int?>>> {
+        return this.entries.asSequence().filter { (k, _) -> k.endsWith(INTEGER) }
+            .map { (k, v) -> Pair(k.removeSuffix(INTEGER), v.map { it.first?.toInt() }.toSet()) }
+            .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
+    }
+
+    /**
+     * Gets an iterator containing the string values currently stored in the map.
+     * @return an iterator over the string values stored in the map.
+     */
+    @Name("iteratorString")
+    fun iteratorString(): Iterator<Pair<String, Set<String?>>> {
+        return this.entries.asSequence().filter { (k, _) -> k.endsWith(STRING) }
+            .map { (k, v) -> Pair(k.removeSuffix(STRING), v.map { it.first }.toSet()) }
+            .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
     }
 
     /**
@@ -290,7 +334,9 @@ class MVMap : DeltaCRDT<MVMap> {
      * associated timestamp is not included in the local (foreign) causal context.
      * @param delta the delta that should be merged with the local replica.
      */
-    override fun merge(delta: MVMap) {
+    override fun merge(delta: DeltaCRDT) {
+        if (delta !is MVMap) throw IllegalArgumentException("MVMap unsupported merge argument")
+
         for ((key, foreignEntries) in delta.entries) {
 
             val keptEntries = mutableSetOf<Pair<String?, Timestamp>>()

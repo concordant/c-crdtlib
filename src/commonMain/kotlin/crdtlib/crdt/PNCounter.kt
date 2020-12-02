@@ -63,7 +63,7 @@ import kotlinx.serialization.json.jsonPrimitive
 * }
 */
 @Serializable
-class PNCounter : DeltaCRDT<PNCounter> {
+class PNCounter : DeltaCRDT {
 
     /**
      * A mutable map storing for each client metadata relative to increment operations.
@@ -159,7 +159,9 @@ class PNCounter : DeltaCRDT<PNCounter> {
      * present for this client.
      * @param delta the delta that should be merge with the local replica.
      */
-    override fun merge(delta: PNCounter) {
+    override fun merge(delta: DeltaCRDT) {
+        if (delta !is PNCounter) throw IllegalArgumentException("PNCounter unsupported merge argument")
+
         for ((uid, meta) in delta.increment) {
             val localMeta = this.increment[uid]
             if (localMeta == null || localMeta.first < meta.first) {

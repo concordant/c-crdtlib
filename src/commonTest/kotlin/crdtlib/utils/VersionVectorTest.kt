@@ -96,7 +96,7 @@ class VersionVectorTest : StringSpec({
      * Calls to contains should return true for all timestamps with same client unique id and a
      * count less or equals to the added timestamp, and false otherwise.
      **/
-    "add timstamp then check inclusion" {
+    "add timestamp then check inclusion" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val ts1 = Timestamp(uid1, 1)

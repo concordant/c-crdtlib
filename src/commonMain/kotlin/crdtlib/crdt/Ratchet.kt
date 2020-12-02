@@ -38,7 +38,7 @@ import kotlinx.serialization.json.*
 * @property value the stored value.
 */
 @Serializable
-class Ratchet(var value: String) : DeltaCRDT<Ratchet>() {
+class Ratchet(var value: String) : DeltaCRDT() {
 
     /**
      * Gets the value stored in the ratchet.
@@ -76,7 +76,9 @@ class Ratchet(var value: String) : DeltaCRDT<Ratchet>() {
      * A foreign value is kept iff it is greater than the local one.
      * @param delta the delta that should be merge with the local replica.
      */
-    override fun merge(delta: Ratchet) {
+    override fun merge(delta: DeltaCRDT) {
+        if (delta !is Ratchet) throw IllegalArgumentException("Ratchet unsupported merge argument")
+
         if (this.value < delta.value) this.value = delta.value
     }
 

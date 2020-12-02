@@ -52,7 +52,7 @@ import kotlinx.serialization.json.*
 * }
 */
 @Serializable
-class Map : DeltaCRDT<Map> {
+class Map : DeltaCRDT {
 
     /**
      * A LWW map storing key / value pairs that should be merged using LWW.
@@ -169,6 +169,87 @@ class Map : DeltaCRDT<Map> {
     @Name("getCntInt")
     fun getCntInt(key: String): Int? {
         return this.cntMap[key]?.get()
+    }
+
+    /**
+     * Gets an iterator containing the Boolean value currently stored in the map.
+     * @return an iterator over the Boolean value stored in the map.
+     */
+    @Name("iteratorLWWBoolean")
+    fun iteratorLWWBoolean(): Iterator<Pair<String, Boolean>> {
+        return this.lwwMap.iteratorBoolean()
+    }
+
+    /**
+     * Gets an iterator containing the double value currently stored in the map.
+     * @return an iterator over the double value stored in the map.
+     */
+    @Name("iteratorLWWDouble")
+    fun iteratorLWWDouble(): Iterator<Pair<String, Double>> {
+        return this.lwwMap.iteratorDouble()
+    }
+
+    /**
+     * Gets an iterator containing the integer value currently stored in the map.
+     * @return an iterator over the integer value stored in the map.
+     */
+    @Name("iteratorLWWInt")
+    fun iteratorLWWInt(): Iterator<Pair<String, Int>> {
+        return this.lwwMap.iteratorInt()
+    }
+
+    /**
+     * Gets an iterator containing the string value currently stored in the map.
+     * @return an iterator over the string value stored in the map.
+     */
+    @Name("iteratorLWWString")
+    fun iteratorLWWString(): Iterator<Pair<String, String>> {
+        return this.lwwMap.iteratorString()
+    }
+
+    /**
+     * Gets an iterator containing the Boolean values currently stored in the map.
+     * @return an iterator over the Boolean values stored in the map.
+     */
+    @Name("iteratorMVBoolean")
+    fun iteratorMVBoolean(): Iterator<Pair<String, Set<Boolean?>>> {
+        return this.mvMap.iteratorBoolean()
+    }
+
+    /**
+     * Gets an iterator containing the double values currently stored in the map.
+     * @return an iterator over the double values stored in the map.
+     */
+    @Name("iteratorMVDouble")
+    fun iteratorMVDouble(): Iterator<Pair<String, Set<Double?>>> {
+        return this.mvMap.iteratorDouble()
+    }
+
+    /**
+     * Gets an iterator containing the integer values currently stored in the map.
+     * @return an iterator over the integer values stored in the map.
+     */
+    @Name("iteratorMVInt")
+    fun iteratorMVInt(): Iterator<Pair<String, Set<Int?>>> {
+        return this.mvMap.iteratorInt()
+    }
+
+    /**
+     * Gets an iterator containing the string values currently stored in the map.
+     * @return an iterator over the string values stored in the map.
+     */
+    @Name("iteratorMVString")
+    fun iteratorMVString(): Iterator<Pair<String, Set<String?>>> {
+        return this.mvMap.iteratorString()
+    }
+
+    /**
+     * Gets an iterator containing the integer values currently stored in the map.
+     * @return an iterator over the integer values stored in the map.
+     */
+    @Name("iteratorCntInt")
+    fun iteratorCntInt(): Iterator<Pair<String, Int>> {
+        return this.cntMap.asSequence().map { (k, v) -> Pair(k, v.get()) }.iterator()
     }
 
     /**
@@ -439,7 +520,9 @@ class Map : DeltaCRDT<Map> {
      * smaller timestamp compared to the foreign one, or there is no local operation recorded.
      * @param delta the delta that should be merged with the local replica.
      */
-    override fun merge(delta: Map) {
+    override fun merge(delta: DeltaCRDT) {
+        if (delta !is Map) throw IllegalArgumentException("Map unsupported merge argument")
+
         this.lwwMap.merge(delta.lwwMap)
         this.mvMap.merge(delta.mvMap)
 

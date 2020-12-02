@@ -40,7 +40,7 @@ import kotlinx.serialization.json.*
 * }
 */
 @Serializable
-class MVRegister : DeltaCRDT<MVRegister> {
+class MVRegister : DeltaCRDT, Iterable<String> {
 
     /**
      * A mutable set storing the different values with their associated timestamp.
@@ -126,7 +126,9 @@ class MVRegister : DeltaCRDT<MVRegister> {
      * associated timestamp is not included in the local (foreign) causal context.
      * @param delta the delta that should be merge with the local replica.
      */
-    override fun merge(delta: MVRegister) {
+    override fun merge(delta: DeltaCRDT) {
+        if (delta !is MVRegister) throw IllegalArgumentException("MVRegister unsupported merge argument")
+
         val keptEntries = mutableSetOf<Pair<String, Timestamp>>()
         for ((value, ts) in this.entries) {
             if (!delta.causalContext.contains(ts) || delta.entries.any { it.second == ts }) {
@@ -163,6 +165,14 @@ class MVRegister : DeltaCRDT<MVRegister> {
             val jsonSerializer = JsonMVRegisterSerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
+    }
+
+    /**
+     * Gets an iterator containing the values currently stored in the register.
+     * @return an iterator over the values stored in the register.
+     */
+    override fun iterator(): Iterator<String> {
+        return this.entries.asSequence().map { it.first }.iterator()
     }
 }
 

@@ -42,7 +42,7 @@ import kotlinx.serialization.json.*
 * }
 */
 @Serializable
-class LWWMap : DeltaCRDT<LWWMap> {
+class LWWMap : DeltaCRDT {
 
     /**
      * A mutable map storing metadata relative to each key.
@@ -67,9 +67,9 @@ class LWWMap : DeltaCRDT<LWWMap> {
     }
 
     /**
-     * Gets the Boolean value corresponding to a given key.
+     * Gets the double value corresponding to a given key.
      * @param key the key that should be looked for.
-     * @return the Boolean value associated to the key, or null if the key is not present in the map
+     * @return the double value associated to the key, or null if the key is not present in the map
      * or last operation is a delete.
      */
     @Name("getDouble")
@@ -97,6 +97,46 @@ class LWWMap : DeltaCRDT<LWWMap> {
     @Name("getString")
     fun getString(key: String): String? {
         return this.entries[key + STRING]?.first
+    }
+
+    /**
+     * Gets an iterator containing the Boolean value currently stored in the map.
+     * @return an iterator over the Boolean value stored in the map.
+     */
+    @Name("iteratorBoolean")
+    fun iteratorBoolean(): Iterator<Pair<String, Boolean>> {
+        return this.entries.asSequence().filter { (k, v) -> k.endsWith(BOOLEAN) && v.first != null }
+            .map { (k, v) -> Pair(k.removeSuffix(BOOLEAN), v.first.toBoolean()) }.iterator()
+    }
+
+    /**
+     * Gets an iterator containing the double value currently stored in the map.
+     * @return an iterator over the double value stored in the map.
+     */
+    @Name("iteratorDouble")
+    fun iteratorDouble(): Iterator<Pair<String, Double>> {
+        return this.entries.asSequence().filter { (k, v) -> k.endsWith(DOUBLE) && v.first != null }
+            .map { (k, v) -> Pair(k.removeSuffix(DOUBLE), v.first!!.toDouble()) }.iterator()
+    }
+
+    /**
+     * Gets an iterator containing the integer value currently stored in the map.
+     * @return an iterator over the integer value stored in the map.
+     */
+    @Name("iteratorInt")
+    fun iteratorInt(): Iterator<Pair<String, Int>> {
+        return this.entries.asSequence().filter { (k, v) -> k.endsWith(INTEGER) && v.first != null }
+            .map { (k, v) -> Pair(k.removeSuffix(INTEGER), v.first!!.toInt()) }.iterator()
+    }
+
+    /**
+     * Gets an iterator containing the string value currently stored in the map.
+     * @return an iterator over the string value stored in the map.
+     */
+    @Name("iteratorString")
+    fun iteratorString(): Iterator<Pair<String, String>> {
+        return this.entries.asSequence().filter { (k, v) -> k.endsWith(STRING) && v.first != null }
+            .map { (k, v) -> Pair(k.removeSuffix(STRING), v.first!!) }.iterator()
     }
 
     /**
@@ -243,7 +283,9 @@ class LWWMap : DeltaCRDT<LWWMap> {
      * smaller timestamp compared to the foreign one, or there is no local operation recorded.
      * @param delta the delta that should be merged with the local replica.
      */
-    override fun merge(delta: LWWMap) {
+    override fun merge(delta: DeltaCRDT) {
+        if (delta !is LWWMap) throw IllegalArgumentException("LWWMap unsupported merge argument")
+
         for ((key, meta) in delta.entries) {
             val value = meta.first
             val ts = meta.second

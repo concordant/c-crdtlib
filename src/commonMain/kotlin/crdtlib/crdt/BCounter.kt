@@ -63,7 +63,7 @@ import kotlinx.serialization.json.*
  * }
  */
 @Serializable
-class BCounter : DeltaCRDT<BCounter>() {
+class BCounter : DeltaCRDT() {
     /**
      * A mutable map of mutable map storing each client metadata relative to increment operations.
      * increment[i][i] represent the increments by replica i.
@@ -227,7 +227,9 @@ class BCounter : DeltaCRDT<BCounter>() {
      * present for this client.
      * @param delta the delta that should be merge with the local replica.
      */
-    override fun merge(delta: BCounter) {
+    override fun merge(delta: DeltaCRDT) {
+        if (delta !is BCounter) throw IllegalArgumentException("BCounter unsupported merge argument")
+
         for ((uid, meta2) in delta.increment) {
             for ((uid2, meta) in meta2) {
                 if (this.increment[uid] == null) {
