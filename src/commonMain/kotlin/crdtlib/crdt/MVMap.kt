@@ -130,8 +130,8 @@ class MVMap : DeltaCRDT {
     @Name("iteratorBoolean")
     fun iteratorBoolean(): Iterator<Pair<String, Set<Boolean?>>> {
         return this.entries.asSequence().filter { (k, _) -> k.endsWith(BOOLEAN) }
-                .map { (k, v) -> Pair(k.removeSuffix(BOOLEAN), v.map { it.first?.toBoolean() }.toSet()) }
-                .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
+            .map { (k, v) -> Pair(k.removeSuffix(BOOLEAN), v.map { it.first?.toBoolean() }.toSet()) }
+            .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
     }
 
     /**
@@ -141,8 +141,8 @@ class MVMap : DeltaCRDT {
     @Name("iteratorDouble")
     fun iteratorDouble(): Iterator<Pair<String, Set<Double?>>> {
         return this.entries.asSequence().filter { (k, _) -> k.endsWith(DOUBLE) }
-                .map { (k, v) -> Pair(k.removeSuffix(DOUBLE), v.map { it.first?.toDouble() }.toSet()) }
-                .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
+            .map { (k, v) -> Pair(k.removeSuffix(DOUBLE), v.map { it.first?.toDouble() }.toSet()) }
+            .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
     }
 
     /**
@@ -152,8 +152,8 @@ class MVMap : DeltaCRDT {
     @Name("iteratorInt")
     fun iteratorInt(): Iterator<Pair<String, Set<Int?>>> {
         return this.entries.asSequence().filter { (k, _) -> k.endsWith(INTEGER) }
-                .map { (k, v) -> Pair(k.removeSuffix(INTEGER), v.map { it.first?.toInt() }.toSet()) }
-                .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
+            .map { (k, v) -> Pair(k.removeSuffix(INTEGER), v.map { it.first?.toInt() }.toSet()) }
+            .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
     }
 
     /**
