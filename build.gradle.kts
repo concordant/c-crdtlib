@@ -25,6 +25,7 @@ plugins {
     kotlin("multiplatform") version "1.4.10"
     kotlin("plugin.serialization") version "1.4.10"
     id("org.jetbrains.dokka") version "1.4.10.2"
+    id("maven-publish")
     id("lt.petuska.npm.publish") version "1.0.2"
 }
 
@@ -138,6 +139,25 @@ tasks.withType<Test> {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "Gitlab"
+            url = uri(
+                "https://gitlab.inria.fr/api/v4/projects/" +
+                    "${System.getenv("CI_PROJECT_ID")}/packages/maven"
+            )
+            credentials(HttpHeaderCredentials::class) {
+                name = "Job-Token"
+                value = System.getenv("CI_JOB_TOKEN")
+            }
+            authentication {
+                create<HttpHeaderAuthentication>("header")
+            }
+        }
+    }
 }
 
 npmPublishing {
