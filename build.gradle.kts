@@ -72,8 +72,8 @@ kotlin {
 
         commonTest {
             dependencies {
-                implementation("io.kotest:kotest-property:4.3.0")
-                implementation("io.kotest:kotest-assertions-core:4.3.0")
+                implementation("io.kotest:kotest-property:4.3.1")
+                implementation("io.kotest:kotest-assertions-core:4.3.1")
             }
         }
 
@@ -85,13 +85,13 @@ kotlin {
 
         val jvmTest by getting {
             dependencies {
-                implementation("io.kotest:kotest-runner-junit5-jvm:4.3.0")
+                implementation("io.kotest:kotest-runner-junit5-jvm:4.3.1")
             }
         }
 
         val nodeJsTest by getting {
             dependencies {
-                implementation("io.kotest:kotest-core-js:4.2.0.RC2")
+                implementation("io.kotest:kotest-framework-engine:4.3.1")
             }
         }
     }
