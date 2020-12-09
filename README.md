@@ -57,13 +57,13 @@ import * from @concordant/c-crdtlib;
 Get a deploy token or personal access token from Gitlab, with at least the
 read_package_registry scope.  
 Then add the token to your gradle propeties file *~/.gradle/gradle.properties*:
-```
+``` shell
 gitLabPrivateToken="<deployOrPersonalToken>"
 ```
 
 In you project's configuration build file *build.gradle.kts* add the GitLab
 registry as a repository:
-```kotlin
+``` kotlin
 repositories {
     maven {
         url = uri("https://gitlab.inria.fr/api/v4/projects/18591/packages/maven")
@@ -80,7 +80,7 @@ repositories {
 ```
 
 And add the maven package as a dependency:
-```kotlin
+``` kotlin
 dependencies {
     implementation("concordant:c-crdtlib:x.y.z")
 }
