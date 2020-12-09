@@ -63,7 +63,7 @@ gitLabPrivateToken="<deployOrPersonalToken>"
 
 In you project's configuration build file *build.gradle.kts* add the GitLab
 registry as a repository:
-```
+```kotlin
 repositories {
     maven {
         url = uri("https://gitlab.inria.fr/api/v4/projects/18591/packages/maven")
@@ -80,7 +80,7 @@ repositories {
 ```
 
 And add the maven package as a dependency:
-```
+```kotlin
 dependencies {
     implementation("concordant:c-crdtlib:x.y.z")
 }
