@@ -58,7 +58,7 @@ Get a deploy token or personal access token from Gitlab, with at least the
 read_package_registry scope.  
 Then add the token to your gradle propeties file *~/.gradle/gradle.properties*:
 ``` shell
-gitLabPrivateToken="<deployOrPersonalToken>"
+gitLabPrivateToken=<deployOrPersonalToken>
 ```
 
 In you project's configuration build file *build.gradle.kts* add the GitLab
