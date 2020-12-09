@@ -398,6 +398,15 @@ class MVMap : DeltaCRDT {
         const val STRING = SEPARATOR + "STRING"
 
         /**
+         * Get the type name for serialization.
+         * @return the type as a string.
+         */
+        @Name("getType")
+        fun getType(): String {
+            return "MVMap"
+        }
+
+        /**
          * Deserializes a given json string in a crdt map.
          * @param json the given json string.
          * @return the resulted crdt map.

@@ -93,6 +93,15 @@ class Ratchet(var value: String) : DeltaCRDT() {
 
     companion object {
         /**
+         * Get the type name for serialization.
+         * @return the type as a string.
+         */
+        @Name("getType")
+        fun getType(): String {
+            return "Ratchet"
+        }
+        
+        /**
          * Deserializes a given json string in a crdt ratchet.
          * @param json the given json string.
          * @return the resulted ratchet.

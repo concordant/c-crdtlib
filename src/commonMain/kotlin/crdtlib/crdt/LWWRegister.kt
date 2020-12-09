@@ -106,6 +106,15 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT() {
 
     companion object {
         /**
+         * Get the type name for serialization.
+         * @return the type as a string.
+         */
+        @Name("getType")
+        fun getType(): String {
+            return "LWWRegister"
+        }
+
+        /**
          * Deserializes a given json string in a crdt LWW register.
          * @param json the given json string.
          * @return the resulted LWW register.

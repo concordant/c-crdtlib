@@ -262,6 +262,15 @@ class RGA : DeltaCRDT, Iterable<String> {
 
     companion object {
         /**
+         * Get the type name for serialization.
+         * @return the type as a string.
+         */
+        @Name("getType")
+        fun getType(): String {
+            return "RGA"
+        }
+
+        /**
          * Deserializes a given json string in a crdt rga.
          * @param json the given json string.
          * @return the resulted crdt rga.
