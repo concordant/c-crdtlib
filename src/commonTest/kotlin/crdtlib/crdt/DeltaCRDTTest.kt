@@ -142,4 +142,24 @@ class DeltaCRDTTest : StringSpec({
             DeltaCRDT.fromJson(crdtJson)
         }
     }
+
+    /**
+     * This test evaluates that deserializing a json crdt with spaces and
+     * newlines works.
+     */
+    "fromJson with spaces and new lines works" {
+        val counter = PNCounter()
+        val counterJson = counter.toJson()
+        // This is a PNCounter JSON string with some spaces and newlines
+        val prettyCounterJson = """{
+            "type" : "PNCounter",
+            "metadata" : {
+                "increment" : [],
+                "decrement":[]
+            },
+            "value" : 0
+        }"""
+        val deltaCrdt = DeltaCRDT.fromJson(prettyCounterJson)
+        deltaCrdt.toJson().shouldBe(counterJson)
+    }
 })
