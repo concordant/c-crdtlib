@@ -57,7 +57,7 @@ abstract class DeltaCRDT {
          */
         @Name("fromJson")
         fun fromJson(json: String): DeltaCRDT {
-            val regex = """"_type":"(\w+)",""".toRegex()
+            val regex = """"type":"(\w+)",""".toRegex()
             val matchResult = regex.find(json)
             val crdtType = matchResult?.groups?.get(1)?.value
             when (crdtType) {

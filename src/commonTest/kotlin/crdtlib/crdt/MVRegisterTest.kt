@@ -467,14 +467,14 @@ class MVRegisterTest : StringSpec({
         val reg = MVRegister()
         val regJson = reg.toJson()
 
-        regJson.shouldBe("""{"_type":"MVRegister","_metadata":{"entries":[],"causalContext":{"entries":[]}},"value":[]}""")
+        regJson.shouldBe("""{"type":"MVRegister","metadata":{"entries":[],"causalContext":{"entries":[]}},"value":[]}""")
     }
 
     /**
      * This test evaluates JSON deserialization of an empty mv register.
      **/
     "empty JSON deserialization" {
-        val regJson = MVRegister.fromJson("""{"_type":"MVRegister","_metadata":{"entries":[],"causalContext":{"entries":[]}},"value":[]}""")
+        val regJson = MVRegister.fromJson("""{"type":"MVRegister","metadata":{"entries":[],"causalContext":{"entries":[]}},"value":[]}""")
 
         regJson.get().shouldBeEmpty()
     }
@@ -498,14 +498,14 @@ class MVRegisterTest : StringSpec({
         reg2.merge(reg1)
         val regJson = reg2.toJson()
 
-        regJson.shouldBe("""{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"clientid2"},"cnt":-2147483647},{"uid":{"name":"clientid1"},"cnt":-2147483647}],"causalContext":{"entries":[{"name":"clientid2"},-2147483647,{"name":"clientid1"},-2147483647]}},"value":["value2","value1"]}""")
+        regJson.shouldBe("""{"type":"MVRegister","metadata":{"entries":[{"uid":{"name":"clientid2"},"cnt":-2147483647},{"uid":{"name":"clientid1"},"cnt":-2147483647}],"causalContext":{"entries":[{"name":"clientid2"},-2147483647,{"name":"clientid1"},-2147483647]}},"value":["value2","value1"]}""")
     }
 
     /**
      * This test evaluates JSON deserialization of a mv register.
      **/
     "JSON deserialization" {
-        val regJson = MVRegister.fromJson("""{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"clientid2"},"cnt":-2147483647},{"uid":{"name":"clientid1"},"cnt":-2147483647}],"causalContext":{"entries":[{"name":"clientid2"},-2147483647,{"name":"clientid1"},-2147483647]}},"value":["value2","value1"]}""")
+        val regJson = MVRegister.fromJson("""{"type":"MVRegister","metadata":{"entries":[{"uid":{"name":"clientid2"},"cnt":-2147483647},{"uid":{"name":"clientid1"},"cnt":-2147483647}],"causalContext":{"entries":[{"name":"clientid2"},-2147483647,{"name":"clientid1"},-2147483647]}},"value":["value2","value1"]}""")
 
         regJson.get().shouldContainExactlyInAnyOrder("value1", "value2")
     }

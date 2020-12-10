@@ -125,19 +125,19 @@ class DeltaCRDTTest : StringSpec({
      * IllegalArgumentException.
      */
     "fromJson with unknown type fail" {
-        val crdtJson = """{"_type":"MyCRDT"}"""
+        val crdtJson = """{"type":"MyCRDT"}"""
         shouldThrow<IllegalArgumentException> {
             DeltaCRDT.fromJson(crdtJson)
         }
     }
 
     /**
-     * This test evaluates that deserializing a json crdt with no _type key
+     * This test evaluates that deserializing a json crdt with no type key
      * throw an IllegalArgumentException.
      */
-    "fromJson with no _type key fail" {
-        // This is a PNCounter JSON string without _type key
-        val crdtJson = """{"_metadata":{"increment":[],"decrement":[]},"value":0}"""
+    "fromJson with no type key fail" {
+        // This is a PNCounter JSON string without type key
+        val crdtJson = """{"metadata":{"increment":[],"decrement":[]},"value":0}"""
         shouldThrow<IllegalArgumentException> {
             DeltaCRDT.fromJson(crdtJson)
         }

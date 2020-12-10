@@ -49,8 +49,8 @@ data class RGANode(val atom: String, val anchor: RGAUId?, val uid: RGAUId, val t
 * This class is a delta-based CRDT Replicated Growable Array (RGA).
 * It is serializable to JSON and respect the following schema:
 * {
-*   "_type": "RGA",
-*   "_metadata": [
+*   "type": "RGA",
+*   "metadata": [
 *       ({
 *           ( "atom": $value, )? // If atom is present removed should be true.
 *           "anchor": RGAUId.toJson(),
@@ -300,14 +300,14 @@ class JsonRGASerializer(serializer: KSerializer<RGA>) :
             }
             metadata.add(transformedNode)
         }
-        return JsonObject(mapOf("_type" to JsonPrimitive("RGA"), "_metadata" to JsonArray(metadata), "value" to JsonArray(value)))
+        return JsonObject(mapOf("type" to JsonPrimitive("RGA"), "metadata" to JsonArray(metadata), "value" to JsonArray(value)))
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
         val value = element.jsonObject["value"]!!.jsonArray
         val nodes = mutableListOf<JsonElement>()
         var idxValue = 0
-        for (tmpNode in element.jsonObject["_metadata"]!!.jsonArray) {
+        for (tmpNode in element.jsonObject["metadata"]!!.jsonArray) {
             val removed = tmpNode.jsonObject["removed"]!!.jsonPrimitive.boolean
             var transformedNode = tmpNode
             if (!removed) {
