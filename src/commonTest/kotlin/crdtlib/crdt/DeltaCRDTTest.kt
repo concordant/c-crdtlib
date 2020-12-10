@@ -144,10 +144,9 @@ class DeltaCRDTTest : StringSpec({
     }
 
     /**
-     * This test evaluates that deserializing a json crdt with no _type key
-     * throw an IllegalArgumentException.
+     * This test evaluates that deserializing a json crdt with spaces works.
      */
-    "fromJson with spaces and new lines works" {
+    "fromJson with spaces works" {
         val counter = PNCounter()
         val counterJson = counter.toJson()
         // This is a PNCounter JSON string with some spaces and newlines
@@ -158,6 +157,47 @@ class DeltaCRDTTest : StringSpec({
                 "decrement":[]
             },
             "value" : 0
+        }"""
+        val deltaCrdt = DeltaCRDT.fromJson(prettyCounterJson)
+        deltaCrdt.toJson().shouldBe(counterJson)
+    }
+
+    /**
+     * This test evaluates that deserializing a json crdt with newlines works.
+     */
+    "fromJson with newlines works" {
+        val counter = PNCounter()
+        val counterJson = counter.toJson()
+        // This is a PNCounter JSON string with some spaces and newlines
+        val prettyCounterJson = """{
+            "_type"
+            :
+            "PNCounter",
+            "_metadata" : {
+                "increment" : [],
+                "decrement":[]
+            },
+            "value" : 0
+        }"""
+        val deltaCrdt = DeltaCRDT.fromJson(prettyCounterJson)
+        deltaCrdt.toJson().shouldBe(counterJson)
+    }
+
+    /**
+     * This test evaluates that deserializing a json crdt with quotes works.
+     */
+    "fromJson with simple quotes works" {
+        val counter = PNCounter()
+        val counterJson = counter.toJson()
+        // This is a PNCounter JSON string with some spaces, newlines, and
+        // simple quotes
+        val prettyCounterJson = """{
+            '_type' : 'PNCounter',
+            '_metadata' : {
+                'increment' : [],
+                'decrement':[]
+            },
+            'value' : 0
         }"""
         val deltaCrdt = DeltaCRDT.fromJson(prettyCounterJson)
         deltaCrdt.toJson().shouldBe(counterJson)

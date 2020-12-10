@@ -57,36 +57,37 @@ abstract class DeltaCRDT {
          */
         @Name("fromJson")
         fun fromJson(json: String): DeltaCRDT {
+            val properJson = json.replace('\'', '"')
             val regex = """"_type"\s*:\s*"(\w+)",""".toRegex()
-            val matchResult = regex.find(json)
+            val matchResult = regex.find(properJson)
             val crdtType = matchResult?.groups?.get(1)?.value
             when (crdtType) {
                 "PNCounter" -> {
-                    return PNCounter.fromJson(json)
+                    return PNCounter.fromJson(properJson)
                 }
                 "BCounter" -> {
-                    return BCounter.fromJson(json)
+                    return BCounter.fromJson(properJson)
                 }
                 "LWWRegister" -> {
-                    return LWWRegister.fromJson(json)
+                    return LWWRegister.fromJson(properJson)
                 }
                 "MVRegister" -> {
-                    return MVRegister.fromJson(json)
+                    return MVRegister.fromJson(properJson)
                 }
                 "Ratchet" -> {
-                    return Ratchet.fromJson(json)
+                    return Ratchet.fromJson(properJson)
                 }
                 "RGA" -> {
-                    return RGA.fromJson(json)
+                    return RGA.fromJson(properJson)
                 }
                 "LWWMap" -> {
-                    return LWWMap.fromJson(json)
+                    return LWWMap.fromJson(properJson)
                 }
                 "MVMap" -> {
-                    return MVMap.fromJson(json)
+                    return MVMap.fromJson(properJson)
                 }
                 "Map" -> {
-                    return Map.fromJson(json)
+                    return Map.fromJson(properJson)
                 }
                 else -> {
                     throw IllegalArgumentException("DeltaCRDT cannot deserialize type: $crdtType")
