@@ -61,10 +61,23 @@ Then add the token to your gradle propeties file *~/.gradle/gradle.properties*:
 gitLabPrivateToken=<deployOrPersonalToken>
 ```
 
-In you project's configuration build file *build.gradle.kts* add the GitLab
-registry as a repository:
+In you project's configuration build file *build.gradle.kts* :
+- Add the repository jcenter() or mavenCentral() :
 ``` kotlin
 repositories {
+    jcenter()
+}
+```
+or
+``` kotlin
+repositories {
+    mavenCentral()
+}
+```
+- add the JitPack repository and the GitLab registry as a repository :
+``` kotlin
+repositories {
+    maven(url = "https://jitpack.io")
     maven {
         url = uri("https://gitlab.inria.fr/api/v4/projects/18591/packages/maven")
         credentials(HttpHeaderCredentials::class) {
@@ -78,8 +91,7 @@ repositories {
     }
 }
 ```
-
-And add the maven package as a dependency:
+- Add the maven package as a dependency:
 ``` kotlin
 dependencies {
     implementation("concordant:c-crdtlib:x.y.z")
