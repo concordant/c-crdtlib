@@ -30,8 +30,8 @@ import kotlinx.serialization.json.*
 * This class is a delta-based CRDT map implementing last writer wins (LWW) to resolve conflicts.
 * It is serializable to JSON and respect the following schema:
 * {
-*   "_type": "Map",
-*   "_metadata": {
+*   "type": "Map",
+*   "metadata": {
 *       "lwwMap": {
 *           // $key is a string
 *           ( "$key": Timestamp.toJson() )*( , "$key": Timestamp.toJson() )?
@@ -644,11 +644,11 @@ class JsonMapSerializer(serializer: KSerializer<Map>) :
         }
 
         val metadata = JsonObject(mapOf("lwwMap" to lwwMetadata, "mvMap" to mvMetadata, "cntMap" to JsonObject(cntMetadata)))
-        return JsonObject(mapOf("_type" to JsonPrimitive("Map"), "_metadata" to metadata).plus(values))
+        return JsonObject(mapOf("type" to JsonPrimitive("Map"), "metadata" to metadata).plus(values))
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
-        val metadata = element.jsonObject["_metadata"]!!.jsonObject
+        val metadata = element.jsonObject["metadata"]!!.jsonObject
 
         val lwwMetadata = metadata["lwwMap"]!!.jsonObject
         val lwwEntries = mutableMapOf<String, JsonElement>()

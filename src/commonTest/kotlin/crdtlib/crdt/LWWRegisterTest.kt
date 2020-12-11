@@ -197,14 +197,14 @@ class LWWRegisterTest : StringSpec({
         val reg = LWWRegister(value, ts)
         val regJson = reg.toJson()
 
-        regJson.shouldBe("""{"_type":"LWWRegister","_metadata":{"uid":{"name":"clientid"},"cnt":-2147483647},"value":"value"}""")
+        regJson.shouldBe("""{"type":"LWWRegister","metadata":{"uid":{"name":"clientid"},"cnt":-2147483647},"value":"value"}""")
     }
 
     /**
      * This test evaluates JSON deserialization of a lww register.
      **/
     "JSON deserialization" {
-        val regJson = LWWRegister.fromJson("""{"_type":"LWWRegister","_metadata":{"uid":{"name":"clientid"},"cnt":-2147483647},"value":"value"}""")
+        val regJson = LWWRegister.fromJson("""{"type":"LWWRegister","metadata":{"uid":{"name":"clientid"},"cnt":-2147483647},"value":"value"}""")
 
         regJson.get().shouldBe("value")
     }

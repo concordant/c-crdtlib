@@ -32,7 +32,7 @@ import kotlinx.serialization.json.*
 * with respect to this partial order.
 * It is serializable to JSON and respect the following schema:
 * {
-*   "_type": "Ratchet",
+*   "type": "Ratchet",
 *   "value": $value
 * }
 * @property value the stored value.
@@ -112,7 +112,7 @@ class JsonRatchetSerializer(serializer: KSerializer<Ratchet>) :
     JsonTransformingSerializer<Ratchet>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {
-        return JsonObject(mapOf("_type" to JsonPrimitive("Ratchet"), "value" to element.jsonObject["value"] as JsonElement))
+        return JsonObject(mapOf("type" to JsonPrimitive("Ratchet"), "value" to element.jsonObject["value"] as JsonElement))
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {

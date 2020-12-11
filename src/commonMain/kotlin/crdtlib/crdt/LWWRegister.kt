@@ -30,8 +30,8 @@ import kotlinx.serialization.json.*
 * This class is a delta-based CRDT last writer wins (LWW) register.
 * It is serializable to JSON and respects the following schema:
 * {
-*   "_type": "LWWRegister",
-*   "_metadata": Timestamp.toJson(),
+*   "type": "LWWRegister",
+*   "metadata": Timestamp.toJson(),
 *   "value": $value
 * }
 * @property value the value stored in the register.
@@ -127,12 +127,12 @@ class JsonLWWRegisterSerializer(serializer: KSerializer<LWWRegister>) :
     override fun transformSerialize(element: JsonElement): JsonElement {
         val value = element.jsonObject["value"] as JsonElement
         val metadata = element.jsonObject["ts"]!!.jsonObject
-        return JsonObject(mapOf("_type" to JsonPrimitive("LWWRegister"), "_metadata" to metadata, "value" to value))
+        return JsonObject(mapOf("type" to JsonPrimitive("LWWRegister"), "metadata" to metadata, "value" to value))
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
         val value = element.jsonObject["value"] as JsonElement
-        val ts = element.jsonObject["_metadata"]!!.jsonObject
+        val ts = element.jsonObject["metadata"]!!.jsonObject
         return JsonObject(mapOf("value" to value, "ts" to ts))
     }
 }

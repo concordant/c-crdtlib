@@ -3527,7 +3527,7 @@ class MapTest : StringSpec({
 
         val mapJson = map.toJson()
 
-        mapJson.shouldBe("""{"_type":"Map","_metadata":{"lwwMap":{"entries":{}},"mvMap":{"entries":{},"causalContext":{"entries":[]}},"cntMap":{}}}""")
+        mapJson.shouldBe("""{"type":"Map","metadata":{"lwwMap":{"entries":{}},"mvMap":{"entries":{},"causalContext":{"entries":[]}},"cntMap":{}}}""")
     }
 
     /**
@@ -3540,7 +3540,7 @@ class MapTest : StringSpec({
         val ts2 = client.tick()
         val ts3 = client.tick()
 
-        val mapJson = Map.fromJson("""{"_type":"Map","_metadata":{"lwwMap":{"entries":{}},"mvMap":{"entries":{},"causalContext":{"entries":[]}},"cntMap":{}}}""")
+        val mapJson = Map.fromJson("""{"type":"Map","metadata":{"lwwMap":{"entries":{}},"mvMap":{"entries":{},"causalContext":{"entries":[]}},"cntMap":{}}}""")
         mapJson.putLWW("key1", "value1", ts1)
         mapJson.putMV("key1", "value1", ts2)
         mapJson.increment("key1", 42, ts3)
@@ -3584,14 +3584,14 @@ class MapTest : StringSpec({
         map.decrement("key", 11, ts10)
         val mapJson = map.toJson()
 
-        mapJson.shouldBe("""{"_type":"Map","_metadata":{"lwwMap":{"entries":{"key%BOOLEAN":{"uid":{"name":"clientid"},"cnt":-2147483647},"key%DOUBLE":{"uid":{"name":"clientid"},"cnt":-2147483646},"key%INTEGER":{"uid":{"name":"clientid"},"cnt":-2147483645},"key%STRING":{"uid":{"name":"clientid"},"cnt":-2147483644}}},"mvMap":{"entries":{"key%BOOLEAN":[{"uid":{"name":"clientid"},"cnt":-2147483643}],"key%DOUBLE":[{"uid":{"name":"clientid"},"cnt":-2147483642}],"key%INTEGER":[{"uid":{"name":"clientid"},"cnt":-2147483641}],"key%STRING":[{"uid":{"name":"clientid"},"cnt":-2147483640}]},"causalContext":{"entries":[{"name":"clientid"},-2147483640]}},"cntMap":{"key":{"increment":[{"name":"clientid"},{"first":42,"second":{"uid":{"name":"clientid"},"cnt":-2147483639}}],"decrement":[{"name":"clientid"},{"first":11,"second":{"uid":{"name":"clientid"},"cnt":-2147483638}}]}}},"key%BOOLEAN%LWW":true,"key%DOUBLE%LWW":3.14,"key%INTEGER%LWW":42,"key%STRING%LWW":"value","key%BOOLEAN%MV":[true],"key%DOUBLE%MV":[3.14],"key%INTEGER%MV":[42],"key%STRING%MV":["value"],"key%CNT":31}""")
+        mapJson.shouldBe("""{"type":"Map","metadata":{"lwwMap":{"entries":{"key%BOOLEAN":{"uid":{"name":"clientid"},"cnt":-2147483647},"key%DOUBLE":{"uid":{"name":"clientid"},"cnt":-2147483646},"key%INTEGER":{"uid":{"name":"clientid"},"cnt":-2147483645},"key%STRING":{"uid":{"name":"clientid"},"cnt":-2147483644}}},"mvMap":{"entries":{"key%BOOLEAN":[{"uid":{"name":"clientid"},"cnt":-2147483643}],"key%DOUBLE":[{"uid":{"name":"clientid"},"cnt":-2147483642}],"key%INTEGER":[{"uid":{"name":"clientid"},"cnt":-2147483641}],"key%STRING":[{"uid":{"name":"clientid"},"cnt":-2147483640}]},"causalContext":{"entries":[{"name":"clientid"},-2147483640]}},"cntMap":{"key":{"increment":[{"name":"clientid"},{"first":42,"second":{"uid":{"name":"clientid"},"cnt":-2147483639}}],"decrement":[{"name":"clientid"},{"first":11,"second":{"uid":{"name":"clientid"},"cnt":-2147483638}}]}}},"key%BOOLEAN%LWW":true,"key%DOUBLE%LWW":3.14,"key%INTEGER%LWW":42,"key%STRING%LWW":"value","key%BOOLEAN%MV":[true],"key%DOUBLE%MV":[3.14],"key%INTEGER%MV":[42],"key%STRING%MV":["value"],"key%CNT":31}""")
     }
 
     /**
      * This test evaluates JSON deserialization of a map.
      */
     "JSON deserialization" {
-        val mapJson = Map.fromJson("""{"_type":"Map","_metadata":{"lwwMap":{"entries":{"key%BOOLEAN":{"uid":{"name":"clientid"},"cnt":-2147483647},"key%DOUBLE":{"uid":{"name":"clientid"},"cnt":-2147483646},"key%INTEGER":{"uid":{"name":"clientid"},"cnt":-2147483645},"key%STRING":{"uid":{"name":"clientid"},"cnt":-2147483644}}},"mvMap":{"entries":{"key%BOOLEAN":[{"uid":{"name":"clientid"},"cnt":-2147483643}],"key%DOUBLE":[{"uid":{"name":"clientid"},"cnt":-2147483642}],"key%INTEGER":[{"uid":{"name":"clientid"},"cnt":-2147483641}],"key%STRING":[{"uid":{"name":"clientid"},"cnt":-2147483640}]},"causalContext":{"entries":[{"name":"clientid"},-2147483640]}},"cntMap":{"key":{"increment":[{"name":"clientid"},{"first":42,"second":{"uid":{"name":"clientid"},"cnt":-2147483639}}],"decrement":[{"name":"clientid"},{"first":11,"second":{"uid":{"name":"clientid"},"cnt":-2147483638}}]}}},"key%BOOLEAN%LWW":true,"key%DOUBLE%LWW":3.14,"key%INTEGER%LWW":42,"key%STRING%LWW":"value","key%BOOLEAN%MV":[true],"key%DOUBLE%MV":[3.14],"key%INTEGER%MV":[42],"key%STRING%MV":["value"],"key%CNT":31}""")
+        val mapJson = Map.fromJson("""{"type":"Map","metadata":{"lwwMap":{"entries":{"key%BOOLEAN":{"uid":{"name":"clientid"},"cnt":-2147483647},"key%DOUBLE":{"uid":{"name":"clientid"},"cnt":-2147483646},"key%INTEGER":{"uid":{"name":"clientid"},"cnt":-2147483645},"key%STRING":{"uid":{"name":"clientid"},"cnt":-2147483644}}},"mvMap":{"entries":{"key%BOOLEAN":[{"uid":{"name":"clientid"},"cnt":-2147483643}],"key%DOUBLE":[{"uid":{"name":"clientid"},"cnt":-2147483642}],"key%INTEGER":[{"uid":{"name":"clientid"},"cnt":-2147483641}],"key%STRING":[{"uid":{"name":"clientid"},"cnt":-2147483640}]},"causalContext":{"entries":[{"name":"clientid"},-2147483640]}},"cntMap":{"key":{"increment":[{"name":"clientid"},{"first":42,"second":{"uid":{"name":"clientid"},"cnt":-2147483639}}],"decrement":[{"name":"clientid"},{"first":11,"second":{"uid":{"name":"clientid"},"cnt":-2147483638}}]}}},"key%BOOLEAN%LWW":true,"key%DOUBLE%LWW":3.14,"key%INTEGER%LWW":42,"key%STRING%LWW":"value","key%BOOLEAN%MV":[true],"key%DOUBLE%MV":[3.14],"key%INTEGER%MV":[42],"key%STRING%MV":["value"],"key%CNT":31}""")
 
         mapJson.getLWWBoolean("key").shouldBe(true)
         mapJson.getLWWDouble("key").shouldBe(3.14)

@@ -216,14 +216,14 @@ class RatchetTest : StringSpec({
         val rat = Ratchet(value)
         val ratJson = rat.toJson()
 
-        ratJson.shouldBe("""{"_type":"Ratchet","value":"VALUE"}""")
+        ratJson.shouldBe("""{"type":"Ratchet","value":"VALUE"}""")
     }
 
     /**
      * This test evaluates JSON deserialization of a ratchet.
      **/
     "JSON deserialization" {
-        val ratJson = Ratchet.fromJson("""{"_type":"Ratchet","value":"VALUE"}""")
+        val ratJson = Ratchet.fromJson("""{"type":"Ratchet","value":"VALUE"}""")
 
         ratJson.get().shouldBe("VALUE")
     }

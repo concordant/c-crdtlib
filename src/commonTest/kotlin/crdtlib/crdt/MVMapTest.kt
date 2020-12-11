@@ -1425,7 +1425,7 @@ class MVMapTest : StringSpec({
 
         val mapJson = map.toJson()
 
-        mapJson.shouldBe("""{"_type":"MVMap","_metadata":{"entries":{},"causalContext":{"entries":[]}}}""")
+        mapJson.shouldBe("""{"type":"MVMap","metadata":{"entries":{},"causalContext":{"entries":[]}}}""")
     }
 
     /**
@@ -1436,7 +1436,7 @@ class MVMapTest : StringSpec({
         val client = SimpleEnvironment(uid)
         val ts = client.tick()
 
-        val mapJson = MVMap.fromJson("""{"_type":"MVMap","_metadata":{"entries":{},"causalContext":{"entries":[]}}}""")
+        val mapJson = MVMap.fromJson("""{"type":"MVMap","metadata":{"entries":{},"causalContext":{"entries":[]}}}""")
         mapJson.put("key1", "value1", ts)
 
         mapJson.getString("key1")!!.shouldHaveSingleElement("value1")
@@ -1482,14 +1482,14 @@ class MVMapTest : StringSpec({
         map1.merge(map2)
         val mapJson = map1.toJson()
 
-        mapJson.shouldBe("""{"_type":"MVMap","_metadata":{"entries":{"key1%INTEGER":[{"uid":{"name":"clientid1"},"cnt":-2147483647}],"key2%STRING":[{"uid":{"name":"clientid1"},"cnt":-2147483645}],"key3%STRING":[{"uid":{"name":"clientid1"},"cnt":-2147483644},{"uid":{"name":"clientid2"},"cnt":-2147483647}],"key4%BOOLEAN":[{"uid":{"name":"clientid1"},"cnt":-2147483643}],"key5%DOUBLE":[{"uid":{"name":"clientid1"},"cnt":-2147483642}]},"causalContext":{"entries":[{"name":"clientid1"},-2147483642,{"name":"clientid2"},-2147483647]}},"key1%INTEGER":[1],"key2%STRING":[null],"key3%STRING":["value3","value2"],"key4%BOOLEAN":[true],"key5%DOUBLE":[3.14159]}""")
+        mapJson.shouldBe("""{"type":"MVMap","metadata":{"entries":{"key1%INTEGER":[{"uid":{"name":"clientid1"},"cnt":-2147483647}],"key2%STRING":[{"uid":{"name":"clientid1"},"cnt":-2147483645}],"key3%STRING":[{"uid":{"name":"clientid1"},"cnt":-2147483644},{"uid":{"name":"clientid2"},"cnt":-2147483647}],"key4%BOOLEAN":[{"uid":{"name":"clientid1"},"cnt":-2147483643}],"key5%DOUBLE":[{"uid":{"name":"clientid1"},"cnt":-2147483642}]},"causalContext":{"entries":[{"name":"clientid1"},-2147483642,{"name":"clientid2"},-2147483647]}},"key1%INTEGER":[1],"key2%STRING":[null],"key3%STRING":["value3","value2"],"key4%BOOLEAN":[true],"key5%DOUBLE":[3.14159]}""")
     }
 
     /**
      * This test evaluates JSON deserialization of a MV map.
      */
     "JSON deserialization" {
-        val mapJson = MVMap.fromJson("""{"_type":"MVMap","_metadata":{"entries":{"key1%INTEGER":[{"uid":{"name":"clientid1"},"cnt":-2147483647}],"key2%STRING":[{"uid":{"name":"clientid1"},"cnt":-2147483645}],"key3%STRING":[{"uid":{"name":"clientid1"},"cnt":-2147483644},{"uid":{"name":"clientid2"},"cnt":-2147483647}],"key4%BOOLEAN":[{"uid":{"name":"clientid1"},"cnt":-2147483643}],"key5%DOUBLE":[{"uid":{"name":"clientid1"},"cnt":-2147483642}]},"causalContext":{"entries":[{"name":"clientid1"},-2147483642,{"name":"clientid2"},-2147483647]}},"key1%INTEGER":[1],"key2%STRING":[null],"key3%STRING":["value3","value2"],"key4%BOOLEAN":[true],"key5%DOUBLE":[3.14159]}""")
+        val mapJson = MVMap.fromJson("""{"type":"MVMap","metadata":{"entries":{"key1%INTEGER":[{"uid":{"name":"clientid1"},"cnt":-2147483647}],"key2%STRING":[{"uid":{"name":"clientid1"},"cnt":-2147483645}],"key3%STRING":[{"uid":{"name":"clientid1"},"cnt":-2147483644},{"uid":{"name":"clientid2"},"cnt":-2147483647}],"key4%BOOLEAN":[{"uid":{"name":"clientid1"},"cnt":-2147483643}],"key5%DOUBLE":[{"uid":{"name":"clientid1"},"cnt":-2147483642}]},"causalContext":{"entries":[{"name":"clientid1"},-2147483642,{"name":"clientid2"},-2147483647]}},"key1%INTEGER":[1],"key2%STRING":[null],"key3%STRING":["value3","value2"],"key4%BOOLEAN":[true],"key5%DOUBLE":[3.14159]}""")
 
         mapJson.getInt("key1")!!.shouldHaveSingleElement(1)
         mapJson.getString("key2").shouldBeNull()
