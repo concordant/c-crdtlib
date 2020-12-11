@@ -144,12 +144,8 @@ class DeltaCRDTTest : StringSpec({
     }
 
     /**
-<<<<<<< HEAD
      * This test evaluates that deserializing a json crdt with spaces and
      * newlines works.
-=======
-     * This test evaluates that deserializing a json crdt with spaces works.
->>>>>>> 89-deltacrdt-fromjson-method-should-support-spaces-in-json
      */
     "fromJson with spaces works" {
         val counter = PNCounter()
