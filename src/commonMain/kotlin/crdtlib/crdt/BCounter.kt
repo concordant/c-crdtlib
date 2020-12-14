@@ -63,7 +63,14 @@ import kotlinx.serialization.json.*
  * }
  */
 @Serializable
-class BCounter : DeltaCRDT() {
+class BCounter : DeltaCRDT {
+
+    /**
+     * Default constructor.
+     */
+    constructor() : super()
+    constructor(env: Environment) : super(env)
+
     /**
      * A mutable map of mutable map storing each client metadata relative to increment operations.
      * increment[i][i] represent the increments by replica i.
@@ -128,11 +135,12 @@ class BCounter : DeltaCRDT() {
      * @return the delta corresponding to this operation.
      */
     @Name("increment")
-    fun increment(amount: Int, ts: Timestamp): BCounter {
+    fun increment(amount: Int): BCounter {
+        if (amount < 0) return this.decrement(-amount)
         val op = BCounter()
         if (amount == 0) return op
-        if (amount < 0) return this.decrement(-amount, ts)
 
+        val ts = env.tick()
         val thisLine = this.increment.getOrPut(ts.uid, { mutableMapOf() })
         val count = checkedSum(thisLine[ts.uid]?.first ?: 0, amount)
         thisLine[ts.uid] = Pair(count, ts)
@@ -147,20 +155,20 @@ class BCounter : DeltaCRDT() {
      * @return the delta corresponding to this operation.
      */
     @Name("decrement")
-    fun decrement(amount: Int, ts: Timestamp): BCounter {
+    fun decrement(amount: Int): BCounter {
+        if (amount < 0) return this.increment(-amount)
         val op = BCounter()
         if (amount == 0) return op
-        if (amount < 0) return this.increment(-amount, ts)
 
         try {
-            if (amount > this.localRights(ts.uid)) {
+            if (amount > this.localRights(env.uid)) {
                 throw IllegalArgumentException("BCounter has not enough rights")
             }
         } catch (e: ArithmeticException) {
             // localRights overflowed, so it is larger than amount
         }
-        val count = checkedSum(this.decrement[ts.uid]?.first ?: 0, amount)
-
+        val count = checkedSum(this.decrement[env.uid]?.first ?: 0, amount)
+        val ts = env.tick()
         this.decrement[ts.uid] = Pair(count, ts)
         op.decrement[ts.uid] = Pair(count, ts)
         return op
@@ -169,12 +177,13 @@ class BCounter : DeltaCRDT() {
     /**
      * Transfers rights from the local replica to some other replica to.
      * @param amount the rights that should be transferred from the local replica to replica to.
+     * @param to the client uid to which rights are transfered.
      * @return the delta corresponding to this operation.
      */
     @Name("transfer")
-    fun transfer(amount: Int, to: ClientUId, ts: Timestamp): BCounter {
+    fun transfer(amount: Int, to: ClientUId): BCounter {
         try {
-            if (amount > this.localRights(ts.uid)) {
+            if (amount > this.localRights(env.uid)) {
                 throw IllegalArgumentException("BCounter has not enough rights")
             }
         } catch (e: ArithmeticException) {
@@ -184,12 +193,13 @@ class BCounter : DeltaCRDT() {
         val op = BCounter()
         if (amount == 0) return op
         val rights = checkedSum(
-            this.increment[ts.uid]?.get(to)?.first ?: 0,
+            this.increment[env.uid]?.get(to)?.first ?: 0,
             amount
         )
 
-        this.increment[ts.uid]?.put(to, Pair(rights, ts))
-        op.increment[ts.uid]?.put(to, Pair(rights, ts))
+        val ts = env.tick()
+        this.increment[env.uid]?.put(to, Pair(rights, ts))
+        op.increment[env.uid]?.put(to, Pair(rights, ts))
         return op
     }
 
@@ -274,9 +284,11 @@ class BCounter : DeltaCRDT() {
          * @return the resulted crdt counter.
          */
         @Name("fromJson")
-        fun fromJson(json: String): BCounter {
+        fun fromJson(json: String, env: Environment? = null): BCounter {
             val jsonSerializer = JsonBCounterSerializer(serializer())
-            return Json.decodeFromString(jsonSerializer, json)
+            val obj = Json.decodeFromString(jsonSerializer, json)
+            if (env != null) obj.env = env
+            return obj
         }
     }
 }

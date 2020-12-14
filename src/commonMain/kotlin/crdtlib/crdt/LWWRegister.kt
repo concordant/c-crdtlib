@@ -19,6 +19,7 @@
 
 package crdtlib.crdt
 
+import crdtlib.utils.Environment
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
@@ -53,21 +54,22 @@ class LWWRegister : DeltaCRDT {
     /**
      * Default constructor creating a empty register.
      */
-    constructor()
+    constructor() : super()
+    constructor(env: Environment) : super(env)
 
     /**
      * Constructor creating a register initialized with a given value.
      * @param value the value to be put in the register.
-     * @param ts the associated timestamp.
+     * @param env the environment
      */
-    constructor(value: String, ts: Timestamp) {
+    constructor(value: String, env: Environment) : super(env) {
         this.value = value
-        this.ts = ts
+        this.ts = env.tick()
     }
-
     /**
      * Constructor creating a copy of a given register.
-     * @param other the register that should be copy.
+     * @param other the register that should be copied.
+     * @return a copy with no env associated.
      */
     constructor(other: LWWRegister) {
         this.value = other.value
@@ -85,13 +87,14 @@ class LWWRegister : DeltaCRDT {
 
     /**
      * Assigns a given value to the register.
-     * Assign is not effective if the associated timestamp is smaller (older) than the current one.
+     * Assign is not effective if the timestamp provided by the environment
+     * is smaller (older) than the current one.
      * @param v the value that should be assigned.
-     * @param ts the timestamp associated to the operation.
      * @return the delta corresponding to this operation.
      */
     @Name("set")
-    fun assign(v: String, ts: Timestamp): LWWRegister {
+    fun assign(v: String): LWWRegister {
+        val ts = env.tick()
         val currentTs = this.ts
         if (currentTs == null || currentTs < ts) {
             this.ts = ts
@@ -151,9 +154,11 @@ class LWWRegister : DeltaCRDT {
          * @return the resulted LWW register.
          */
         @Name("fromJson")
-        fun fromJson(json: String): LWWRegister {
+        fun fromJson(json: String, env: Environment? = null): LWWRegister {
             val jsonSerializer = JsonLWWRegisterSerializer(serializer())
-            return Json.decodeFromString(jsonSerializer, json)
+            val obj = Json.decodeFromString(jsonSerializer, json)
+            if (env != null) obj.env = env
+            return obj
         }
     }
 }

@@ -20,6 +20,7 @@
 package crdtlib.crdt
 
 import crdtlib.utils.ClientUId
+import crdtlib.utils.Environment
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
@@ -81,6 +82,7 @@ class PNCounter : DeltaCRDT {
      * Default constructor.
      */
     constructor()
+    constructor(env: Environment) : super(env)
 
     /**
      * Gets the value of the counter.
@@ -97,11 +99,12 @@ class PNCounter : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("increment")
-    fun increment(amount: Int, ts: Timestamp): PNCounter {
+    fun increment(amount: Int): PNCounter {
+        if (amount < 0) return this.decrement(-amount)
         val op = PNCounter()
         if (amount == 0) return op
-        if (amount < 0) return this.decrement(-amount, ts)
 
+        val ts = env.tick()
         val count = this.increment[ts.uid]?.first ?: 0
         if (Int.MAX_VALUE - count < amount - 1) {
             throw RuntimeException("PNCounter has reached Int.MAX_VALUE")
@@ -117,11 +120,12 @@ class PNCounter : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("decrement")
-    fun decrement(amount: Int, ts: Timestamp): PNCounter {
+    fun decrement(amount: Int): PNCounter {
+        if (amount < 0) return this.increment(-amount)
         val op = PNCounter()
         if (amount == 0) return op
-        if (amount < 0) return this.increment(-amount, ts)
 
+        val ts = env.tick()
         val count = this.decrement[ts.uid]?.first ?: 0
         if (Int.MAX_VALUE - count < amount - 1) {
             throw RuntimeException("PNCounter has reached Int.MAX_VALUE")
@@ -201,9 +205,11 @@ class PNCounter : DeltaCRDT {
          * @return the resulted crdt counter.
          */
         @Name("fromJson")
-        fun fromJson(json: String): PNCounter {
+        fun fromJson(json: String, env: Environment? = null): PNCounter {
             val jsonSerializer = JsonPNCounterSerializer(serializer())
-            return Json.decodeFromString(jsonSerializer, json)
+            val obj = Json.decodeFromString(jsonSerializer, json)
+            if (env != null) obj.env = env
+            return obj
         }
     }
 }

@@ -19,6 +19,7 @@
 
 package crdtlib.crdt
 
+import crdtlib.utils.Environment
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.VersionVector
@@ -38,14 +39,36 @@ import kotlinx.serialization.json.*
 * @property value the stored value.
 */
 @Serializable
-class Ratchet(var value: String) : DeltaCRDT() {
+class Ratchet : DeltaCRDT {
+    @Required
+    var value: String? = null
+
+    /**
+     * Default constructor creating an empty ratchet.
+     */
+    constructor() : super()
+
+    /**
+     * Constructor creating an empty ratchet with provided environment.
+     * @param env the current environment
+     */
+    constructor(env: Environment) : super(env)
+
+    /**
+     * Constructor creating a ratchet with initial value and environment.
+     * @param value the initial value
+     * @param env the current environment
+     */
+    constructor(value: String?, env: Environment? = null) : super(env) {
+        this.value = value
+    }
 
     /**
      * Gets the value stored in the ratchet.
      * @return the value stored in the ratchet.
      */
     @Name("get")
-    fun get(): String {
+    fun get(): String? {
         return this.value
     }
 
@@ -56,8 +79,11 @@ class Ratchet(var value: String) : DeltaCRDT() {
      * @return the delta corresponding to this operation.
      */
     @Name("set")
-    fun assign(value: String): Ratchet {
-        if (this.value < value) this.value = value
+    fun assign(value: String?): Ratchet {
+        // if x == null and value == "", then x.orEmpty() == value
+        if (value != null && this.value.orEmpty() <= value) {
+            this.value = value
+        }
         return Ratchet(this.value)
     }
 
@@ -79,7 +105,12 @@ class Ratchet(var value: String) : DeltaCRDT() {
     override fun merge(delta: DeltaCRDT) {
         if (delta !is Ratchet) throw IllegalArgumentException("Ratchet unsupported merge argument")
 
-        if (this.value < delta.value) this.value = delta.value
+        // if x == null and value == "", then x.orEmpty() == value
+        if (delta.value != null &&
+            this.value.orEmpty() <= delta.value.orEmpty()
+        ) {
+            this.value = delta.value
+        }
     }
 
     /**
@@ -107,7 +138,7 @@ class Ratchet(var value: String) : DeltaCRDT() {
          * @return the resulted ratchet.
          */
         @Name("fromJson")
-        fun fromJson(json: String): Ratchet {
+        fun fromJson(json: String, env: Environment? = null): Ratchet {
             val jsonSerializer = JsonRatchetSerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }
