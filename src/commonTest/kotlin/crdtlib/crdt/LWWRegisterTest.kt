@@ -22,7 +22,8 @@ package crdtlib.crdt
 import crdtlib.utils.ClientUId
 import crdtlib.utils.SimpleEnvironment
 import io.kotest.core.spec.style.StringSpec
-import io.kotest.matchers.*
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.shouldBe
 
 /**
 * Represents a test suite for LWWRegister.
@@ -40,6 +41,16 @@ class LWWRegisterTest : StringSpec({
         client1 = SimpleEnvironment(uid1)
         client2 = SimpleEnvironment(uid2)
         client3 = SimpleEnvironment(uid3)
+    }
+
+    /**
+     * This test evaluates the scenario: create an empty register, get.
+     * Call to get should return null.
+     */
+    "create empty register and get" {
+        val reg = LWWRegister()
+
+        reg.get().shouldBeNull()
     }
 
     /**
@@ -61,6 +72,22 @@ class LWWRegisterTest : StringSpec({
         reg.assign("value2")
 
         reg.get().shouldBe("value2")
+    }
+
+    /**
+     * This test evaluates the scenario: create empy || assign merge get.
+     * Call to get should return the value set in the second replica.
+     */
+    "R1: create empty; R2: create with greater timestamp, merge, get" {
+        val value = "value"
+
+        val reg1 = LWWRegister()
+        val reg2 = LWWRegister(value, client1)
+        reg1.merge(reg2)
+        reg2.merge(reg1)
+
+        reg1.get().shouldBe(value)
+        reg2.get().shouldBe(value)
     }
 
     /**
@@ -126,6 +153,24 @@ class LWWRegisterTest : StringSpec({
         reg2.get().shouldBe("value2")
     }
 
+    /**
+     * This test evaluates JSON serialization of an empty lww register.
+     **/
+    "empty JSON serialization" {
+        val reg = LWWRegister()
+        val regJson = reg.toJson()
+
+        regJson.shouldBe("""{"type":"LWWRegister","metadata":null,"value":null}""")
+    }
+
+    /**
+     * This test evaluates JSON deserialization of an empty lww register.
+     **/
+    "empty JSON deserialization" {
+        val regJson = LWWRegister.fromJson("""{"type":"LWWRegister","metadata":null,"value":null}""")
+
+        regJson.get().shouldBeNull()
+    }
     /**
      * This test evaluates JSON serialization of a lww register.
      **/
