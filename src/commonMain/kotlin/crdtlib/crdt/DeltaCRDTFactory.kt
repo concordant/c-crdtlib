@@ -27,9 +27,9 @@ class DeltaCRDTFactory {
     companion object {
 
         /**
-         * Create an empty crdt for a given type.
-         * @param crdtType the given crdt type.
-         * @return an empty crdt of the given type.
+         * Create an empty delta crdt of a given type.
+         * @param crdtType the given delta crdt type.
+         * @return an empty delta crdt of the given type.
          */
         fun createDeltaCRDT(crdtType: String): DeltaCRDT {
             when (crdtType) {

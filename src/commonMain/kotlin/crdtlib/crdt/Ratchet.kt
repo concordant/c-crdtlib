@@ -131,7 +131,7 @@ class Ratchet : DeltaCRDT {
         fun getType(): String {
             return "Ratchet"
         }
-        
+
         /**
          * Deserializes a given json string in a crdt ratchet.
          * @param json the given json string.
