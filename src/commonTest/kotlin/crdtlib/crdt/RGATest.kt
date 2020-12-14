@@ -34,6 +34,19 @@ import io.kotest.matchers.iterator.shouldHaveNext
 **/
 class RGATest : StringSpec({
 
+    val uid1 = ClientUId("clientid1")
+    val uid2 = ClientUId("clientid2")
+    val uid3 = ClientUId("clientid3")
+    var client1 = SimpleEnvironment(uid1)
+    var client2 = SimpleEnvironment(uid2)
+    var client3 = SimpleEnvironment(uid3)
+
+    beforeTest {
+        client1 = SimpleEnvironment(uid1)
+        client2 = SimpleEnvironment(uid2)
+        client3 = SimpleEnvironment(uid3)
+    }
+
     /**
      * This test evaluates the scenario: create, get/iterator.
      * Call to get should return an empty array.
@@ -56,9 +69,7 @@ class RGATest : StringSpec({
      * Call to iterator should return an iterator containing the inserted value.
      */
     "insert at 0 and get/iterator" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val rga = RGA(client)
+        val rga = RGA(client1)
 
         rga.insertAt(0, "A")
 
@@ -80,9 +91,7 @@ class RGATest : StringSpec({
      * Call to iterator should return an iterator containing the two inserted value.
      */
     "insert at 0, insert at 0, get/iterator" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val rga = RGA(client)
+        val rga = RGA(client1)
 
         rga.insertAt(0, "B")
         rga.insertAt(0, "A")
@@ -108,9 +117,7 @@ class RGATest : StringSpec({
      * Call to iterator should return an iterator containing the two inserted value.
      */
     "insert at 0, insert at 1, get/iterator" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val rga = RGA(client)
+        val rga = RGA(client1)
 
         rga.insertAt(0, "A")
         rga.insertAt(1, "B")
@@ -134,9 +141,7 @@ class RGATest : StringSpec({
      * Call to iterator should return an empty iterator.
      */
     "insert at 0, remove at 0, get/iterator" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val rga = RGA(client)
+        val rga = RGA(client1)
 
         rga.insertAt(0, "A")
         rga.removeAt(0)
@@ -155,9 +160,7 @@ class RGATest : StringSpec({
      * Call to iterator should return an empty iterator.
      */
     "insert at 0, insert at 0, remove at 0, remove at 0, get/iterator" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val rga = RGA(client)
+        val rga = RGA(client1)
 
         rga.insertAt(0, "A")
         rga.insertAt(0, "B")
@@ -180,9 +183,7 @@ class RGATest : StringSpec({
      * Call to iterator should return an iterator containing the two last inserted values.
      */
     "insert at 0, insert at 1, remove at 0, insert at 1, get/iterator" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val rga = RGA(client)
+        val rga = RGA(client1)
 
         rga.insertAt(0, "A")
         rga.insertAt(1, "B")
@@ -210,9 +211,7 @@ class RGATest : StringSpec({
      * Call to iterator should return an iterator containing the first and third inserted values.
      */
     "insert at 0, insert at 1, remove at 1, insert at 1, get/iterator" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val rga = RGA(client)
+        val rga = RGA(client1)
 
         rga.insertAt(0, "A")
         rga.insertAt(1, "B")
@@ -238,10 +237,8 @@ class RGATest : StringSpec({
      * Call to iterator should return an iterator containing the value inserted in replica 1.
      */
     "R1: insert at 0; R2: merge, get/iterator" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val rga1 = RGA(client)
-        val rga2 = RGA(client)
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client1)
 
         rga1.insertAt(0, "A")
         rga2.merge(rga1)
@@ -263,10 +260,8 @@ class RGATest : StringSpec({
      * Call to iterator should return an iterator containing the two values inserted in replica 1.
      */
     "R1: insert at 0, insert at 0; R2: merge, get/iterator" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val rga1 = RGA(client)
-        val rga2 = RGA(client)
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client1)
 
         rga1.insertAt(0, "B")
         rga1.insertAt(0, "A")
@@ -293,10 +288,8 @@ class RGATest : StringSpec({
      * Call to iterator should return an iterator containing the three values inserted in replica 1.
      */
     "R1: insert at 0, insert at 1, insert at 2; R2: merge, get/iterator" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val rga1 = RGA(client)
-        val rga2 = RGA(client)
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client1)
 
         rga1.insertAt(0, "A")
         rga1.insertAt(1, "B")
@@ -317,10 +310,6 @@ class RGATest : StringSpec({
     }
 
     "R1: insert at 0; R2: insert at 0, merge, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val rga1 = RGA(client1)
         val rga2 = RGA(client2)
 
@@ -351,10 +340,6 @@ class RGATest : StringSpec({
      * Call to iterator should return an iterator containing the four values.
      */
     "R1: insert at 0, insert at 0; R2: insert at 0, insert at 0, merge, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val rga1 = RGA(client1)
         val rga2 = RGA(client2)
 
@@ -379,10 +364,6 @@ class RGATest : StringSpec({
     }
 
     "R1: insert at 0, 1; R2: insert at 0, 1, merge, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val rga1 = RGA(client1)
         val rga2 = RGA(client2)
 
@@ -423,10 +404,6 @@ class RGATest : StringSpec({
      * first and the fourth one).
      */
     "R1: insert four times, remove at 1; R2: merge after inserts, remove at 2, merge, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val rga1 = RGA(client1)
         val rga2 = RGA(client2)
 
@@ -452,12 +429,6 @@ class RGATest : StringSpec({
     }
 
     "R1, R2, R3: insert 0, 1 ; merge R1, R2 -> R3" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val uid3 = ClientUId("clientid3")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val client3 = SimpleEnvironment(uid3)
         val rga1 = RGA(client1)
         val rga2 = RGA(client2)
         val rga3 = RGA(client3)
@@ -489,12 +460,6 @@ class RGATest : StringSpec({
     }
 
     "R1, R2, R3: insert 0, 1 ; merge R3, R2 -> R1" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val uid3 = ClientUId("clientid3")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val client3 = SimpleEnvironment(uid3)
         val rga1 = RGA(client1)
         val rga2 = RGA(client2)
         val rga3 = RGA(client3)
@@ -532,10 +497,8 @@ class RGATest : StringSpec({
      * Call to iterator should return an iterator containing the value inserted in replica 1.
      */
     "use delta returned by insert" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val rga1 = RGA(client)
-        val rga2 = RGA(client)
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client1)
 
         val insertOp = rga1.insertAt(0, "A")
         rga2.merge(insertOp)
@@ -563,10 +526,8 @@ class RGATest : StringSpec({
      * Call to iterator should return an empty iterator.
      */
     "use delta returned by remove" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val rga1 = RGA(client)
-        val rga2 = RGA(client)
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client1)
 
         rga1.insertAt(0, "A")
         rga2.merge(rga1)
@@ -593,10 +554,8 @@ class RGATest : StringSpec({
      * Call to iterator should return an empty iterator.
      */
     "use delta returned by insert and remove" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val rga1 = RGA(client)
-        val rga2 = RGA(client)
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client1)
 
         val insertOp = rga1.insertAt(0, "A")
         val removeOp = rga1.removeAt(0)
@@ -624,10 +583,8 @@ class RGATest : StringSpec({
      * Call to iterator should return an empty iterator.
      */
     "merge from delta insert to delta remove" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val rga1 = RGA(client)
-        val rga2 = RGA(client)
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client1)
 
         val op1 = rga1.insertAt(0, "A")
         val op2 = rga1.removeAt(0)
@@ -654,10 +611,8 @@ class RGATest : StringSpec({
      * Call to iterator should return an empty iterator.
      */
     "merge from delta remove to delta import" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val rga1 = RGA(client)
-        val rga2 = RGA(client)
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client1)
 
         val op1 = rga1.insertAt(0, "A")
         val op2 = rga1.removeAt(0)
@@ -687,15 +642,13 @@ class RGATest : StringSpec({
      * context.
      */
     "generate delta" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
         val vv = VersionVector()
-        val rga1 = RGA(client)
-        val rga2 = RGA(client)
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client1)
 
         rga1.insertAt(0, "A")
         rga1.insertAt(0, "B")
-        vv.update(client.tick())
+        vv.update(client1.tick())
         rga1.insertAt(0, "C")
         rga1.insertAt(0, "D")
         val delta = rga1.generateDelta(vv)

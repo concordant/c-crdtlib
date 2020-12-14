@@ -30,6 +30,17 @@ import io.kotest.matchers.shouldBe
 * Represents a suite test for BCounter.
 **/
 class BCounterTest : StringSpec({
+
+    val uid1 = ClientUId("clientid1")
+    val uid2 = ClientUId("clientid2")
+    var client1 = SimpleEnvironment(uid1)
+    var client2 = SimpleEnvironment(uid2)
+
+    beforeTest {
+        client1 = SimpleEnvironment(uid1)
+        client2 = SimpleEnvironment(uid2)
+    }
+
     "create and get value" {
         val cnt = BCounter()
 
@@ -37,103 +48,85 @@ class BCounterTest : StringSpec({
     }
 
     "create and localRights value" {
-        val uid = ClientUId("clientid")
-
         val cnt = BCounter()
 
-        cnt.localRights(uid).shouldBeZero()
+        cnt.localRights(uid1).shouldBeZero()
     }
 
     "increment and get/localRights" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
         val inc = 10
-        val cnt = BCounter(client)
+        val cnt = BCounter(client1)
 
         cnt.increment(inc)
 
         cnt.get().shouldBe(10)
-        cnt.localRights(uid).shouldBe(10)
+        cnt.localRights(uid1).shouldBe(10)
     }
 
     "failing decrement and get/localRights" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt = BCounter(client)
+        val cnt = BCounter(client1)
 
         shouldThrow<IllegalArgumentException> {
             cnt.decrement(10)
         }
 
         cnt.get().shouldBeZero()
-        cnt.localRights(uid).shouldBeZero()
+        cnt.localRights(uid1).shouldBeZero()
     }
 
     "increment decrement and get/localRights" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt = BCounter(client)
+        val cnt = BCounter(client1)
 
         cnt.increment(15)
         cnt.decrement(6)
 
         cnt.get().shouldBe(9)
-        cnt.localRights(uid).shouldBe(9)
+        cnt.localRights(uid1).shouldBe(9)
     }
 
     "failing negative increment and get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt = BCounter(client)
+        val cnt = BCounter(client1)
 
         shouldThrow<IllegalArgumentException> {
             cnt.increment(-15)
         }
 
         cnt.get().shouldBeZero()
-        cnt.localRights(uid).shouldBeZero()
+        cnt.localRights(uid1).shouldBeZero()
     }
 
     "positive increment, negative increment and get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt = BCounter(client)
+        val cnt = BCounter(client1)
 
         cnt.increment(15)
         cnt.increment(-8)
 
         cnt.get().shouldBe(7)
-        cnt.localRights(uid).shouldBe(7)
+        cnt.localRights(uid1).shouldBe(7)
     }
 
     "negative decrement and get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt = BCounter(client)
+        val cnt = BCounter(client1)
 
         cnt.decrement(-15)
 
         cnt.get().shouldBe(15)
-        cnt.localRights(uid).shouldBe(15)
+        cnt.localRights(uid1).shouldBe(15)
     }
 
     "multiple increments and get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt = BCounter(client)
+        val cnt = BCounter(client1)
 
         cnt.increment(10)
         cnt.increment(1)
         cnt.increment(100)
 
         cnt.get().shouldBe(111)
-        cnt.localRights(uid).shouldBe(111)
+        cnt.localRights(uid1).shouldBe(111)
     }
 
     "multiple failing decrements and get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt = BCounter(client)
+        val cnt = BCounter(client1)
 
         shouldThrow<IllegalArgumentException> {
             cnt.decrement(10)
@@ -146,13 +139,11 @@ class BCounterTest : StringSpec({
         }
 
         cnt.get().shouldBeZero()
-        cnt.localRights(uid).shouldBeZero()
+        cnt.localRights(uid1).shouldBeZero()
     }
 
     "one increment, multiple decrements and get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt = BCounter(client)
+        val cnt = BCounter(client1)
 
         cnt.increment(150)
         cnt.decrement(10)
@@ -160,29 +151,27 @@ class BCounterTest : StringSpec({
         cnt.decrement(100)
 
         cnt.get().shouldBe(39)
-        cnt.localRights(uid).shouldBe(39)
+        cnt.localRights(uid1).shouldBe(39)
     }
 
     "multiple (increment, decrement)" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt = BCounter(client)
+        val cnt = BCounter(client1)
 
         cnt.increment(15)
         cnt.get().shouldBe(15)
-        cnt.localRights(uid).shouldBe(15)
+        cnt.localRights(uid1).shouldBe(15)
 
         cnt.decrement(5)
         cnt.get().shouldBe(10)
-        cnt.localRights(uid).shouldBe(10)
+        cnt.localRights(uid1).shouldBe(10)
 
         cnt.increment(40)
         cnt.get().shouldBe(50)
-        cnt.localRights(uid).shouldBe(50)
+        cnt.localRights(uid1).shouldBe(50)
 
         cnt.decrement(2)
         cnt.get().shouldBe(48)
-        cnt.localRights(uid).shouldBe(48)
+        cnt.localRights(uid1).shouldBe(48)
 
         shouldThrow<IllegalArgumentException> {
             cnt.decrement(50)
@@ -192,10 +181,8 @@ class BCounterTest : StringSpec({
     /* Merging */
 
     "R1: increment; R2: merge and get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt1 = BCounter(client)
-        val cnt2 = BCounter(client)
+        val cnt1 = BCounter(client1)
+        val cnt2 = BCounter(client1)
 
         cnt1.increment(11)
         cnt2.merge(cnt1)
@@ -203,15 +190,11 @@ class BCounterTest : StringSpec({
 
         cnt1.get().shouldBe(11)
         cnt2.get().shouldBe(11)
-        cnt1.localRights(uid).shouldBe(11)
-        cnt2.localRights(uid).shouldBe(11)
+        cnt1.localRights(uid1).shouldBe(11)
+        cnt2.localRights(uid1).shouldBe(11)
     }
 
     "R1: increment; R2: increment, merge, get" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val cnt1 = BCounter(client1)
         val cnt2 = BCounter(client2)
 
@@ -225,10 +208,6 @@ class BCounterTest : StringSpec({
     }
 
     "R1: increment; R2: merge, increment, get" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val cnt1 = BCounter(client1)
         val cnt2 = BCounter(client2)
 
@@ -242,10 +221,6 @@ class BCounterTest : StringSpec({
     }
 
     "R1: multiple operations; R2: multiple operations, merge, get" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val cnt1 = BCounter(client1)
         val cnt2 = BCounter(client2)
 
@@ -272,10 +247,6 @@ class BCounterTest : StringSpec({
     }
 
     "R1: multiple operations; R2: merge, multiple operations, get" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val cnt1 = BCounter(client1)
         val cnt2 = BCounter(client2)
 
@@ -297,25 +268,21 @@ class BCounterTest : StringSpec({
     /* Deltas */
 
     "use delta returned by increment" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt1 = BCounter(client)
-        val cnt2 = BCounter(client)
+        val cnt1 = BCounter(client1)
+        val cnt2 = BCounter(client1)
 
         val incOp = cnt1.increment(11)
         cnt2.merge(incOp)
         cnt1.merge(incOp)
 
         cnt2.get().shouldBe(11)
-        cnt1.localRights(uid).shouldBe(11)
-        cnt2.localRights(uid).shouldBe(11)
+        cnt1.localRights(uid1).shouldBe(11)
+        cnt2.localRights(uid1).shouldBe(11)
     }
 
     "use delta returned by increment and decrement" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt1 = BCounter(client)
-        val cnt2 = BCounter(client)
+        val cnt1 = BCounter(client1)
+        val cnt2 = BCounter(client1)
 
         val incOp = cnt1.increment(15)
         val decOp = cnt1.decrement(11)
@@ -326,19 +293,17 @@ class BCounterTest : StringSpec({
 
         cnt1.get().shouldBe(4)
         cnt2.get().shouldBe(4)
-        cnt1.localRights(uid).shouldBe(4)
-        cnt2.localRights(uid).shouldBe(4)
+        cnt1.localRights(uid1).shouldBe(4)
+        cnt2.localRights(uid1).shouldBe(4)
     }
 
     "generate delta" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt1 = BCounter(client)
-        val cnt2 = BCounter(client)
+        val cnt1 = BCounter(client1)
+        val cnt2 = BCounter(client1)
 
         cnt1.increment(11)
         cnt1.increment(33)
-        val vv = client.getState()
+        val vv = client1.getState()
         cnt2.merge(cnt1)
         cnt1.decrement(10)
         cnt1.decrement(20)
@@ -346,15 +311,12 @@ class BCounterTest : StringSpec({
         cnt2.merge(delta)
 
         cnt2.get().shouldBe(14)
-        cnt2.localRights(uid).shouldBe(14)
+        cnt2.localRights(uid1).shouldBe(14)
     }
 
     /* Rights transfer */
 
     "rights transfer, one way" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
         val cnt1 = BCounter(client1)
         val cnt2 = BCounter(client1)
 
@@ -368,9 +330,6 @@ class BCounterTest : StringSpec({
     }
 
     "two rights transfers, one way" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
         val cnt1 = BCounter(client1)
         val cnt2 = BCounter(client1)
 
@@ -391,10 +350,6 @@ class BCounterTest : StringSpec({
     }
 
     "two rights transfers (one failing), one way" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val cnt1 = BCounter(client1)
         val cnt2 = BCounter(client2)
 
@@ -424,10 +379,6 @@ class BCounterTest : StringSpec({
     }
 
     "two way transfer" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val cnt1 = BCounter(client1)
         val cnt2 = BCounter(client2)
 
@@ -459,10 +410,7 @@ class BCounterTest : StringSpec({
     /* Overflow errors */
 
     "overflowing increment" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-
-        val cnt = BCounter(client)
+        val cnt = BCounter(client1)
 
         cnt.increment(Int.MAX_VALUE)
 
@@ -474,11 +422,6 @@ class BCounterTest : StringSpec({
     }
 
     "R1: increment; R2: increment, merge, overflowing get" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-
         val cnt1 = BCounter(client1)
         val cnt2 = BCounter(client2)
 
@@ -492,11 +435,6 @@ class BCounterTest : StringSpec({
     }
 
     "overflowing rights transfer" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-
         val cnt1 = BCounter(client1)
         val cnt2 = BCounter(client2)
         cnt1.increment(Int.MAX_VALUE)
@@ -515,11 +453,6 @@ class BCounterTest : StringSpec({
     }
 
     "rights transfer, overflowing decrement" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-
         val cnt1 = BCounter(client1)
         val cnt2 = BCounter(client2)
         cnt1.increment(Int.MAX_VALUE)
@@ -537,8 +470,6 @@ class BCounterTest : StringSpec({
     /* Serialization */
 
     "empty JSON serialization" {
-        val uid1 = ClientUId("clientid1")
-        val client1 = SimpleEnvironment(uid1)
         val cnt = BCounter(client1)
 
         val cntJson = cnt.toJson()
@@ -552,10 +483,6 @@ class BCounterTest : StringSpec({
     }
 
     "JSON serialization" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val cnt1 = BCounter(client1)
         val cnt2 = BCounter(client2)
 
@@ -571,9 +498,6 @@ class BCounterTest : StringSpec({
     }
 
     "JSON deserialization" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
         val cntJson = BCounter.fromJson(
             """{"type":"BCounter","metadata":{"increment":[{"name":"clientid1"},[{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}],{"name":"clientid2"},[{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":2,"second":{"uid":{"name":"clientid2"},"cnt":-2147483645}}]],"decrement":[{"name":"clientid1"},{"first":5,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}},{"name":"clientid2"},{"first":20,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}}]},"value":15}""",
             client1

@@ -29,6 +29,16 @@ import io.kotest.matchers.*
 **/
 class PNCounterTest : StringSpec({
 
+    val uid1 = ClientUId("clientid1")
+    val uid2 = ClientUId("clientid2")
+    var client1 = SimpleEnvironment(uid1)
+    var client2 = SimpleEnvironment(uid2)
+
+    beforeTest {
+        client1 = SimpleEnvironment(uid1)
+        client2 = SimpleEnvironment(uid2)
+    }
+
     /**
      * This test evaluates the scenario: get.
      * Call to get should return 0.
@@ -44,9 +54,7 @@ class PNCounterTest : StringSpec({
      * Call to get should return the value set by increment.
      */
     "increment and get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt = PNCounter(client)
+        val cnt = PNCounter(client1)
 
         cnt.increment(10)
 
@@ -58,9 +66,7 @@ class PNCounterTest : StringSpec({
      * Call to get should return the inverse of value set by decrement.
      */
     "decrement and get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt = PNCounter(client)
+        val cnt = PNCounter(client1)
 
         cnt.decrement(10)
 
@@ -72,9 +78,7 @@ class PNCounterTest : StringSpec({
      * Call to get should return the value set by increment.
      */
     "increment with negative amount and get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt = PNCounter(client)
+        val cnt = PNCounter(client1)
 
         cnt.increment(-10)
 
@@ -86,9 +90,7 @@ class PNCounterTest : StringSpec({
      * Call to get should return the inverse of value set by decrement.
      */
     "decrement with negative amount and get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt = PNCounter(client)
+        val cnt = PNCounter(client1)
 
         cnt.decrement(-10)
 
@@ -100,9 +102,7 @@ class PNCounterTest : StringSpec({
      * Call to get should return the sum of values set by calls to increment.
      */
     "multiple increments and get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt = PNCounter(client)
+        val cnt = PNCounter(client1)
 
         cnt.increment(10)
         cnt.increment(1)
@@ -116,9 +116,7 @@ class PNCounterTest : StringSpec({
      * Call to get should return the inverse of the sum of values set by calls to decrement.
      */
     "multiple decrements and get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt = PNCounter(client)
+        val cnt = PNCounter(client1)
 
         cnt.decrement(10)
         cnt.decrement(1)
@@ -132,9 +130,7 @@ class PNCounterTest : StringSpec({
      * Call to get should return the sum of increments minus the sum of decrements.
      */
     "increment, decrement, get positive value" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt = PNCounter(client)
+        val cnt = PNCounter(client1)
 
         cnt.increment(42)
         cnt.decrement(27)
@@ -149,9 +145,7 @@ class PNCounterTest : StringSpec({
      * Call to get should return the sum of increments minus the sum of decrements.
      */
     "increment, decrement, get negative value" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt = PNCounter(client)
+        val cnt = PNCounter(client1)
 
         cnt.increment(42)
         cnt.decrement(77)
@@ -166,10 +160,8 @@ class PNCounterTest : StringSpec({
      * Call to get should return value set by increment in the first replica.
      */
     "R1: increment; R2: merge and get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt1 = PNCounter(client)
-        val cnt2 = PNCounter(client)
+        val cnt1 = PNCounter(client1)
+        val cnt2 = PNCounter(client1)
 
         cnt1.increment(11)
         cnt2.merge(cnt1)
@@ -184,11 +176,9 @@ class PNCounterTest : StringSpec({
      * Call to get should return the inverse value set by decrement in the first replica.
      */
     "R1: decrement; R2: merge and get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
         val dec = 11
-        val cnt1 = PNCounter(client)
-        val cnt2 = PNCounter(client)
+        val cnt1 = PNCounter(client1)
+        val cnt2 = PNCounter(client1)
 
         cnt1.decrement(dec)
         cnt2.merge(cnt1)
@@ -203,10 +193,6 @@ class PNCounterTest : StringSpec({
      * Call to get should return sum of the two increment values.
      */
     "R1: increment; R2: increment, merge, get" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val cnt1 = PNCounter(client1)
         val cnt2 = PNCounter(client2)
 
@@ -222,10 +208,6 @@ class PNCounterTest : StringSpec({
      * Call to get should return sum of the two increment values.
      */
     "R1: increment; R2: merge, increment, get" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val cnt1 = PNCounter(client1)
         val cnt2 = PNCounter(client2)
 
@@ -241,10 +223,6 @@ class PNCounterTest : StringSpec({
      * Call to get should return the inverse of the sum of the two decrement values.
      */
     "R1: decrement; R2: decrement, merge, get" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val cnt1 = PNCounter(client1)
         val cnt2 = PNCounter(client2)
 
@@ -260,10 +238,6 @@ class PNCounterTest : StringSpec({
      * Call to get should return the inverse of the sum of the two decrement values.
      */
     "R1: decrement; R2: merge, decrement, get" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val cnt1 = PNCounter(client1)
         val cnt2 = PNCounter(client2)
 
@@ -279,10 +253,6 @@ class PNCounterTest : StringSpec({
      * Call to get should return the sum of increment values minus the sum of the decrement values.
      */
     "R1: multiple operations; R2: multiple operations, merge, get" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val cnt1 = PNCounter(client1)
         val cnt2 = PNCounter(client2)
 
@@ -304,10 +274,6 @@ class PNCounterTest : StringSpec({
      * Call to get should return the sum of increment values minus the sum of the decrement values.
      */
     "R1: multiple operations; R2: merge, multiple operations, get" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val cnt1 = PNCounter(client1)
         val cnt2 = PNCounter(client2)
 
@@ -329,10 +295,8 @@ class PNCounterTest : StringSpec({
      * Call to get should return the increment value set in the first replica.
      */
     "use delta returned by increment" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt1 = PNCounter(client)
-        val cnt2 = PNCounter(client)
+        val cnt1 = PNCounter(client1)
+        val cnt2 = PNCounter(client1)
 
         val incOp = cnt1.increment(11)
         cnt2.merge(incOp)
@@ -346,10 +310,8 @@ class PNCounterTest : StringSpec({
      * Call to get should return the inverse of the decrement value set in the first replica.
      */
     "use delta returned by decrement" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt1 = PNCounter(client)
-        val cnt2 = PNCounter(client)
+        val cnt1 = PNCounter(client1)
+        val cnt2 = PNCounter(client1)
 
         val decOp = cnt1.decrement(11)
         cnt2.merge(decOp)
@@ -364,10 +326,8 @@ class PNCounterTest : StringSpec({
      * Call to get should return the sum of increment values minus the sum of decrement values.
      */
     "use delta returned by increment and decrement" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt1 = PNCounter(client)
-        val cnt2 = PNCounter(client)
+        val cnt1 = PNCounter(client1)
+        val cnt2 = PNCounter(client1)
 
         val decOp = cnt1.decrement(11)
         val incOp = cnt1.increment(22)
@@ -386,14 +346,12 @@ class PNCounterTest : StringSpec({
     * w.r.t the given context (here only the decrements).
     */
     "generate delta" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val cnt1 = PNCounter(client)
-        val cnt2 = PNCounter(client)
+        val cnt1 = PNCounter(client1)
+        val cnt2 = PNCounter(client1)
 
         cnt1.increment(11)
         cnt1.increment(33)
-        val vv = client.getState()
+        val vv = client1.getState()
         cnt1.decrement(10)
         cnt1.decrement(20)
         val delta = cnt1.generateDelta(vv)
@@ -426,10 +384,6 @@ class PNCounterTest : StringSpec({
      * This test evaluates JSON serialization of a pncounter.
      **/
     "JSON serialization" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
         val cnt1 = PNCounter(client1)
         val cnt2 = PNCounter(client2)
 
