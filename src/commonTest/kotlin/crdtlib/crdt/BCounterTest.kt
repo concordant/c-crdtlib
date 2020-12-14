@@ -542,11 +542,11 @@ class BCounterTest : StringSpec({
         val cnt = BCounter(client1)
 
         val cntJson = cnt.toJson()
-        cntJson.shouldBe("""{"_type":"BCounter","_metadata":{"increment":[],"decrement":[]},"value":0}""")
+        cntJson.shouldBe("""{"type":"BCounter","metadata":{"increment":[],"decrement":[]},"value":0}""")
     }
 
     "empty JSON deserialization" {
-        val cntJson = BCounter.fromJson("""{"_type":"BCounter","_metadata":{"increment":[],"decrement":[]},"value":0}""")
+        val cntJson = BCounter.fromJson("""{"type":"BCounter","metadata":{"increment":[],"decrement":[]},"value":0}""")
 
         cntJson.get().shouldBe(0)
     }
@@ -567,7 +567,7 @@ class BCounterTest : StringSpec({
         cnt1.merge(cnt2)
         val cntJson = cnt1.toJson()
 
-        cntJson.shouldBe("""{"_type":"BCounter","_metadata":{"increment":[{"name":"clientid1"},[{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}],{"name":"clientid2"},[{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":2,"second":{"uid":{"name":"clientid2"},"cnt":-2147483645}}]],"decrement":[{"name":"clientid1"},{"first":5,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}},{"name":"clientid2"},{"first":20,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}}]},"value":15}""")
+        cntJson.shouldBe("""{"type":"BCounter","metadata":{"increment":[{"name":"clientid1"},[{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}],{"name":"clientid2"},[{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":2,"second":{"uid":{"name":"clientid2"},"cnt":-2147483645}}]],"decrement":[{"name":"clientid1"},{"first":5,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}},{"name":"clientid2"},{"first":20,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}}]},"value":15}""")
     }
 
     "JSON deserialization" {
@@ -575,7 +575,7 @@ class BCounterTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val cntJson = BCounter.fromJson(
-            """{"_type":"BCounter","_metadata":{"increment":[{"name":"clientid1"},[{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}],{"name":"clientid2"},[{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":2,"second":{"uid":{"name":"clientid2"},"cnt":-2147483645}}]],"decrement":[{"name":"clientid1"},{"first":5,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}},{"name":"clientid2"},{"first":20,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}}]},"value":15}""",
+            """{"type":"BCounter","metadata":{"increment":[{"name":"clientid1"},[{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}],{"name":"clientid2"},[{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":2,"second":{"uid":{"name":"clientid2"},"cnt":-2147483645}}]],"decrement":[{"name":"clientid1"},{"first":5,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}},{"name":"clientid2"},{"first":20,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}}]},"value":15}""",
             client1
         )
 

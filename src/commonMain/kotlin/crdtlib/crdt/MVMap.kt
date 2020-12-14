@@ -31,8 +31,8 @@ import kotlinx.serialization.json.*
 * This class is a delta-based CRDT map implementing last writer wins (MV) to resolve conflicts.
 * It is serializable to JSON and respect the following schema:
 * {
-*   "_type": "MVMap",
-*   "_metadata": {
+*   "type": "MVMap",
+*   "metadata": {
 *       "entries": {
 *           // $key is a string
 *           (( "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] )*( , "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] ))?
@@ -444,11 +444,11 @@ class JsonMVMapSerializer(serializer: KSerializer<MVMap>) :
             entries[key] = JsonArray(meta)
         }
         val metadata = JsonObject(mapOf("entries" to JsonObject(entries.toMap()), "causalContext" to causalContext))
-        return JsonObject(mapOf("_type" to JsonPrimitive("MVMap"), "_metadata" to metadata).plus(values))
+        return JsonObject(mapOf("type" to JsonPrimitive("MVMap"), "metadata" to metadata).plus(values))
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
-        val metadata = element.jsonObject["_metadata"]!!.jsonObject
+        val metadata = element.jsonObject["metadata"]!!.jsonObject
         val causalContext = metadata["causalContext"]!!.jsonObject
         val entries = mutableMapOf<String, JsonElement>()
         for ((key, meta) in metadata["entries"]!!.jsonObject) {

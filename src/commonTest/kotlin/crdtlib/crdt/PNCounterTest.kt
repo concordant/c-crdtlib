@@ -410,14 +410,14 @@ class PNCounterTest : StringSpec({
 
         val cntJson = cnt.toJson()
 
-        cntJson.shouldBe("""{"_type":"PNCounter","_metadata":{"increment":[],"decrement":[]},"value":0}""")
+        cntJson.shouldBe("""{"type":"PNCounter","metadata":{"increment":[],"decrement":[]},"value":0}""")
     }
 
     /**
      * This test evaluates JSON deserialization of an empty pncounter.
      **/
     "empty JSON deserialization" {
-        val cntJson = PNCounter.fromJson("""{"_type":"PNCounter","_metadata":{"increment":[],"decrement":[]},"value":0}""")
+        val cntJson = PNCounter.fromJson("""{"type":"PNCounter","metadata":{"increment":[],"decrement":[]},"value":0}""")
 
         cntJson.get().shouldBe(0)
     }
@@ -440,14 +440,14 @@ class PNCounterTest : StringSpec({
         cnt2.merge(cnt1)
         val cntJson = cnt2.toJson()
 
-        cntJson.shouldBe("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}},{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}}],"decrement":[{"name":"clientid2"},{"first":20,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}]},"value":10}""")
+        cntJson.shouldBe("""{"type":"PNCounter","metadata":{"increment":[{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}},{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}}],"decrement":[{"name":"clientid2"},{"first":20,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}]},"value":10}""")
     }
 
     /**
      * This test evaluates JSON deserialization of a pncounter.
      **/
     "JSON deserialization" {
-        val cntJson = PNCounter.fromJson("""{"_type":"PNCounter","_metadata":{"increment":[{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}},{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}}],"decrement":[{"name":"clientid2"},{"first":20,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}]},"value":10}""")
+        val cntJson = PNCounter.fromJson("""{"type":"PNCounter","metadata":{"increment":[{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}},{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}}],"decrement":[{"name":"clientid2"},{"first":20,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}]},"value":10}""")
 
         cntJson.get().shouldBe(10)
     }

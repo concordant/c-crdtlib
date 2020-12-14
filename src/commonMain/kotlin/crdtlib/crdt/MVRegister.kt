@@ -33,8 +33,8 @@ import kotlinx.serialization.json.*
 * This class is a delta-based CRDT multi-value register.
 * It is serializable to JSON and respect the following schema:
 * {
-*   "_type": "MVRegister",
-*   "_metadata": VersionVector.toJson(),
+*   "type": "MVRegister",
+*   "metadata": VersionVector.toJson(),
 *   "value": [
 *       (( $value, )*( $value ))?
 *   ]
@@ -200,12 +200,12 @@ class JsonMVRegisterSerializer(serializer: KSerializer<MVRegister>) :
             entries.add(tmpPair.jsonObject["second"]!!.jsonObject)
         }
         val metadata = JsonObject(mapOf("entries" to JsonArray(entries), "causalContext" to element.jsonObject["causalContext"]!!.jsonObject))
-        return JsonObject(mapOf("_type" to JsonPrimitive("MVRegister"), "_metadata" to metadata, "value" to JsonArray(value)))
+        return JsonObject(mapOf("type" to JsonPrimitive("MVRegister"), "metadata" to metadata, "value" to JsonArray(value)))
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
         val entries = mutableListOf<JsonElement>()
-        val metadata = element.jsonObject["_metadata"]!!.jsonObject
+        val metadata = element.jsonObject["metadata"]!!.jsonObject
         val value = element.jsonObject["value"]!!.jsonArray
         for ((idxValue, tmpEntry) in metadata["entries"]!!.jsonArray.withIndex()) {
             entries.add(JsonObject(mapOf("first" to value[idxValue], "second" to tmpEntry)))

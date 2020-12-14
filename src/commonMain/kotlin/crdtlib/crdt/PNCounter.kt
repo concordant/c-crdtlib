@@ -39,8 +39,8 @@ import kotlinx.serialization.json.jsonPrimitive
 * This class is a delta-based CRDT pn-counter.
 * It is serializable to JSON and respect the following schema:
 * {
-*   "_type": "PNCounter",
-*   "_metadata": {
+*   "type": "PNCounter",
+*   "metadata": {
 *       "increment": [
 *           (( ClientUId.toJson(), {
 *               "first": $value, // $value is an integer
@@ -220,14 +220,14 @@ class JsonPNCounterSerializer(serializer: KSerializer<PNCounter>) :
         }.sumBy { it.jsonObject["first"]!!.jsonPrimitive.int }
         return JsonObject(
             mapOf(
-                "_type" to JsonPrimitive("PNCounter"),
-                "_metadata" to element,
+                "type" to JsonPrimitive("PNCounter"),
+                "metadata" to element,
                 "value" to JsonPrimitive(incValue - decValue)
             )
         )
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
-        return element.jsonObject["_metadata"]!!.jsonObject
+        return element.jsonObject["metadata"]!!.jsonObject
     }
 }

@@ -130,21 +130,82 @@ class DeltaCRDTTest : StringSpec({
      * IllegalArgumentException.
      */
     "fromJson with unknown type fail" {
-        val crdtJson = """{"_type":"MyCRDT"}"""
+        val crdtJson = """{"type":"MyCRDT"}"""
         shouldThrow<IllegalArgumentException> {
             DeltaCRDT.fromJson(crdtJson)
         }
     }
 
     /**
-     * This test evaluates that deserializing a json crdt with no _type key
+     * This test evaluates that deserializing a json crdt with no type key
      * throw an IllegalArgumentException.
      */
-    "fromJson with no _type key fail" {
-        // This is a PNCounter JSON string without _type key
-        val crdtJson = """{"_metadata":{"increment":[],"decrement":[]},"value":0}"""
+    "fromJson with no type key fail" {
+        // This is a PNCounter JSON string without type key
+        val crdtJson = """{"metadata":{"increment":[],"decrement":[]},"value":0}"""
         shouldThrow<IllegalArgumentException> {
             DeltaCRDT.fromJson(crdtJson)
         }
+    }
+
+    /**
+     * This test evaluates that deserializing a json crdt with spaces and
+     * newlines works.
+     */
+    "fromJson with spaces works" {
+        val counter = PNCounter()
+        val counterJson = counter.toJson()
+        // This is a PNCounter JSON string with some spaces and newlines
+        val prettyCounterJson = """{
+            "type" : "PNCounter",
+            "metadata" : {
+                "increment" : [],
+                "decrement":[]
+            },
+            "value" : 0
+        }"""
+        val deltaCrdt = DeltaCRDT.fromJson(prettyCounterJson)
+        deltaCrdt.toJson().shouldBe(counterJson)
+    }
+
+    /**
+     * This test evaluates that deserializing a json crdt with newlines works.
+     */
+    "fromJson with newlines works" {
+        val counter = PNCounter()
+        val counterJson = counter.toJson()
+        // This is a PNCounter JSON string with some spaces and newlines
+        val prettyCounterJson = """{
+            "type"
+            :
+            "PNCounter",
+            "metadata" : {
+                "increment" : [],
+                "decrement":[]
+            },
+            "value" : 0
+        }"""
+        val deltaCrdt = DeltaCRDT.fromJson(prettyCounterJson)
+        deltaCrdt.toJson().shouldBe(counterJson)
+    }
+
+    /**
+     * This test evaluates that deserializing a json crdt with quotes works.
+     */
+    "fromJson with simple quotes works" {
+        val counter = PNCounter()
+        val counterJson = counter.toJson()
+        // This is a PNCounter JSON string with some spaces, newlines, and
+        // simple quotes
+        val prettyCounterJson = """{
+            'type' : 'PNCounter',
+            'metadata' : {
+                'increment' : [],
+                'decrement':[]
+            },
+            'value' : 0
+        }"""
+        val deltaCrdt = DeltaCRDT.fromJson(prettyCounterJson)
+        deltaCrdt.toJson().shouldBe(counterJson)
     }
 })

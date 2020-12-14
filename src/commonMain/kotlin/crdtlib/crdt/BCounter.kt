@@ -36,8 +36,8 @@ import kotlinx.serialization.json.*
  *
  * It is serializable to JSON and respect the following schema:
  * {
- *   "_type": "BCounter",
- *   "_metadata": {
+ *   "type": "BCounter",
+ *   "metadata": {
  *       "increment": [
  *          ({ClientUId.toJson()}, [
  *              (( ClientUId.toJson(), {
@@ -306,14 +306,14 @@ class JsonBCounterSerializer(private val serializer: KSerializer<BCounter>) :
 
         return JsonObject(
             mapOf(
-                "_type" to JsonPrimitive("BCounter"),
-                "_metadata" to element,
+                "type" to JsonPrimitive("BCounter"),
+                "metadata" to element,
                 "value" to JsonPrimitive(incValue - decValue)
             )
         )
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
-        return element.jsonObject["_metadata"]!!.jsonObject
+        return element.jsonObject["metadata"]!!.jsonObject
     }
 }
