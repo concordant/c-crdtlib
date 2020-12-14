@@ -54,7 +54,6 @@ class MapTest : StringSpec({
     val key2 = "key2"
     val key3 = "key3"
     val key4 = "key4"
-    val key5 = "key5"
 
     beforeTest {
         client1 = SimpleEnvironment(uid1)

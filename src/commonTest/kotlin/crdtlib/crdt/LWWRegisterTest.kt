@@ -32,15 +32,12 @@ class LWWRegisterTest : StringSpec({
 
     val uid1 = ClientUId("clientid1")
     val uid2 = ClientUId("clientid2")
-    val uid3 = ClientUId("clientid3")
     var client1 = SimpleEnvironment(uid1)
     var client2 = SimpleEnvironment(uid2)
-    var client3 = SimpleEnvironment(uid3)
 
     beforeTest {
         client1 = SimpleEnvironment(uid1)
         client2 = SimpleEnvironment(uid2)
-        client3 = SimpleEnvironment(uid3)
     }
 
     /**
