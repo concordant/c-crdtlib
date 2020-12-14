@@ -156,6 +156,15 @@ class MVRegister : DeltaCRDT, Iterable<String> {
 
     companion object {
         /**
+         * Get the type name for serialization.
+         * @return the type as a string.
+         */
+        @Name("getType")
+        fun getType(): String {
+            return "MVRegister"
+        }
+
+        /**
          * Deserializes a given json string in a crdt MV register.
          * @param json the given json string.
          * @return the resulted MV register.

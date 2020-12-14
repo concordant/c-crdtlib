@@ -260,6 +260,15 @@ class BCounter : DeltaCRDT() {
 
     companion object {
         /**
+         * Get the type name for serialization.
+         * @return the type as a string.
+         */
+        @Name("getType")
+        fun getType(): String {
+            return "BCounter"
+        }
+
+        /**
          * Deserializes a given json string in a crdt counter.
          * @param json the given json string.
          * @return the resulted crdt counter.

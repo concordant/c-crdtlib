@@ -26,7 +26,6 @@ import crdtlib.utils.VersionVector
 * Interface for delta based CRDT
 */
 abstract class DeltaCRDT {
-
     /**
      * Generates the delta from a given version vector by calling the protected abstract method.
      * @param vv the given version vector.
@@ -50,6 +49,15 @@ abstract class DeltaCRDT {
     abstract fun toJson(): String
 
     companion object {
+        /**
+         * Get the type name for serialization.
+         * @return the type as a string.
+         */
+        @Name("getType")
+        fun getType(): String {
+            throw NotImplementedError("getType not implemented")
+        }
+
         /**
          * Deserializes a given json string in the corresponding crdt type.
          * @param json the given json string.

@@ -565,6 +565,15 @@ class Map : DeltaCRDT {
         const val PNCOUNTER = SEPARATOR + "CNT"
 
         /**
+         * Get the type name for serialization.
+         * @return the type as a string.
+         */
+        @Name("getType")
+        fun getType(): String {
+            return "Map"
+        }
+
+        /**
          * Deserializes a given json string in a crdt map.
          * @param json the given json string.
          * @return the resulted crdt map.
