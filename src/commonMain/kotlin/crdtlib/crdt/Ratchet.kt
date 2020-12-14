@@ -19,6 +19,7 @@
 
 package crdtlib.crdt
 
+import crdtlib.utils.Environment
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.VersionVector
@@ -38,10 +39,18 @@ import kotlinx.serialization.json.*
 * @property value the stored value.
 */
 @Serializable
-class Ratchet(var value: String) : DeltaCRDT() {
+class Ratchet : DeltaCRDT {
+    var value: String
+
+    constructor(value: String) : super() {
+        this.value = value
+    }
+    constructor(value: String, env: Environment?) : super(env) {
+        this.value = value
+    }
 
     /**
-     * Gets the value stored in the ratchet.
+     * Gets the value stored i"n the ratchet.
      * @return the value stored in the ratchet.
      */
     @Name("get")
@@ -98,7 +107,7 @@ class Ratchet(var value: String) : DeltaCRDT() {
          * @return the resulted ratchet.
          */
         @Name("fromJson")
-        fun fromJson(json: String): Ratchet {
+        fun fromJson(json: String, env: Environment? = null): Ratchet {
             val jsonSerializer = JsonRatchetSerializer(serializer())
             return Json.decodeFromString(jsonSerializer, json)
         }

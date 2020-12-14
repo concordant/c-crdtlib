@@ -23,7 +23,7 @@ package crdtlib.utils
 * This class represents a simple environment generating increasing monotonic timestamps.
 * @property uid the client unique identifier associated with this environment.
 */
-class SimpleEnvironment(private val uid: ClientUId) : Environment() {
+class SimpleEnvironment(uid: ClientUId) : Environment(uid) {
 
     /**
      * A version vector storing this environment causal context.

@@ -62,21 +62,17 @@ class MVMapTest : StringSpec({
     "put and get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
         val key = "key"
         val valueBoolean = true
         val valueDouble = 3.14159
         val valueInt = 42
         val valueString = "value"
-        val map = MVMap()
+        val map = MVMap(client)
 
-        map.put(key, valueBoolean, ts1)
-        map.put(key, valueDouble, ts2)
-        map.put(key, valueInt, ts3)
-        map.put(key, valueString, ts4)
+        map.put(key, valueBoolean)
+        map.put(key, valueDouble)
+        map.put(key, valueInt)
+        map.put(key, valueString)
 
         map.getBoolean(key)!!.shouldHaveSingleElement(valueBoolean)
         map.getDouble(key)!!.shouldHaveSingleElement(valueDouble)
@@ -112,29 +108,21 @@ class MVMapTest : StringSpec({
     "put, delete, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val ts5 = client.tick()
-        val ts6 = client.tick()
-        val ts7 = client.tick()
-        val ts8 = client.tick()
         val key = "key"
         val valueBoolean = true
         val valueDouble = 3.14159
         val valueInt = 42
         val valueString = "value"
-        val map = MVMap()
+        val map = MVMap(client)
 
-        map.put(key, valueBoolean, ts1)
-        map.put(key, valueDouble, ts2)
-        map.put(key, valueInt, ts3)
-        map.put(key, valueString, ts4)
-        map.deleteBoolean(key, ts5)
-        map.deleteDouble(key, ts6)
-        map.deleteInt(key, ts7)
-        map.deleteString(key, ts8)
+        map.put(key, valueBoolean)
+        map.put(key, valueDouble)
+        map.put(key, valueInt)
+        map.put(key, valueString)
+        map.deleteBoolean(key)
+        map.deleteDouble(key)
+        map.deleteInt(key)
+        map.deleteString(key)
 
         map.getBoolean(key).shouldBeNull()
         map.getDouble(key).shouldBeNull()
@@ -155,17 +143,13 @@ class MVMapTest : StringSpec({
     "delete and get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
         val key = "key"
-        val map = MVMap()
+        val map = MVMap(client)
 
-        map.deleteBoolean(key, ts1)
-        map.deleteDouble(key, ts2)
-        map.deleteInt(key, ts3)
-        map.deleteString(key, ts4)
+        map.deleteBoolean(key)
+        map.deleteDouble(key)
+        map.deleteInt(key)
+        map.deleteString(key)
 
         map.getBoolean(key).shouldBeNull()
         map.getDouble(key).shouldBeNull()
@@ -186,14 +170,6 @@ class MVMapTest : StringSpec({
     "put, put, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val ts5 = client.tick()
-        val ts6 = client.tick()
-        val ts7 = client.tick()
-        val ts8 = client.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -203,16 +179,16 @@ class MVMapTest : StringSpec({
         val valInt2 = -100
         val valString1 = "value1"
         val valString2 = "value2"
-        val map = MVMap()
+        val map = MVMap(client)
 
-        map.put(key, valBoolean1, ts1)
-        map.put(key, valDouble1, ts2)
-        map.put(key, valInt1, ts3)
-        map.put(key, valString1, ts4)
-        map.put(key, valBoolean2, ts5)
-        map.put(key, valDouble2, ts6)
-        map.put(key, valInt2, ts7)
-        map.put(key, valString2, ts8)
+        map.put(key, valBoolean1)
+        map.put(key, valDouble1)
+        map.put(key, valInt1)
+        map.put(key, valString1)
+        map.put(key, valBoolean2)
+        map.put(key, valDouble2)
+        map.put(key, valInt2)
+        map.put(key, valString2)
 
         map.getBoolean(key)!!.shouldHaveSingleElement(valBoolean2)
         map.getDouble(key)!!.shouldHaveSingleElement(valDouble2)
@@ -248,18 +224,6 @@ class MVMapTest : StringSpec({
     "put, put, del, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val ts5 = client.tick()
-        val ts6 = client.tick()
-        val ts7 = client.tick()
-        val ts8 = client.tick()
-        val ts9 = client.tick()
-        val ts10 = client.tick()
-        val ts11 = client.tick()
-        val ts12 = client.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -269,20 +233,20 @@ class MVMapTest : StringSpec({
         val valInt2 = -100
         val valString1 = "value1"
         val valString2 = "value2"
-        val map = MVMap()
+        val map = MVMap(client)
 
-        map.put(key, valBoolean1, ts1)
-        map.put(key, valDouble1, ts2)
-        map.put(key, valInt1, ts3)
-        map.put(key, valString1, ts4)
-        map.put(key, valBoolean2, ts5)
-        map.put(key, valDouble2, ts6)
-        map.put(key, valInt2, ts7)
-        map.put(key, valString2, ts8)
-        map.deleteBoolean(key, ts9)
-        map.deleteDouble(key, ts10)
-        map.deleteInt(key, ts11)
-        map.deleteString(key, ts12)
+        map.put(key, valBoolean1)
+        map.put(key, valDouble1)
+        map.put(key, valInt1)
+        map.put(key, valString1)
+        map.put(key, valBoolean2)
+        map.put(key, valDouble2)
+        map.put(key, valInt2)
+        map.put(key, valString2)
+        map.deleteBoolean(key)
+        map.deleteDouble(key)
+        map.deleteInt(key)
+        map.deleteString(key)
 
         map.getBoolean(key).shouldBeNull()
         map.getDouble(key).shouldBeNull()
@@ -303,22 +267,18 @@ class MVMapTest : StringSpec({
     "R1: put; R2: merge and get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
         val key = "key"
         val valueBoolean = true
         val valueDouble = 3.14159
         val valueInt = 42
         val valueString = "value"
-        val map1 = MVMap()
-        val map2 = MVMap()
+        val map1 = MVMap(client)
+        val map2 = MVMap(client)
 
-        map1.put(key, valueBoolean, ts1)
-        map1.put(key, valueDouble, ts2)
-        map1.put(key, valueInt, ts3)
-        map1.put(key, valueString, ts4)
+        map1.put(key, valueBoolean)
+        map1.put(key, valueDouble)
+        map1.put(key, valueInt)
+        map1.put(key, valueString)
         map1.merge(map2)
         map2.merge(map1)
 
@@ -382,14 +342,6 @@ class MVMapTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts3 = client1.tick()
-        val ts5 = client1.tick()
-        val ts7 = client1.tick()
-        val ts2 = client2.tick()
-        val ts4 = client2.tick()
-        val ts6 = client2.tick()
-        val ts8 = client2.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -399,18 +351,18 @@ class MVMapTest : StringSpec({
         val valInt2 = -100
         val valString1 = "value1"
         val valString2 = "value2"
-        val map1 = MVMap()
-        val map2 = MVMap()
+        val map1 = MVMap(client1)
+        val map2 = MVMap(client2)
 
-        map1.put(key, valBoolean1, ts1)
-        map1.put(key, valDouble1, ts3)
-        map1.put(key, valInt1, ts5)
-        map1.put(key, valString1, ts7)
+        map1.put(key, valBoolean1)
+        map1.put(key, valDouble1)
+        map1.put(key, valInt1)
+        map1.put(key, valString1)
         map2.merge(map1)
-        map2.put(key, valBoolean2, ts2)
-        map2.put(key, valDouble2, ts4)
-        map2.put(key, valInt2, ts6)
-        map2.put(key, valString2, ts8)
+        map2.put(key, valBoolean2)
+        map2.put(key, valDouble2)
+        map2.put(key, valInt2)
+        map2.put(key, valString2)
 
         map2.getBoolean(key)!!.shouldHaveSingleElement(valBoolean2)
         map2.getDouble(key)!!.shouldHaveSingleElement(valDouble2)
@@ -448,14 +400,6 @@ class MVMapTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts3 = client1.tick()
-        val ts5 = client1.tick()
-        val ts7 = client1.tick()
-        val ts2 = client2.tick()
-        val ts4 = client2.tick()
-        val ts6 = client2.tick()
-        val ts8 = client2.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -465,17 +409,17 @@ class MVMapTest : StringSpec({
         val valInt2 = -100
         val valString1 = "value1"
         val valString2 = "value2"
-        val map1 = MVMap()
-        val map2 = MVMap()
+        val map1 = MVMap(client1)
+        val map2 = MVMap(client2)
 
-        map1.put(key, valBoolean1, ts1)
-        map1.put(key, valDouble1, ts3)
-        map1.put(key, valInt1, ts5)
-        map1.put(key, valString1, ts7)
-        map2.put(key, valBoolean2, ts2)
-        map2.put(key, valDouble2, ts4)
-        map2.put(key, valInt2, ts6)
-        map2.put(key, valString2, ts8)
+        map1.put(key, valBoolean1)
+        map1.put(key, valDouble1)
+        map1.put(key, valInt1)
+        map1.put(key, valString1)
+        map2.put(key, valBoolean2)
+        map2.put(key, valDouble2)
+        map2.put(key, valInt2)
+        map2.put(key, valString2)
         map2.merge(map1)
 
         map2.getBoolean(key)!!.shouldContainExactlyInAnyOrder(valBoolean1, valBoolean2)
@@ -514,18 +458,6 @@ class MVMapTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts3 = client1.tick()
-        val ts5 = client1.tick()
-        val ts7 = client1.tick()
-        val ts2 = client2.tick()
-        val ts4 = client2.tick()
-        val ts6 = client2.tick()
-        val ts8 = client2.tick()
-        val ts9 = client2.tick()
-        val ts10 = client2.tick()
-        val ts11 = client2.tick()
-        val ts12 = client2.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -535,21 +467,21 @@ class MVMapTest : StringSpec({
         val valInt2 = -100
         val valString1 = "value1"
         val valString2 = "value2"
-        val map1 = MVMap()
-        val map2 = MVMap()
+        val map1 = MVMap(client1)
+        val map2 = MVMap(client2)
 
-        map2.put(key, valBoolean2, ts1)
-        map2.put(key, valDouble2, ts3)
-        map2.put(key, valInt2, ts5)
-        map2.put(key, valString2, ts7)
-        map1.put(key, valBoolean1, ts2)
-        map1.put(key, valDouble1, ts4)
-        map1.put(key, valInt1, ts6)
-        map1.put(key, valString1, ts8)
-        map1.deleteBoolean(key, ts9)
-        map1.deleteDouble(key, ts10)
-        map1.deleteInt(key, ts11)
-        map1.deleteString(key, ts12)
+        map2.put(key, valBoolean2)
+        map2.put(key, valDouble2)
+        map2.put(key, valInt2)
+        map2.put(key, valString2)
+        map1.put(key, valBoolean1)
+        map1.put(key, valDouble1)
+        map1.put(key, valInt1)
+        map1.put(key, valString1)
+        map1.deleteBoolean(key)
+        map1.deleteDouble(key)
+        map1.deleteInt(key)
+        map1.deleteString(key)
         map2.merge(map1)
 
         map2.getBoolean(key)!!.shouldContainExactlyInAnyOrder(valBoolean2, null)
@@ -589,18 +521,6 @@ class MVMapTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts3 = client1.tick()
-        val ts5 = client1.tick()
-        val ts7 = client1.tick()
-        val ts2 = client2.tick()
-        val ts4 = client2.tick()
-        val ts6 = client2.tick()
-        val ts8 = client2.tick()
-        val ts9 = client2.tick()
-        val ts10 = client2.tick()
-        val ts11 = client2.tick()
-        val ts12 = client2.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -610,22 +530,22 @@ class MVMapTest : StringSpec({
         val valInt2 = -100
         val valString1 = "value1"
         val valString2 = "value2"
-        val map1 = MVMap()
-        val map2 = MVMap()
+        val map1 = MVMap(client1)
+        val map2 = MVMap(client2)
 
-        map2.put(key, valBoolean2, ts1)
-        map2.put(key, valDouble2, ts3)
-        map2.put(key, valInt2, ts5)
-        map2.put(key, valString2, ts7)
-        map1.put(key, valBoolean1, ts2)
-        map1.put(key, valDouble1, ts4)
-        map1.put(key, valInt1, ts6)
-        map1.put(key, valString1, ts8)
+        map2.put(key, valBoolean2)
+        map2.put(key, valDouble2)
+        map2.put(key, valInt2)
+        map2.put(key, valString2)
+        map1.put(key, valBoolean1)
+        map1.put(key, valDouble1)
+        map1.put(key, valInt1)
+        map1.put(key, valString1)
         map2.merge(map1)
-        map1.deleteBoolean(key, ts9)
-        map1.deleteDouble(key, ts10)
-        map1.deleteInt(key, ts11)
-        map1.deleteString(key, ts12)
+        map1.deleteBoolean(key)
+        map1.deleteDouble(key)
+        map1.deleteInt(key)
+        map1.deleteString(key)
         map2.merge(map1)
 
         map2.getBoolean(key)!!.shouldContainExactlyInAnyOrder(valBoolean2, null)
@@ -664,22 +584,6 @@ class MVMapTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts3 = client1.tick()
-        val ts5 = client1.tick()
-        val ts7 = client1.tick()
-        val ts9 = client1.tick()
-        val ts11 = client1.tick()
-        val ts13 = client1.tick()
-        val ts15 = client1.tick()
-        client2.tick()
-        client2.tick()
-        client2.tick()
-        client2.tick()
-        val ts10 = client2.tick()
-        val ts12 = client2.tick()
-        val ts14 = client2.tick()
-        val ts16 = client2.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -689,21 +593,25 @@ class MVMapTest : StringSpec({
         val valInt2 = -100
         val valString1 = "value1"
         val valString2 = "value2"
-        val map1 = MVMap()
-        val map2 = MVMap()
+        val map1 = MVMap(client1)
+        val map2 = MVMap(client2)
 
-        map1.put(key, valBoolean1, ts1)
-        map1.put(key, valDouble1, ts3)
-        map1.put(key, valInt1, ts5)
-        map1.put(key, valString1, ts7)
-        map1.deleteBoolean(key, ts9)
-        map1.deleteDouble(key, ts11)
-        map1.deleteInt(key, ts13)
-        map1.deleteString(key, ts15)
-        map2.put(key, valBoolean2, ts10)
-        map2.put(key, valDouble2, ts12)
-        map2.put(key, valInt2, ts14)
-        map2.put(key, valString2, ts16)
+        map1.put(key, valBoolean1)
+        map1.put(key, valDouble1)
+        map1.put(key, valInt1)
+        map1.put(key, valString1)
+        map1.deleteBoolean(key)
+        map1.deleteDouble(key)
+        map1.deleteInt(key)
+        map1.deleteString(key)
+        client2.tick()
+        client2.tick()
+        client2.tick()
+        client2.tick()
+        map2.put(key, valBoolean2)
+        map2.put(key, valDouble2)
+        map2.put(key, valInt2)
+        map2.put(key, valString2)
         map2.merge(map1)
 
         map2.getBoolean(key)!!.shouldContainExactlyInAnyOrder(valBoolean2, null)
@@ -743,22 +651,6 @@ class MVMapTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts3 = client1.tick()
-        val ts5 = client1.tick()
-        val ts7 = client1.tick()
-        val ts9 = client1.tick()
-        val ts11 = client1.tick()
-        val ts13 = client1.tick()
-        val ts15 = client1.tick()
-        client2.tick()
-        client2.tick()
-        client2.tick()
-        client2.tick()
-        val ts10 = client2.tick()
-        val ts12 = client2.tick()
-        val ts14 = client2.tick()
-        val ts16 = client2.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -768,22 +660,26 @@ class MVMapTest : StringSpec({
         val valInt2 = -100
         val valString1 = "value1"
         val valString2 = "value2"
-        val map1 = MVMap()
-        val map2 = MVMap()
+        val map1 = MVMap(client1)
+        val map2 = MVMap(client2)
 
-        map1.put(key, valBoolean1, ts1)
-        map1.put(key, valDouble1, ts3)
-        map1.put(key, valInt1, ts5)
-        map1.put(key, valString1, ts7)
-        map2.put(key, valBoolean2, ts10)
-        map2.put(key, valDouble2, ts12)
-        map2.put(key, valInt2, ts14)
-        map2.put(key, valString2, ts16)
+        map1.put(key, valBoolean1)
+        map1.put(key, valDouble1)
+        map1.put(key, valInt1)
+        map1.put(key, valString1)
+        map2.put(key, valBoolean2)
+        map2.put(key, valDouble2)
+        map2.put(key, valInt2)
+        map2.put(key, valString2)
         map2.merge(map1)
-        map1.deleteBoolean(key, ts9)
-        map1.deleteDouble(key, ts11)
-        map1.deleteInt(key, ts13)
-        map1.deleteString(key, ts15)
+        client2.tick()
+        client2.tick()
+        client2.tick()
+        client2.tick()
+        map1.deleteBoolean(key)
+        map1.deleteDouble(key)
+        map1.deleteInt(key)
+        map1.deleteString(key)
         map2.merge(map1)
 
         map2.getBoolean(key)!!.shouldContainExactlyInAnyOrder(valBoolean2, null)
@@ -824,18 +720,6 @@ class MVMapTest : StringSpec({
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
         val client3 = SimpleEnvironment(uid3)
-        val ts1 = client1.tick()
-        val ts4 = client1.tick()
-        val ts7 = client1.tick()
-        val ts10 = client1.tick()
-        val ts2 = client2.tick()
-        val ts5 = client2.tick()
-        val ts8 = client2.tick()
-        val ts11 = client2.tick()
-        val ts3 = client3.tick()
-        val ts6 = client3.tick()
-        val ts9 = client3.tick()
-        val ts12 = client3.tick()
         val key = "key"
         val valBoolean1 = true
         val valBoolean2 = false
@@ -845,23 +729,23 @@ class MVMapTest : StringSpec({
         val valInt2 = -100
         val valString1 = "value1"
         val valString2 = "value2"
-        val map1 = MVMap()
-        val map2 = MVMap()
-        val map3 = MVMap()
+        val map1 = MVMap(client1)
+        val map2 = MVMap(client2)
+        val map3 = MVMap(client3)
 
-        map1.put(key, valBoolean1, ts1)
-        map1.put(key, valDouble1, ts4)
-        map1.put(key, valInt1, ts7)
-        map1.put(key, valString1, ts10)
+        map1.put(key, valBoolean1)
+        map1.put(key, valDouble1)
+        map1.put(key, valInt1)
+        map1.put(key, valString1)
         map3.merge(map1)
-        map2.put(key, valBoolean2, ts2)
-        map2.put(key, valDouble2, ts5)
-        map2.put(key, valInt2, ts8)
-        map2.put(key, valString2, ts11)
-        map3.deleteBoolean(key, ts3)
-        map3.deleteDouble(key, ts6)
-        map3.deleteInt(key, ts9)
-        map3.deleteString(key, ts12)
+        map2.put(key, valBoolean2)
+        map2.put(key, valDouble2)
+        map2.put(key, valInt2)
+        map2.put(key, valString2)
+        map3.deleteBoolean(key)
+        map3.deleteDouble(key)
+        map3.deleteInt(key)
+        map3.deleteString(key)
         map3.merge(map2)
 
         map3.getDouble(key)!!.shouldContainExactlyInAnyOrder(valDouble2, null)
@@ -898,22 +782,18 @@ class MVMapTest : StringSpec({
     "use deltas returned by put" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
         val key = "key"
         val valueBoolean = true
         val valueDouble = 3.14159
         val valueInt = 42
         val valueString = "value"
-        val map1 = MVMap()
-        val map2 = MVMap()
+        val map1 = MVMap(client)
+        val map2 = MVMap(client)
 
-        val opBoolean = map1.put(key, valueBoolean, ts1)
-        val opDouble = map1.put(key, valueDouble, ts2)
-        val opInt = map1.put(key, valueInt, ts3)
-        val opString = map1.put(key, valueString, ts4)
+        val opBoolean = map1.put(key, valueBoolean)
+        val opDouble = map1.put(key, valueDouble)
+        val opInt = map1.put(key, valueInt)
+        val opString = map1.put(key, valueString)
         map1.merge(opBoolean)
         map1.merge(opDouble)
         map1.merge(opInt)
@@ -981,30 +861,22 @@ class MVMapTest : StringSpec({
     "use deltas returned by put and delete" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val ts5 = client.tick()
-        val ts6 = client.tick()
-        val ts7 = client.tick()
-        val ts8 = client.tick()
         val key = "key"
         val valueBoolean = true
         val valueDouble = 3.14159
         val valueInt = 42
         val valueString = "value"
-        val map1 = MVMap()
-        val map2 = MVMap()
+        val map1 = MVMap(client)
+        val map2 = MVMap(client)
 
-        val putOpBoolean = map1.put(key, valueBoolean, ts1)
-        val putOpDouble = map1.put(key, valueDouble, ts2)
-        val putOpInt = map1.put(key, valueInt, ts3)
-        val putOpString = map1.put(key, valueString, ts4)
-        val delOpBoolean = map1.deleteBoolean(key, ts5)
-        val delOpDouble = map1.deleteDouble(key, ts6)
-        val delOpInt = map1.deleteInt(key, ts7)
-        val delOpString = map1.deleteString(key, ts8)
+        val putOpBoolean = map1.put(key, valueBoolean)
+        val putOpDouble = map1.put(key, valueDouble)
+        val putOpInt = map1.put(key, valueInt)
+        val putOpString = map1.put(key, valueString)
+        val delOpBoolean = map1.deleteBoolean(key)
+        val delOpDouble = map1.deleteDouble(key)
+        val delOpInt = map1.deleteInt(key)
+        val delOpString = map1.deleteString(key)
         map1.merge(putOpBoolean)
         map1.merge(putOpDouble)
         map1.merge(putOpInt)
@@ -1049,18 +921,6 @@ class MVMapTest : StringSpec({
     "merge deltas returned by put operations" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val ts5 = client.tick()
-        val ts6 = client.tick()
-        val ts7 = client.tick()
-        val ts8 = client.tick()
-        val ts9 = client.tick()
-        val ts10 = client.tick()
-        val ts11 = client.tick()
-        val ts12 = client.tick()
         val key1 = "key1"
         val key2 = "key2"
         val valBoolean1 = true
@@ -1071,21 +931,21 @@ class MVMapTest : StringSpec({
         val valInt2 = -100
         val valString1 = "value1"
         val valString2 = "value2"
-        val map1 = MVMap()
-        val map2 = MVMap()
+        val map1 = MVMap(client)
+        val map2 = MVMap(client)
 
-        val opBoolean1 = map1.put(key1, valBoolean1, ts1)
-        val opDouble1 = map1.put(key1, valDouble1, ts2)
-        val opInt1 = map1.put(key1, valInt1, ts3)
-        val opString1 = map1.put(key1, valString1, ts4)
-        val opBoolean2 = map1.put(key1, valBoolean2, ts5)
-        val opDouble2 = map1.put(key1, valDouble2, ts6)
-        val opInt2 = map1.put(key1, valInt2, ts7)
-        val opString2 = map1.put(key1, valString2, ts8)
-        val opBoolean3 = map1.put(key2, valBoolean1, ts9)
-        val opDouble3 = map1.put(key2, valDouble1, ts10)
-        val opInt3 = map1.put(key2, valInt1, ts11)
-        val opString3 = map1.put(key2, valString1, ts12)
+        val opBoolean1 = map1.put(key1, valBoolean1)
+        val opDouble1 = map1.put(key1, valDouble1)
+        val opInt1 = map1.put(key1, valInt1)
+        val opString1 = map1.put(key1, valString1)
+        val opBoolean2 = map1.put(key1, valBoolean2)
+        val opDouble2 = map1.put(key1, valDouble2)
+        val opInt2 = map1.put(key1, valInt2)
+        val opString2 = map1.put(key1, valString2)
+        val opBoolean3 = map1.put(key2, valBoolean1)
+        val opDouble3 = map1.put(key2, valDouble1)
+        val opInt3 = map1.put(key2, valInt1)
+        val opString3 = map1.put(key2, valString1)
         opDouble3.merge(opString3)
         opBoolean3.merge(opDouble3)
         opInt3.merge(opBoolean3)
@@ -1146,39 +1006,27 @@ class MVMapTest : StringSpec({
     "merge deltas returned by put and delete operations" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val ts5 = client.tick()
-        val ts6 = client.tick()
-        val ts7 = client.tick()
-        val ts8 = client.tick()
-        val ts9 = client.tick()
-        val ts10 = client.tick()
-        val ts11 = client.tick()
-        val ts12 = client.tick()
         val key1 = "key1"
         val key2 = "key2"
         val valueBoolean = true
         val valueDouble = 3.14159
         val valueInt = 42
         val valueString = "value"
-        val map1 = MVMap()
-        val map2 = MVMap()
+        val map1 = MVMap(client)
+        val map2 = MVMap(client)
 
-        val opBoolean1 = map1.put(key1, valueBoolean, ts1)
-        val opDouble1 = map1.put(key1, valueDouble, ts2)
-        val opInt1 = map1.put(key1, valueInt, ts3)
-        val opString1 = map1.put(key1, valueString, ts4)
-        val opBoolean2 = map1.deleteBoolean(key1, ts5)
-        val opDouble2 = map1.deleteDouble(key1, ts6)
-        val opInt2 = map1.deleteInt(key1, ts7)
-        val opString2 = map1.deleteString(key1, ts8)
-        val opBoolean3 = map1.put(key2, valueBoolean, ts9)
-        val opDouble3 = map1.put(key2, valueDouble, ts10)
-        val opInt3 = map1.put(key2, valueInt, ts11)
-        val opString3 = map1.put(key2, valueString, ts12)
+        val opBoolean1 = map1.put(key1, valueBoolean)
+        val opDouble1 = map1.put(key1, valueDouble)
+        val opInt1 = map1.put(key1, valueInt)
+        val opString1 = map1.put(key1, valueString)
+        val opBoolean2 = map1.deleteBoolean(key1)
+        val opDouble2 = map1.deleteDouble(key1)
+        val opInt2 = map1.deleteInt(key1)
+        val opString2 = map1.deleteString(key1)
+        val opBoolean3 = map1.put(key2, valueBoolean)
+        val opDouble3 = map1.put(key2, valueDouble)
+        val opInt3 = map1.put(key2, valueInt)
+        val opString3 = map1.put(key2, valueString)
         opDouble3.merge(opString3)
         opBoolean3.merge(opDouble3)
         opInt3.merge(opBoolean3)
@@ -1233,24 +1081,7 @@ class MVMapTest : StringSpec({
     "generate delta" {
         val uid = ClientUId("clientid1")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val ts5 = client.tick()
-        val ts6 = client.tick()
-        val ts7 = client.tick()
-        val ts8 = client.tick()
-        val ts9 = client.tick()
-        val ts10 = client.tick()
-        val ts11 = client.tick()
-        val ts12 = client.tick()
-        val ts13 = client.tick()
-        val ts14 = client.tick()
-        val ts15 = client.tick()
-        val ts16 = client.tick()
         val vv = VersionVector()
-        vv.update(ts8)
         val key1 = "key1"
         val key2 = "key2"
         val key3 = "key3"
@@ -1259,25 +1090,26 @@ class MVMapTest : StringSpec({
         val valueDouble = 3.14159
         val valueInt = 42
         val valueString = "value"
-        val map1 = MVMap()
-        val map2 = MVMap()
+        val map1 = MVMap(client)
+        val map2 = MVMap(client)
 
-        map1.put(key1, valueBoolean, ts1)
-        map1.put(key1, valueDouble, ts2)
-        map1.put(key1, valueInt, ts3)
-        map1.put(key1, valueString, ts4)
-        map1.put(key2, valueBoolean, ts5)
-        map1.put(key2, valueDouble, ts6)
-        map1.put(key2, valueInt, ts7)
-        map1.put(key2, valueString, ts8)
-        map1.put(key3, valueBoolean, ts9)
-        map1.put(key3, valueDouble, ts10)
-        map1.put(key3, valueInt, ts11)
-        map1.put(key3, valueString, ts12)
-        map1.put(key4, valueBoolean, ts13)
-        map1.put(key4, valueDouble, ts14)
-        map1.put(key4, valueInt, ts15)
-        map1.put(key4, valueString, ts16)
+        map1.put(key1, valueBoolean)
+        map1.put(key1, valueDouble)
+        map1.put(key1, valueInt)
+        map1.put(key1, valueString)
+        map1.put(key2, valueBoolean)
+        map1.put(key2, valueDouble)
+        map1.put(key2, valueInt)
+        map1.put(key2, valueString)
+        vv.update(client.tick())
+        map1.put(key3, valueBoolean)
+        map1.put(key3, valueDouble)
+        map1.put(key3, valueInt)
+        map1.put(key3, valueString)
+        map1.put(key4, valueBoolean)
+        map1.put(key4, valueDouble)
+        map1.put(key4, valueInt)
+        map1.put(key4, valueString)
         val delta = map1.generateDelta(vv)
         map2.merge(delta)
 
@@ -1336,24 +1168,7 @@ class MVMapTest : StringSpec({
     "generate delta with delete" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val ts5 = client.tick()
-        val ts6 = client.tick()
-        val ts7 = client.tick()
-        val ts8 = client.tick()
-        val ts9 = client.tick()
-        val ts10 = client.tick()
-        val ts11 = client.tick()
-        val ts12 = client.tick()
-        val ts13 = client.tick()
-        val ts14 = client.tick()
-        val ts15 = client.tick()
-        val ts16 = client.tick()
         val vv = VersionVector()
-        vv.update(ts4)
         val key1 = "key1"
         val key2 = "key2"
         val key3 = "key3"
@@ -1361,25 +1176,26 @@ class MVMapTest : StringSpec({
         val valueDouble = 3.14159
         val valueInt = 42
         val valueString = "value"
-        val map1 = MVMap()
-        val map2 = MVMap()
+        val map1 = MVMap(client)
+        val map2 = MVMap(client)
 
-        map1.put(key1, valueBoolean, ts1)
-        map1.put(key1, valueDouble, ts2)
-        map1.put(key1, valueInt, ts3)
-        map1.put(key1, valueString, ts4)
-        map1.put(key2, valueBoolean, ts5)
-        map1.put(key2, valueDouble, ts6)
-        map1.put(key2, valueInt, ts7)
-        map1.put(key2, valueString, ts8)
-        map1.deleteBoolean(key2, ts9)
-        map1.deleteDouble(key2, ts10)
-        map1.deleteInt(key2, ts11)
-        map1.deleteString(key2, ts12)
-        map1.put(key3, valueBoolean, ts13)
-        map1.put(key3, valueDouble, ts14)
-        map1.put(key3, valueInt, ts15)
-        map1.put(key3, valueString, ts16)
+        map1.put(key1, valueBoolean)
+        map1.put(key1, valueDouble)
+        map1.put(key1, valueInt)
+        map1.put(key1, valueString)
+        vv.update(client.tick())
+        map1.put(key2, valueBoolean)
+        map1.put(key2, valueDouble)
+        map1.put(key2, valueInt)
+        map1.put(key2, valueString)
+        map1.deleteBoolean(key2)
+        map1.deleteDouble(key2)
+        map1.deleteInt(key2)
+        map1.deleteString(key2)
+        map1.put(key3, valueBoolean)
+        map1.put(key3, valueDouble)
+        map1.put(key3, valueInt)
+        map1.put(key3, valueString)
         val delta = map1.generateDelta(vv)
         map2.merge(delta)
 
@@ -1434,10 +1250,12 @@ class MVMapTest : StringSpec({
     "empty JSON deserialization" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts = client.tick()
 
-        val mapJson = MVMap.fromJson("""{"_type":"MVMap","_metadata":{"entries":{},"causalContext":{"entries":[]}}}""")
-        mapJson.put("key1", "value1", ts)
+        val mapJson = MVMap.fromJson(
+            """{"_type":"MVMap","_metadata":{"entries":{},"causalContext":{"entries":[]}}}""",
+            client
+        )
+        mapJson.put("key1", "value1")
 
         mapJson.getString("key1")!!.shouldHaveSingleElement("value1")
         mapJson.getString("key2").shouldBeNull()
@@ -1452,13 +1270,6 @@ class MVMapTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts3 = client1.tick()
-        val ts4 = client1.tick()
-        val ts5 = client1.tick()
-        val ts6 = client1.tick()
-        val ts7 = client1.tick()
-        val ts2 = client2.tick()
         val key1 = "key1"
         val key2 = "key2"
         val key3 = "key3"
@@ -1469,16 +1280,16 @@ class MVMapTest : StringSpec({
         val value3 = "value3"
         val value4 = true
         val value5 = 3.14159
-        val map1 = MVMap()
-        val map2 = MVMap()
+        val map1 = MVMap(client1)
+        val map2 = MVMap(client2)
 
-        map1.put(key1, value1, ts1)
-        map1.put(key2, value2, ts3)
-        map1.deleteString(key2, ts4)
-        map1.put(key3, value3, ts5)
-        map1.put(key4, value4, ts6)
-        map1.put(key5, value5, ts7)
-        map2.put(key3, value2, ts2)
+        map1.put(key1, value1)
+        map1.put(key2, value2)
+        map1.deleteString(key2)
+        map1.put(key3, value3)
+        map1.put(key4, value4)
+        map1.put(key5, value5)
+        map2.put(key3, value2)
         map1.merge(map2)
         val mapJson = map1.toJson()
 

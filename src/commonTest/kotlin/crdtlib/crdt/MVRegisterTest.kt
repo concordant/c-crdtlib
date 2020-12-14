@@ -52,15 +52,13 @@ class MVRegisterTest : StringSpec({
     "create with a value and get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts = client.tick()
-        val value = "value"
-        val reg = MVRegister(value, ts)
+        val reg = MVRegister("value", client)
 
-        reg.get().shouldHaveSingleElement(value)
+        reg.get().shouldHaveSingleElement("value")
 
         val it = reg.iterator()
         it.shouldHaveNext()
-        it.next().shouldBe(value)
+        it.next().shouldBe("value")
         it.shouldBeEmpty()
     }
 
@@ -72,17 +70,15 @@ class MVRegisterTest : StringSpec({
     "copy with copy constructor and get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts = client.tick()
-        val value = "value"
-        val reg1 = MVRegister(value, ts)
+        val reg1 = MVRegister("value", client)
 
         val reg2 = MVRegister(reg1)
 
-        reg2.get().shouldHaveSingleElement(value)
+        reg2.get().shouldHaveSingleElement("value")
 
         val it = reg2.iterator()
         it.shouldHaveNext()
-        it.next().shouldBe(value)
+        it.next().shouldBe("value")
         it.shouldBeEmpty()
     }
 
@@ -96,17 +92,13 @@ class MVRegisterTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val val1 = "value1"
-        val val2 = "value2"
-        val reg1 = MVRegister(val1, ts1)
-        val reg2 = MVRegister(val2, ts2)
+        val reg1 = MVRegister("value1", client1)
+        val reg2 = MVRegister("value2", client2)
 
         reg2.merge(reg1)
         val reg3 = MVRegister(reg2)
 
-        reg3.get().shouldContainExactlyInAnyOrder(val1, val2)
+        reg3.get().shouldContainExactlyInAnyOrder("value1", "value2")
 
         val it = reg3.iterator()
         for (value in reg3.get()) {
@@ -124,43 +116,15 @@ class MVRegisterTest : StringSpec({
     "create, assign, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val val1 = "value1"
-        val val2 = "value2"
 
-        val reg = MVRegister(val1, ts1)
-        reg.assign(val2, ts2)
+        val reg = MVRegister("value1", client)
+        reg.assign("value2")
 
-        reg.get().shouldHaveSingleElement(val2)
+        reg.get().shouldHaveSingleElement("value2")
 
         val it = reg.iterator()
         it.shouldHaveNext()
-        it.next().shouldBe(val2)
-        it.shouldBeEmpty()
-    }
-
-    /**
-     * This test evaluates the scenario: assign assign(old timestamp) get/iterator.
-     * Call to get should return first assigned value.
-     * Call to iterator should return an iterator containing the first assigned value.
-     */
-    "create assign, assign with older timestamp, get/iterator" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val val1 = "value1"
-        val val2 = "value2"
-
-        val reg = MVRegister(val1, ts2)
-        reg.assign(val2, ts1)
-
-        reg.get().shouldHaveSingleElement(val1)
-
-        val it = reg.iterator()
-        it.shouldHaveNext()
-        it.next().shouldBe(val1)
+        it.next().shouldBe("value2")
         it.shouldBeEmpty()
     }
 
@@ -172,24 +136,22 @@ class MVRegisterTest : StringSpec({
     "R1: create with value; R2: create empty, merge, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts = client.tick()
-        val value = "value"
 
-        val reg1 = MVRegister(value, ts)
+        val reg1 = MVRegister("value", client)
         val reg2 = MVRegister()
         reg1.merge(reg2)
         reg2.merge(reg1)
 
-        reg1.get().shouldHaveSingleElement(value)
-        reg2.get().shouldHaveSingleElement(value)
+        reg1.get().shouldHaveSingleElement("value")
+        reg2.get().shouldHaveSingleElement("value")
 
         val it1 = reg1.iterator()
         it1.shouldHaveNext()
-        it1.next().shouldBe(value)
+        it1.next().shouldBe("value")
         it1.shouldBeEmpty()
         val it2 = reg2.iterator()
         it2.shouldHaveNext()
-        it2.next().shouldBe(value)
+        it2.next().shouldBe("value")
         it2.shouldBeEmpty()
     }
 
@@ -203,21 +165,17 @@ class MVRegisterTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val val1 = "value1"
-        val val2 = "value2"
 
-        val reg1 = MVRegister(val1, ts1)
-        val reg2 = MVRegister()
+        val reg1 = MVRegister("value1", client1)
+        val reg2 = MVRegister(client2)
         reg2.merge(reg1)
-        reg2.assign(val2, ts2)
+        reg2.assign("value2")
 
-        reg2.get().shouldHaveSingleElement(val2)
+        reg2.get().shouldHaveSingleElement("value2")
 
         val it = reg2.iterator()
         it.shouldHaveNext()
-        it.next().shouldBe(val2)
+        it.next().shouldBe("value2")
         it.shouldBeEmpty()
     }
 
@@ -231,17 +189,13 @@ class MVRegisterTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val val1 = "value1"
-        val val2 = "value2"
 
-        val reg1 = MVRegister(val1, ts1)
-        val reg2 = MVRegister()
-        reg2.assign(val2, ts2)
+        val reg1 = MVRegister("value1", client1)
+        val reg2 = MVRegister(client2)
+        reg2.assign("value2")
         reg2.merge(reg1)
 
-        reg2.get().shouldContainExactlyInAnyOrder(val1, val2)
+        reg2.get().shouldContainExactlyInAnyOrder("value1", "value2")
 
         val it = reg2.iterator()
         for (value in reg2.get()) {
@@ -260,22 +214,18 @@ class MVRegisterTest : StringSpec({
     "R1: create with value, assign; R2: create empty, merge before assign, merge after assign, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val val1 = "value1"
-        val val2 = "value2"
 
-        val reg1 = MVRegister(val1, ts1)
-        val reg2 = MVRegister(val2, ts2)
+        val reg1 = MVRegister("value1", client)
+        val reg2 = MVRegister("value2", client)
         reg2.merge(reg1)
-        reg1.assign(val2, ts2)
+        reg1.assign("value2")
         reg2.merge(reg1)
 
-        reg2.get().shouldHaveSingleElement(val2)
+        reg2.get().shouldHaveSingleElement("value2")
 
         val it = reg2.iterator()
         it.shouldHaveNext()
-        it.next().shouldBe(val2)
+        it.next().shouldBe("value2")
         it.shouldBeEmpty()
     }
 
@@ -292,20 +242,14 @@ class MVRegisterTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val ts3 = client1.tick()
-        val val1 = "value1"
-        val val2 = "value2"
-        val val3 = "value3"
 
-        val reg1 = MVRegister(val1, ts1)
-        val reg2 = MVRegister(val2, ts2)
+        val reg1 = MVRegister("value1", client1)
+        val reg2 = MVRegister("value2", client2)
         reg2.merge(reg1)
-        reg1.assign(val3, ts3)
+        reg1.assign("value3")
         reg2.merge(reg1)
 
-        reg2.get().shouldContainExactlyInAnyOrder(val2, val3)
+        reg2.get().shouldContainExactlyInAnyOrder("value2", "value3")
 
         val it = reg2.iterator()
         for (value in reg2.get()) {
@@ -330,21 +274,15 @@ class MVRegisterTest : StringSpec({
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
         val client3 = SimpleEnvironment(uid3)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val ts3 = client3.tick()
-        val val1 = "value1"
-        val val2 = "value2"
-        val val3 = "value3"
-        val reg1 = MVRegister(val1, ts1)
-        val reg2 = MVRegister(val2, ts2)
-        val reg3 = MVRegister(val3, ts3)
+        val reg1 = MVRegister("value1", client1)
+        val reg2 = MVRegister("value2", client2)
+        val reg3 = MVRegister("value3", client3)
 
         reg2.merge(reg3)
         reg3.merge(reg1)
         reg3.merge(reg2)
 
-        reg3.get().shouldContainExactlyInAnyOrder(val1, val2, val3)
+        reg3.get().shouldContainExactlyInAnyOrder("value1", "value2", "value3")
 
         val it = reg3.iterator()
         for (value in reg3.get()) {
@@ -370,22 +308,16 @@ class MVRegisterTest : StringSpec({
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
         val client3 = SimpleEnvironment(uid3)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val ts3 = client3.tick()
-        val val1 = "value1"
-        val val2 = "value2"
-        val val3 = "value3"
-        val reg1 = MVRegister(val1, ts1)
-        val reg2 = MVRegister()
-        val reg3 = MVRegister(val3, ts3)
+        val reg1 = MVRegister("value1", client1)
+        val reg2 = MVRegister(client2)
+        val reg3 = MVRegister("value3", client3)
 
         reg2.merge(reg3)
-        reg2.assign(val2, ts2)
+        reg2.assign("value2")
         reg3.merge(reg1)
         reg3.merge(reg2)
 
-        reg3.get().shouldContainExactlyInAnyOrder(val1, val2)
+        reg3.get().shouldContainExactlyInAnyOrder("value1", "value2")
 
         val it = reg3.iterator()
         for (value in reg3.get()) {
@@ -403,25 +335,23 @@ class MVRegisterTest : StringSpec({
     "use delta returned by assign" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts = client.tick()
-        val value = "value"
-        val reg1 = MVRegister()
-        val reg2 = MVRegister()
+        val reg1 = MVRegister(client)
+        val reg2 = MVRegister(client)
 
-        val assignOp = reg1.assign(value, ts)
+        val assignOp = reg1.assign("value")
         reg1.merge(assignOp)
         reg2.merge(assignOp)
 
-        reg1.get().shouldHaveSingleElement(value)
-        reg2.get().shouldHaveSingleElement(value)
+        reg1.get().shouldHaveSingleElement("value")
+        reg2.get().shouldHaveSingleElement("value")
 
         val it1 = reg1.iterator()
         it1.shouldHaveNext()
-        it1.next().shouldBe(value)
+        it1.next().shouldBe("value")
         it1.shouldBeEmpty()
         val it2 = reg2.iterator()
         it2.shouldHaveNext()
-        it2.next().shouldBe(value)
+        it2.next().shouldBe("value")
         it2.shouldBeEmpty()
     }
 
@@ -437,20 +367,16 @@ class MVRegisterTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
+        val reg1 = MVRegister("value1", client1)
+        val reg2 = MVRegister("value2", client2)
         val vv = client1.getState()
-        val val1 = "value1"
-        val val2 = "value2"
-        val reg1 = MVRegister(val1, ts1)
-        val reg2 = MVRegister(val2, ts2)
         val reg3 = MVRegister()
 
         reg2.merge(reg1)
         val delta = reg2.generateDelta(vv)
         reg3.merge(delta)
 
-        reg3.get().shouldContainExactlyInAnyOrder(val1, val2)
+        reg3.get().shouldContainExactlyInAnyOrder("value1", "value2")
 
         val it = reg3.iterator()
         for (value in reg3.get()) {
@@ -487,14 +413,10 @@ class MVRegisterTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val val1 = "value1"
-        val val2 = "value2"
 
-        val reg1 = MVRegister(val1, ts1)
-        val reg2 = MVRegister()
-        reg2.assign(val2, ts2)
+        val reg1 = MVRegister("value1", client1)
+        val reg2 = MVRegister(client2)
+        reg2.assign("value2")
         reg2.merge(reg1)
         val regJson = reg2.toJson()
 
@@ -505,7 +427,12 @@ class MVRegisterTest : StringSpec({
      * This test evaluates JSON deserialization of a mv register.
      **/
     "JSON deserialization" {
-        val regJson = MVRegister.fromJson("""{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"clientid2"},"cnt":-2147483647},{"uid":{"name":"clientid1"},"cnt":-2147483647}],"causalContext":{"entries":[{"name":"clientid2"},-2147483647,{"name":"clientid1"},-2147483647]}},"value":["value2","value1"]}""")
+        val uid1 = ClientUId("clientid1")
+        val client1 = SimpleEnvironment(uid1)
+        val regJson = MVRegister.fromJson(
+            """{"_type":"MVRegister","_metadata":{"entries":[{"uid":{"name":"clientid2"},"cnt":-2147483647},{"uid":{"name":"clientid1"},"cnt":-2147483647}],"causalContext":{"entries":[{"name":"clientid2"},-2147483647,{"name":"clientid1"},-2147483647]}},"value":["value2","value1"]}""",
+            client1
+        )
 
         regJson.get().shouldContainExactlyInAnyOrder("value1", "value2")
     }

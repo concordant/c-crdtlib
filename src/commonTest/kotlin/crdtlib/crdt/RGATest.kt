@@ -58,10 +58,9 @@ class RGATest : StringSpec({
     "insert at 0 and get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts = client.tick()
-        val rga = RGA()
+        val rga = RGA(client)
 
-        rga.insertAt(0, "A", ts)
+        rga.insertAt(0, "A")
 
         rga.get().shouldHaveSingleElement("A")
         rga.get(0).shouldBe("A")
@@ -83,12 +82,10 @@ class RGATest : StringSpec({
     "insert at 0, insert at 0, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val rga = RGA()
+        val rga = RGA(client)
 
-        rga.insertAt(0, "B", ts1)
-        rga.insertAt(0, "A", ts2)
+        rga.insertAt(0, "B")
+        rga.insertAt(0, "A")
 
         rga.get().shouldContainExactly("A", "B")
         rga.get(0).shouldBe("A")
@@ -113,12 +110,10 @@ class RGATest : StringSpec({
     "insert at 0, insert at 1, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val rga = RGA()
+        val rga = RGA(client)
 
-        rga.insertAt(0, "A", ts1)
-        rga.insertAt(1, "B", ts2)
+        rga.insertAt(0, "A")
+        rga.insertAt(1, "B")
 
         rga.get().shouldContainExactly("A", "B")
         rga.get(0).shouldBe("A")
@@ -141,12 +136,10 @@ class RGATest : StringSpec({
     "insert at 0, remove at 0, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val rga = RGA()
+        val rga = RGA(client)
 
-        rga.insertAt(0, "A", ts1)
-        rga.removeAt(0, ts2)
+        rga.insertAt(0, "A")
+        rga.removeAt(0)
 
         rga.get().shouldBeEmpty()
         shouldThrow<IndexOutOfBoundsException> {
@@ -164,16 +157,12 @@ class RGATest : StringSpec({
     "insert at 0, insert at 0, remove at 0, remove at 0, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val rga = RGA()
+        val rga = RGA(client)
 
-        rga.insertAt(0, "A", ts1)
-        rga.insertAt(0, "B", ts2)
-        rga.removeAt(0, ts3)
-        rga.removeAt(0, ts4)
+        rga.insertAt(0, "A")
+        rga.insertAt(0, "B")
+        rga.removeAt(0)
+        rga.removeAt(0)
 
         rga.get().shouldBeEmpty()
         shouldThrow<IndexOutOfBoundsException> {
@@ -193,16 +182,12 @@ class RGATest : StringSpec({
     "insert at 0, insert at 1, remove at 0, insert at 1, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val rga = RGA()
+        val rga = RGA(client)
 
-        rga.insertAt(0, "A", ts1)
-        rga.insertAt(1, "B", ts2)
-        rga.removeAt(0, ts3)
-        rga.insertAt(1, "C", ts4)
+        rga.insertAt(0, "A")
+        rga.insertAt(1, "B")
+        rga.removeAt(0)
+        rga.insertAt(1, "C")
 
         rga.get().shouldContainExactly("B", "C")
         rga.get(0).shouldBe("B")
@@ -227,16 +212,12 @@ class RGATest : StringSpec({
     "insert at 0, insert at 1, remove at 1, insert at 1, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val rga = RGA()
+        val rga = RGA(client)
 
-        rga.insertAt(0, "A", ts1)
-        rga.insertAt(1, "B", ts2)
-        rga.removeAt(1, ts3)
-        rga.insertAt(1, "C", ts4)
+        rga.insertAt(0, "A")
+        rga.insertAt(1, "B")
+        rga.removeAt(1)
+        rga.insertAt(1, "C")
 
         rga.get().shouldContainExactly("A", "C")
         rga.get(0).shouldBe("A")
@@ -256,14 +237,13 @@ class RGATest : StringSpec({
      * Call to get at 0 should return the value inserted in replica 1.
      * Call to iterator should return an iterator containing the value inserted in replica 1.
      */
-    "R1: insert at 1; R2: merge, get/iterator" {
+    "R1: insert at 0; R2: merge, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts = client.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA(client)
+        val rga2 = RGA(client)
 
-        rga1.insertAt(0, "A", ts)
+        rga1.insertAt(0, "A")
         rga2.merge(rga1)
 
         rga2.get().shouldHaveSingleElement("A")
@@ -285,13 +265,11 @@ class RGATest : StringSpec({
     "R1: insert at 0, insert at 0; R2: merge, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA(client)
+        val rga2 = RGA(client)
 
-        rga1.insertAt(0, "B", ts1)
-        rga1.insertAt(0, "A", ts2)
+        rga1.insertAt(0, "B")
+        rga1.insertAt(0, "A")
         rga2.merge(rga1)
 
         rga2.get().shouldContainExactly("A", "B")
@@ -317,15 +295,12 @@ class RGATest : StringSpec({
     "R1: insert at 0, insert at 1, insert at 2; R2: merge, get/iterator" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA(client)
+        val rga2 = RGA(client)
 
-        rga1.insertAt(0, "A", ts1)
-        rga1.insertAt(1, "B", ts2)
-        rga1.insertAt(2, "C", ts3)
+        rga1.insertAt(0, "A")
+        rga1.insertAt(1, "B")
+        rga1.insertAt(2, "C")
         rga2.merge(rga1)
 
         rga2.get().shouldContainExactly("A", "B", "C")
@@ -341,62 +316,16 @@ class RGATest : StringSpec({
         it.shouldBeEmpty()
     }
 
-    /**
-     * This test evaluates the scenario: insert at 0 || insert at 0 (with greater timestamp), merge,
-     * get/iterator.
-     * Call to get should return an array containing the two values. Value inserted in replica 2
-     * should be at index 0 and the one inserted at replica 1 at index 1.
-     * Call to get at 0 should return the value inserted in replica 2.
-     * Call to get at 1 should return the value inserted in replica 1.
-     * Call to iterator should return an iterator containing the two values.
-     */
-    "R1: insert at 0; R2: insert at 0 with greater timestamp, merge, get/iterator" {
+    "R1: insert at 0; R2: insert at 0, merge, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client2)
 
-        rga1.insertAt(0, "B", ts1)
-        rga2.insertAt(0, "A", ts2)
-        rga2.merge(rga1)
-
-        rga2.get().shouldContainExactly("A", "B")
-        rga2.get(0).shouldBe("A")
-        rga2.get(1).shouldBe("B")
-
-        val it = rga2.iterator()
-        for (value in rga2.get()) {
-            it.shouldHaveNext()
-            it.next().shouldBe(value)
-        }
-        it.shouldBeEmpty()
-    }
-
-    /**
-     * This test evaluates the scenario: insert at 0 (with greater timestamp) || insert at 0, merge,
-     * get/iterator.
-     * Call to get should return an array containing the two values. Value inserted in replica
-     * 1 should be at index 0 and the one inserted at replica 2 at index 1.
-     * Call to get at 0 should return the value inserted in replica 1.
-     * Call to get at 1 should return the value inserted in replica 2.
-     * Call to iterator should return an iterator containing the two values.
-     */
-    "R1: insert at 0 with greater timestamp; R2: insert at 0, merge, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
-
-        rga1.insertAt(0, "A", ts2)
-        rga2.insertAt(0, "B", ts1)
+        rga1.insertAt(0, "B")
+        rga2.insertAt(0, "A")
         rga2.merge(rga1)
 
         rga2.get().shouldContainExactly("A", "B")
@@ -426,17 +355,13 @@ class RGATest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val ts3 = client1.tick()
-        val ts4 = client2.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client2)
 
-        rga1.insertAt(0, "D", ts1)
-        rga1.insertAt(0, "B", ts3)
-        rga2.insertAt(0, "C", ts2)
-        rga2.insertAt(0, "A", ts4)
+        rga1.insertAt(0, "D")
+        rga1.insertAt(0, "B")
+        rga2.insertAt(0, "C")
+        rga2.insertAt(0, "A")
         rga2.merge(rga1)
 
         rga2.get().shouldContainExactly("A", "B", "C", "D")
@@ -453,33 +378,18 @@ class RGATest : StringSpec({
         it.shouldBeEmpty()
     }
 
-    /**
-     * This test evaluates the scenario: insert at 0 (with greater timestamp), insert at 1 || insert
-     * at 0, insert at 1, merge, get/iterator.
-     * Call to get should return an array containing the four values. Values inserted in replica 1
-     * should be before the one inserted in replica 2.
-     * Call to get at 0 should return the first value inserted in replica 1.
-     * Call to get at 1 should return the second value inserted in replica 1.
-     * Call to get at 2 should return the first value inserted in replica 2.
-     * Call to get at 3 should return the second value inserted in replica 2.
-     * Call to iterator should return an iterator containing the four values.
-     */
-    "insert at 0 with greater timestamp, insert at 1; R2: insert at 0, insert at 1, merge, get/iterator" {
+    "R1: insert at 0, 1; R2: insert at 0, 1, merge, get/iterator" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val ts3 = client1.tick()
-        val ts4 = client2.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client2)
 
-        rga1.insertAt(0, "A", ts2)
-        rga1.insertAt(1, "B", ts4)
-        rga2.insertAt(0, "C", ts1)
-        rga2.insertAt(1, "D", ts3)
+        rga1.insertAt(0, "C")
+        rga1.insertAt(1, "D")
+        rga2.insertAt(0, "A")
+        rga2.insertAt(1, "B")
         rga1.merge(rga2)
 
         rga1.get().shouldContainExactly("A", "B", "C", "D")
@@ -494,49 +404,12 @@ class RGATest : StringSpec({
             it.next().shouldBe(value)
         }
         it.shouldBeEmpty()
-    }
 
-    /**
-     * This test evaluates the scenario: insert at 0, insert at 1 || insert at 0 (with greater
-     * timestamp), insert at 1, merge, get/iterator.
-     * Call to get should return an array containing the four values. Values inserted in replica 2
-     * should be before the one inserted in replica 1.
-     * Call to get at 0 should return the first value inserted in replica 2.
-     * Call to get at 1 should return the second value inserted in replica 2.
-     * Call to get at 2 should return the first value inserted in replica 1.
-     * Call to get at 3 should return the second value inserted in replica 1.
-     * Call to iterator should return an iterator containing the four values.
-     */
-    "R1: insert at 0, insert at 1; R2: insert at 0 with greater timestamp, insert at 1, merge, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val ts3 = client1.tick()
-        val ts4 = client2.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
-
-        rga1.insertAt(0, "C", ts1)
-        rga1.insertAt(1, "D", ts3)
-        rga2.insertAt(0, "A", ts2)
-        rga2.insertAt(1, "B", ts4)
         rga2.merge(rga1)
-
-        rga2.get().shouldContainExactly("A", "B", "C", "D")
         rga2.get(0).shouldBe("A")
         rga2.get(1).shouldBe("B")
         rga2.get(2).shouldBe("C")
         rga2.get(3).shouldBe("D")
-
-        val it = rga2.iterator()
-        for (value in rga2.get()) {
-            it.shouldHaveNext()
-            it.next().shouldBe(value)
-        }
-        it.shouldBeEmpty()
     }
 
     /**
@@ -554,22 +427,16 @@ class RGATest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client1.tick()
-        val ts3 = client1.tick()
-        val ts4 = client1.tick()
-        val ts5 = client1.tick()
-        val ts6 = client2.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client2)
 
-        rga1.insertAt(0, "A", ts1)
-        rga1.insertAt(1, "B", ts2)
-        rga1.insertAt(2, "C", ts3)
-        rga1.insertAt(3, "D", ts4)
+        rga1.insertAt(0, "A")
+        rga1.insertAt(1, "B")
+        rga1.insertAt(2, "C")
+        rga1.insertAt(3, "D")
         rga2.merge(rga1)
-        rga1.removeAt(1, ts5)
-        rga2.removeAt(2, ts6)
+        rga1.removeAt(1)
+        rga2.removeAt(2)
         rga2.merge(rga1)
 
         rga2.get().shouldContainExactly("A", "D")
@@ -584,44 +451,24 @@ class RGATest : StringSpec({
         it.shouldBeEmpty()
     }
 
-    /**
-     * This test evaluates the scenario: insert at 0 (with greater timestamp) insert at 1 || insert
-     * at 0 (with second greater timestamp), insert at 1 || insert at 0, insert at 1, merge from
-     * replica 1, merge from replica 2, get/iterator.
-     * Call to get should return an array containing the six values. Values inserted in replica 1
-     * should be before the one inserted in replica 2 which should be before those inserted at
-     * replica 3.
-     * Call to get at 0 should return the first value inserted in replica 1.
-     * Call to get at 1 should return the second inserted value in replica 1.
-     * Call to get at 2 should return the first inserted value in replica 2.
-     * Call to get at 3 should return the second inserted value in replica 2.
-     * Call to get at 4 should return the first inserted value in replica 3.
-     * Call to get at 5 should return the second inserted value in replica 3.
-     * Call to iterator should return an iterator containing the six values.
-     */
-    "R1: insert at 0 with greater timestamp, insert at 1; R2: insert at 0 with second timestamp, insert at 1; R3: insert at 0, insert at 1, merge R1 and R2, get/iterator" {
+    "R1, R2, R3: insert 0, 1 ; merge R1, R2 -> R3" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val uid3 = ClientUId("clientid3")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
         val client3 = SimpleEnvironment(uid3)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val ts3 = client3.tick()
-        val ts4 = client1.tick()
-        val ts5 = client2.tick()
-        val ts6 = client3.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
-        val rga3 = RGA()
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client2)
+        val rga3 = RGA(client3)
 
-        rga1.insertAt(0, "A", ts3)
-        rga1.insertAt(1, "B", ts6)
-        rga2.insertAt(0, "C", ts2)
-        rga2.insertAt(1, "D", ts5)
-        rga3.insertAt(0, "E", ts1)
-        rga3.insertAt(1, "F", ts4)
+        // client3 has the largest uid → will be first in merged RGA
+        rga3.insertAt(0, "A")
+        rga3.insertAt(1, "B")
+        rga2.insertAt(0, "C")
+        rga2.insertAt(1, "D")
+        rga1.insertAt(0, "E")
+        rga1.insertAt(1, "F")
         rga3.merge(rga1)
         rga3.merge(rga2)
 
@@ -641,285 +488,37 @@ class RGATest : StringSpec({
         it.shouldBeEmpty()
     }
 
-    /**
-     * This test evaluates the scenario: insert at 0 (with greater timestamp) insert at 1 || insert
-     * at 0, insert at 1 || insert at 0 (with second greater timestamp), insert at 1, merge from
-     * replica 1, merge from replica 2, get/iterator.
-     * Call to get should return an array containing the six values. Values inserted in replica 1
-     * should be before the one inserted in replica 3 which should be before those inserted at
-     * replica 2.
-     * Call to get at 0 should return the first value inserted in replica 1.
-     * Call to get at 1 should return the second inserted value in replica 1.
-     * Call to get at 2 should return the first inserted value in replica 3.
-     * Call to get at 3 should return the second inserted value in replica 3.
-     * Call to get at 4 should return the first inserted value in replica 2.
-     * Call to get at 5 should return the second inserted value in replica 2.
-     * Call to iterator should return an iterator containing the six values.
-     */
-    "R1: insert at 0 with greater timestamp, insert at 1; R2: insert at 0, insert at 1; R3: insert at 0 with second timestamp, insert at 1, merge R1 and R2, get/iterator" {
+    "R1, R2, R3: insert 0, 1 ; merge R3, R2 -> R1" {
         val uid1 = ClientUId("clientid1")
         val uid2 = ClientUId("clientid2")
         val uid3 = ClientUId("clientid3")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
         val client3 = SimpleEnvironment(uid3)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val ts3 = client3.tick()
-        val ts4 = client1.tick()
-        val ts5 = client2.tick()
-        val ts6 = client3.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
-        val rga3 = RGA()
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client2)
+        val rga3 = RGA(client3)
 
-        rga1.insertAt(0, "A", ts3)
-        rga1.insertAt(1, "B", ts6)
-        rga2.insertAt(0, "E", ts1)
-        rga2.insertAt(1, "F", ts4)
-        rga3.insertAt(0, "C", ts2)
-        rga3.insertAt(1, "D", ts5)
-        rga3.merge(rga1)
-        rga3.merge(rga2)
+        // client3 has the largest uid → will be first in merged RGA
+        rga3.insertAt(0, "A")
+        rga3.insertAt(1, "B")
+        rga2.insertAt(0, "C")
+        rga2.insertAt(1, "D")
+        rga1.insertAt(0, "E")
+        rga1.insertAt(1, "F")
+        rga1.merge(rga3)
+        rga1.merge(rga2)
 
-        rga3.get().shouldContainExactly("A", "B", "C", "D", "E", "F")
-        rga3.get(0).shouldBe("A")
-        rga3.get(1).shouldBe("B")
-        rga3.get(2).shouldBe("C")
-        rga3.get(3).shouldBe("D")
-        rga3.get(4).shouldBe("E")
-        rga3.get(5).shouldBe("F")
+        rga1.get().shouldContainExactly("A", "B", "C", "D", "E", "F")
+        rga1.get(0).shouldBe("A")
+        rga1.get(1).shouldBe("B")
+        rga1.get(2).shouldBe("C")
+        rga1.get(3).shouldBe("D")
+        rga1.get(4).shouldBe("E")
+        rga1.get(5).shouldBe("F")
 
-        val it = rga3.iterator()
-        for (value in rga3.get()) {
-            it.shouldHaveNext()
-            it.next().shouldBe(value)
-        }
-        it.shouldBeEmpty()
-    }
-
-    /**
-     * This test evaluates the scenario: insert at 0 (with second greater timestamp) insert at 1 ||
-     * insert at 0 (with greater timestamp), insert at 1 || insert at 0, insert at 1, merge from
-     * replica 1, merge from replica 2, get/iterator.
-     * Call to get should return an array containing the six values. Values inserted in replica 2
-     * should be before the one inserted in replica 1 which should be before those inserted at
-     * replica 3.
-     * Call to get at 0 should return the first value inserted in replica 2.
-     * Call to get at 1 should return the second inserted value in replica 2.
-     * Call to get at 2 should return the first inserted value in replica 1.
-     * Call to get at 3 should return the second inserted value in replica 1.
-     * Call to get at 4 should return the first inserted value in replica 3.
-     * Call to get at 5 should return the second inserted value in replica 3.
-     * Call to iterator should return an iterator containing the six values.
-     */
-    "R1: insert at 0 with second timestamp, insert at 1; R2: insert at 0 with greater timestamp, insert at 1; R3: insert at 0, insert at 1, merge R1 and R2, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val uid3 = ClientUId("clientid3")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val client3 = SimpleEnvironment(uid3)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val ts3 = client3.tick()
-        val ts4 = client1.tick()
-        val ts5 = client2.tick()
-        val ts6 = client3.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
-        val rga3 = RGA()
-
-        rga1.insertAt(0, "C", ts2)
-        rga1.insertAt(1, "D", ts5)
-        rga2.insertAt(0, "A", ts3)
-        rga2.insertAt(1, "B", ts6)
-        rga3.insertAt(0, "E", ts1)
-        rga3.insertAt(1, "F", ts4)
-        rga3.merge(rga1)
-        rga3.merge(rga2)
-
-        rga3.get().shouldContainExactly("A", "B", "C", "D", "E", "F")
-        rga3.get(0).shouldBe("A")
-        rga3.get(1).shouldBe("B")
-        rga3.get(2).shouldBe("C")
-        rga3.get(3).shouldBe("D")
-        rga3.get(4).shouldBe("E")
-        rga3.get(5).shouldBe("F")
-
-        val it = rga3.iterator()
-        for (value in rga3.get()) {
-            it.shouldHaveNext()
-            it.next().shouldBe(value)
-        }
-        it.shouldBeEmpty()
-    }
-
-    /**
-     * This test evaluates the scenario: insert at 0, insert at 1 || insert at 0 (with greater
-     * timestamp), insert at 1 || insert at 0 (with second greater timestamp), insert at 1, merge
-     * from replica 1, merge from replica 2, get/iterator.
-     * Call to get should return an array containing the six values. Values inserted in replica 2
-     * should be before the one inserted in replica 3 which should be before those inserted at
-     * replica 1.
-     * Call to get at 0 should return the first value inserted in replica 2.
-     * Call to get at 1 should return the second inserted value in replica 2.
-     * Call to get at 2 should return the first inserted value in replica 3.
-     * Call to get at 3 should return the second inserted value in replica 3.
-     * Call to get at 4 should return the first inserted value in replica 1.
-     * Call to get at 5 should return the second inserted value in replica 1.
-     * Call to iterator should return an iterator containing the six values.
-     */
-    "R1: insert at 0, insert at 1; R2: insert at 0 with greater timestamp, insert at 1; R3: insert at 0 with second timestamp, insert at 1, merge R1 and R2, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val uid3 = ClientUId("clientid3")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val client3 = SimpleEnvironment(uid3)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val ts3 = client3.tick()
-        val ts4 = client1.tick()
-        val ts5 = client2.tick()
-        val ts6 = client3.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
-        val rga3 = RGA()
-
-        rga1.insertAt(0, "E", ts1)
-        rga1.insertAt(1, "F", ts4)
-        rga2.insertAt(0, "A", ts3)
-        rga2.insertAt(1, "B", ts6)
-        rga3.insertAt(0, "C", ts2)
-        rga3.insertAt(1, "D", ts5)
-        rga3.merge(rga1)
-        rga3.merge(rga2)
-
-        rga3.get().shouldContainExactly("A", "B", "C", "D", "E", "F")
-        rga3.get(0).shouldBe("A")
-        rga3.get(1).shouldBe("B")
-        rga3.get(2).shouldBe("C")
-        rga3.get(3).shouldBe("D")
-        rga3.get(4).shouldBe("E")
-        rga3.get(5).shouldBe("F")
-
-        val it = rga3.iterator()
-        for (value in rga3.get()) {
-            it.shouldHaveNext()
-            it.next().shouldBe(value)
-        }
-        it.shouldBeEmpty()
-    }
-
-    /**
-     * This test evaluates the scenario: insert at 0, insert at 1 || insert at 0 (with second greater
-     * timestamp), insert at 1 || insert at 0 (with greater timestamp), insert at 1, merge from
-     * replica 1, merge from replica 2, get/iterator.
-     * Call to get should return an array containing the six values. Values inserted in replica 3
-     * should be before the one inserted in replica 2 which should be before those inserted at
-     * replica 1.
-     * Call to get at 0 should return the first value inserted in replica 3.
-     * Call to get at 1 should return the second inserted value in replica 3.
-     * Call to get at 2 should return the first inserted value in replica 2.
-     * Call to get at 3 should return the second inserted value in replica 2.
-     * Call to get at 4 should return the first inserted value in replica 1.
-     * Call to get at 5 should return the second inserted value in replica 1.
-     * Call to iterator should return an iterator containing the six values.
-     */
-    "R1: insert at 0, insert at 1; R2: insert at 0 with second timestamp, insert at 1; R3: insert at 0 with greater timestamp, insert at 1, merge R1 and R2, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val uid3 = ClientUId("clientid3")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val client3 = SimpleEnvironment(uid3)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val ts3 = client3.tick()
-        val ts4 = client1.tick()
-        val ts5 = client2.tick()
-        val ts6 = client3.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
-        val rga3 = RGA()
-
-        rga1.insertAt(0, "E", ts1)
-        rga1.insertAt(1, "F", ts4)
-        rga2.insertAt(0, "C", ts2)
-        rga2.insertAt(1, "D", ts5)
-        rga3.insertAt(0, "A", ts3)
-        rga3.insertAt(1, "B", ts6)
-        rga3.merge(rga1)
-        rga3.merge(rga2)
-
-        rga3.get().shouldContainExactly("A", "B", "C", "D", "E", "F")
-        rga3.get(0).shouldBe("A")
-        rga3.get(1).shouldBe("B")
-        rga3.get(2).shouldBe("C")
-        rga3.get(3).shouldBe("D")
-        rga3.get(4).shouldBe("E")
-        rga3.get(5).shouldBe("F")
-
-        val it = rga3.iterator()
-        for (value in rga3.get()) {
-            it.shouldHaveNext()
-            it.next().shouldBe(value)
-        }
-        it.shouldBeEmpty()
-    }
-
-    /**
-     * This test evaluates the scenario: insert at 0 (with second greater timestamp) insert at 1 ||
-     * insert at 0, insert at 1 || insert at 0 (with greater timestamp), insert at 1, merge from
-     * replica 1, merge from replica 2, get/iterator.
-     * Call to get should return an array containing the six values. Values inserted in replica 3
-     * should be before the one inserted in replica 1 which should be before those inserted at
-     * replica 2.
-     * Call to get at 0 should return the first value inserted in replica 3.
-     * Call to get at 1 should return the second inserted value in replica 3.
-     * Call to get at 2 should return the first inserted value in replica 1.
-     * Call to get at 3 should return the second inserted value in replica 1.
-     * Call to get at 4 should return the first inserted value in replica 2.
-     * Call to get at 5 should return the second inserted value in replica 2.
-     * Call to iterator should return an iterator containing the six values.
-     */
-    "R1: insert at 0 with second timestamp, insert at 1; R2: insert at 0, insert at 1; R3: insert at 0 with greater timestamp, insert at 1, merge R1 and R2, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val uid3 = ClientUId("clientid3")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val client3 = SimpleEnvironment(uid3)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val ts3 = client3.tick()
-        val ts4 = client1.tick()
-        val ts5 = client2.tick()
-        val ts6 = client3.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
-        val rga3 = RGA()
-
-        rga1.insertAt(0, "C", ts2)
-        rga1.insertAt(1, "D", ts5)
-        rga2.insertAt(0, "E", ts1)
-        rga2.insertAt(1, "F", ts4)
-        rga3.insertAt(0, "A", ts3)
-        rga3.insertAt(1, "B", ts6)
-        rga3.merge(rga1)
-        rga3.merge(rga2)
-
-        rga3.get().shouldContainExactly("A", "B", "C", "D", "E", "F")
-        rga3.get(0).shouldBe("A")
-        rga3.get(1).shouldBe("B")
-        rga3.get(2).shouldBe("C")
-        rga3.get(3).shouldBe("D")
-        rga3.get(4).shouldBe("E")
-        rga3.get(5).shouldBe("F")
-
-        val it = rga3.iterator()
-        for (value in rga3.get()) {
+        val it = rga1.iterator()
+        for (value in rga1.get()) {
             it.shouldHaveNext()
             it.next().shouldBe(value)
         }
@@ -935,11 +534,10 @@ class RGATest : StringSpec({
     "use delta returned by insert" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts = client.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA(client)
+        val rga2 = RGA(client)
 
-        val insertOp = rga1.insertAt(0, "A", ts)
+        val insertOp = rga1.insertAt(0, "A")
         rga2.merge(insertOp)
         rga2.merge(insertOp)
 
@@ -967,14 +565,12 @@ class RGATest : StringSpec({
     "use delta returned by remove" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA(client)
+        val rga2 = RGA(client)
 
-        rga1.insertAt(0, "A", ts1)
+        rga1.insertAt(0, "A")
         rga2.merge(rga1)
-        val removeOp = rga1.removeAt(0, ts2)
+        val removeOp = rga1.removeAt(0)
         rga1.merge(removeOp)
         rga2.merge(removeOp)
 
@@ -999,13 +595,11 @@ class RGATest : StringSpec({
     "use delta returned by insert and remove" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA(client)
+        val rga2 = RGA(client)
 
-        val insertOp = rga1.insertAt(0, "A", ts1)
-        val removeOp = rga1.removeAt(0, ts2)
+        val insertOp = rga1.insertAt(0, "A")
+        val removeOp = rga1.removeAt(0)
         rga1.merge(insertOp)
         rga1.merge(removeOp)
         rga2.merge(insertOp)
@@ -1032,13 +626,11 @@ class RGATest : StringSpec({
     "merge from delta insert to delta remove" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA(client)
+        val rga2 = RGA(client)
 
-        val op1 = rga1.insertAt(0, "A", ts1)
-        val op2 = rga1.removeAt(0, ts2)
+        val op1 = rga1.insertAt(0, "A")
+        val op2 = rga1.removeAt(0)
         op1.merge(op2)
         rga1.merge(op1)
         rga2.merge(op1)
@@ -1064,13 +656,11 @@ class RGATest : StringSpec({
     "merge from delta remove to delta import" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA(client)
+        val rga2 = RGA(client)
 
-        val op1 = rga1.insertAt(0, "A", ts1)
-        val op2 = rga1.removeAt(0, ts2)
+        val op1 = rga1.insertAt(0, "A")
+        val op2 = rga1.removeAt(0)
         op2.merge(op1)
         rga1.merge(op2)
         rga2.merge(op2)
@@ -1099,25 +689,21 @@ class RGATest : StringSpec({
     "generate delta" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
         val vv = VersionVector()
-        vv.update(ts2)
-        val rga1 = RGA()
-        val rga2 = RGA()
+        val rga1 = RGA(client)
+        val rga2 = RGA(client)
 
-        rga1.insertAt(0, "A", ts1)
-        rga1.insertAt(0, "B", ts3)
-        rga1.insertAt(0, "C", ts2)
-        rga1.insertAt(0, "D", ts4)
+        rga1.insertAt(0, "A")
+        rga1.insertAt(0, "B")
+        vv.update(client.tick())
+        rga1.insertAt(0, "C")
+        rga1.insertAt(0, "D")
         val delta = rga1.generateDelta(vv)
         rga2.merge(delta)
 
-        rga2.get().shouldContainExactly("D", "B")
+        rga2.get().shouldContainExactly("D", "C")
         rga2.get(0).shouldBe("D")
-        rga2.get(1).shouldBe("B")
+        rga2.get(1).shouldBe("C")
 
         val it = rga2.iterator()
         for (value in rga2.get()) {
@@ -1153,16 +739,12 @@ class RGATest : StringSpec({
     "JSON serialization" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val rga = RGA()
+        val rga = RGA(client)
 
-        rga.insertAt(0, "A", ts1)
-        rga.insertAt(1, "B", ts2)
-        rga.removeAt(1, ts3)
-        rga.insertAt(1, "C", ts4)
+        rga.insertAt(0, "A")
+        rga.insertAt(1, "B")
+        rga.removeAt(1)
+        rga.insertAt(1, "C")
         val rgaJson = rga.toJson()
 
         rgaJson.shouldBe("""{"_type":"RGA","_metadata":[{"anchor":null,"uid":{"uid":{"name":"clientid"},"cnt":-2147483647},"ts":{"uid":{"name":"clientid"},"cnt":-2147483647},"removed":false},{"anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483644},"ts":{"uid":{"name":"clientid"},"cnt":-2147483644},"removed":false},{"atom":"B","anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483646},"ts":{"uid":{"name":"clientid"},"cnt":-2147483645},"removed":true}],"value":["A","C"]}""")

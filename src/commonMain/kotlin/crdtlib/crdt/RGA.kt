@@ -19,6 +19,7 @@
 
 package crdtlib.crdt
 
+import crdtlib.utils.Environment
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
@@ -39,7 +40,8 @@ typealias RGAUId = Timestamp
 * @property atom the atom stored within the node.
 * @property anchor the uid of the node to the left of this node, when it was inserted.
 * @property uid the unique identifier associated with the node.
-* @property ts the timestamp associated with last update of the node.
+* @property ts the timestamp associated with last update of the node
+*           (insertion or removal), used to generate deltas.
 * @property removed a boolean to mark if the node is a tombstone.
 */
 @Serializable
@@ -77,9 +79,10 @@ class RGA : DeltaCRDT, Iterable<String> {
     /**
      * Default constructor.
      */
-    constructor()
+    constructor() : super()
+    constructor(env: Environment) : super(env)
 
-    constructor(nodes: List<RGANode>) {
+    constructor(nodes: List<RGANode>, env: Environment) : super(env) {
         for (node in nodes) {
             this.nodes.add(node)
         }
@@ -107,13 +110,13 @@ class RGA : DeltaCRDT, Iterable<String> {
      * Inserts a given atom at a given index.
      * @param index the index where the atom should be inserted.
      * @param atom the atom that should be inserted.
-     * @param ts the timestamp associated with the operation.
      * @return the resulting delta operation.
      */
     @Name("insertAt")
-    fun insertAt(index: Int, atom: String, ts: Timestamp): RGA {
+    fun insertAt(index: Int, atom: String): RGA {
         val realIdx = this.toRealIndex(index - 1)
         val anchor = this.nodes.getOrNull(realIdx)?.uid // Anchor is null if left node is supposed to be at index -1
+        val ts = env.tick()
         val newNode = RGANode(atom, anchor, ts, ts, false)
 
         this.nodes.add(realIdx + 1, newNode)
@@ -126,13 +129,13 @@ class RGA : DeltaCRDT, Iterable<String> {
     /**
      * Removes the atom presents a a given index.
      * @param index the index where atom should be removed.
-     * @param ts the timestamp associated with the operation.
      * @return the resulting delta operation.
      */
     @Name("removeAt")
-    fun removeAt(index: Int, ts: Timestamp): RGA {
+    fun removeAt(index: Int): RGA {
         val realIdx = this.toRealIndex(index)
         val node = this.nodes[realIdx]
+        val ts = env.tick()
         val newNode = RGANode(node.atom, node.anchor, node.uid, ts, true)
 
         this.nodes[realIdx] = newNode
@@ -267,9 +270,11 @@ class RGA : DeltaCRDT, Iterable<String> {
          * @return the resulted crdt rga.
          */
         @Name("fromJson")
-        fun fromJson(json: String): RGA {
+        fun fromJson(json: String, env: Environment? = null): RGA {
             val jsonSerializer = JsonRGASerializer(serializer())
-            return Json.decodeFromString(jsonSerializer, json)
+            val obj = Json.decodeFromString(jsonSerializer, json)
+            if (env != null) obj.env = env
+            return obj
         }
     }
 

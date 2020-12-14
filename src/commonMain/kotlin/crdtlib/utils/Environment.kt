@@ -24,6 +24,8 @@ package crdtlib.utils
 */
 abstract class Environment {
 
+    val uid: ClientUId
+
     /**
      * Protected abstract method getting the state associated with the environment.
      * @return the current state.
@@ -47,6 +49,10 @@ abstract class Environment {
      * @param vv the given version vector.
      */
     protected abstract fun updateProtected(vv: VersionVector)
+
+    constructor(uid: ClientUId) {
+        this.uid = uid
+    }
 
     /**
      * Gets the state associated with the environment.

@@ -19,6 +19,7 @@
 
 package crdtlib.crdt
 
+import crdtlib.utils.Environment
 import crdtlib.utils.Name
 import crdtlib.utils.VersionVector
 
@@ -26,6 +27,17 @@ import crdtlib.utils.VersionVector
 * Interface for delta based CRDT
 */
 abstract class DeltaCRDT {
+
+    protected lateinit var env: Environment
+
+    internal fun setEnv(env: Environment) {
+        this.env = env
+    }
+
+    constructor()
+    constructor(env: Environment?) {
+        if (env != null) this.env = env
+    }
 
     /**
      * Generates the delta from a given version vector by calling the protected abstract method.
@@ -56,37 +68,37 @@ abstract class DeltaCRDT {
          * @return the resulted delta crdt.
          */
         @Name("fromJson")
-        fun fromJson(json: String): DeltaCRDT {
+        fun fromJson(json: String, env: Environment? = null): DeltaCRDT {
             val regex = """"_type":"(\w+)",""".toRegex()
             val matchResult = regex.find(json)
             val crdtType = matchResult?.groups?.get(1)?.value
             when (crdtType) {
                 "PNCounter" -> {
-                    return PNCounter.fromJson(json)
+                    return PNCounter.fromJson(json, env)
                 }
                 "BCounter" -> {
-                    return BCounter.fromJson(json)
+                    return BCounter.fromJson(json, env)
                 }
                 "LWWRegister" -> {
-                    return LWWRegister.fromJson(json)
+                    return LWWRegister.fromJson(json, env)
                 }
                 "MVRegister" -> {
-                    return MVRegister.fromJson(json)
+                    return MVRegister.fromJson(json, env)
                 }
                 "Ratchet" -> {
-                    return Ratchet.fromJson(json)
+                    return Ratchet.fromJson(json, env)
                 }
                 "RGA" -> {
-                    return RGA.fromJson(json)
+                    return RGA.fromJson(json, env)
                 }
                 "LWWMap" -> {
-                    return LWWMap.fromJson(json)
+                    return LWWMap.fromJson(json, env)
                 }
                 "MVMap" -> {
-                    return MVMap.fromJson(json)
+                    return MVMap.fromJson(json, env)
                 }
                 "Map" -> {
-                    return Map.fromJson(json)
+                    return Map.fromJson(json, env)
                 }
                 else -> {
                     throw IllegalArgumentException("DeltaCRDT cannot deserialize type: $crdtType")

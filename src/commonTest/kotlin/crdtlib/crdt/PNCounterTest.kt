@@ -46,13 +46,11 @@ class PNCounterTest : StringSpec({
     "increment and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts = client.tick()
-        val inc = 10
-        val cnt = PNCounter()
+        val cnt = PNCounter(client)
 
-        cnt.increment(inc, ts)
+        cnt.increment(10)
 
-        cnt.get().shouldBe(inc)
+        cnt.get().shouldBe(10)
     }
 
     /**
@@ -62,13 +60,11 @@ class PNCounterTest : StringSpec({
     "decrement and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts = client.tick()
-        val dec = 10
-        val cnt = PNCounter()
+        val cnt = PNCounter(client)
 
-        cnt.decrement(dec, ts)
+        cnt.decrement(10)
 
-        cnt.get().shouldBe(-dec)
+        cnt.get().shouldBe(-10)
     }
 
     /**
@@ -78,13 +74,11 @@ class PNCounterTest : StringSpec({
     "increment with negative amount and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts = client.tick()
-        val inc = -10
-        val cnt = PNCounter()
+        val cnt = PNCounter(client)
 
-        cnt.increment(inc, ts)
+        cnt.increment(-10)
 
-        cnt.get().shouldBe(inc)
+        cnt.get().shouldBe(-10)
     }
 
     /**
@@ -94,13 +88,11 @@ class PNCounterTest : StringSpec({
     "decrement with negative amount and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts = client.tick()
-        val dec = -10
-        val cnt = PNCounter()
+        val cnt = PNCounter(client)
 
-        cnt.decrement(dec, ts)
+        cnt.decrement(-10)
 
-        cnt.get().shouldBe(-dec)
+        cnt.get().shouldBe(10)
     }
 
     /**
@@ -110,17 +102,11 @@ class PNCounterTest : StringSpec({
     "multiple increments and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val inc1 = 10
-        val inc2 = 1
-        val inc3 = 100
-        val cnt = PNCounter()
+        val cnt = PNCounter(client)
 
-        cnt.increment(inc1, ts1)
-        cnt.increment(inc2, ts2)
-        cnt.increment(inc3, ts3)
+        cnt.increment(10)
+        cnt.increment(1)
+        cnt.increment(100)
 
         cnt.get().shouldBe(111)
     }
@@ -132,17 +118,11 @@ class PNCounterTest : StringSpec({
     "multiple decrements and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val dec1 = 10
-        val dec2 = 1
-        val dec3 = 100
-        val cnt = PNCounter()
+        val cnt = PNCounter(client)
 
-        cnt.decrement(dec1, ts1)
-        cnt.decrement(dec2, ts2)
-        cnt.decrement(dec3, ts3)
+        cnt.decrement(10)
+        cnt.decrement(1)
+        cnt.decrement(100)
 
         cnt.get().shouldBe(-111)
     }
@@ -154,20 +134,12 @@ class PNCounterTest : StringSpec({
     "increment, decrement, get positive value" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val inc1 = 42
-        val inc2 = 34
-        val dec1 = 27
-        val dec2 = 2
-        val cnt = PNCounter()
+        val cnt = PNCounter(client)
 
-        cnt.increment(inc1, ts1)
-        cnt.decrement(dec1, ts2)
-        cnt.increment(inc2, ts3)
-        cnt.decrement(dec2, ts4)
+        cnt.increment(42)
+        cnt.decrement(27)
+        cnt.increment(34)
+        cnt.decrement(2)
 
         cnt.get().shouldBe(47)
     }
@@ -179,20 +151,12 @@ class PNCounterTest : StringSpec({
     "increment, decrement, get negative value" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val inc1 = 42
-        val inc2 = 34
-        val dec1 = 77
-        val dec2 = 13
-        val cnt = PNCounter()
+        val cnt = PNCounter(client)
 
-        cnt.increment(inc1, ts1)
-        cnt.decrement(dec1, ts2)
-        cnt.increment(inc2, ts3)
-        cnt.decrement(dec2, ts4)
+        cnt.increment(42)
+        cnt.decrement(77)
+        cnt.increment(34)
+        cnt.decrement(13)
 
         cnt.get().shouldBe(-14)
     }
@@ -204,12 +168,10 @@ class PNCounterTest : StringSpec({
     "R1: increment; R2: merge and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts = client.tick()
-        val inc = 11
-        val cnt1 = PNCounter()
-        val cnt2 = PNCounter()
+        val cnt1 = PNCounter(client)
+        val cnt2 = PNCounter(client)
 
-        cnt1.increment(inc, ts)
+        cnt1.increment(11)
         cnt2.merge(cnt1)
         cnt1.merge(cnt2)
 
@@ -224,12 +186,11 @@ class PNCounterTest : StringSpec({
     "R1: decrement; R2: merge and get" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts = client.tick()
         val dec = 11
-        val cnt1 = PNCounter()
-        val cnt2 = PNCounter()
+        val cnt1 = PNCounter(client)
+        val cnt2 = PNCounter(client)
 
-        cnt1.decrement(dec, ts)
+        cnt1.decrement(dec)
         cnt2.merge(cnt1)
         cnt1.merge(cnt2)
 
@@ -246,15 +207,11 @@ class PNCounterTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val inc1 = 10
-        val inc2 = 1
-        val cnt1 = PNCounter()
-        val cnt2 = PNCounter()
+        val cnt1 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
-        cnt1.increment(inc1, ts1)
-        cnt2.increment(inc2, ts2)
+        cnt1.increment(10)
+        cnt2.increment(1)
         cnt2.merge(cnt1)
 
         cnt2.get().shouldBe(11)
@@ -269,16 +226,12 @@ class PNCounterTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val inc1 = 10
-        val inc2 = 1
-        val cnt1 = PNCounter()
-        val cnt2 = PNCounter()
+        val cnt1 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
-        cnt1.increment(inc1, ts1)
+        cnt1.increment(10)
         cnt2.merge(cnt1)
-        cnt2.increment(inc2, ts2)
+        cnt2.increment(1)
 
         cnt2.get().shouldBe(11)
     }
@@ -292,15 +245,11 @@ class PNCounterTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val dec1 = 10
-        val dec2 = 1
-        val cnt1 = PNCounter()
-        val cnt2 = PNCounter()
+        val cnt1 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
-        cnt1.decrement(dec1, ts1)
-        cnt2.decrement(dec2, ts2)
+        cnt1.decrement(10)
+        cnt2.decrement(1)
         cnt2.merge(cnt1)
 
         cnt2.get().shouldBe(-11)
@@ -315,16 +264,12 @@ class PNCounterTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val dec1 = 10
-        val dec2 = 1
-        val cnt1 = PNCounter()
-        val cnt2 = PNCounter()
+        val cnt1 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
-        cnt1.decrement(dec1, ts1)
+        cnt1.decrement(10)
         cnt2.merge(cnt1)
-        cnt2.decrement(dec2, ts2)
+        cnt2.decrement(1)
 
         cnt2.get().shouldBe(-11)
     }
@@ -338,33 +283,17 @@ class PNCounterTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val ts3 = client1.tick()
-        val ts4 = client2.tick()
-        val ts5 = client1.tick()
-        val ts6 = client2.tick()
-        val ts7 = client1.tick()
-        val ts8 = client2.tick()
-        val dec1 = 10
-        val dec2 = 20
-        val dec3 = 30
-        val dec4 = 40
-        val inc1 = 10
-        val inc2 = 30
-        val inc3 = 50
-        val inc4 = 70
-        val cnt1 = PNCounter()
-        val cnt2 = PNCounter()
+        val cnt1 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
-        cnt1.decrement(dec1, ts1)
-        cnt1.increment(inc1, ts3)
-        cnt1.increment(inc2, ts5)
-        cnt1.decrement(dec2, ts7)
-        cnt2.decrement(dec3, ts2)
-        cnt2.increment(inc3, ts4)
-        cnt2.increment(inc4, ts6)
-        cnt2.decrement(dec4, ts8)
+        cnt1.decrement(10)
+        cnt1.increment(10)
+        cnt1.increment(30)
+        cnt1.decrement(20)
+        cnt2.decrement(30)
+        cnt2.increment(50)
+        cnt2.increment(70)
+        cnt2.decrement(40)
         cnt2.merge(cnt1)
 
         cnt2.get().shouldBe(60)
@@ -379,34 +308,18 @@ class PNCounterTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val ts3 = client1.tick()
-        val ts4 = client2.tick()
-        val ts5 = client1.tick()
-        val ts6 = client2.tick()
-        val ts7 = client1.tick()
-        val ts8 = client2.tick()
-        val dec1 = 10
-        val dec2 = 20
-        val dec3 = 30
-        val dec4 = 40
-        val inc1 = 10
-        val inc2 = 30
-        val inc3 = 50
-        val inc4 = 70
-        val cnt1 = PNCounter()
-        val cnt2 = PNCounter()
+        val cnt1 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
-        cnt1.decrement(dec1, ts1)
-        cnt1.increment(inc1, ts3)
-        cnt1.increment(inc2, ts5)
-        cnt1.decrement(dec2, ts7)
+        cnt1.decrement(10)
+        cnt1.increment(10)
+        cnt1.increment(30)
+        cnt1.decrement(20)
         cnt2.merge(cnt1)
-        cnt2.decrement(dec3, ts2)
-        cnt2.increment(inc3, ts4)
-        cnt2.increment(inc4, ts6)
-        cnt2.decrement(dec4, ts8)
+        cnt2.decrement(30)
+        cnt2.increment(50)
+        cnt2.increment(70)
+        cnt2.decrement(40)
 
         cnt2.get().shouldBe(60)
     }
@@ -418,12 +331,10 @@ class PNCounterTest : StringSpec({
     "use delta returned by increment" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts = client.tick()
-        val inc = 11
-        val cnt1 = PNCounter()
-        val cnt2 = PNCounter()
+        val cnt1 = PNCounter(client)
+        val cnt2 = PNCounter(client)
 
-        val incOp = cnt1.increment(inc, ts)
+        val incOp = cnt1.increment(11)
         cnt2.merge(incOp)
         cnt1.merge(incOp)
 
@@ -437,12 +348,10 @@ class PNCounterTest : StringSpec({
     "use delta returned by decrement" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts = client.tick()
-        val dec = 11
-        val cnt1 = PNCounter()
-        val cnt2 = PNCounter()
+        val cnt1 = PNCounter(client)
+        val cnt2 = PNCounter(client)
 
-        val decOp = cnt1.decrement(dec, ts)
+        val decOp = cnt1.decrement(11)
         cnt2.merge(decOp)
         cnt1.merge(decOp)
 
@@ -457,15 +366,11 @@ class PNCounterTest : StringSpec({
     "use delta returned by increment and decrement" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val dec = 11
-        val inc = 22
-        val cnt1 = PNCounter()
-        val cnt2 = PNCounter()
+        val cnt1 = PNCounter(client)
+        val cnt2 = PNCounter(client)
 
-        val decOp = cnt1.decrement(dec, ts1)
-        val incOp = cnt1.increment(inc, ts2)
+        val decOp = cnt1.decrement(11)
+        val incOp = cnt1.increment(22)
         cnt2.merge(decOp)
         cnt2.merge(incOp)
         cnt1.merge(decOp)
@@ -483,22 +388,14 @@ class PNCounterTest : StringSpec({
     "generate delta" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val vv = client.getState()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val inc1 = 11
-        val inc2 = 33
-        val dec1 = 10
-        val dec2 = 20
-        val cnt1 = PNCounter()
-        val cnt2 = PNCounter()
+        val cnt1 = PNCounter(client)
+        val cnt2 = PNCounter(client)
 
-        cnt1.increment(inc1, ts1)
-        cnt1.increment(inc2, ts2)
-        cnt1.decrement(dec1, ts3)
-        cnt1.decrement(dec2, ts4)
+        cnt1.increment(11)
+        cnt1.increment(33)
+        val vv = client.getState()
+        cnt1.decrement(10)
+        cnt1.decrement(20)
         val delta = cnt1.generateDelta(vv)
         cnt2.merge(delta)
 
@@ -533,21 +430,13 @@ class PNCounterTest : StringSpec({
         val uid2 = ClientUId("clientid2")
         val client1 = SimpleEnvironment(uid1)
         val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val ts3 = client1.tick()
-        val ts4 = client2.tick()
-        val dec1 = 10
-        val dec2 = 20
-        val inc1 = 10
-        val inc2 = 30
-        val cnt1 = PNCounter()
-        val cnt2 = PNCounter()
+        val cnt1 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
-        cnt1.decrement(dec1, ts1)
-        cnt1.increment(inc1, ts3)
-        cnt2.decrement(dec2, ts2)
-        cnt2.increment(inc2, ts4)
+        cnt1.decrement(10)
+        cnt1.increment(10)
+        cnt2.decrement(20)
+        cnt2.increment(30)
         cnt2.merge(cnt1)
         val cntJson = cnt2.toJson()
 
