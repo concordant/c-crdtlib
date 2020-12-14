@@ -50,7 +50,7 @@ class Ratchet : DeltaCRDT {
     }
 
     /**
-     * Gets the value stored i"n the ratchet.
+     * Gets the value stored in the ratchet.
      * @return the value stored in the ratchet.
      */
     @Name("get")

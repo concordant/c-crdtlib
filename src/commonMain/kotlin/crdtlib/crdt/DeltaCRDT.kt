@@ -28,12 +28,22 @@ import crdtlib.utils.VersionVector
 */
 abstract class DeltaCRDT {
 
+    /**
+     * The environment liniked to this crdt.
+     */
     protected lateinit var env: Environment
 
+    /**
+     * Setter for environment.
+     * @param env the new environment reference
+     */
     internal fun setEnv(env: Environment) {
         this.env = env
     }
 
+    /**
+     * Default constructor.
+     */
     constructor()
     constructor(env: Environment?) {
         if (env != null) this.env = env

@@ -516,7 +516,7 @@ class Map : DeltaCRDT {
 
         for ((key, cnt) in delta.cntMap) {
             var localCnt = this.cntMap[key]
-            if (localCnt == null) localCnt = PNCounter(env)
+            if (localCnt == null) localCnt = PNCounter(this.env)
             localCnt.merge(cnt)
             this.cntMap[key] = localCnt
         }

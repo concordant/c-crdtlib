@@ -24,6 +24,9 @@ package crdtlib.utils
 */
 abstract class Environment {
 
+    /**
+     * The client uid linked to this environment.
+     */
     val uid: ClientUId
 
     /**

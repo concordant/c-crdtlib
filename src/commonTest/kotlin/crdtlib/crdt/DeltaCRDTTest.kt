@@ -19,8 +19,6 @@
 
 package crdtlib.crdt
 
-import crdtlib.utils.ClientUId
-import crdtlib.utils.SimpleEnvironment
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
@@ -54,12 +52,7 @@ class DeltaCRDTTest : StringSpec({
      * This test evaluates that fromJson is able to deserialize a LWWRegister.
      */
     "fromJson with LWWRegister" {
-        val register = LWWRegister(
-            "value",
-            SimpleEnvironment(
-                ClientUId("clientuid")
-            )
-        )
+        val register = LWWRegister()
         val registerJson = register.toJson()
         val deltaCrdt = DeltaCRDT.fromJson(registerJson)
         deltaCrdt.toJson().shouldBe(registerJson)

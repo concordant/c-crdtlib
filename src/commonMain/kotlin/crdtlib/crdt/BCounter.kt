@@ -65,6 +65,9 @@ import kotlinx.serialization.json.*
 @Serializable
 class BCounter : DeltaCRDT {
 
+    /**
+     * Default constructor.
+     */
     constructor() : super()
     constructor(env: Environment) : super(env)
 
@@ -174,6 +177,7 @@ class BCounter : DeltaCRDT {
     /**
      * Transfers rights from the local replica to some other replica to.
      * @param amount the rights that should be transferred from the local replica to replica to.
+     * @param to the client uid to which rights are transfered.
      * @return the delta corresponding to this operation.
      */
     @Name("transfer")
