@@ -34,24 +34,52 @@ import kotlinx.serialization.json.*
 *   "metadata": Timestamp.toJson(),
 *   "value": $value
 * }
-* @property value the value stored in the register.
-* @property value the timestamp associated to the value.
 */
 @Serializable
-class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT() {
+class LWWRegister : DeltaCRDT {
+
+    /**
+     * The string value stored in the register.
+     */
+    @Required
+    var value: String? = null
+
+    /**
+     * The timestamp associated to the value.
+     */
+    @Required
+    var ts: Timestamp? = null
+
+    /**
+     * Default constructor creating a empty register.
+     */
+    constructor()
+
+    /**
+     * Constructor creating a register initialized with a given value.
+     * @param value the value to be put in the register.
+     * @param ts the associated timestamp.
+     */
+    constructor(value: String, ts: Timestamp) {
+        this.value = value
+        this.ts = ts
+    }
 
     /**
      * Constructor creating a copy of a given register.
      * @param other the register that should be copy.
      */
-    constructor(other: LWWRegister) : this(other.value, other.ts)
+    constructor(other: LWWRegister) {
+        this.value = other.value
+        this.ts = other.ts
+    }
 
     /**
      * Gets the value currently stored in the register.
      * @return value stored in the register.
      */
     @Name("get")
-    fun get(): String {
+    fun get(): String? {
         return value
     }
 
@@ -64,7 +92,8 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT() {
      */
     @Name("set")
     fun assign(v: String, ts: Timestamp): LWWRegister {
-        if (this.ts < ts) {
+        val currentTs = this.ts
+        if (currentTs == null || currentTs < ts) {
             this.ts = ts
             this.value = v
         }
@@ -89,7 +118,9 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT() {
     override fun merge(delta: DeltaCRDT) {
         if (delta !is LWWRegister) throw IllegalArgumentException("LWWRegister unsupported merge argument")
 
-        if (this.ts < delta.ts) {
+        val currentTs = this.ts
+        val deltaTs = delta.ts
+        if (currentTs == null || (deltaTs != null && currentTs < deltaTs)) {
             this.value = delta.value
             this.ts = delta.ts
         }
@@ -126,13 +157,13 @@ class JsonLWWRegisterSerializer(serializer: KSerializer<LWWRegister>) :
 
     override fun transformSerialize(element: JsonElement): JsonElement {
         val value = element.jsonObject["value"] as JsonElement
-        val metadata = element.jsonObject["ts"]!!.jsonObject
+        val metadata = element.jsonObject["ts"] as JsonElement
         return JsonObject(mapOf("type" to JsonPrimitive("LWWRegister"), "metadata" to metadata, "value" to value))
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
         val value = element.jsonObject["value"] as JsonElement
-        val ts = element.jsonObject["metadata"]!!.jsonObject
+        val ts = element.jsonObject["metadata"] as JsonElement
         return JsonObject(mapOf("value" to value, "ts" to ts))
     }
 }
