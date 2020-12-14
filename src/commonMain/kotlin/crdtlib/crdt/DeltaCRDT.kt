@@ -19,6 +19,7 @@
 
 package crdtlib.crdt
 
+import crdtlib.utils.Environment
 import crdtlib.utils.Name
 import crdtlib.utils.VersionVector
 
@@ -26,6 +27,26 @@ import crdtlib.utils.VersionVector
 * Interface for delta based CRDT
 */
 abstract class DeltaCRDT {
+    /**
+     * The environment liniked to this crdt.
+     */
+    protected lateinit var env: Environment
+
+    /**
+     * Setter for environment.
+     * @param env the new environment reference
+     */
+    internal fun setEnv(env: Environment) {
+        this.env = env
+    }
+
+    /**
+     * Default constructor.
+     */
+    constructor()
+    constructor(env: Environment?) {
+        if (env != null) this.env = env
+    }
 
     /**
      * Generates the delta from a given version vector by calling the protected abstract method.
@@ -51,43 +72,52 @@ abstract class DeltaCRDT {
 
     companion object {
         /**
+         * Get the type name for serialization.
+         * @return the type as a string.
+         */
+        @Name("getType")
+        fun getType(): String {
+            throw NotImplementedError("getType not implemented")
+        }
+
+        /**
          * Deserializes a given json string in the corresponding crdt type.
          * @param json the given json string.
          * @return the resulted delta crdt.
          */
         @Name("fromJson")
-        fun fromJson(json: String): DeltaCRDT {
+        fun fromJson(json: String, env: Environment? = null): DeltaCRDT {
             val properJson = json.replace('\'', '"')
             val regex = """"type"\s*:\s*"(\w+)",""".toRegex()
             val matchResult = regex.find(properJson)
             val crdtType = matchResult?.groups?.get(1)?.value
             when (crdtType) {
                 "PNCounter" -> {
-                    return PNCounter.fromJson(properJson)
+                    return PNCounter.fromJson(properJson, env)
                 }
                 "BCounter" -> {
-                    return BCounter.fromJson(properJson)
+                    return BCounter.fromJson(properJson, env)
                 }
                 "LWWRegister" -> {
-                    return LWWRegister.fromJson(properJson)
+                    return LWWRegister.fromJson(properJson, env)
                 }
                 "MVRegister" -> {
-                    return MVRegister.fromJson(properJson)
+                    return MVRegister.fromJson(properJson, env)
                 }
                 "Ratchet" -> {
-                    return Ratchet.fromJson(properJson)
+                    return Ratchet.fromJson(properJson, env)
                 }
                 "RGA" -> {
-                    return RGA.fromJson(properJson)
+                    return RGA.fromJson(properJson, env)
                 }
                 "LWWMap" -> {
-                    return LWWMap.fromJson(properJson)
+                    return LWWMap.fromJson(properJson, env)
                 }
                 "MVMap" -> {
-                    return MVMap.fromJson(properJson)
+                    return MVMap.fromJson(properJson, env)
                 }
                 "Map" -> {
-                    return Map.fromJson(properJson)
+                    return Map.fromJson(properJson, env)
                 }
                 else -> {
                     throw IllegalArgumentException("DeltaCRDT cannot deserialize type: $crdtType")

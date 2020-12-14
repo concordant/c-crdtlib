@@ -19,6 +19,7 @@
 
 package crdtlib.crdt
 
+import crdtlib.utils.Environment
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
@@ -53,7 +54,8 @@ class LWWMap : DeltaCRDT {
     /**
      * Default constructor.
      */
-    constructor()
+    constructor() : super()
+    constructor(env: Environment) : super(env)
 
     /**
      * Gets the Boolean value corresponding to a given key.
@@ -143,13 +145,13 @@ class LWWMap : DeltaCRDT {
      * Puts a key / Boolean value pair into the map.
      * @param key the key that is targeted.
      * @param value the Boolean value that should be assigned to the key.
-     * @param ts the timestamp of this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("setBoolean")
-    fun put(key: String, value: Boolean?, ts: Timestamp): LWWMap {
+    fun put(key: String, value: Boolean?): LWWMap {
         val op = LWWMap()
         val currentTs = this.entries[key + BOOLEAN]?.second
+        val ts = env.tick()
         if (currentTs == null || currentTs < ts) {
             this.entries[key + BOOLEAN] = Pair(value?.toString(), ts)
             op.entries[key + BOOLEAN] = Pair(value?.toString(), ts)
@@ -161,13 +163,13 @@ class LWWMap : DeltaCRDT {
      * Puts a key / double value pair into the map.
      * @param key the key that is targeted.
      * @param value the double value that should be assigned to the key.
-     * @param ts the timestamp of this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("setDouble")
-    fun put(key: String, value: Double?, ts: Timestamp): LWWMap {
+    fun put(key: String, value: Double?): LWWMap {
         val op = LWWMap()
         val currentTs = this.entries[key + DOUBLE]?.second
+        val ts = env.tick()
         if (currentTs == null || currentTs < ts) {
             this.entries[key + DOUBLE] = Pair(value?.toString(), ts)
             op.entries[key + DOUBLE] = Pair(value?.toString(), ts)
@@ -179,13 +181,13 @@ class LWWMap : DeltaCRDT {
      * Puts a key / integer value pair into the map.
      * @param key the key that is targeted.
      * @param value the integer value that should be assigned to the key.
-     * @param ts the timestamp of this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("setInt")
-    fun put(key: String, value: Int?, ts: Timestamp): LWWMap {
+    fun put(key: String, value: Int?): LWWMap {
         val op = LWWMap()
         val currentTs = this.entries[key + INTEGER]?.second
+        val ts = env.tick()
         if (currentTs == null || currentTs < ts) {
             this.entries[key + INTEGER] = Pair(value?.toString(), ts)
             op.entries[key + INTEGER] = Pair(value?.toString(), ts)
@@ -197,13 +199,13 @@ class LWWMap : DeltaCRDT {
      * Puts a key / string value pair into the map.
      * @param key the key that is targeted.
      * @param value the string value that should be assigned to the key.
-     * @param ts the timestamp of this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("setString")
-    fun put(key: String, value: String?, ts: Timestamp): LWWMap {
+    fun put(key: String, value: String?): LWWMap {
         val op = LWWMap()
         val currentTs = this.entries[key + STRING]?.second
+        val ts = env.tick()
         if (currentTs == null || currentTs < ts) {
             this.entries[key + STRING] = Pair(value, ts)
             op.entries[key + STRING] = Pair(value, ts)
@@ -215,48 +217,44 @@ class LWWMap : DeltaCRDT {
      * Deletes a given key / Boolean value pair if it is present in the map and has not yet been
      * deleted.
      * @param key the key that should be deleted.
-     * @param ts the timestamp linked to this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("deleteBoolean")
-    fun deleteBoolean(key: String, ts: Timestamp): LWWMap {
-        return put(key, null as Boolean?, ts)
+    fun deleteBoolean(key: String): LWWMap {
+        return put(key, null as Boolean?)
     }
 
     /**
      * Deletes a given key / double value pair if it is present in the map and has not yet been
      * deleted.
      * @param key the key that should be deleted.
-     * @param ts the timestamp linked to this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("deleteDouble")
-    fun deleteDouble(key: String, ts: Timestamp): LWWMap {
-        return put(key, null as Double?, ts)
+    fun deleteDouble(key: String): LWWMap {
+        return put(key, null as Double?)
     }
 
     /**
      * Deletes a given key / integer value pair if it is present in the map and has not yet been
      * deleted.
      * @param key the key that should be deleted.
-     * @param ts the timestamp linked to this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("deleteInt")
-    fun deleteInt(key: String, ts: Timestamp): LWWMap {
-        return put(key, null as Int?, ts)
+    fun deleteInt(key: String): LWWMap {
+        return put(key, null as Int?)
     }
 
     /**
      * Deletes a given key / string value pair if it is present in the map and has not yet been
      * deleted.
      * @param key the key that should be deleted.
-     * @param ts the timestamp linked to this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("deleteString")
-    fun deleteString(key: String, ts: Timestamp): LWWMap {
-        return put(key, null as String?, ts)
+    fun deleteString(key: String): LWWMap {
+        return put(key, null as String?)
     }
 
     /**
@@ -332,14 +330,25 @@ class LWWMap : DeltaCRDT {
         const val STRING = SEPARATOR + "STRING"
 
         /**
+         * Get the type name for serialization.
+         * @return the type as a string.
+         */
+        @Name("getType")
+        fun getType(): String {
+            return "LWWMap"
+        }
+
+        /**
          * Deserializes a given json string in a crdt map.
          * @param json the given json string.
          * @return the resulted crdt map.
          */
         @Name("fromJson")
-        fun fromJson(json: String): LWWMap {
+        fun fromJson(json: String, env: Environment? = null): LWWMap {
             val jsonSerializer = JsonLWWMapSerializer(serializer())
-            return Json.decodeFromString(jsonSerializer, json)
+            val obj = Json.decodeFromString(jsonSerializer, json)
+            if (env != null) obj.env = env
+            return obj
         }
     }
 }

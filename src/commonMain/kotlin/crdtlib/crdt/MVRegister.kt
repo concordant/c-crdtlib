@@ -19,6 +19,7 @@
 
 package crdtlib.crdt
 
+import crdtlib.utils.Environment
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
@@ -55,16 +56,18 @@ class MVRegister : DeltaCRDT, Iterable<String> {
     val causalContext: VersionVector = VersionVector()
 
     /**
-     * Default constructor creating a empty register.
+     * Default constructor creating an empty register.
      */
-    constructor()
+    constructor() : super()
+    constructor(env: Environment) : super(env)
 
     /**
      * Constructor creating a register initialized with a given value.
      * @param value the value to be put in the register.
-     * @param ts the associated timestamp.
+     * @param env the environment
      */
-    constructor(value: String, ts: Timestamp) {
+    constructor(value: String, env: Environment) : super(env) {
+        val ts = env.tick()
         this.entries = mutableSetOf(Pair(value, ts))
         this.causalContext.update(ts)
     }
@@ -78,7 +81,11 @@ class MVRegister : DeltaCRDT, Iterable<String> {
         this.causalContext.update(other.causalContext)
     }
 
-    constructor(entries: Set<Pair<String, Timestamp>>, causalContext: VersionVector) {
+    constructor(
+        entries: Set<Pair<String, Timestamp>>,
+        causalContext: VersionVector,
+        env: Environment
+    ) : super(env) {
         this.entries = entries.toMutableSet()
         this.causalContext.update(causalContext)
     }
@@ -94,14 +101,15 @@ class MVRegister : DeltaCRDT, Iterable<String> {
 
     /**
      * Assigns a given value to the register.
-     * This value overload all others and the causal context is updated with the given timestamp.
-     * Assign is not effective if the associated timestamp is already included in the causal context.
+     * This value overrides all others and the causal context is updated.
+     * Assign is not effective if the environment provides a timestamp
+     * already included in the causal context.
      * @param value the value that should be assigned.
-     * @param ts the timestamp associated to the operation.
      * @return the delta corresponding to this operation.
      */
     @Name("set")
-    fun assign(value: String, ts: Timestamp): MVRegister {
+    fun assign(value: String): MVRegister {
+        val ts = env.tick()
         if (!this.causalContext.contains(ts)) {
             this.entries.clear()
             this.entries.add(Pair(value, ts))
@@ -156,14 +164,25 @@ class MVRegister : DeltaCRDT, Iterable<String> {
 
     companion object {
         /**
+         * Get the type name for serialization.
+         * @return the type as a string.
+         */
+        @Name("getType")
+        fun getType(): String {
+            return "MVRegister"
+        }
+
+        /**
          * Deserializes a given json string in a crdt MV register.
          * @param json the given json string.
          * @return the resulted MV register.
          */
         @Name("fromJson")
-        fun fromJson(json: String): MVRegister {
+        fun fromJson(json: String, env: Environment? = null): MVRegister {
             val jsonSerializer = JsonMVRegisterSerializer(serializer())
-            return Json.decodeFromString(jsonSerializer, json)
+            val obj = Json.decodeFromString(jsonSerializer, json)
+            if (env != null) obj.env = env
+            return obj
         }
     }
 
