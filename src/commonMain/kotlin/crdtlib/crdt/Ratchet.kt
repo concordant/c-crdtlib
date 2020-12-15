@@ -36,10 +36,12 @@ import kotlinx.serialization.json.*
 *   "type": "Ratchet",
 *   "value": $value
 * }
-* @property value the stored value.
 */
 @Serializable
 class Ratchet : DeltaCRDT {
+    /*
+     * The value stored in the ratchet.
+     */
     @Required
     var value: String? = null
 
@@ -131,7 +133,7 @@ class Ratchet : DeltaCRDT {
         fun getType(): String {
             return "Ratchet"
         }
-        
+
         /**
          * Deserializes a given json string in a crdt ratchet.
          * @param json the given json string.
@@ -140,7 +142,9 @@ class Ratchet : DeltaCRDT {
         @Name("fromJson")
         fun fromJson(json: String, env: Environment? = null): Ratchet {
             val jsonSerializer = JsonRatchetSerializer(serializer())
-            return Json.decodeFromString(jsonSerializer, json)
+            val obj = Json.decodeFromString(jsonSerializer, json)
+            if (env != null) obj.env = env
+            return obj
         }
     }
 }

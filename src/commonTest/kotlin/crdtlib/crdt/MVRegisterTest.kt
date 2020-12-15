@@ -81,7 +81,7 @@ class MVRegisterTest : StringSpec({
 
         val reg2 = MVRegister(reg1)
 
-        reg1.shouldContainExactlyInAnyOrder("value1")
+        reg2.shouldContainExactlyInAnyOrder("value1")
     }
 
     /**
