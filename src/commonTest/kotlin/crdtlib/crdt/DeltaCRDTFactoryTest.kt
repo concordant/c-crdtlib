@@ -19,6 +19,8 @@
 
 package crdtlib.crdt
 
+import crdtlib.utils.ClientUId
+import crdtlib.utils.SimpleEnvironment
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -28,11 +30,22 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 **/
 class DeltaCRDTFactoryTest : StringSpec({
 
+    val uid = ClientUId("clientuid")
+    val client = SimpleEnvironment(uid)
+
     /**
      * Create a BCounter using the factory.
      */
     "create a BCounter" {
         val counter = DeltaCRDTFactory.createDeltaCRDT("BCounter")
+        counter.shouldBeInstanceOf<BCounter>()
+    }
+
+    /**
+     * Create a BCounter with environment using the factory.
+     */
+    "create a BCounter with environment" {
+        val counter = DeltaCRDTFactory.createDeltaCRDT("BCounter", client)
         counter.shouldBeInstanceOf<BCounter>()
     }
 
@@ -45,10 +58,26 @@ class DeltaCRDTFactoryTest : StringSpec({
     }
 
     /**
+     * Create a PNCounter with environment using the factory.
+     */
+    "create a PNCounter with environment" {
+        val counter = DeltaCRDTFactory.createDeltaCRDT("PNCounter", client)
+        counter.shouldBeInstanceOf<PNCounter>()
+    }
+
+    /**
      * Create a MVRegister using the factory.
      */
     "create a MVRegister" {
         val register = DeltaCRDTFactory.createDeltaCRDT("MVRegister")
+        register.shouldBeInstanceOf<MVRegister>()
+    }
+
+    /**
+     * Create a MVRegister with environment using the factory.
+     */
+    "create a MVRegister with environment" {
+        val register = DeltaCRDTFactory.createDeltaCRDT("MVRegister", client)
         register.shouldBeInstanceOf<MVRegister>()
     }
 
@@ -61,10 +90,26 @@ class DeltaCRDTFactoryTest : StringSpec({
     }
 
     /**
+     * Create a LWWRegister with environment using the factory.
+     */
+    "create a LWWRegister with environment" {
+        val register = DeltaCRDTFactory.createDeltaCRDT("LWWRegister", client)
+        register.shouldBeInstanceOf<LWWRegister>()
+    }
+
+    /**
      * Create a Ratchet using the factory.
      */
     "create a Ratchet" {
         val ratchet = DeltaCRDTFactory.createDeltaCRDT("Ratchet")
+        ratchet.shouldBeInstanceOf<Ratchet>()
+    }
+
+    /**
+     * Create a Ratchet with environment using the factory.
+     */
+    "create a Ratchet with environment" {
+        val ratchet = DeltaCRDTFactory.createDeltaCRDT("Ratchet", client)
         ratchet.shouldBeInstanceOf<Ratchet>()
     }
 
@@ -77,10 +122,26 @@ class DeltaCRDTFactoryTest : StringSpec({
     }
 
     /**
+     * Create a RGA with environment using the factory.
+     */
+    "create a RGA with environment" {
+        val rga = DeltaCRDTFactory.createDeltaCRDT("RGA", client)
+        rga.shouldBeInstanceOf<RGA>()
+    }
+
+    /**
      * Create a Map using the factory.
      */
     "create a Map" {
         val map = DeltaCRDTFactory.createDeltaCRDT("Map")
+        map.shouldBeInstanceOf<Map>()
+    }
+
+    /**
+     * Create a Map with environment using the factory.
+     */
+    "create a Map with environment" {
+        val map = DeltaCRDTFactory.createDeltaCRDT("Map", client)
         map.shouldBeInstanceOf<Map>()
     }
 
@@ -93,10 +154,26 @@ class DeltaCRDTFactoryTest : StringSpec({
     }
 
     /**
+     * Create a LWWMap with environment using the factory.
+     */
+    "create a LWWMap with environment" {
+        val map = DeltaCRDTFactory.createDeltaCRDT("LWWMap", client)
+        map.shouldBeInstanceOf<LWWMap>()
+    }
+
+    /**
      * Create a MVMap using the factory.
      */
     "create a MVMap" {
         val map = DeltaCRDTFactory.createDeltaCRDT("MVMap")
+        map.shouldBeInstanceOf<MVMap>()
+    }
+
+    /**
+     * Create a MVMap with environment using the factory.
+     */
+    "create a MVMap with environment" {
+        val map = DeltaCRDTFactory.createDeltaCRDT("MVMap", client)
         map.shouldBeInstanceOf<MVMap>()
     }
 
@@ -106,6 +183,15 @@ class DeltaCRDTFactoryTest : StringSpec({
     "create an unknown type crdt" {
         shouldThrow<IllegalArgumentException> {
             DeltaCRDTFactory.createDeltaCRDT("MyCRDT")
+        }
+    }
+
+    /**
+     * Create a delta crdt with an unknown type and environment.
+     */
+    "create an unknown type crdt with environment" {
+        shouldThrow<IllegalArgumentException> {
+            DeltaCRDTFactory.createDeltaCRDT("MyCRDT", client)
         }
     }
 })

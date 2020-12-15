@@ -19,6 +19,7 @@
 
 package crdtlib.crdt
 
+import crdtlib.utils.Environment
 import crdtlib.utils.Name
 
 /**
@@ -34,33 +35,42 @@ class DeltaCRDTFactory {
          * @return an empty delta crdt of the given type.
          */
         @Name("createDeltaCRDT")
-        fun createDeltaCRDT(crdtType: String): DeltaCRDT {
+        fun createDeltaCRDT(crdtType: String, env: Environment? = null): DeltaCRDT {
             when (crdtType) {
                 "PNCounter" -> {
+                    if (env != null) return PNCounter(env)
                     return PNCounter()
                 }
                 "BCounter" -> {
+                    if (env != null) return BCounter(env)
                     return BCounter()
                 }
                 "LWWRegister" -> {
+                    if (env != null) return LWWRegister(env)
                     return LWWRegister()
                 }
                 "MVRegister" -> {
+                    if (env != null) return MVRegister(env)
                     return MVRegister()
                 }
                 "Ratchet" -> {
+                    if (env != null) return Ratchet(env)
                     return Ratchet()
                 }
                 "RGA" -> {
+                    if (env != null) return RGA(env)
                     return RGA()
                 }
                 "LWWMap" -> {
+                    if (env != null) return LWWMap(env)
                     return LWWMap()
                 }
                 "MVMap" -> {
+                    if (env != null) return MVMap(env)
                     return MVMap()
                 }
                 "Map" -> {
+                    if (env != null) return Map(env)
                     return Map()
                 }
                 else -> {
