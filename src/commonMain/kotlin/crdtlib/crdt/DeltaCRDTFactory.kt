@@ -19,6 +19,8 @@
 
 package crdtlib.crdt
 
+import crdtlib.utils.Name
+
 /**
 * This class repressents a delta crdt factory.
 */
