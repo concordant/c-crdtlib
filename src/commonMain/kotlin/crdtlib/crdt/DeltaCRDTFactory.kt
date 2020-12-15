@@ -31,6 +31,7 @@ class DeltaCRDTFactory {
          * @param crdtType the given delta crdt type.
          * @return an empty delta crdt of the given type.
          */
+        @Name("createDeltaCRDT")
         fun createDeltaCRDT(crdtType: String): DeltaCRDT {
             when (crdtType) {
                 "PNCounter" -> {
