@@ -95,6 +95,7 @@ class BCounter : DeltaCRDT {
      */
     @Name("get")
     fun get(): Int {
+        onRead()
         return checkedSum(
             this.increment.asSequence().map {
                 (k, v) ->
@@ -113,6 +114,7 @@ class BCounter : DeltaCRDT {
      */
     @Name("localRights")
     fun localRights(uid: ClientUId): Int {
+        onRead()
         return checkedSum(
             this.increment.asSequence().map {
                 (_, v) ->
@@ -138,7 +140,10 @@ class BCounter : DeltaCRDT {
     fun increment(amount: Int): BCounter {
         if (amount < 0) return this.decrement(-amount)
         val op = BCounter()
-        if (amount == 0) return op
+        if (amount == 0) {
+            onWrite(op)
+            return op
+        }
 
         val ts = env.tick()
         val thisLine = this.increment.getOrPut(ts.uid, { mutableMapOf() })
@@ -146,6 +151,7 @@ class BCounter : DeltaCRDT {
         thisLine[ts.uid] = Pair(count, ts)
 
         op.increment[ts.uid] = mutableMapOf(ts.uid to Pair(count, ts))
+        onWrite(op)
         return op
     }
 
@@ -158,7 +164,10 @@ class BCounter : DeltaCRDT {
     fun decrement(amount: Int): BCounter {
         if (amount < 0) return this.increment(-amount)
         val op = BCounter()
-        if (amount == 0) return op
+        if (amount == 0) {
+            onWrite(op)
+            return op
+        }
 
         try {
             if (amount > this.localRights(env.uid)) {
@@ -171,6 +180,7 @@ class BCounter : DeltaCRDT {
         val ts = env.tick()
         this.decrement[ts.uid] = Pair(count, ts)
         op.decrement[ts.uid] = Pair(count, ts)
+        onWrite(op)
         return op
     }
 
@@ -200,6 +210,7 @@ class BCounter : DeltaCRDT {
         val ts = env.tick()
         this.increment[env.uid]?.put(to, Pair(rights, ts))
         op.increment[env.uid]?.put(to, Pair(rights, ts))
+        onWrite(op)
         return op
     }
 
