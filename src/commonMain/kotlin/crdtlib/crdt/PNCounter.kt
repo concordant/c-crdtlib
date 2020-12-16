@@ -90,6 +90,7 @@ class PNCounter : DeltaCRDT {
      */
     @Name("get")
     fun get(): Int {
+        onRead()
         return this.increment.values.sumBy { it.first } - this.decrement.values.sumBy { it.first }
     }
 
@@ -102,7 +103,10 @@ class PNCounter : DeltaCRDT {
     fun increment(amount: Int): PNCounter {
         if (amount < 0) return this.decrement(-amount)
         val op = PNCounter()
-        if (amount == 0) return op
+        if (amount == 0) {
+            onWrite(op)
+            return op
+        }
 
         val ts = env.tick()
         val count = this.increment[ts.uid]?.first ?: 0
@@ -111,6 +115,7 @@ class PNCounter : DeltaCRDT {
         }
         this.increment[ts.uid] = Pair(count + amount, ts)
         op.increment[ts.uid] = Pair(count + amount, ts)
+        onWrite(op)
         return op
     }
 
@@ -123,7 +128,10 @@ class PNCounter : DeltaCRDT {
     fun decrement(amount: Int): PNCounter {
         if (amount < 0) return this.increment(-amount)
         val op = PNCounter()
-        if (amount == 0) return op
+        if (amount == 0) {
+            onWrite(op)
+            return op
+        }
 
         val ts = env.tick()
         val count = this.decrement[ts.uid]?.first ?: 0
@@ -132,6 +140,7 @@ class PNCounter : DeltaCRDT {
         }
         this.decrement[ts.uid] = Pair(count + amount, ts)
         op.decrement[ts.uid] = Pair(count + amount, ts)
+        onWrite(op)
         return op
     }
 

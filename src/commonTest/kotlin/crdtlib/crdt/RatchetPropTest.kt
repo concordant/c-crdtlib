@@ -19,6 +19,8 @@
 
 package crdtlib.crdt
 
+import crdtlib.utils.ClientUId
+import crdtlib.utils.SimpleEnvironment
 import crdtlib.utils.VersionVector
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.property.Arb
@@ -37,6 +39,13 @@ val OperationArb = arbitrary { rs ->
 }
 
 class RatchetPropTest : StringSpec({
+
+    val uid1 = ClientUId("clientid1")
+    var client1 = SimpleEnvironment(uid1)
+
+    beforeTest {
+        client1 = SimpleEnvironment(uid1)
+    }
 
     "deserialize is inverse to serialize" {
         forAll(RatchetArb) { r ->
@@ -58,7 +67,7 @@ class RatchetPropTest : StringSpec({
             val maybeMaximum = ops.maxByOrNull { it.second }
             val maximum = maybeMaximum?.second ?: ""
 
-            val r = Ratchet("")
+            val r = Ratchet("", client1)
             ops.map { op ->
                 when (op.first) {
                     OpType.ASSIGN -> r.assign(op.second)
@@ -75,8 +84,8 @@ class RatchetPropTest : StringSpec({
             val m1 = ops1.maxOrNull() ?: ""
             val m2 = ops2.maxOrNull() ?: ""
 
-            val r1 = Ratchet("")
-            val r2 = Ratchet("")
+            val r1 = Ratchet("", client1)
+            val r2 = Ratchet("", client1)
             ops1.map { op -> r1.assign(op) }
             ops2.map { op -> r2.assign(op) }
 

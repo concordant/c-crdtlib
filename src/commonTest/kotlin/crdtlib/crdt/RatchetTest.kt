@@ -19,6 +19,8 @@
 
 package crdtlib.crdt
 
+import crdtlib.utils.ClientUId
+import crdtlib.utils.SimpleEnvironment
 import crdtlib.utils.VersionVector
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.nulls.shouldBeNull
@@ -29,9 +31,16 @@ import io.kotest.matchers.shouldBe
 **/
 class RatchetTest : StringSpec({
 
+    val uid1 = ClientUId("clientid1")
+    var client1 = SimpleEnvironment(uid1)
+
     val val1 = "AAA"
     val val2 = "BBB"
     val val3 = "CCC"
+
+    beforeTest {
+        client1 = SimpleEnvironment(uid1)
+    }
 
     "create empty ratchet then get" {
         val rat = Ratchet()
@@ -54,7 +63,7 @@ class RatchetTest : StringSpec({
      * Call to get should return the value set by assign.
      */
     "create, assign greater value, get" {
-        val rat = Ratchet(val1)
+        val rat = Ratchet(val1, client1)
         rat.assign(val2)
 
         rat.get().shouldBe(val2)
@@ -65,7 +74,7 @@ class RatchetTest : StringSpec({
      * Call to get should return the value set by the constructor.
      */
     "create, assign lower value, get" {
-        val rat = Ratchet(val2)
+        val rat = Ratchet(val2, client1)
         rat.assign(val1)
 
         rat.get().shouldBe(val2)
@@ -111,9 +120,9 @@ class RatchetTest : StringSpec({
      * Call to get should return the value set by assign in the first replica.
      */
     "R1: create, assign with the greatest value; R2: create, merge, get" {
-        val rat1 = Ratchet(val2)
+        val rat1 = Ratchet(val2, client1)
         rat1.assign(val3)
-        val rat2 = Ratchet(val1)
+        val rat2 = Ratchet(val1, client1)
         rat2.merge(rat1)
 
         rat2.get().shouldBe(val3)
@@ -125,7 +134,7 @@ class RatchetTest : StringSpec({
      * Call to get should return the value set in the second replica.
      */
     "R1: create, assign; R2: create with greatest value, merge, get" {
-        val rat1 = Ratchet(val1)
+        val rat1 = Ratchet(val1, client1)
         rat1.assign(val2)
         val rat2 = Ratchet(val3)
         rat2.merge(rat1)
@@ -139,7 +148,7 @@ class RatchetTest : StringSpec({
      * Call to get should return the value set at initialization in the first replica.
      */
     "R1: create with greatest value, assign; R2: create, merge, get" {
-        val rat1 = Ratchet(val3)
+        val rat1 = Ratchet(val3, client1)
         rat1.assign(val1)
         val rat2 = Ratchet(val2)
         rat2.merge(rat1)
@@ -154,7 +163,7 @@ class RatchetTest : StringSpec({
      */
     "R1: create, merge before assign; r2: create with greatest value, assign, merge" {
         val rat1 = Ratchet(val2)
-        val rat2 = Ratchet(val3)
+        val rat2 = Ratchet(val3, client1)
         rat1.merge(rat2)
         rat2.assign(val1)
         rat2.merge(rat1)
@@ -167,8 +176,12 @@ class RatchetTest : StringSpec({
      * Call to get should return value set at initialization in the first replica.
      */
     "use delta returned by assign" {
-        val rat1 = Ratchet(val3)
-        val assignOp = rat1.assign(val2)
+        val rat1 = Ratchet(val3, client1)
+
+        val returnedAssignOp = rat1.assign(val2)
+        val assignOp = client1.popWrite().second
+        returnedAssignOp.shouldBe(assignOp)
+
         val rat2 = Ratchet(val1)
         rat2.merge(assignOp)
 
@@ -182,7 +195,7 @@ class RatchetTest : StringSpec({
     "generate delta then merge" {
         val vv = VersionVector()
 
-        val rat1 = Ratchet(val3)
+        val rat1 = Ratchet(val3, client1)
         rat1.assign(val2)
         val rat2 = Ratchet(val1)
         val delta = rat1.generateDelta(vv)

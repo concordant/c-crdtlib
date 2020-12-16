@@ -19,11 +19,15 @@
 
 package crdtlib.utils
 
+import crdtlib.crdt.DeltaCRDT
+
 /**
-* This class represents a simple environment generating increasing monotonic timestamps.
+* This class represents a simple environment
+* generating increasing monotonic timestamps
+* and providing access to the last submitted delta.
 * @property uid the client unique identifier associated with this environment.
 */
-class SimpleEnvironment(uid: ClientUId) : Environment(uid) {
+open class SimpleEnvironment(uid: ClientUId) : Environment(uid) {
 
     /**
      * A version vector storing this environment causal context.
@@ -31,18 +35,27 @@ class SimpleEnvironment(uid: ClientUId) : Environment(uid) {
     private val currentState: VersionVector = VersionVector()
 
     /**
-     * Gets the current state associated with the environment.
-     * @return the current state.
-     */
-    override fun getStateProtected(): VersionVector {
+     * Store the last obj and delta submitted via onWrite()
+     **/
+    private var lastWrite: Pair<DeltaCRDT, DeltaCRDT>? = null
+
+    /**
+     * Pop (return and delete) the last delta submitted via onWrite()
+     * Throws NullPointerException if last submitted delta
+     * has already been pop()ed.
+     * @return the last write as a Pair(obj, delta)
+     **/
+    fun popWrite(): Pair<DeltaCRDT, DeltaCRDT> {
+        val d = lastWrite
+        lastWrite = null
+        return d!!
+    }
+
+    override fun getState(): VersionVector {
         return this.currentState.copy()
     }
 
-    /**
-     * Generates a monotonically increasing timestamp.
-     * @return the generated timestamp.
-     */
-    override fun tickProtected(): Timestamp {
+    override fun tick(): Timestamp {
         val lastCnt = this.currentState.max()
         if (lastCnt == Timestamp.CNT_MAX_VALUE) {
             throw RuntimeException("Timestamp counter has reached Timestamp.CNT_MAX_VALUE")
@@ -52,19 +65,15 @@ class SimpleEnvironment(uid: ClientUId) : Environment(uid) {
         return ts
     }
 
-    /**
-     * Updates the currentState with the given timestamp.
-     * @param ts the given timestamp.
-     */
-    override fun updateProtected(ts: Timestamp) {
+    override fun update(ts: Timestamp) {
         this.currentState.update(ts)
     }
 
-    /**
-     * Updates the current currentState with the given version vector.
-     * @param vv the given version vector.
-     */
-    override fun updateProtected(vv: VersionVector) {
+    override fun update(vv: VersionVector) {
         this.currentState.update(vv)
+    }
+
+    override fun onWrite(obj: DeltaCRDT, delta: DeltaCRDT) {
+        this.lastWrite = Pair(obj, delta)
     }
 }

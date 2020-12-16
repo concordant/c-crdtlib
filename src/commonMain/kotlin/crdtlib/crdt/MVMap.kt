@@ -81,6 +81,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("getBoolean")
     fun getBoolean(key: String): Set<Boolean?>? {
+        onRead()
         val setOfValues = this.entries[key + BOOLEAN]?.map { it.first?.toBoolean() }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
@@ -94,6 +95,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("getDouble")
     fun getDouble(key: String): Set<Double?>? {
+        onRead()
         val setOfValues = this.entries[key + DOUBLE]?.map { it.first?.toDouble() }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
@@ -107,6 +109,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("getInt")
     fun getInt(key: String): Set<Int?>? {
+        onRead()
         val setOfValues = this.entries[key + INTEGER]?.map { it.first?.toInt() }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
@@ -120,6 +123,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("getString")
     fun getString(key: String): Set<String?>? {
+        onRead()
         val setOfValues = this.entries[key + STRING]?.map { it.first }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
@@ -131,6 +135,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("iteratorBoolean")
     fun iteratorBoolean(): Iterator<Pair<String, Set<Boolean?>>> {
+        onRead()
         return this.entries.asSequence().filter { (k, _) -> k.endsWith(BOOLEAN) }
             .map { (k, v) -> Pair(k.removeSuffix(BOOLEAN), v.map { it.first?.toBoolean() }.toSet()) }
             .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
@@ -142,6 +147,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("iteratorDouble")
     fun iteratorDouble(): Iterator<Pair<String, Set<Double?>>> {
+        onRead()
         return this.entries.asSequence().filter { (k, _) -> k.endsWith(DOUBLE) }
             .map { (k, v) -> Pair(k.removeSuffix(DOUBLE), v.map { it.first?.toDouble() }.toSet()) }
             .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
@@ -153,6 +159,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("iteratorInt")
     fun iteratorInt(): Iterator<Pair<String, Set<Int?>>> {
+        onRead()
         return this.entries.asSequence().filter { (k, _) -> k.endsWith(INTEGER) }
             .map { (k, v) -> Pair(k.removeSuffix(INTEGER), v.map { it.first?.toInt() }.toSet()) }
             .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
@@ -164,6 +171,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("iteratorString")
     fun iteratorString(): Iterator<Pair<String, Set<String?>>> {
+        onRead()
         return this.entries.asSequence().filter { (k, _) -> k.endsWith(STRING) }
             .map { (k, v) -> Pair(k.removeSuffix(STRING), v.map { it.first }.toSet()) }
             .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
@@ -190,6 +198,7 @@ class MVMap : DeltaCRDT {
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
+        onWrite(op)
         return op
     }
 
@@ -214,6 +223,7 @@ class MVMap : DeltaCRDT {
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
+        onWrite(op)
         return op
     }
 
@@ -238,6 +248,7 @@ class MVMap : DeltaCRDT {
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
+        onWrite(op)
         return op
     }
 
@@ -262,6 +273,7 @@ class MVMap : DeltaCRDT {
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
+        onWrite(op)
         return op
     }
 
@@ -273,7 +285,9 @@ class MVMap : DeltaCRDT {
      */
     @Name("deleteBoolean")
     fun deleteBoolean(key: String): MVMap {
-        return put(key, null as Boolean?)
+        val op = put(key, null as Boolean?)
+        onWrite(op)
+        return op
     }
 
     /**
@@ -284,7 +298,9 @@ class MVMap : DeltaCRDT {
      */
     @Name("deleteDouble")
     fun deleteDouble(key: String): MVMap {
-        return put(key, null as Double?)
+        val op = put(key, null as Double?)
+        onWrite(op)
+        return op
     }
 
     /**
@@ -295,7 +311,9 @@ class MVMap : DeltaCRDT {
      */
     @Name("deleteInt")
     fun deleteInt(key: String): MVMap {
-        return put(key, null as Int?)
+        val op = put(key, null as Int?)
+        onWrite(op)
+        return op
     }
 
     /**
@@ -306,7 +324,9 @@ class MVMap : DeltaCRDT {
      */
     @Name("deleteString")
     fun deleteString(key: String): MVMap {
-        return put(key, null as String?)
+        val op = put(key, null as String?)
+        onWrite(op)
+        return op
     }
 
     /**

@@ -239,7 +239,10 @@ class MVRegisterTest : StringSpec({
         val reg1 = MVRegister(client1)
         val reg2 = MVRegister(client1)
 
-        val assignOp = reg1.assign("value")
+        val returnedAssignOp = reg1.assign("value")
+        val assignOp = client1.popWrite().second
+        returnedAssignOp.shouldBe(assignOp)
+
         reg1.merge(assignOp)
         reg2.merge(assignOp)
 

@@ -671,10 +671,19 @@ class MVMapTest : StringSpec({
         val map1 = MVMap(client1)
         val map2 = MVMap(client1)
 
-        val opBoolean = map1.put(key1, valBoolean1)
-        val opDouble = map1.put(key1, valDouble1)
-        val opInt = map1.put(key1, valInt1)
-        val opString = map1.put(key1, valString1)
+        val returnedOpBoolean = map1.put(key1, valBoolean1)
+        val opBoolean = client1.popWrite().second
+        returnedOpBoolean.shouldBe(opBoolean)
+        val returnedOpDouble = map1.put(key1, valDouble1)
+        val opDouble = client1.popWrite().second
+        returnedOpDouble.shouldBe(opDouble)
+        val returnedOpInt = map1.put(key1, valInt1)
+        val opInt = client1.popWrite().second
+        returnedOpInt.shouldBe(opInt)
+        val returnedOpString = map1.put(key1, valString1)
+        val opString = client1.popWrite().second
+        returnedOpString.shouldBe(opString)
+
         map1.merge(opBoolean)
         map1.merge(opDouble)
         map1.merge(opInt)
@@ -743,14 +752,35 @@ class MVMapTest : StringSpec({
         val map1 = MVMap(client1)
         val map2 = MVMap(client1)
 
-        val putOpBoolean = map1.put(key1, valBoolean1)
-        val putOpDouble = map1.put(key1, valDouble1)
-        val putOpInt = map1.put(key1, valInt1)
-        val putOpString = map1.put(key1, valString1)
-        val delOpBoolean = map1.deleteBoolean(key1)
-        val delOpDouble = map1.deleteDouble(key1)
-        val delOpInt = map1.deleteInt(key1)
-        val delOpString = map1.deleteString(key1)
+        val returnedOpBoolean = map1.put(key1, valBoolean1)
+        val opBoolean = client1.popWrite().second
+        returnedOpBoolean.shouldBe(opBoolean)
+
+        val returnedPutOpBoolean = map1.put(key1, valBoolean1)
+        val putOpBoolean = client1.popWrite().second
+        returnedPutOpBoolean.shouldBe(putOpBoolean)
+        val returnedPutOpDouble = map1.put(key1, valDouble1)
+        val putOpDouble = client1.popWrite().second
+        returnedPutOpDouble.shouldBe(putOpDouble)
+        val returnedPutOpInt = map1.put(key1, valInt1)
+        val putOpInt = client1.popWrite().second
+        returnedPutOpInt.shouldBe(putOpInt)
+        val returnedPutOpString = map1.put(key1, valString1)
+        val putOpString = client1.popWrite().second
+        returnedPutOpString.shouldBe(putOpString)
+        val returnedDelOpBoolean = map1.deleteBoolean(key1)
+        val delOpBoolean = client1.popWrite().second
+        returnedDelOpBoolean.shouldBe(delOpBoolean)
+        val returnedDelOpDouble = map1.deleteDouble(key1)
+        val delOpDouble = client1.popWrite().second
+        returnedDelOpDouble.shouldBe(delOpDouble)
+        val returnedDelOpInt = map1.deleteInt(key1)
+        val delOpInt = client1.popWrite().second
+        returnedDelOpInt.shouldBe(delOpInt)
+        val returnedDelOpString = map1.deleteString(key1)
+        val delOpString = client1.popWrite().second
+        returnedDelOpString.shouldBe(delOpString)
+
         map1.merge(putOpBoolean)
         map1.merge(putOpDouble)
         map1.merge(putOpInt)
@@ -796,18 +826,43 @@ class MVMapTest : StringSpec({
         val map1 = MVMap(client1)
         val map2 = MVMap(client1)
 
-        val opBoolean1 = map1.put(key1, valBoolean1)
-        val opDouble1 = map1.put(key1, valDouble1)
-        val opInt1 = map1.put(key1, valInt1)
-        val opString1 = map1.put(key1, valString1)
-        val opBoolean2 = map1.put(key1, valBoolean2)
-        val opDouble2 = map1.put(key1, valDouble2)
-        val opInt2 = map1.put(key1, valInt2)
-        val opString2 = map1.put(key1, valString2)
-        val opBoolean3 = map1.put(key2, valBoolean1)
-        val opDouble3 = map1.put(key2, valDouble1)
-        val opInt3 = map1.put(key2, valInt1)
-        val opString3 = map1.put(key2, valString1)
+        val returnedOpBoolean1 = map1.put(key1, valBoolean1)
+        val opBoolean1 = client1.popWrite().second
+        returnedOpBoolean1.shouldBe(opBoolean1)
+        val returnedOpDouble1 = map1.put(key1, valDouble1)
+        val opDouble1 = client1.popWrite().second
+        returnedOpDouble1.shouldBe(opDouble1)
+        val returnedOpInt1 = map1.put(key1, valInt1)
+        val opInt1 = client1.popWrite().second
+        returnedOpInt1.shouldBe(opInt1)
+        val returnedOpString1 = map1.put(key1, valString1)
+        val opString1 = client1.popWrite().second
+        returnedOpString1.shouldBe(opString1)
+        val returnedOpBoolean2 = map1.put(key1, valBoolean2)
+        val opBoolean2 = client1.popWrite().second
+        returnedOpBoolean2.shouldBe(opBoolean2)
+        val returnedOpDouble2 = map1.put(key1, valDouble2)
+        val opDouble2 = client1.popWrite().second
+        returnedOpDouble2.shouldBe(opDouble2)
+        val returnedOpInt2 = map1.put(key1, valInt2)
+        val opInt2 = client1.popWrite().second
+        returnedOpInt2.shouldBe(opInt2)
+        val returnedOpString2 = map1.put(key1, valString2)
+        val opString2 = client1.popWrite().second
+        returnedOpString2.shouldBe(opString2)
+        val returnedOpBoolean3 = map1.put(key2, valBoolean1)
+        val opBoolean3 = client1.popWrite().second
+        returnedOpBoolean3.shouldBe(opBoolean3)
+        val returnedOpDouble3 = map1.put(key2, valDouble1)
+        val opDouble3 = client1.popWrite().second
+        returnedOpDouble3.shouldBe(opDouble3)
+        val returnedOpInt3 = map1.put(key2, valInt1)
+        val opInt3 = client1.popWrite().second
+        returnedOpInt3.shouldBe(opInt3)
+        val returnedOpString3 = map1.put(key2, valString1)
+        val opString3 = client1.popWrite().second
+        returnedOpString3.shouldBe(opString3)
+
         opDouble3.merge(opString3)
         opBoolean3.merge(opDouble3)
         opInt3.merge(opBoolean3)
@@ -869,18 +924,43 @@ class MVMapTest : StringSpec({
         val map1 = MVMap(client1)
         val map2 = MVMap(client1)
 
-        val opBoolean1 = map1.put(key1, valBoolean1)
-        val opDouble1 = map1.put(key1, valDouble1)
-        val opInt1 = map1.put(key1, valInt1)
-        val opString1 = map1.put(key1, valString1)
-        val opBoolean2 = map1.deleteBoolean(key1)
-        val opDouble2 = map1.deleteDouble(key1)
-        val opInt2 = map1.deleteInt(key1)
-        val opString2 = map1.deleteString(key1)
-        val opBoolean3 = map1.put(key2, valBoolean1)
-        val opDouble3 = map1.put(key2, valDouble1)
-        val opInt3 = map1.put(key2, valInt1)
-        val opString3 = map1.put(key2, valString1)
+        val returnedOpBoolean1 = map1.put(key1, valBoolean1)
+        val opBoolean1 = client1.popWrite().second
+        returnedOpBoolean1.shouldBe(opBoolean1)
+        val returnedOpDouble1 = map1.put(key1, valDouble1)
+        val opDouble1 = client1.popWrite().second
+        returnedOpDouble1.shouldBe(opDouble1)
+        val returnedOpInt1 = map1.put(key1, valInt1)
+        val opInt1 = client1.popWrite().second
+        returnedOpInt1.shouldBe(opInt1)
+        val returnedOpString1 = map1.put(key1, valString1)
+        val opString1 = client1.popWrite().second
+        returnedOpString1.shouldBe(opString1)
+        val returnedOpBoolean2 = map1.deleteBoolean(key1)
+        val opBoolean2 = client1.popWrite().second
+        returnedOpBoolean2.shouldBe(opBoolean2)
+        val returnedOpDouble2 = map1.deleteDouble(key1)
+        val opDouble2 = client1.popWrite().second
+        returnedOpDouble2.shouldBe(opDouble2)
+        val returnedOpInt2 = map1.deleteInt(key1)
+        val opInt2 = client1.popWrite().second
+        returnedOpInt2.shouldBe(opInt2)
+        val returnedOpString2 = map1.deleteString(key1)
+        val opString2 = client1.popWrite().second
+        returnedOpString2.shouldBe(opString2)
+        val returnedOpBoolean3 = map1.put(key2, valBoolean1)
+        val opBoolean3 = client1.popWrite().second
+        returnedOpBoolean3.shouldBe(opBoolean3)
+        val returnedOpDouble3 = map1.put(key2, valDouble1)
+        val opDouble3 = client1.popWrite().second
+        returnedOpDouble3.shouldBe(opDouble3)
+        val returnedOpInt3 = map1.put(key2, valInt1)
+        val opInt3 = client1.popWrite().second
+        returnedOpInt3.shouldBe(opInt3)
+        val returnedOpString3 = map1.put(key2, valString1)
+        val opString3 = client1.popWrite().second
+        returnedOpString3.shouldBe(opString3)
+
         opDouble3.merge(opString3)
         opBoolean3.merge(opDouble3)
         opInt3.merge(opBoolean3)
@@ -1087,7 +1167,8 @@ class MVMapTest : StringSpec({
             """{"type":"MVMap","metadata":{"entries":{},"causalContext":{"entries":[]}}}""",
             client1
         )
-        mapJson.put("key1", "value1")
+        val putDelta = mapJson.put("key1", "value1")
+        putDelta.shouldBe(client1.popWrite().second)
 
         mapJson.getString("key1")!!.shouldHaveSingleElement("value1")
         mapJson.getString("key2").shouldBeNull()

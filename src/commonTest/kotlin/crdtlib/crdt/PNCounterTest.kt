@@ -298,7 +298,10 @@ class PNCounterTest : StringSpec({
         val cnt1 = PNCounter(client1)
         val cnt2 = PNCounter(client1)
 
-        val incOp = cnt1.increment(11)
+        val returnedIncOp = cnt1.increment(11)
+        val incOp = client1.popWrite().second
+        returnedIncOp.shouldBe(incOp)
+
         cnt2.merge(incOp)
         cnt1.merge(incOp)
 
@@ -313,7 +316,10 @@ class PNCounterTest : StringSpec({
         val cnt1 = PNCounter(client1)
         val cnt2 = PNCounter(client1)
 
-        val decOp = cnt1.decrement(11)
+        val returnedDecOp = cnt1.decrement(11)
+        val decOp = client1.popWrite().second
+        returnedDecOp.shouldBe(decOp)
+
         cnt2.merge(decOp)
         cnt1.merge(decOp)
 
@@ -329,8 +335,13 @@ class PNCounterTest : StringSpec({
         val cnt1 = PNCounter(client1)
         val cnt2 = PNCounter(client1)
 
-        val decOp = cnt1.decrement(11)
-        val incOp = cnt1.increment(22)
+        val returnedDecOp = cnt1.decrement(11)
+        val decOp = client1.popWrite().second
+        returnedDecOp.shouldBe(decOp)
+        val returnedIncOp = cnt1.increment(22)
+        val incOp = client1.popWrite().second
+        returnedIncOp.shouldBe(incOp)
+
         cnt2.merge(decOp)
         cnt2.merge(incOp)
         cnt1.merge(decOp)

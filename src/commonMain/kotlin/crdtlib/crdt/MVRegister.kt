@@ -96,6 +96,7 @@ class MVRegister : DeltaCRDT, Iterable<String> {
      */
     @Name("get")
     fun get(): Set<String> {
+        onRead()
         return this.entries.map { it.first }.toSet()
     }
 
@@ -115,7 +116,9 @@ class MVRegister : DeltaCRDT, Iterable<String> {
             this.entries.add(Pair(value, ts))
             this.causalContext.update(ts)
         }
-        return MVRegister(this)
+        val delta = MVRegister(this)
+        onWrite(delta)
+        return delta
     }
 
     /**
