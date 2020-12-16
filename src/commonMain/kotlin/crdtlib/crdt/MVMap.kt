@@ -19,6 +19,7 @@
 
 package crdtlib.crdt
 
+import crdtlib.utils.Environment
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
@@ -30,8 +31,8 @@ import kotlinx.serialization.json.*
 * This class is a delta-based CRDT map implementing last writer wins (MV) to resolve conflicts.
 * It is serializable to JSON and respect the following schema:
 * {
-*   "_type": "MVMap",
-*   "_metadata": {
+*   "type": "MVMap",
+*   "metadata": {
 *       "entries": {
 *           // $key is a string
 *           (( "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] )*( , "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] ))?
@@ -62,12 +63,13 @@ class MVMap : DeltaCRDT {
     /**
      * Default constructor.
      */
-    constructor()
+    constructor() : super()
+    constructor(env: Environment) : super(env)
 
     /**
      * Constructor initializing the causal context.
      */
-    constructor(cc: VersionVector) {
+    constructor(cc: VersionVector, env: Environment) : super(env) {
         this.causalContext = cc
     }
 
@@ -79,6 +81,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("getBoolean")
     fun getBoolean(key: String): Set<Boolean?>? {
+        onRead()
         val setOfValues = this.entries[key + BOOLEAN]?.map { it.first?.toBoolean() }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
@@ -92,6 +95,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("getDouble")
     fun getDouble(key: String): Set<Double?>? {
+        onRead()
         val setOfValues = this.entries[key + DOUBLE]?.map { it.first?.toDouble() }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
@@ -105,6 +109,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("getInt")
     fun getInt(key: String): Set<Int?>? {
+        onRead()
         val setOfValues = this.entries[key + INTEGER]?.map { it.first?.toInt() }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
@@ -118,6 +123,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("getString")
     fun getString(key: String): Set<String?>? {
+        onRead()
         val setOfValues = this.entries[key + STRING]?.map { it.first }?.toSet()
         if (setOfValues == mutableSetOf(null)) return null
         return setOfValues
@@ -129,6 +135,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("iteratorBoolean")
     fun iteratorBoolean(): Iterator<Pair<String, Set<Boolean?>>> {
+        onRead()
         return this.entries.asSequence().filter { (k, _) -> k.endsWith(BOOLEAN) }
             .map { (k, v) -> Pair(k.removeSuffix(BOOLEAN), v.map { it.first?.toBoolean() }.toSet()) }
             .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
@@ -140,6 +147,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("iteratorDouble")
     fun iteratorDouble(): Iterator<Pair<String, Set<Double?>>> {
+        onRead()
         return this.entries.asSequence().filter { (k, _) -> k.endsWith(DOUBLE) }
             .map { (k, v) -> Pair(k.removeSuffix(DOUBLE), v.map { it.first?.toDouble() }.toSet()) }
             .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
@@ -151,6 +159,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("iteratorInt")
     fun iteratorInt(): Iterator<Pair<String, Set<Int?>>> {
+        onRead()
         return this.entries.asSequence().filter { (k, _) -> k.endsWith(INTEGER) }
             .map { (k, v) -> Pair(k.removeSuffix(INTEGER), v.map { it.first?.toInt() }.toSet()) }
             .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
@@ -162,6 +171,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("iteratorString")
     fun iteratorString(): Iterator<Pair<String, Set<String?>>> {
+        onRead()
         return this.entries.asSequence().filter { (k, _) -> k.endsWith(STRING) }
             .map { (k, v) -> Pair(k.removeSuffix(STRING), v.map { it.first }.toSet()) }
             .filter { (_, v) -> v != mutableSetOf(null) }.iterator()
@@ -171,12 +181,12 @@ class MVMap : DeltaCRDT {
      * Puts a key / Boolean value pair into the map.
      * @param key the key that is targeted.
      * @param value the Boolean value that should be assigned to the key.
-     * @param ts the timestamp of this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("setBoolean")
-    fun put(key: String, value: Boolean?, ts: Timestamp): MVMap {
+    fun put(key: String, value: Boolean?): MVMap {
         val op = MVMap()
+        val ts = env.tick()
         if (!this.causalContext.contains(ts)) {
             var meta = this.entries[key + BOOLEAN]
             if (meta == null) meta = mutableSetOf()
@@ -188,6 +198,7 @@ class MVMap : DeltaCRDT {
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
+        onWrite(op)
         return op
     }
 
@@ -195,12 +206,12 @@ class MVMap : DeltaCRDT {
      * Puts a key / double value pair into the map.
      * @param key the key that is targeted.
      * @param value the double value that should be assigned to the key.
-     * @param ts the timestamp of this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("setDouble")
-    fun put(key: String, value: Double?, ts: Timestamp): MVMap {
+    fun put(key: String, value: Double?): MVMap {
         val op = MVMap()
+        val ts = env.tick()
         if (!this.causalContext.contains(ts)) {
             var meta = this.entries[key + DOUBLE]
             if (meta == null) meta = mutableSetOf()
@@ -212,6 +223,7 @@ class MVMap : DeltaCRDT {
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
+        onWrite(op)
         return op
     }
 
@@ -219,12 +231,12 @@ class MVMap : DeltaCRDT {
      * Puts a key / integer value pair into the map.
      * @param key the key that is targeted.
      * @param value the integer value that should be assigned to the key.
-     * @param ts the timestamp of this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("setInt")
-    fun put(key: String, value: Int?, ts: Timestamp): MVMap {
+    fun put(key: String, value: Int?): MVMap {
         val op = MVMap()
+        val ts = env.tick()
         if (!this.causalContext.contains(ts)) {
             var meta = this.entries[key + INTEGER]
             if (meta == null) meta = mutableSetOf()
@@ -236,6 +248,7 @@ class MVMap : DeltaCRDT {
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
+        onWrite(op)
         return op
     }
 
@@ -243,12 +256,12 @@ class MVMap : DeltaCRDT {
      * Puts a key / string value pair into the map.
      * @param key the key that is targeted.
      * @param value the string value that should be assigned to the key.
-     * @param ts the timestamp of this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("setString")
-    fun put(key: String, value: String?, ts: Timestamp): MVMap {
+    fun put(key: String, value: String?): MVMap {
         val op = MVMap()
+        val ts = env.tick()
         if (!this.causalContext.contains(ts)) {
             var meta = this.entries[key + STRING]
             if (meta == null) meta = mutableSetOf()
@@ -260,6 +273,7 @@ class MVMap : DeltaCRDT {
             this.causalContext.update(ts)
             op.causalContext.update(ts)
         }
+        onWrite(op)
         return op
     }
 
@@ -267,48 +281,52 @@ class MVMap : DeltaCRDT {
      * Deletes a given key / Boolean value pair if it is present in the map and has not yet been
      * deleted.
      * @param key the key that should be deleted.
-     * @param ts the timestamp linked to this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("deleteBoolean")
-    fun deleteBoolean(key: String, ts: Timestamp): MVMap {
-        return put(key, null as Boolean?, ts)
+    fun deleteBoolean(key: String): MVMap {
+        val op = put(key, null as Boolean?)
+        onWrite(op)
+        return op
     }
 
     /**
      * Deletes a given key / double value pair if it is present in the map and has not yet been
      * deleted.
      * @param key the key that should be deleted.
-     * @param ts the timestamp linked to this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("deleteDouble")
-    fun deleteDouble(key: String, ts: Timestamp): MVMap {
-        return put(key, null as Double?, ts)
+    fun deleteDouble(key: String): MVMap {
+        val op = put(key, null as Double?)
+        onWrite(op)
+        return op
     }
 
     /**
      * Deletes a given key / integer value pair if it is present in the map and has not yet been
      * deleted.
      * @param key the key that should be deleted.
-     * @param ts the timestamp linked to this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("deleteInt")
-    fun deleteInt(key: String, ts: Timestamp): MVMap {
-        return put(key, null as Int?, ts)
+    fun deleteInt(key: String): MVMap {
+        val op = put(key, null as Int?)
+        onWrite(op)
+        return op
     }
 
     /**
      * Deletes a given key / string value pair if it is present in the map and has not yet been
      * deleted.
      * @param key the key that should be deleted.
-     * @param ts the timestamp linked to this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("deleteString")
-    fun deleteString(key: String, ts: Timestamp): MVMap {
-        return put(key, null as String?, ts)
+    fun deleteString(key: String): MVMap {
+        val op = put(key, null as String?)
+        onWrite(op)
+        return op
     }
 
     /**
@@ -398,14 +416,25 @@ class MVMap : DeltaCRDT {
         const val STRING = SEPARATOR + "STRING"
 
         /**
+         * Get the type name for serialization.
+         * @return the type as a string.
+         */
+        @Name("getType")
+        fun getType(): String {
+            return "MVMap"
+        }
+
+        /**
          * Deserializes a given json string in a crdt map.
          * @param json the given json string.
          * @return the resulted crdt map.
          */
         @Name("fromJson")
-        fun fromJson(json: String): MVMap {
+        fun fromJson(json: String, env: Environment? = null): MVMap {
             val jsonSerializer = JsonMVMapSerializer(serializer())
-            return Json.decodeFromString(jsonSerializer, json)
+            val obj = Json.decodeFromString(jsonSerializer, json)
+            if (env != null) obj.env = env
+            return obj
         }
     }
 }
@@ -444,11 +473,11 @@ class JsonMVMapSerializer(serializer: KSerializer<MVMap>) :
             entries[key] = JsonArray(meta)
         }
         val metadata = JsonObject(mapOf("entries" to JsonObject(entries.toMap()), "causalContext" to causalContext))
-        return JsonObject(mapOf("_type" to JsonPrimitive("MVMap"), "_metadata" to metadata).plus(values))
+        return JsonObject(mapOf("type" to JsonPrimitive("MVMap"), "metadata" to metadata).plus(values))
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
-        val metadata = element.jsonObject["_metadata"]!!.jsonObject
+        val metadata = element.jsonObject["metadata"]!!.jsonObject
         val causalContext = metadata["causalContext"]!!.jsonObject
         val entries = mutableMapOf<String, JsonElement>()
         for ((key, meta) in metadata["entries"]!!.jsonObject) {

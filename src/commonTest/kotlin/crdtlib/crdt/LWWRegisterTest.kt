@@ -22,26 +22,42 @@ package crdtlib.crdt
 import crdtlib.utils.ClientUId
 import crdtlib.utils.SimpleEnvironment
 import io.kotest.core.spec.style.StringSpec
-import io.kotest.matchers.*
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.shouldBe
 
 /**
 * Represents a test suite for LWWRegister.
 **/
 class LWWRegisterTest : StringSpec({
 
+    val uid1 = ClientUId("clientid1")
+    val uid2 = ClientUId("clientid2")
+    var client1 = SimpleEnvironment(uid1)
+    var client2 = SimpleEnvironment(uid2)
+
+    beforeTest {
+        client1 = SimpleEnvironment(uid1)
+        client2 = SimpleEnvironment(uid2)
+    }
+
+    /**
+     * This test evaluates the scenario: create an empty register, get.
+     * Call to get should return null.
+     */
+    "create empty register and get" {
+        val reg = LWWRegister()
+
+        reg.get().shouldBeNull()
+    }
+
     /**
      * This test evaluates the scenario: create get.
      * Call to get should return the value assigned by the constructor.
      */
     "create register and get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val ts = client.tick()
-        val value = "value"
+        val reg = LWWRegister("value", client1)
 
-        val reg = LWWRegister(value, ts)
-
-        reg.get().shouldBe(value)
+        reg.get().shouldBe("value")
     }
 
     /**
@@ -49,35 +65,26 @@ class LWWRegisterTest : StringSpec({
      * Call to get should return the value set by the assign method.
      */
     "create, assign, get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val val1 = "value1"
-        val val2 = "value2"
+        val reg = LWWRegister("value1", client1)
+        reg.assign("value2")
 
-        val reg = LWWRegister(val1, ts1)
-        reg.assign(val2, ts2)
-
-        reg.get().shouldBe(val2)
+        reg.get().shouldBe("value2")
     }
 
     /**
-     * This test evaluates the scenario: create assign(older timestamp) get.
-     * Call to get should return the value set by the constructor.
+     * This test evaluates the scenario: create empy || assign merge get.
+     * Call to get should return the value set in the second replica.
      */
-    "create, assign with older timestamp, get" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val val1 = "value1"
-        val val2 = "value2"
+    "R1: create empty; R2: create with greater timestamp, merge, get" {
+        val value = "value"
 
-        val reg = LWWRegister(val1, ts2)
-        reg.assign(val2, ts1)
+        val reg1 = LWWRegister()
+        val reg2 = LWWRegister(value, client1)
+        reg1.merge(reg2)
+        reg2.merge(reg1)
 
-        reg.get().shouldBe(val1)
+        reg1.get().shouldBe(value)
+        reg2.get().shouldBe(value)
     }
 
     /**
@@ -85,22 +92,13 @@ class LWWRegisterTest : StringSpec({
      * Call to get should return the value set in the second replica.
      */
     "R1: create; R2: create with greater timestamp, merge, get" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val val1 = "value1"
-        val val2 = "value2"
-
-        val reg1 = LWWRegister(val1, ts1)
-        val reg2 = LWWRegister(val2, ts2)
+        val reg1 = LWWRegister("value1", client1)
+        val reg2 = LWWRegister("value2", client2)
         reg1.merge(reg2)
         reg2.merge(reg1)
 
-        reg1.get().shouldBe(val2)
-        reg2.get().shouldBe(val2)
+        reg1.get().shouldBe("value2")
+        reg2.get().shouldBe("value2")
     }
 
     /**
@@ -108,23 +106,12 @@ class LWWRegisterTest : StringSpec({
      * Call to get should return the value set by call to assign method in the second replica.
      */
     "R1: create; R2: create, merge, assign, get" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val ts3 = client2.tick()
-        val val1 = "value1"
-        val val2 = "value2"
-        val val3 = "value3"
-
-        val reg1 = LWWRegister(val1, ts1)
-        val reg2 = LWWRegister(val2, ts2)
+        val reg1 = LWWRegister("value1", client1)
+        val reg2 = LWWRegister("value2", client2)
         reg2.merge(reg1)
-        reg2.assign(val3, ts3)
+        reg2.assign("value3")
 
-        reg2.get().shouldBe(val3)
+        reg2.get().shouldBe("value3")
     }
 
     /**
@@ -132,29 +119,21 @@ class LWWRegisterTest : StringSpec({
      * Call to get should return last value set in the second replica.
      */
     "use delta generated by assign" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
-        val ts3 = client1.tick()
-        val ts4 = client2.tick()
-        val val1 = "value1"
-        val val2 = "value2"
-        val val3 = "value3"
-        val val4 = "value4"
+        val reg1 = LWWRegister("value1", client1)
+        val reg2 = LWWRegister("value2", client2)
 
-        val reg1 = LWWRegister(val1, ts1)
-        val reg2 = LWWRegister(val2, ts2)
-        val assignOp1 = reg1.assign(val3, ts3)
-        val assignOp2 = reg2.assign(val4, ts4)
+        val returnedAssignOp1 = reg1.assign("value3")
+        val assignOp1 = client1.popWrite().second
+        returnedAssignOp1.shouldBe(assignOp1)
+        val returnedAssignOp2 = reg2.assign("value4")
+        val assignOp2 = client2.popWrite().second
+        returnedAssignOp2.shouldBe(assignOp2)
 
         reg1.merge(assignOp2)
         reg2.merge(assignOp1)
 
-        reg1.get().shouldBe(val4)
-        reg2.get().shouldBe(val4)
+        reg1.get().shouldBe("value4")
+        reg2.get().shouldBe("value4")
     }
 
     /*
@@ -162,49 +141,55 @@ class LWWRegisterTest : StringSpec({
     * Call to get should return the values set in the second replica.
     */
     "generate delta then merge" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts2 = client2.tick()
+        val reg1 = LWWRegister("value1", client1)
+        val reg2 = LWWRegister("value2", client2)
         val vv1 = client1.getState()
         val vv2 = client2.getState()
-        val val1 = "value1"
-        val val2 = "value2"
-
-        val reg1 = LWWRegister(val1, ts1)
-        val reg2 = LWWRegister(val2, ts2)
         val delta2 = reg1.generateDelta(vv2)
         val delta1 = reg2.generateDelta(vv1)
 
         reg1.merge(delta1)
         reg2.merge(delta2)
 
-        reg1.get().shouldBe(val2)
-        reg2.get().shouldBe(val2)
+        reg1.get().shouldBe("value2")
+        reg2.get().shouldBe("value2")
     }
 
+    /**
+     * This test evaluates JSON serialization of an empty lww register.
+     **/
+    "empty JSON serialization" {
+        val reg = LWWRegister()
+        val regJson = reg.toJson()
+
+        regJson.shouldBe("""{"type":"LWWRegister","metadata":null,"value":null}""")
+    }
+
+    /**
+     * This test evaluates JSON deserialization of an empty lww register.
+     **/
+    "empty JSON deserialization" {
+        val regJson = LWWRegister.fromJson("""{"type":"LWWRegister","metadata":null,"value":null}""")
+
+        regJson.get().shouldBeNull()
+    }
     /**
      * This test evaluates JSON serialization of a lww register.
      **/
     "JSON serialization" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val ts = client.tick()
         val value = "value"
 
-        val reg = LWWRegister(value, ts)
+        val reg = LWWRegister(value, client1)
         val regJson = reg.toJson()
 
-        regJson.shouldBe("""{"_type":"LWWRegister","_metadata":{"uid":{"name":"clientid"},"cnt":-2147483647},"value":"value"}""")
+        regJson.shouldBe("""{"type":"LWWRegister","metadata":{"uid":{"name":"clientid1"},"cnt":-2147483647},"value":"value"}""")
     }
 
     /**
      * This test evaluates JSON deserialization of a lww register.
      **/
     "JSON deserialization" {
-        val regJson = LWWRegister.fromJson("""{"_type":"LWWRegister","_metadata":{"uid":{"name":"clientid"},"cnt":-2147483647},"value":"value"}""")
+        val regJson = LWWRegister.fromJson("""{"type":"LWWRegister","metadata":{"uid":{"name":"clientid"},"cnt":-2147483647},"value":"value"}""")
 
         regJson.get().shouldBe("value")
     }

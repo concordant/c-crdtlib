@@ -28,9 +28,11 @@ The code is in the directory *src/*. This directory contains multiple directorie
 
 ## Usage
 
-This library is delivered as a NPM package in [Gitlab Packages](
-https://gitlab.inria.fr/concordant/software/c-crdtlib/-/packages)
-(as a private registry).
+This library is delivered as an NPM package and a Maven in [Gitlab Packages](
+https://gitlab.inria.fr/concordant/software/c-crdtlib/-/packages) (as a private
+registry).
+
+### NPM install
 
 Get a deploy token or personal access token from Gitlab,
 with at least the read_package_registry scope.  
@@ -48,6 +50,52 @@ $ npm i @concordant/c-crdtlib
 And use it:
 ``` typescript
 import * from @concordant/c-crdtlib;
+```
+
+### Gradle install
+
+Get a deploy token or personal access token from Gitlab, with at least the
+read_package_registry scope.  
+Then add the token to your gradle propeties file *~/.gradle/gradle.properties*:
+``` shell
+gitLabPrivateToken=<deployOrPersonalToken>
+```
+
+In you project's configuration build file *build.gradle.kts* :
+- Add the repository jcenter() or mavenCentral() :
+``` kotlin
+repositories {
+    jcenter()
+}
+```
+or
+``` kotlin
+repositories {
+    mavenCentral()
+}
+```
+- add the JitPack repository and the GitLab registry as a repository :
+``` kotlin
+repositories {
+    maven(url = "https://jitpack.io")
+    maven {
+        url = uri("https://gitlab.inria.fr/api/v4/projects/18591/packages/maven")
+        credentials(HttpHeaderCredentials::class) {
+            name = "Deploy-Token"
+            val gitLabPrivateToken: String by project
+            value = gitLabPrivateToken
+        }
+        authentication {
+            create<HttpHeaderAuthentication>("header")
+        }
+    }
+}
+```
+- Add the maven package as a dependency:
+``` kotlin
+dependencies {
+    implementation("concordant:c-crdtlib:x.y.z")
+}
 ```
 
 ## Build project

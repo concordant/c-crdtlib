@@ -19,6 +19,7 @@
 
 package crdtlib.crdt
 
+import crdtlib.utils.Environment
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
@@ -30,45 +31,79 @@ import kotlinx.serialization.json.*
 * This class is a delta-based CRDT last writer wins (LWW) register.
 * It is serializable to JSON and respects the following schema:
 * {
-*   "_type": "LWWRegister",
-*   "_metadata": Timestamp.toJson(),
+*   "type": "LWWRegister",
+*   "metadata": Timestamp.toJson(),
 *   "value": $value
 * }
-* @property value the value stored in the register.
-* @property value the timestamp associated to the value.
 */
 @Serializable
-class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT() {
+class LWWRegister : DeltaCRDT {
 
     /**
-     * Constructor creating a copy of a given register.
-     * @param other the register that should be copy.
+     * The string value stored in the register.
      */
-    constructor(other: LWWRegister) : this(other.value, other.ts)
+    @Required
+    var value: String? = null
+
+    /**
+     * The timestamp associated to the value.
+     */
+    @Required
+    var ts: Timestamp? = null
+
+    /**
+     * Default constructor creating a empty register.
+     */
+    constructor() : super()
+    constructor(env: Environment) : super(env)
+
+    /**
+     * Constructor creating a register initialized with a given value.
+     * @param value the value to be put in the register.
+     * @param env the environment
+     */
+    constructor(value: String, env: Environment) : super(env) {
+        this.value = value
+        this.ts = env.tick()
+    }
+    /**
+     * Constructor creating a copy of a given register.
+     * @param other the register that should be copied.
+     * @return a copy with no env associated.
+     */
+    constructor(other: LWWRegister) {
+        this.value = other.value
+        this.ts = other.ts
+    }
 
     /**
      * Gets the value currently stored in the register.
      * @return value stored in the register.
      */
     @Name("get")
-    fun get(): String {
+    fun get(): String? {
+        onRead()
         return value
     }
 
     /**
      * Assigns a given value to the register.
-     * Assign is not effective if the associated timestamp is smaller (older) than the current one.
+     * Assign is not effective if the timestamp provided by the environment
+     * is smaller (older) than the current one.
      * @param v the value that should be assigned.
-     * @param ts the timestamp associated to the operation.
      * @return the delta corresponding to this operation.
      */
     @Name("set")
-    fun assign(v: String, ts: Timestamp): LWWRegister {
-        if (this.ts < ts) {
+    fun assign(v: String): LWWRegister {
+        val ts = env.tick()
+        val currentTs = this.ts
+        if (currentTs == null || currentTs < ts) {
             this.ts = ts
             this.value = v
         }
-        return LWWRegister(this)
+        val delta = LWWRegister(this)
+        onWrite(delta)
+        return delta
     }
 
     /**
@@ -89,7 +124,9 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT() {
     override fun merge(delta: DeltaCRDT) {
         if (delta !is LWWRegister) throw IllegalArgumentException("LWWRegister unsupported merge argument")
 
-        if (this.ts < delta.ts) {
+        val currentTs = this.ts
+        val deltaTs = delta.ts
+        if (currentTs == null || (deltaTs != null && currentTs < deltaTs)) {
             this.value = delta.value
             this.ts = delta.ts
         }
@@ -106,14 +143,25 @@ class LWWRegister(var value: String, var ts: Timestamp) : DeltaCRDT() {
 
     companion object {
         /**
+         * Get the type name for serialization.
+         * @return the type as a string.
+         */
+        @Name("getType")
+        fun getType(): String {
+            return "LWWRegister"
+        }
+
+        /**
          * Deserializes a given json string in a crdt LWW register.
          * @param json the given json string.
          * @return the resulted LWW register.
          */
         @Name("fromJson")
-        fun fromJson(json: String): LWWRegister {
+        fun fromJson(json: String, env: Environment? = null): LWWRegister {
             val jsonSerializer = JsonLWWRegisterSerializer(serializer())
-            return Json.decodeFromString(jsonSerializer, json)
+            val obj = Json.decodeFromString(jsonSerializer, json)
+            if (env != null) obj.env = env
+            return obj
         }
     }
 }
@@ -126,13 +174,13 @@ class JsonLWWRegisterSerializer(serializer: KSerializer<LWWRegister>) :
 
     override fun transformSerialize(element: JsonElement): JsonElement {
         val value = element.jsonObject["value"] as JsonElement
-        val metadata = element.jsonObject["ts"]!!.jsonObject
-        return JsonObject(mapOf("_type" to JsonPrimitive("LWWRegister"), "_metadata" to metadata, "value" to value))
+        val metadata = element.jsonObject["ts"] as JsonElement
+        return JsonObject(mapOf("type" to JsonPrimitive("LWWRegister"), "metadata" to metadata, "value" to value))
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
         val value = element.jsonObject["value"] as JsonElement
-        val ts = element.jsonObject["_metadata"]!!.jsonObject
+        val ts = element.jsonObject["metadata"] as JsonElement
         return JsonObject(mapOf("value" to value, "ts" to ts))
     }
 }

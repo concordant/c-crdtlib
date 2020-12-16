@@ -32,6 +32,35 @@ import io.kotest.matchers.nulls.*
  * Represents a suite test for LWWMap.
  */
 class LWWMapTest : StringSpec({
+
+    val uid1 = ClientUId("clientid1")
+    val uid2 = ClientUId("clientid2")
+    val uid3 = ClientUId("clientid3")
+    var client1 = SimpleEnvironment(uid1)
+    var client2 = SimpleEnvironment(uid2)
+    var client3 = SimpleEnvironment(uid3)
+
+    val valBoolean1 = true
+    val valBoolean2 = false
+    val valDouble1 = 12.3456789
+    val valDouble2 = 3.14159
+    val valInt1 = 42
+    val valInt2 = -100
+    val valString1 = "value1"
+    val valString2 = "value2"
+
+    val key1 = "key1"
+    val key2 = "key2"
+    val key3 = "key3"
+    val key4 = "key4"
+    val key5 = "key5"
+
+    beforeTest {
+        client1 = SimpleEnvironment(uid1)
+        client2 = SimpleEnvironment(uid2)
+        client3 = SimpleEnvironment(uid3)
+    }
+
     /**
      * This test evaluates the scenario: get/iterator.
      * Call to get should return null.
@@ -39,13 +68,12 @@ class LWWMapTest : StringSpec({
      *
      */
     "create and get/iterator" {
-        val key = "key"
         val map = LWWMap()
 
-        map.getBoolean(key).shouldBeNull()
-        map.getDouble(key).shouldBeNull()
-        map.getInt(key).shouldBeNull()
-        map.getString(key).shouldBeNull()
+        map.getBoolean(key1).shouldBeNull()
+        map.getDouble(key1).shouldBeNull()
+        map.getInt(key1).shouldBeNull()
+        map.getString(key1).shouldBeNull()
 
         map.iteratorBoolean().shouldBeEmpty()
         map.iteratorDouble().shouldBeEmpty()
@@ -59,47 +87,36 @@ class LWWMapTest : StringSpec({
      * Call to iterator should return an iterator containing the value set by the put.
      */
     "put and get/iterator" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val key = "key"
-        val valueBoolean = true
-        val valueDouble = 3.14159
-        val valueInt = 42
-        val valueString = "value"
-        val map = LWWMap()
+        val map = LWWMap(client1)
 
-        map.put(key, valueBoolean, ts1)
-        map.put(key, valueDouble, ts2)
-        map.put(key, valueInt, ts3)
-        map.put(key, valueString, ts4)
+        map.put(key1, valBoolean1)
+        map.put(key1, valDouble1)
+        map.put(key1, valInt1)
+        map.put(key1, valString1)
 
-        map.getBoolean(key).shouldBe(valueBoolean)
-        map.getDouble(key).shouldBe(valueDouble)
-        map.getInt(key).shouldBe(valueInt)
-        map.getString(key).shouldBe(valueString)
+        map.getBoolean(key1).shouldBe(valBoolean1)
+        map.getDouble(key1).shouldBe(valDouble1)
+        map.getInt(key1).shouldBe(valInt1)
+        map.getString(key1).shouldBe(valString1)
 
         val iteratorBoolean = map.iteratorBoolean()
         iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key, valueBoolean))
+        iteratorBoolean.next().shouldBe(Pair(key1, valBoolean1))
         iteratorBoolean.shouldBeEmpty()
 
         val iteratorDouble = map.iteratorDouble()
         iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key, valueDouble))
+        iteratorDouble.next().shouldBe(Pair(key1, valDouble1))
         iteratorDouble.shouldBeEmpty()
 
         val iteratorInt = map.iteratorInt()
         iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key, valueInt))
+        iteratorInt.next().shouldBe(Pair(key1, valInt1))
         iteratorInt.shouldBeEmpty()
 
         val iteratorString = map.iteratorString()
         iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key, valueString))
+        iteratorString.next().shouldBe(Pair(key1, valString1))
         iteratorString.shouldBeEmpty()
     }
 
@@ -109,36 +126,21 @@ class LWWMapTest : StringSpec({
      * Call to iterator should return an empty iterator.
      */
     "put, delete, get/iterator" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val ts5 = client.tick()
-        val ts6 = client.tick()
-        val ts7 = client.tick()
-        val ts8 = client.tick()
-        val key = "key"
-        val valueBoolean = true
-        val valueDouble = 3.14159
-        val valueInt = 42
-        val valueString = "value"
-        val map = LWWMap()
+        val map = LWWMap(client1)
 
-        map.put(key, valueBoolean, ts1)
-        map.put(key, valueDouble, ts2)
-        map.put(key, valueInt, ts3)
-        map.put(key, valueString, ts4)
-        map.deleteBoolean(key, ts5)
-        map.deleteDouble(key, ts6)
-        map.deleteInt(key, ts7)
-        map.deleteString(key, ts8)
+        map.put(key1, valBoolean1)
+        map.put(key1, valDouble1)
+        map.put(key1, valInt1)
+        map.put(key1, valString1)
+        map.deleteBoolean(key1)
+        map.deleteDouble(key1)
+        map.deleteInt(key1)
+        map.deleteString(key1)
 
-        map.getBoolean(key).shouldBeNull()
-        map.getDouble(key).shouldBeNull()
-        map.getInt(key).shouldBeNull()
-        map.getString(key).shouldBeNull()
+        map.getBoolean(key1).shouldBeNull()
+        map.getDouble(key1).shouldBeNull()
+        map.getInt(key1).shouldBeNull()
+        map.getString(key1).shouldBeNull()
 
         map.iteratorBoolean().shouldBeEmpty()
         map.iteratorDouble().shouldBeEmpty()
@@ -152,24 +154,17 @@ class LWWMapTest : StringSpec({
      * Call to iterator should return an empty iterator.
      */
     "delete and get/iterator" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val key = "key"
-        val map = LWWMap()
+        val map = LWWMap(client1)
 
-        map.deleteBoolean(key, ts1)
-        map.deleteDouble(key, ts2)
-        map.deleteInt(key, ts3)
-        map.deleteString(key, ts4)
+        map.deleteBoolean(key1)
+        map.deleteDouble(key1)
+        map.deleteInt(key1)
+        map.deleteString(key1)
 
-        map.getBoolean(key).shouldBeNull()
-        map.getDouble(key).shouldBeNull()
-        map.getInt(key).shouldBeNull()
-        map.getString(key).shouldBeNull()
+        map.getBoolean(key1).shouldBeNull()
+        map.getDouble(key1).shouldBeNull()
+        map.getInt(key1).shouldBeNull()
+        map.getString(key1).shouldBeNull()
 
         map.iteratorBoolean().shouldBeEmpty()
         map.iteratorDouble().shouldBeEmpty()
@@ -183,59 +178,40 @@ class LWWMapTest : StringSpec({
      * Call to iterator should return an iterator containing the value set by the second put.
      */
     "put, put, get/iterator" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val ts5 = client.tick()
-        val ts6 = client.tick()
-        val ts7 = client.tick()
-        val ts8 = client.tick()
-        val key = "key"
-        val valBoolean1 = true
-        val valBoolean2 = false
-        val valDouble1 = 12.3456789
-        val valDouble2 = 3.14159
-        val valInt1 = 42
-        val valInt2 = -100
-        val valString1 = "value1"
-        val valString2 = "value2"
-        val map = LWWMap()
+        val map = LWWMap(client1)
 
-        map.put(key, valBoolean1, ts1)
-        map.put(key, valDouble1, ts2)
-        map.put(key, valInt1, ts3)
-        map.put(key, valString1, ts4)
-        map.put(key, valBoolean2, ts5)
-        map.put(key, valDouble2, ts6)
-        map.put(key, valInt2, ts7)
-        map.put(key, valString2, ts8)
+        map.put(key1, valBoolean1)
+        map.put(key1, valDouble1)
+        map.put(key1, valInt1)
+        map.put(key1, valString1)
+        map.put(key1, valBoolean2)
+        map.put(key1, valDouble2)
+        map.put(key1, valInt2)
+        map.put(key1, valString2)
 
-        map.getBoolean(key).shouldBe(valBoolean2)
-        map.getDouble(key).shouldBe(valDouble2)
-        map.getInt(key).shouldBe(valInt2)
-        map.getString(key).shouldBe(valString2)
+        map.getBoolean(key1).shouldBe(valBoolean2)
+        map.getDouble(key1).shouldBe(valDouble2)
+        map.getInt(key1).shouldBe(valInt2)
+        map.getString(key1).shouldBe(valString2)
 
         val iteratorBoolean = map.iteratorBoolean()
         iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key, valBoolean2))
+        iteratorBoolean.next().shouldBe(Pair(key1, valBoolean2))
         iteratorBoolean.shouldBeEmpty()
 
         val iteratorDouble = map.iteratorDouble()
         iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key, valDouble2))
+        iteratorDouble.next().shouldBe(Pair(key1, valDouble2))
         iteratorDouble.shouldBeEmpty()
 
         val iteratorInt = map.iteratorInt()
         iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key, valInt2))
+        iteratorInt.next().shouldBe(Pair(key1, valInt2))
         iteratorInt.shouldBeEmpty()
 
         val iteratorString = map.iteratorString()
         iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key, valString2))
+        iteratorString.next().shouldBe(Pair(key1, valString2))
         iteratorString.shouldBeEmpty()
     }
 
@@ -245,48 +221,25 @@ class LWWMapTest : StringSpec({
      * Call to iterator should return an empty iterator.
      */
     "put, put, del, get/iterator" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val ts5 = client.tick()
-        val ts6 = client.tick()
-        val ts7 = client.tick()
-        val ts8 = client.tick()
-        val ts9 = client.tick()
-        val ts10 = client.tick()
-        val ts11 = client.tick()
-        val ts12 = client.tick()
-        val key = "key"
-        val valBoolean1 = true
-        val valBoolean2 = false
-        val valDouble1 = 12.3456789
-        val valDouble2 = 3.14159
-        val valInt1 = 42
-        val valInt2 = -100
-        val valString1 = "value1"
-        val valString2 = "value2"
-        val map = LWWMap()
+        val map = LWWMap(client1)
 
-        map.put(key, valBoolean1, ts1)
-        map.put(key, valDouble1, ts2)
-        map.put(key, valInt1, ts3)
-        map.put(key, valString1, ts4)
-        map.put(key, valBoolean2, ts5)
-        map.put(key, valDouble2, ts6)
-        map.put(key, valInt2, ts7)
-        map.put(key, valString2, ts8)
-        map.deleteBoolean(key, ts9)
-        map.deleteDouble(key, ts10)
-        map.deleteInt(key, ts11)
-        map.deleteString(key, ts12)
+        map.put(key1, valBoolean1)
+        map.put(key1, valDouble1)
+        map.put(key1, valInt1)
+        map.put(key1, valString1)
+        map.put(key1, valBoolean2)
+        map.put(key1, valDouble2)
+        map.put(key1, valInt2)
+        map.put(key1, valString2)
+        map.deleteBoolean(key1)
+        map.deleteDouble(key1)
+        map.deleteInt(key1)
+        map.deleteString(key1)
 
-        map.getBoolean(key).shouldBeNull()
-        map.getDouble(key).shouldBeNull()
-        map.getInt(key).shouldBeNull()
-        map.getString(key).shouldBeNull()
+        map.getBoolean(key1).shouldBeNull()
+        map.getDouble(key1).shouldBeNull()
+        map.getInt(key1).shouldBeNull()
+        map.getString(key1).shouldBeNull()
 
         map.iteratorBoolean().shouldBeEmpty()
         map.iteratorDouble().shouldBeEmpty()
@@ -300,74 +253,63 @@ class LWWMapTest : StringSpec({
      * Call to iterator should return an iterator containing the value set by the put registered in the first replica.
      */
     "R1: put; R2: merge and get/iterator" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val key = "key"
-        val valueBoolean = true
-        val valueDouble = 3.14159
-        val valueInt = 42
-        val valueString = "value"
-        val map1 = LWWMap()
-        val map2 = LWWMap()
+        val map1 = LWWMap(client1)
+        val map2 = LWWMap(client1)
 
-        map1.put(key, valueBoolean, ts1)
-        map1.put(key, valueDouble, ts2)
-        map1.put(key, valueInt, ts3)
-        map1.put(key, valueString, ts4)
+        map1.put(key1, valBoolean1)
+        map1.put(key1, valDouble1)
+        map1.put(key1, valInt1)
+        map1.put(key1, valString1)
         map1.merge(map2)
         map2.merge(map1)
 
-        map1.getBoolean(key).shouldBe(valueBoolean)
-        map1.getDouble(key).shouldBe(valueDouble)
-        map1.getInt(key).shouldBe(valueInt)
-        map1.getString(key).shouldBe(valueString)
-        map2.getBoolean(key).shouldBe(valueBoolean)
-        map2.getDouble(key).shouldBe(valueDouble)
-        map2.getInt(key).shouldBe(valueInt)
-        map2.getString(key).shouldBe(valueString)
+        map1.getBoolean(key1).shouldBe(valBoolean1)
+        map1.getDouble(key1).shouldBe(valDouble1)
+        map1.getInt(key1).shouldBe(valInt1)
+        map1.getString(key1).shouldBe(valString1)
+        map2.getBoolean(key1).shouldBe(valBoolean1)
+        map2.getDouble(key1).shouldBe(valDouble1)
+        map2.getInt(key1).shouldBe(valInt1)
+        map2.getString(key1).shouldBe(valString1)
 
         val iteratorBoolean1 = map1.iteratorBoolean()
         iteratorBoolean1.shouldHaveNext()
-        iteratorBoolean1.next().shouldBe(Pair(key, valueBoolean))
+        iteratorBoolean1.next().shouldBe(Pair(key1, valBoolean1))
         iteratorBoolean1.shouldBeEmpty()
 
         val iteratorDouble1 = map1.iteratorDouble()
         iteratorDouble1.shouldHaveNext()
-        iteratorDouble1.next().shouldBe(Pair(key, valueDouble))
+        iteratorDouble1.next().shouldBe(Pair(key1, valDouble1))
         iteratorDouble1.shouldBeEmpty()
 
         val iteratorInt1 = map1.iteratorInt()
         iteratorInt1.shouldHaveNext()
-        iteratorInt1.next().shouldBe(Pair(key, valueInt))
+        iteratorInt1.next().shouldBe(Pair(key1, valInt1))
         iteratorInt1.shouldBeEmpty()
 
         val iteratorString1 = map1.iteratorString()
         iteratorString1.shouldHaveNext()
-        iteratorString1.next().shouldBe(Pair(key, valueString))
+        iteratorString1.next().shouldBe(Pair(key1, valString1))
         iteratorString1.shouldBeEmpty()
 
         val iteratorBoolean2 = map2.iteratorBoolean()
         iteratorBoolean2.shouldHaveNext()
-        iteratorBoolean2.next().shouldBe(Pair(key, valueBoolean))
+        iteratorBoolean2.next().shouldBe(Pair(key1, valBoolean1))
         iteratorBoolean2.shouldBeEmpty()
 
         val iteratorDouble2 = map2.iteratorDouble()
         iteratorDouble2.shouldHaveNext()
-        iteratorDouble2.next().shouldBe(Pair(key, valueDouble))
+        iteratorDouble2.next().shouldBe(Pair(key1, valDouble1))
         iteratorDouble2.shouldBeEmpty()
 
         val iteratorInt2 = map2.iteratorInt()
         iteratorInt2.shouldHaveNext()
-        iteratorInt2.next().shouldBe(Pair(key, valueInt))
+        iteratorInt2.next().shouldBe(Pair(key1, valInt1))
         iteratorInt2.shouldBeEmpty()
 
         val iteratorString2 = map2.iteratorString()
         iteratorString2.shouldHaveNext()
-        iteratorString2.next().shouldBe(Pair(key, valueString))
+        iteratorString2.next().shouldBe(Pair(key1, valString1))
         iteratorString2.shouldBeEmpty()
     }
 
@@ -377,63 +319,42 @@ class LWWMapTest : StringSpec({
      * Call to iterator should return an iterator containing the value set by the put registered in the second replica.
      */
     "R1: put; R2: merge, put LWW, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts3 = client1.tick()
-        val ts5 = client1.tick()
-        val ts7 = client1.tick()
-        val ts2 = client2.tick()
-        val ts4 = client2.tick()
-        val ts6 = client2.tick()
-        val ts8 = client2.tick()
-        val key = "key"
-        val valBoolean1 = true
-        val valBoolean2 = false
-        val valDouble1 = 12.3456789
-        val valDouble2 = 3.14159
-        val valInt1 = 42
-        val valInt2 = -100
-        val valString1 = "value1"
-        val valString2 = "value2"
-        val map1 = LWWMap()
-        val map2 = LWWMap()
+        val map1 = LWWMap(client1)
+        val map2 = LWWMap(client2)
 
-        map1.put(key, valBoolean1, ts1)
-        map1.put(key, valDouble1, ts3)
-        map1.put(key, valInt1, ts5)
-        map1.put(key, valString1, ts7)
+        map1.put(key1, valBoolean1)
+        map1.put(key1, valDouble1)
+        map1.put(key1, valInt1)
+        map1.put(key1, valString1)
         map2.merge(map1)
-        map2.put(key, valBoolean2, ts2)
-        map2.put(key, valDouble2, ts4)
-        map2.put(key, valInt2, ts6)
-        map2.put(key, valString2, ts8)
+        map2.put(key1, valBoolean2)
+        map2.put(key1, valDouble2)
+        map2.put(key1, valInt2)
+        map2.put(key1, valString2)
 
-        map2.getBoolean(key).shouldBe(valBoolean2)
-        map2.getDouble(key).shouldBe(valDouble2)
-        map2.getInt(key).shouldBe(valInt2)
-        map2.getString(key).shouldBe(valString2)
+        map2.getBoolean(key1).shouldBe(valBoolean2)
+        map2.getDouble(key1).shouldBe(valDouble2)
+        map2.getInt(key1).shouldBe(valInt2)
+        map2.getString(key1).shouldBe(valString2)
 
         val iteratorBoolean = map2.iteratorBoolean()
         iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key, valBoolean2))
+        iteratorBoolean.next().shouldBe(Pair(key1, valBoolean2))
         iteratorBoolean.shouldBeEmpty()
 
         val iteratorDouble = map2.iteratorDouble()
         iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key, valDouble2))
+        iteratorDouble.next().shouldBe(Pair(key1, valDouble2))
         iteratorDouble.shouldBeEmpty()
 
         val iteratorInt = map2.iteratorInt()
         iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key, valInt2))
+        iteratorInt.next().shouldBe(Pair(key1, valInt2))
         iteratorInt.shouldBeEmpty()
 
         val iteratorString = map2.iteratorString()
         iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key, valString2))
+        iteratorString.next().shouldBe(Pair(key1, valString2))
         iteratorString.shouldBeEmpty()
     }
 
@@ -442,64 +363,43 @@ class LWWMapTest : StringSpec({
      * Call to get should return the value set by put registered in the second replica.
      * Call to iterator should return an iterator containing the value set by put registered in the second replica.
      */
-    "R1: put; R2: put LWW, merge, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts3 = client1.tick()
-        val ts5 = client1.tick()
-        val ts7 = client1.tick()
-        val ts2 = client2.tick()
-        val ts4 = client2.tick()
-        val ts6 = client2.tick()
-        val ts8 = client2.tick()
-        val key = "key"
-        val valBoolean1 = true
-        val valBoolean2 = false
-        val valDouble1 = 12.3456789
-        val valDouble2 = 3.14159
-        val valInt1 = 42
-        val valInt2 = -100
-        val valString1 = "value1"
-        val valString2 = "value2"
-        val map1 = LWWMap()
-        val map2 = LWWMap()
+    "R1: put | R2: put, merge 1->2, get/iterator" {
+        val map1 = LWWMap(client1)
+        val map2 = LWWMap(client2)
 
-        map1.put(key, valBoolean1, ts1)
-        map1.put(key, valDouble1, ts3)
-        map1.put(key, valInt1, ts5)
-        map1.put(key, valString1, ts7)
-        map2.put(key, valBoolean2, ts2)
-        map2.put(key, valDouble2, ts4)
-        map2.put(key, valInt2, ts6)
-        map2.put(key, valString2, ts8)
+        map1.put(key1, valBoolean1)
+        map1.put(key1, valDouble1)
+        map1.put(key1, valInt1)
+        map1.put(key1, valString1)
+        map2.put(key1, valBoolean2)
+        map2.put(key1, valDouble2)
+        map2.put(key1, valInt2)
+        map2.put(key1, valString2)
         map2.merge(map1)
 
-        map2.getBoolean(key).shouldBe(valBoolean2)
-        map2.getDouble(key).shouldBe(valDouble2)
-        map2.getInt(key).shouldBe(valInt2)
-        map2.getString(key).shouldBe(valString2)
+        map2.getBoolean(key1).shouldBe(valBoolean2)
+        map2.getDouble(key1).shouldBe(valDouble2)
+        map2.getInt(key1).shouldBe(valInt2)
+        map2.getString(key1).shouldBe(valString2)
 
         val iteratorBoolean = map2.iteratorBoolean()
         iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key, valBoolean2))
+        iteratorBoolean.next().shouldBe(Pair(key1, valBoolean2))
         iteratorBoolean.shouldBeEmpty()
 
         val iteratorDouble = map2.iteratorDouble()
         iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key, valDouble2))
+        iteratorDouble.next().shouldBe(Pair(key1, valDouble2))
         iteratorDouble.shouldBeEmpty()
 
         val iteratorInt = map2.iteratorInt()
         iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key, valInt2))
+        iteratorInt.next().shouldBe(Pair(key1, valInt2))
         iteratorInt.shouldBeEmpty()
 
         val iteratorString = map2.iteratorString()
         iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key, valString2))
+        iteratorString.next().shouldBe(Pair(key1, valString2))
         iteratorString.shouldBeEmpty()
     }
 
@@ -508,64 +408,43 @@ class LWWMapTest : StringSpec({
      * Call to get should return the value set by put registered in the first replica.
      * Call to iterator should return an iterator containing the value set by the put registered in the first replica.
      */
-    "R1: put LWW; R2: put, merge, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts3 = client1.tick()
-        val ts5 = client1.tick()
-        val ts7 = client1.tick()
-        val ts2 = client2.tick()
-        val ts4 = client2.tick()
-        val ts6 = client2.tick()
-        val ts8 = client2.tick()
-        val key = "key"
-        val valBoolean1 = true
-        val valBoolean2 = false
-        val valDouble1 = 12.3456789
-        val valDouble2 = 3.14159
-        val valInt1 = 42
-        val valInt2 = -100
-        val valString1 = "value1"
-        val valString2 = "value2"
-        val map1 = LWWMap()
-        val map2 = LWWMap()
+    "R1: put | R2: put, merge R2->R1, get/iterator" {
+        val map1 = LWWMap(client1)
+        val map2 = LWWMap(client2)
 
-        map2.put(key, valBoolean2, ts1)
-        map2.put(key, valDouble2, ts3)
-        map2.put(key, valInt2, ts5)
-        map2.put(key, valString2, ts7)
-        map1.put(key, valBoolean1, ts2)
-        map1.put(key, valDouble1, ts4)
-        map1.put(key, valInt1, ts6)
-        map1.put(key, valString1, ts8)
-        map2.merge(map1)
+        map1.put(key1, valBoolean1)
+        map1.put(key1, valDouble1)
+        map1.put(key1, valInt1)
+        map1.put(key1, valString1)
+        map2.put(key1, valBoolean2)
+        map2.put(key1, valDouble2)
+        map2.put(key1, valInt2)
+        map2.put(key1, valString2)
+        map1.merge(map2)
 
-        map2.getBoolean(key).shouldBe(valBoolean1)
-        map2.getDouble(key).shouldBe(valDouble1)
-        map2.getInt(key).shouldBe(valInt1)
-        map2.getString(key).shouldBe(valString1)
+        map1.getBoolean(key1).shouldBe(valBoolean2)
+        map1.getDouble(key1).shouldBe(valDouble2)
+        map1.getInt(key1).shouldBe(valInt2)
+        map1.getString(key1).shouldBe(valString2)
 
-        val iteratorBoolean2 = map2.iteratorBoolean()
+        val iteratorBoolean2 = map1.iteratorBoolean()
         iteratorBoolean2.shouldHaveNext()
-        iteratorBoolean2.next().shouldBe(Pair(key, valBoolean1))
+        iteratorBoolean2.next().shouldBe(Pair(key1, valBoolean2))
         iteratorBoolean2.shouldBeEmpty()
 
-        val iteratorDouble2 = map2.iteratorDouble()
+        val iteratorDouble2 = map1.iteratorDouble()
         iteratorDouble2.shouldHaveNext()
-        iteratorDouble2.next().shouldBe(Pair(key, valDouble1))
+        iteratorDouble2.next().shouldBe(Pair(key1, valDouble2))
         iteratorDouble2.shouldBeEmpty()
 
-        val iteratorInt2 = map2.iteratorInt()
+        val iteratorInt2 = map1.iteratorInt()
         iteratorInt2.shouldHaveNext()
-        iteratorInt2.next().shouldBe(Pair(key, valInt1))
+        iteratorInt2.next().shouldBe(Pair(key1, valInt2))
         iteratorInt2.shouldBeEmpty()
 
-        val iteratorString2 = map2.iteratorString()
+        val iteratorString2 = map1.iteratorString()
         iteratorString2.shouldHaveNext()
-        iteratorString2.next().shouldBe(Pair(key, valString1))
+        iteratorString2.next().shouldBe(Pair(key1, valString2))
         iteratorString2.shouldBeEmpty()
     }
 
@@ -575,52 +454,27 @@ class LWWMapTest : StringSpec({
      * Call to iterator should return an empty iterator.
      */
     "R1: put, delete LWW; R2: put, merge, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts3 = client1.tick()
-        val ts5 = client1.tick()
-        val ts7 = client1.tick()
-        val ts2 = client2.tick()
-        val ts4 = client2.tick()
-        val ts6 = client2.tick()
-        val ts8 = client2.tick()
-        val ts9 = client2.tick()
-        val ts10 = client2.tick()
-        val ts11 = client2.tick()
-        val ts12 = client2.tick()
-        val key = "key"
-        val valBoolean1 = true
-        val valBoolean2 = false
-        val valDouble1 = 12.3456789
-        val valDouble2 = 3.14159
-        val valInt1 = 42
-        val valInt2 = -100
-        val valString1 = "value1"
-        val valString2 = "value2"
-        val map1 = LWWMap()
-        val map2 = LWWMap()
+        val map1 = LWWMap(client1)
+        val map2 = LWWMap(client2)
 
-        map2.put(key, valBoolean2, ts1)
-        map2.put(key, valDouble2, ts3)
-        map2.put(key, valInt2, ts5)
-        map2.put(key, valString2, ts7)
-        map1.put(key, valBoolean1, ts2)
-        map1.put(key, valDouble1, ts4)
-        map1.put(key, valInt1, ts6)
-        map1.put(key, valString1, ts8)
-        map1.deleteBoolean(key, ts9)
-        map1.deleteDouble(key, ts10)
-        map1.deleteInt(key, ts11)
-        map1.deleteString(key, ts12)
+        map2.put(key1, valBoolean2)
+        map2.put(key1, valDouble2)
+        map2.put(key1, valInt2)
+        map2.put(key1, valString2)
+        map1.put(key1, valBoolean1)
+        map1.put(key1, valDouble1)
+        map1.put(key1, valInt1)
+        map1.put(key1, valString1)
+        map1.deleteBoolean(key1)
+        map1.deleteDouble(key1)
+        map1.deleteInt(key1)
+        map1.deleteString(key1)
         map2.merge(map1)
 
-        map2.getBoolean(key).shouldBeNull()
-        map2.getDouble(key).shouldBeNull()
-        map2.getInt(key).shouldBeNull()
-        map2.getString(key).shouldBeNull()
+        map2.getBoolean(key1).shouldBeNull()
+        map2.getDouble(key1).shouldBeNull()
+        map2.getInt(key1).shouldBeNull()
+        map2.getString(key1).shouldBeNull()
 
         map2.iteratorBoolean().shouldBeEmpty()
         map2.iteratorDouble().shouldBeEmpty()
@@ -634,53 +488,28 @@ class LWWMapTest : StringSpec({
      * Call to iterator should return an empty iterator.
      */
     "R1: put, delete LWW; R2: put, merge before delete, merge after delete, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts3 = client1.tick()
-        val ts5 = client1.tick()
-        val ts7 = client1.tick()
-        val ts2 = client2.tick()
-        val ts4 = client2.tick()
-        val ts6 = client2.tick()
-        val ts8 = client2.tick()
-        val ts9 = client2.tick()
-        val ts10 = client2.tick()
-        val ts11 = client2.tick()
-        val ts12 = client2.tick()
-        val key = "key"
-        val valBoolean1 = true
-        val valBoolean2 = false
-        val valDouble1 = 12.3456789
-        val valDouble2 = 3.14159
-        val valInt1 = 42
-        val valInt2 = -100
-        val valString1 = "value1"
-        val valString2 = "value2"
-        val map1 = LWWMap()
-        val map2 = LWWMap()
+        val map1 = LWWMap(client1)
+        val map2 = LWWMap(client2)
 
-        map2.put(key, valBoolean2, ts1)
-        map2.put(key, valDouble2, ts3)
-        map2.put(key, valInt2, ts5)
-        map2.put(key, valString2, ts7)
-        map1.put(key, valBoolean1, ts2)
-        map1.put(key, valDouble1, ts4)
-        map1.put(key, valInt1, ts6)
-        map1.put(key, valString1, ts8)
+        map2.put(key1, valBoolean2)
+        map2.put(key1, valDouble2)
+        map2.put(key1, valInt2)
+        map2.put(key1, valString2)
+        map1.put(key1, valBoolean1)
+        map1.put(key1, valDouble1)
+        map1.put(key1, valInt1)
+        map1.put(key1, valString1)
         map2.merge(map1)
-        map1.deleteBoolean(key, ts9)
-        map1.deleteDouble(key, ts10)
-        map1.deleteInt(key, ts11)
-        map1.deleteString(key, ts12)
+        map1.deleteBoolean(key1)
+        map1.deleteDouble(key1)
+        map1.deleteInt(key1)
+        map1.deleteString(key1)
         map2.merge(map1)
 
-        map2.getBoolean(key).shouldBeNull()
-        map2.getDouble(key).shouldBeNull()
-        map2.getInt(key).shouldBeNull()
-        map2.getString(key).shouldBeNull()
+        map2.getBoolean(key1).shouldBeNull()
+        map2.getDouble(key1).shouldBeNull()
+        map2.getInt(key1).shouldBeNull()
+        map2.getString(key1).shouldBeNull()
 
         map2.iteratorBoolean().shouldBeEmpty()
         map2.iteratorDouble().shouldBeEmpty()
@@ -694,75 +523,50 @@ class LWWMapTest : StringSpec({
      * Call to iterator should return an iterator containing the value set by the put registered in the second replica.
      */
     "R1: put, delete; R2: put LWW, merge, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts3 = client1.tick()
-        val ts5 = client1.tick()
-        val ts7 = client1.tick()
-        val ts9 = client1.tick()
-        val ts11 = client1.tick()
-        val ts13 = client1.tick()
-        val ts15 = client1.tick()
-        client2.tick()
-        client2.tick()
-        client2.tick()
-        client2.tick()
-        val ts10 = client2.tick()
-        val ts12 = client2.tick()
-        val ts14 = client2.tick()
-        val ts16 = client2.tick()
-        val key = "key"
-        val valBoolean1 = true
-        val valBoolean2 = false
-        val valDouble1 = 12.3456789
-        val valDouble2 = 3.14159
-        val valInt1 = 42
-        val valInt2 = -100
-        val valString1 = "value1"
-        val valString2 = "value2"
-        val map1 = LWWMap()
-        val map2 = LWWMap()
+        val map1 = LWWMap(client1)
+        val map2 = LWWMap(client2)
 
-        map1.put(key, valBoolean1, ts1)
-        map1.put(key, valDouble1, ts3)
-        map1.put(key, valInt1, ts5)
-        map1.put(key, valString1, ts7)
-        map1.deleteBoolean(key, ts9)
-        map1.deleteDouble(key, ts11)
-        map1.deleteInt(key, ts13)
-        map1.deleteString(key, ts15)
-        map2.put(key, valBoolean2, ts10)
-        map2.put(key, valDouble2, ts12)
-        map2.put(key, valInt2, ts14)
-        map2.put(key, valString2, ts16)
+        map1.put(key1, valBoolean1)
+        map1.put(key1, valDouble1)
+        map1.put(key1, valInt1)
+        map1.put(key1, valString1)
+        map1.deleteBoolean(key1)
+        map1.deleteDouble(key1)
+        map1.deleteInt(key1)
+        map1.deleteString(key1)
+        client2.tick()
+        client2.tick()
+        client2.tick()
+        client2.tick()
+        map2.put(key1, valBoolean2)
+        map2.put(key1, valDouble2)
+        map2.put(key1, valInt2)
+        map2.put(key1, valString2)
         map2.merge(map1)
 
-        map2.getBoolean(key).shouldBe(valBoolean2)
-        map2.getDouble(key).shouldBe(valDouble2)
-        map2.getInt(key).shouldBe(valInt2)
-        map2.getString(key).shouldBe(valString2)
+        map2.getBoolean(key1).shouldBe(valBoolean2)
+        map2.getDouble(key1).shouldBe(valDouble2)
+        map2.getInt(key1).shouldBe(valInt2)
+        map2.getString(key1).shouldBe(valString2)
 
         val iteratorBoolean = map2.iteratorBoolean()
         iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key, valBoolean2))
+        iteratorBoolean.next().shouldBe(Pair(key1, valBoolean2))
         iteratorBoolean.shouldBeEmpty()
 
         val iteratorDouble = map2.iteratorDouble()
         iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key, valDouble2))
+        iteratorDouble.next().shouldBe(Pair(key1, valDouble2))
         iteratorDouble.shouldBeEmpty()
 
         val iteratorInt = map2.iteratorInt()
         iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key, valInt2))
+        iteratorInt.next().shouldBe(Pair(key1, valInt2))
         iteratorInt.shouldBeEmpty()
 
         val iteratorString = map2.iteratorString()
         iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key, valString2))
+        iteratorString.next().shouldBe(Pair(key1, valString2))
         iteratorString.shouldBeEmpty()
     }
 
@@ -772,76 +576,51 @@ class LWWMapTest : StringSpec({
      * Call to iterator should return an iterator containing the value set by the put registered in the second replica.
      */
     "R1: put, delete; R2: put LWW, merge before delete, merge after delete, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val ts1 = client1.tick()
-        val ts3 = client1.tick()
-        val ts5 = client1.tick()
-        val ts7 = client1.tick()
-        val ts9 = client1.tick()
-        val ts11 = client1.tick()
-        val ts13 = client1.tick()
-        val ts15 = client1.tick()
-        client2.tick()
-        client2.tick()
-        client2.tick()
-        client2.tick()
-        val ts10 = client2.tick()
-        val ts12 = client2.tick()
-        val ts14 = client2.tick()
-        val ts16 = client2.tick()
-        val key = "key"
-        val valBoolean1 = true
-        val valBoolean2 = false
-        val valDouble1 = 12.3456789
-        val valDouble2 = 3.14159
-        val valInt1 = 42
-        val valInt2 = -100
-        val valString1 = "value1"
-        val valString2 = "value2"
-        val map1 = LWWMap()
-        val map2 = LWWMap()
+        val map1 = LWWMap(client1)
+        val map2 = LWWMap(client2)
 
-        map1.put(key, valBoolean1, ts1)
-        map1.put(key, valDouble1, ts3)
-        map1.put(key, valInt1, ts5)
-        map1.put(key, valString1, ts7)
-        map2.put(key, valBoolean2, ts10)
-        map2.put(key, valDouble2, ts12)
-        map2.put(key, valInt2, ts14)
-        map2.put(key, valString2, ts16)
+        map1.put(key1, valBoolean1)
+        map1.put(key1, valDouble1)
+        map1.put(key1, valInt1)
+        map1.put(key1, valString1)
+        client2.tick()
+        client2.tick()
+        client2.tick()
+        client2.tick()
+        map2.put(key1, valBoolean2)
+        map2.put(key1, valDouble2)
+        map2.put(key1, valInt2)
+        map2.put(key1, valString2)
         map2.merge(map1)
-        map1.deleteBoolean(key, ts9)
-        map1.deleteDouble(key, ts11)
-        map1.deleteInt(key, ts13)
-        map1.deleteString(key, ts15)
+        map1.deleteBoolean(key1)
+        map1.deleteDouble(key1)
+        map1.deleteInt(key1)
+        map1.deleteString(key1)
         map2.merge(map1)
 
-        map2.getBoolean(key).shouldBe(valBoolean2)
-        map2.getDouble(key).shouldBe(valDouble2)
-        map2.getInt(key).shouldBe(valInt2)
-        map2.getString(key).shouldBe(valString2)
+        map2.getBoolean(key1).shouldBe(valBoolean2)
+        map2.getDouble(key1).shouldBe(valDouble2)
+        map2.getInt(key1).shouldBe(valInt2)
+        map2.getString(key1).shouldBe(valString2)
 
         val iteratorBoolean = map2.iteratorBoolean()
         iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key, valBoolean2))
+        iteratorBoolean.next().shouldBe(Pair(key1, valBoolean2))
         iteratorBoolean.shouldBeEmpty()
 
         val iteratorDouble = map2.iteratorDouble()
         iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key, valDouble2))
+        iteratorDouble.next().shouldBe(Pair(key1, valDouble2))
         iteratorDouble.shouldBeEmpty()
 
         val iteratorInt = map2.iteratorInt()
         iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key, valInt2))
+        iteratorInt.next().shouldBe(Pair(key1, valInt2))
         iteratorInt.shouldBeEmpty()
 
         val iteratorString = map2.iteratorString()
         iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key, valString2))
+        iteratorString.next().shouldBe(Pair(key1, valString2))
         iteratorString.shouldBeEmpty()
     }
 
@@ -850,57 +629,30 @@ class LWWMapTest : StringSpec({
      * Call to get should return null.
      * Call to iterator should return an empty iterator.
      */
-    "R1: put; R2: put; R3: merge R1, delete LWW, merge R2, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val uid3 = ClientUId("clientid3")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val client3 = SimpleEnvironment(uid3)
-        val ts1 = client1.tick()
-        val ts4 = client1.tick()
-        val ts7 = client1.tick()
-        val ts10 = client1.tick()
-        val ts2 = client2.tick()
-        val ts5 = client2.tick()
-        val ts8 = client2.tick()
-        val ts11 = client2.tick()
-        val ts3 = client3.tick()
-        val ts6 = client3.tick()
-        val ts9 = client3.tick()
-        val ts12 = client3.tick()
-        val key = "key"
-        val valBoolean1 = true
-        val valBoolean2 = false
-        val valDouble1 = 12.3456789
-        val valDouble2 = 3.14159
-        val valInt1 = 42
-        val valInt2 = -100
-        val valString1 = "value1"
-        val valString2 = "value2"
-        val map1 = LWWMap()
-        val map2 = LWWMap()
-        val map3 = LWWMap()
+    "R1: put | R2: put; merge R1->R3, R3: delete, merge R2->R3" {
+        val map1 = LWWMap(client1)
+        val map2 = LWWMap(client2)
+        val map3 = LWWMap(client3)
 
-        map1.put(key, valBoolean1, ts1)
-        map1.put(key, valDouble1, ts4)
-        map1.put(key, valInt1, ts7)
-        map1.put(key, valString1, ts10)
+        map1.put(key1, valBoolean1)
+        map1.put(key1, valDouble1)
+        map1.put(key1, valInt1)
+        map1.put(key1, valString1)
+        map2.put(key1, valBoolean2)
+        map2.put(key1, valDouble2)
+        map2.put(key1, valInt2)
+        map2.put(key1, valString2)
         map3.merge(map1)
-        map2.put(key, valBoolean2, ts2)
-        map2.put(key, valDouble2, ts5)
-        map2.put(key, valInt2, ts8)
-        map2.put(key, valString2, ts11)
-        map3.deleteBoolean(key, ts3)
-        map3.deleteDouble(key, ts6)
-        map3.deleteInt(key, ts9)
-        map3.deleteString(key, ts12)
+        map3.deleteBoolean(key1)
+        map3.deleteDouble(key1)
+        map3.deleteInt(key1)
+        map3.deleteString(key1)
         map3.merge(map2)
 
-        map3.getBoolean(key).shouldBeNull()
-        map3.getDouble(key).shouldBeNull()
-        map3.getInt(key).shouldBeNull()
-        map3.getString(key).shouldBeNull()
+        map3.getBoolean(key1).shouldBeNull()
+        map3.getDouble(key1).shouldBeNull()
+        map3.getInt(key1).shouldBeNull()
+        map3.getString(key1).shouldBeNull()
 
         map3.iteratorBoolean().shouldBeEmpty()
         map3.iteratorDouble().shouldBeEmpty()
@@ -913,76 +665,50 @@ class LWWMapTest : StringSpec({
      * Call to get should return the value set by put registered in the second replica.
      * Call to iterator should return an iterator containing the value set by the put registered in the second replica.
      */
-    "R1: put; R2: put LWW; R3: merge R1, delete, merge R2, get/iterator" {
-        val uid1 = ClientUId("clientid1")
-        val uid2 = ClientUId("clientid2")
-        val uid3 = ClientUId("clientid3")
-        val client1 = SimpleEnvironment(uid1)
-        val client2 = SimpleEnvironment(uid2)
-        val client3 = SimpleEnvironment(uid3)
-        val ts1 = client1.tick()
-        val ts4 = client1.tick()
-        val ts7 = client1.tick()
-        val ts10 = client1.tick()
-        val ts2 = client2.tick()
-        val ts5 = client2.tick()
-        val ts8 = client2.tick()
-        val ts11 = client2.tick()
-        val ts3 = client3.tick()
-        val ts6 = client3.tick()
-        val ts9 = client3.tick()
-        val ts12 = client3.tick()
-        val key = "key"
-        val valBoolean1 = true
-        val valBoolean2 = false
-        val valDouble1 = 12.3456789
-        val valDouble2 = 3.14159
-        val valInt1 = 42
-        val valInt2 = -100
-        val valString1 = "value1"
-        val valString2 = "value2"
-        val map1 = LWWMap()
-        val map2 = LWWMap()
-        val map3 = LWWMap()
+    "R1: put | R3: put; merge R1->R2, R2: delete, merge R3->R2" {
+        val map1 = LWWMap(client1)
+        val map2 = LWWMap(client2)
+        val map3 = LWWMap(client3)
 
-        map1.put(key, valBoolean1, ts1)
-        map1.put(key, valDouble1, ts4)
-        map1.put(key, valInt1, ts7)
-        map1.put(key, valString1, ts10)
-        map3.merge(map1)
-        map3.deleteBoolean(key, ts2)
-        map3.deleteDouble(key, ts5)
-        map3.deleteInt(key, ts8)
-        map3.deleteString(key, ts11)
-        map2.put(key, valBoolean2, ts3)
-        map2.put(key, valDouble2, ts6)
-        map2.put(key, valInt2, ts9)
-        map2.put(key, valString2, ts12)
-        map3.merge(map2)
+        map1.put(key1, valBoolean1)
+        map1.put(key1, valDouble1)
+        map1.put(key1, valInt1)
+        map1.put(key1, valString1)
+        map3.put(key1, valBoolean2)
+        map3.put(key1, valDouble2)
+        map3.put(key1, valInt2)
+        map3.put(key1, valString2)
+        map2.merge(map1)
+        // environment not updated by merge: next deletes lose
+        map2.deleteBoolean(key1)
+        map2.deleteDouble(key1)
+        map2.deleteInt(key1)
+        map2.deleteString(key1)
+        map2.merge(map3)
 
-        map3.getBoolean(key).shouldBe(valBoolean2)
-        map3.getDouble(key).shouldBe(valDouble2)
-        map3.getInt(key).shouldBe(valInt2)
-        map3.getString(key).shouldBe(valString2)
+        map2.getBoolean(key1).shouldBe(valBoolean2)
+        map2.getDouble(key1).shouldBe(valDouble2)
+        map2.getInt(key1).shouldBe(valInt2)
+        map2.getString(key1).shouldBe(valString2)
 
-        val iteratorBoolean = map3.iteratorBoolean()
+        val iteratorBoolean = map2.iteratorBoolean()
         iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key, valBoolean2))
+        iteratorBoolean.next().shouldBe(Pair(key1, valBoolean2))
         iteratorBoolean.shouldBeEmpty()
 
-        val iteratorDouble = map3.iteratorDouble()
+        val iteratorDouble = map2.iteratorDouble()
         iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key, valDouble2))
+        iteratorDouble.next().shouldBe(Pair(key1, valDouble2))
         iteratorDouble.shouldBeEmpty()
 
-        val iteratorInt = map3.iteratorInt()
+        val iteratorInt = map2.iteratorInt()
         iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key, valInt2))
+        iteratorInt.next().shouldBe(Pair(key1, valInt2))
         iteratorInt.shouldBeEmpty()
 
-        val iteratorString = map3.iteratorString()
+        val iteratorString = map2.iteratorString()
         iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key, valString2))
+        iteratorString.next().shouldBe(Pair(key1, valString2))
         iteratorString.shouldBeEmpty()
     }
 
@@ -992,24 +718,22 @@ class LWWMapTest : StringSpec({
      * Call to iterator should return an iterator containing the value set by the put registered in the first replica.
      */
     "use deltas returned by put" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val key = "key"
-        val valueBoolean = true
-        val valueDouble = 3.14159
-        val valueInt = 42
-        val valueString = "value"
-        val map1 = LWWMap()
-        val map2 = LWWMap()
+        val map1 = LWWMap(client1)
+        val map2 = LWWMap(client1)
 
-        val opBoolean = map1.put(key, valueBoolean, ts1)
-        val opDouble = map1.put(key, valueDouble, ts2)
-        val opInt = map1.put(key, valueInt, ts3)
-        val opString = map1.put(key, valueString, ts4)
+        val returnedOpBoolean = map1.put(key1, valBoolean1)
+        val opBoolean = client1.popWrite().second
+        returnedOpBoolean.shouldBe(opBoolean)
+        val returnedOpDouble = map1.put(key1, valDouble1)
+        val opDouble = client1.popWrite().second
+        returnedOpDouble.shouldBe(opDouble)
+        val returnedOpInt = map1.put(key1, valInt1)
+        val opInt = client1.popWrite().second
+        returnedOpInt.shouldBe(opInt)
+        val returnedOpString = map1.put(key1, valString1)
+        val opString = client1.popWrite().second
+        returnedOpString.shouldBe(opString)
+
         map1.merge(opBoolean)
         map1.merge(opDouble)
         map1.merge(opInt)
@@ -1019,53 +743,53 @@ class LWWMapTest : StringSpec({
         map2.merge(opInt)
         map2.merge(opString)
 
-        map1.getBoolean(key).shouldBe(valueBoolean)
-        map1.getDouble(key).shouldBe(valueDouble)
-        map1.getInt(key).shouldBe(valueInt)
-        map1.getString(key).shouldBe(valueString)
-        map2.getBoolean(key).shouldBe(valueBoolean)
-        map2.getDouble(key).shouldBe(valueDouble)
-        map2.getInt(key).shouldBe(valueInt)
-        map2.getString(key).shouldBe(valueString)
+        map1.getBoolean(key1).shouldBe(valBoolean1)
+        map1.getDouble(key1).shouldBe(valDouble1)
+        map1.getInt(key1).shouldBe(valInt1)
+        map1.getString(key1).shouldBe(valString1)
+        map2.getBoolean(key1).shouldBe(valBoolean1)
+        map2.getDouble(key1).shouldBe(valDouble1)
+        map2.getInt(key1).shouldBe(valInt1)
+        map2.getString(key1).shouldBe(valString1)
 
         val iteratorBoolean1 = map1.iteratorBoolean()
         iteratorBoolean1.shouldHaveNext()
-        iteratorBoolean1.next().shouldBe(Pair(key, valueBoolean))
+        iteratorBoolean1.next().shouldBe(Pair(key1, valBoolean1))
         iteratorBoolean1.shouldBeEmpty()
 
         val iteratorDouble1 = map1.iteratorDouble()
         iteratorDouble1.shouldHaveNext()
-        iteratorDouble1.next().shouldBe(Pair(key, valueDouble))
+        iteratorDouble1.next().shouldBe(Pair(key1, valDouble1))
         iteratorDouble1.shouldBeEmpty()
 
         val iteratorInt1 = map1.iteratorInt()
         iteratorInt1.shouldHaveNext()
-        iteratorInt1.next().shouldBe(Pair(key, valueInt))
+        iteratorInt1.next().shouldBe(Pair(key1, valInt1))
         iteratorInt1.shouldBeEmpty()
 
         val iteratorString1 = map1.iteratorString()
         iteratorString1.shouldHaveNext()
-        iteratorString1.next().shouldBe(Pair(key, valueString))
+        iteratorString1.next().shouldBe(Pair(key1, valString1))
         iteratorString1.shouldBeEmpty()
 
         val iteratorBoolean2 = map2.iteratorBoolean()
         iteratorBoolean2.shouldHaveNext()
-        iteratorBoolean2.next().shouldBe(Pair(key, valueBoolean))
+        iteratorBoolean2.next().shouldBe(Pair(key1, valBoolean1))
         iteratorBoolean2.shouldBeEmpty()
 
         val iteratorDouble2 = map2.iteratorDouble()
         iteratorDouble2.shouldHaveNext()
-        iteratorDouble2.next().shouldBe(Pair(key, valueDouble))
+        iteratorDouble2.next().shouldBe(Pair(key1, valDouble1))
         iteratorDouble2.shouldBeEmpty()
 
         val iteratorInt2 = map2.iteratorInt()
         iteratorInt2.shouldHaveNext()
-        iteratorInt2.next().shouldBe(Pair(key, valueInt))
+        iteratorInt2.next().shouldBe(Pair(key1, valInt1))
         iteratorInt2.shouldBeEmpty()
 
         val iteratorString2 = map2.iteratorString()
         iteratorString2.shouldHaveNext()
-        iteratorString2.next().shouldBe(Pair(key, valueString))
+        iteratorString2.next().shouldBe(Pair(key1, valString1))
         iteratorString2.shouldBeEmpty()
     }
 
@@ -1075,32 +799,34 @@ class LWWMapTest : StringSpec({
      * Call to iterator should return an empty iterator.
      */
     "use deltas returned by put and delete" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val ts5 = client.tick()
-        val ts6 = client.tick()
-        val ts7 = client.tick()
-        val ts8 = client.tick()
-        val key = "key"
-        val valueBoolean = true
-        val valueDouble = 3.14159
-        val valueInt = 42
-        val valueString = "value"
-        val map1 = LWWMap()
-        val map2 = LWWMap()
+        val map1 = LWWMap(client1)
+        val map2 = LWWMap(client1)
 
-        val putOpBoolean = map1.put(key, valueBoolean, ts1)
-        val putOpDouble = map1.put(key, valueDouble, ts2)
-        val putOpInt = map1.put(key, valueInt, ts3)
-        val putOpString = map1.put(key, valueString, ts4)
-        val delOpBoolean = map1.deleteBoolean(key, ts5)
-        val delOpDouble = map1.deleteDouble(key, ts6)
-        val delOpInt = map1.deleteInt(key, ts7)
-        val delOpString = map1.deleteString(key, ts8)
+        val returnedPutOpBoolean = map1.put(key1, valBoolean1)
+        val putOpBoolean = client1.popWrite().second
+        returnedPutOpBoolean.shouldBe(putOpBoolean)
+        val returnedPutOpDouble = map1.put(key1, valDouble1)
+        val putOpDouble = client1.popWrite().second
+        returnedPutOpDouble.shouldBe(putOpDouble)
+        val returnedPutOpInt = map1.put(key1, valInt1)
+        val putOpInt = client1.popWrite().second
+        returnedPutOpInt.shouldBe(putOpInt)
+        val returnedPutOpString = map1.put(key1, valString1)
+        val putOpString = client1.popWrite().second
+        returnedPutOpString.shouldBe(putOpString)
+        val returnedDelOpBoolean = map1.deleteBoolean(key1)
+        val delOpBoolean = client1.popWrite().second
+        returnedDelOpBoolean.shouldBe(delOpBoolean)
+        val returnedDelOpDouble = map1.deleteDouble(key1)
+        val delOpDouble = client1.popWrite().second
+        returnedDelOpDouble.shouldBe(delOpDouble)
+        val returnedDelOpInt = map1.deleteInt(key1)
+        val delOpInt = client1.popWrite().second
+        returnedDelOpInt.shouldBe(delOpInt)
+        val returnedDelOpString = map1.deleteString(key1)
+        val delOpString = client1.popWrite().second
+        returnedDelOpString.shouldBe(delOpString)
+
         map1.merge(putOpBoolean)
         map1.merge(putOpDouble)
         map1.merge(putOpInt)
@@ -1118,14 +844,14 @@ class LWWMapTest : StringSpec({
         map2.merge(delOpInt)
         map2.merge(delOpString)
 
-        map1.getBoolean(key).shouldBeNull()
-        map1.getDouble(key).shouldBeNull()
-        map1.getInt(key).shouldBeNull()
-        map1.getString(key).shouldBeNull()
-        map2.getBoolean(key).shouldBeNull()
-        map2.getDouble(key).shouldBeNull()
-        map2.getInt(key).shouldBeNull()
-        map2.getString(key).shouldBeNull()
+        map1.getBoolean(key1).shouldBeNull()
+        map1.getDouble(key1).shouldBeNull()
+        map1.getInt(key1).shouldBeNull()
+        map1.getString(key1).shouldBeNull()
+        map2.getBoolean(key1).shouldBeNull()
+        map2.getDouble(key1).shouldBeNull()
+        map2.getInt(key1).shouldBeNull()
+        map2.getString(key1).shouldBeNull()
 
         map1.iteratorBoolean().shouldBeEmpty()
         map1.iteratorDouble().shouldBeEmpty()
@@ -1143,45 +869,46 @@ class LWWMapTest : StringSpec({
      * Call to iterator should return an iterator containing the values set by the puts registered in the first replica.
      */
     "merge deltas returned by put operations" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val ts5 = client.tick()
-        val ts6 = client.tick()
-        val ts7 = client.tick()
-        val ts8 = client.tick()
-        val ts9 = client.tick()
-        val ts10 = client.tick()
-        val ts11 = client.tick()
-        val ts12 = client.tick()
-        val key1 = "key1"
-        val key2 = "key2"
-        val valBoolean1 = true
-        val valBoolean2 = false
-        val valDouble1 = 12.3456789
-        val valDouble2 = 3.14159
-        val valInt1 = 42
-        val valInt2 = -100
-        val valString1 = "value1"
-        val valString2 = "value2"
-        val map1 = LWWMap()
-        val map2 = LWWMap()
+        val map1 = LWWMap(client1)
+        val map2 = LWWMap(client1)
 
-        val opBoolean1 = map1.put(key1, valBoolean1, ts1)
-        val opDouble1 = map1.put(key1, valDouble1, ts2)
-        val opInt1 = map1.put(key1, valInt1, ts3)
-        val opString1 = map1.put(key1, valString1, ts4)
-        val opBoolean2 = map1.put(key1, valBoolean2, ts5)
-        val opDouble2 = map1.put(key1, valDouble2, ts6)
-        val opInt2 = map1.put(key1, valInt2, ts7)
-        val opString2 = map1.put(key1, valString2, ts8)
-        val opBoolean3 = map1.put(key2, valBoolean1, ts9)
-        val opDouble3 = map1.put(key2, valDouble1, ts10)
-        val opInt3 = map1.put(key2, valInt1, ts11)
-        val opString3 = map1.put(key2, valString1, ts12)
+        val returnedOpBoolean1 = map1.put(key1, valBoolean1)
+        val opBoolean1 = client1.popWrite().second
+        returnedOpBoolean1.shouldBe(opBoolean1)
+        val returnedOpDouble1 = map1.put(key1, valDouble1)
+        val opDouble1 = client1.popWrite().second
+        returnedOpDouble1.shouldBe(opDouble1)
+        val returnedOpInt1 = map1.put(key1, valInt1)
+        val opInt1 = client1.popWrite().second
+        returnedOpInt1.shouldBe(opInt1)
+        val returnedOpString1 = map1.put(key1, valString1)
+        val opString1 = client1.popWrite().second
+        returnedOpString1.shouldBe(opString1)
+        val returnedOpBoolean2 = map1.put(key1, valBoolean2)
+        val opBoolean2 = client1.popWrite().second
+        returnedOpBoolean2.shouldBe(opBoolean2)
+        val returnedOpDouble2 = map1.put(key1, valDouble2)
+        val opDouble2 = client1.popWrite().second
+        returnedOpDouble2.shouldBe(opDouble2)
+        val returnedOpInt2 = map1.put(key1, valInt2)
+        val opInt2 = client1.popWrite().second
+        returnedOpInt2.shouldBe(opInt2)
+        val returnedOpString2 = map1.put(key1, valString2)
+        val opString2 = client1.popWrite().second
+        returnedOpString2.shouldBe(opString2)
+        val returnedOpBoolean3 = map1.put(key2, valBoolean1)
+        val opBoolean3 = client1.popWrite().second
+        returnedOpBoolean3.shouldBe(opBoolean3)
+        val returnedOpDouble3 = map1.put(key2, valDouble1)
+        val opDouble3 = client1.popWrite().second
+        returnedOpDouble3.shouldBe(opDouble3)
+        val returnedOpInt3 = map1.put(key2, valInt1)
+        val opInt3 = client1.popWrite().second
+        returnedOpInt3.shouldBe(opInt3)
+        val returnedOpString3 = map1.put(key2, valString1)
+        val opString3 = client1.popWrite().second
+        returnedOpString3.shouldBe(opString3)
+
         opDouble3.merge(opString3)
         opBoolean3.merge(opDouble3)
         opInt3.merge(opBoolean3)
@@ -1240,41 +967,46 @@ class LWWMapTest : StringSpec({
      * Call to iterator should return an iterator containing the value set by put with key2.
      */
     "merge deltas returned by put and delete operations" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val ts5 = client.tick()
-        val ts6 = client.tick()
-        val ts7 = client.tick()
-        val ts8 = client.tick()
-        val ts9 = client.tick()
-        val ts10 = client.tick()
-        val ts11 = client.tick()
-        val ts12 = client.tick()
-        val key1 = "key1"
-        val key2 = "key2"
-        val valueBoolean = true
-        val valueDouble = 3.14159
-        val valueInt = 42
-        val valueString = "value"
-        val map1 = LWWMap()
-        val map2 = LWWMap()
+        val map1 = LWWMap(client1)
+        val map2 = LWWMap(client1)
 
-        val opBoolean1 = map1.put(key1, valueBoolean, ts1)
-        val opDouble1 = map1.put(key1, valueDouble, ts2)
-        val opInt1 = map1.put(key1, valueInt, ts3)
-        val opString1 = map1.put(key1, valueString, ts4)
-        val opBoolean2 = map1.deleteBoolean(key1, ts5)
-        val opDouble2 = map1.deleteDouble(key1, ts6)
-        val opInt2 = map1.deleteInt(key1, ts7)
-        val opString2 = map1.deleteString(key1, ts8)
-        val opBoolean3 = map1.put(key2, valueBoolean, ts9)
-        val opDouble3 = map1.put(key2, valueDouble, ts10)
-        val opInt3 = map1.put(key2, valueInt, ts11)
-        val opString3 = map1.put(key2, valueString, ts12)
+        val returnedOpBoolean1 = map1.put(key1, valBoolean1)
+        val opBoolean1 = client1.popWrite().second
+        returnedOpBoolean1.shouldBe(opBoolean1)
+        val returnedOpDouble1 = map1.put(key1, valDouble1)
+        val opDouble1 = client1.popWrite().second
+        returnedOpDouble1.shouldBe(opDouble1)
+        val returnedOpInt1 = map1.put(key1, valInt1)
+        val opInt1 = client1.popWrite().second
+        returnedOpInt1.shouldBe(opInt1)
+        val returnedOpString1 = map1.put(key1, valString1)
+        val opString1 = client1.popWrite().second
+        returnedOpString1.shouldBe(opString1)
+        val returnedOpBoolean2 = map1.deleteBoolean(key1)
+        val opBoolean2 = client1.popWrite().second
+        returnedOpBoolean2.shouldBe(opBoolean2)
+        val returnedOpDouble2 = map1.deleteDouble(key1)
+        val opDouble2 = client1.popWrite().second
+        returnedOpDouble2.shouldBe(opDouble2)
+        val returnedOpInt2 = map1.deleteInt(key1)
+        val opInt2 = client1.popWrite().second
+        returnedOpInt2.shouldBe(opInt2)
+        val returnedOpString2 = map1.deleteString(key1)
+        val opString2 = client1.popWrite().second
+        returnedOpString2.shouldBe(opString2)
+        val returnedOpBoolean3 = map1.put(key2, valBoolean1)
+        val opBoolean3 = client1.popWrite().second
+        returnedOpBoolean3.shouldBe(opBoolean3)
+        val returnedOpDouble3 = map1.put(key2, valDouble1)
+        val opDouble3 = client1.popWrite().second
+        returnedOpDouble3.shouldBe(opDouble3)
+        val returnedOpInt3 = map1.put(key2, valInt1)
+        val opInt3 = client1.popWrite().second
+        returnedOpInt3.shouldBe(opInt3)
+        val returnedOpString3 = map1.put(key2, valString1)
+        val opString3 = client1.popWrite().second
+        returnedOpString3.shouldBe(opString3)
+
         opDouble3.merge(opString3)
         opBoolean3.merge(opDouble3)
         opInt3.merge(opBoolean3)
@@ -1293,29 +1025,29 @@ class LWWMapTest : StringSpec({
         map2.getDouble(key1).shouldBeNull()
         map2.getInt(key1).shouldBeNull()
         map2.getString(key1).shouldBeNull()
-        map2.getBoolean(key2).shouldBe(valueBoolean)
-        map2.getDouble(key2).shouldBe(valueDouble)
-        map2.getInt(key2).shouldBe(valueInt)
-        map2.getString(key2).shouldBe(valueString)
+        map2.getBoolean(key2).shouldBe(valBoolean1)
+        map2.getDouble(key2).shouldBe(valDouble1)
+        map2.getInt(key2).shouldBe(valInt1)
+        map2.getString(key2).shouldBe(valString1)
 
         val iteratorBoolean = map2.iteratorBoolean()
         iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key2, valueBoolean))
+        iteratorBoolean.next().shouldBe(Pair(key2, valBoolean1))
         iteratorBoolean.shouldBeEmpty()
 
         val iteratorDouble = map2.iteratorDouble()
         iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key2, valueDouble))
+        iteratorDouble.next().shouldBe(Pair(key2, valDouble1))
         iteratorDouble.shouldBeEmpty()
 
         val iteratorInt = map2.iteratorInt()
         iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key2, valueInt))
+        iteratorInt.next().shouldBe(Pair(key2, valInt1))
         iteratorInt.shouldBeEmpty()
 
         val iteratorString = map2.iteratorString()
         iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key2, valueString))
+        iteratorString.next().shouldBe(Pair(key2, valString1))
         iteratorString.shouldBeEmpty()
     }
 
@@ -1327,53 +1059,27 @@ class LWWMapTest : StringSpec({
      * after w.r.t the given context.
      */
     "generate delta" {
-        val uid = ClientUId("clientid1")
-        val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val ts5 = client.tick()
-        val ts6 = client.tick()
-        val ts7 = client.tick()
-        val ts8 = client.tick()
-        val ts9 = client.tick()
-        val ts10 = client.tick()
-        val ts11 = client.tick()
-        val ts12 = client.tick()
-        val ts13 = client.tick()
-        val ts14 = client.tick()
-        val ts15 = client.tick()
-        val ts16 = client.tick()
         val vv = VersionVector()
-        vv.update(ts8)
-        val key1 = "key1"
-        val key2 = "key2"
-        val key3 = "key3"
-        val key4 = "key4"
-        val valueBoolean = true
-        val valueDouble = 3.14159
-        val valueInt = 42
-        val valueString = "value"
-        val map1 = LWWMap()
-        val map2 = LWWMap()
+        val map1 = LWWMap(client1)
+        val map2 = LWWMap(client1)
 
-        map1.put(key1, valueBoolean, ts1)
-        map1.put(key1, valueDouble, ts2)
-        map1.put(key1, valueInt, ts3)
-        map1.put(key1, valueString, ts4)
-        map1.put(key2, valueBoolean, ts5)
-        map1.put(key2, valueDouble, ts6)
-        map1.put(key2, valueInt, ts7)
-        map1.put(key2, valueString, ts8)
-        map1.put(key3, valueBoolean, ts9)
-        map1.put(key3, valueDouble, ts10)
-        map1.put(key3, valueInt, ts11)
-        map1.put(key3, valueString, ts12)
-        map1.put(key4, valueBoolean, ts13)
-        map1.put(key4, valueDouble, ts14)
-        map1.put(key4, valueInt, ts15)
-        map1.put(key4, valueString, ts16)
+        map1.put(key1, valBoolean1)
+        map1.put(key1, valDouble1)
+        map1.put(key1, valInt1)
+        map1.put(key1, valString1)
+        map1.put(key2, valBoolean1)
+        map1.put(key2, valDouble1)
+        map1.put(key2, valInt1)
+        map1.put(key2, valString1)
+        vv.update(client1.tick())
+        map1.put(key3, valBoolean1)
+        map1.put(key3, valDouble1)
+        map1.put(key3, valInt1)
+        map1.put(key3, valString1)
+        map1.put(key4, valBoolean1)
+        map1.put(key4, valDouble1)
+        map1.put(key4, valInt1)
+        map1.put(key4, valString1)
         val delta = map1.generateDelta(vv)
         map2.merge(delta)
 
@@ -1385,41 +1091,41 @@ class LWWMapTest : StringSpec({
         map2.getDouble(key2).shouldBeNull()
         map2.getInt(key2).shouldBeNull()
         map2.getString(key2).shouldBeNull()
-        map2.getBoolean(key3).shouldBe(valueBoolean)
-        map2.getDouble(key3).shouldBe(valueDouble)
-        map2.getInt(key3).shouldBe(valueInt)
-        map2.getString(key3).shouldBe(valueString)
-        map2.getBoolean(key4).shouldBe(valueBoolean)
-        map2.getDouble(key4).shouldBe(valueDouble)
-        map2.getInt(key4).shouldBe(valueInt)
-        map2.getString(key4).shouldBe(valueString)
+        map2.getBoolean(key3).shouldBe(valBoolean1)
+        map2.getDouble(key3).shouldBe(valDouble1)
+        map2.getInt(key3).shouldBe(valInt1)
+        map2.getString(key3).shouldBe(valString1)
+        map2.getBoolean(key4).shouldBe(valBoolean1)
+        map2.getDouble(key4).shouldBe(valDouble1)
+        map2.getInt(key4).shouldBe(valInt1)
+        map2.getString(key4).shouldBe(valString1)
 
         val iteratorBoolean = map2.iteratorBoolean()
         iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key3, valueBoolean))
+        iteratorBoolean.next().shouldBe(Pair(key3, valBoolean1))
         iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key4, valueBoolean))
+        iteratorBoolean.next().shouldBe(Pair(key4, valBoolean1))
         iteratorBoolean.shouldBeEmpty()
 
         val iteratorDouble = map2.iteratorDouble()
         iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key3, valueDouble))
+        iteratorDouble.next().shouldBe(Pair(key3, valDouble1))
         iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key4, valueDouble))
+        iteratorDouble.next().shouldBe(Pair(key4, valDouble1))
         iteratorDouble.shouldBeEmpty()
 
         val iteratorInt = map2.iteratorInt()
         iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key3, valueInt))
+        iteratorInt.next().shouldBe(Pair(key3, valInt1))
         iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key4, valueInt))
+        iteratorInt.next().shouldBe(Pair(key4, valInt1))
         iteratorInt.shouldBeEmpty()
 
         val iteratorString = map2.iteratorString()
         iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key3, valueString))
+        iteratorString.next().shouldBe(Pair(key3, valString1))
         iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key4, valueString))
+        iteratorString.next().shouldBe(Pair(key4, valString1))
         iteratorString.shouldBeEmpty()
     }
 
@@ -1429,52 +1135,27 @@ class LWWMapTest : StringSpec({
      * Call to iterator should return an iterator containing the values set by puts w.r.t the given context.
      */
     "generate delta with delete" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val ts5 = client.tick()
-        val ts6 = client.tick()
-        val ts7 = client.tick()
-        val ts8 = client.tick()
-        val ts9 = client.tick()
-        val ts10 = client.tick()
-        val ts11 = client.tick()
-        val ts12 = client.tick()
-        val ts13 = client.tick()
-        val ts14 = client.tick()
-        val ts15 = client.tick()
-        val ts16 = client.tick()
         val vv = VersionVector()
-        vv.update(ts4)
-        val key1 = "key1"
-        val key2 = "key2"
-        val key3 = "key3"
-        val valueBoolean = true
-        val valueDouble = 3.14159
-        val valueInt = 42
-        val valueString = "value"
-        val map1 = LWWMap()
-        val map2 = LWWMap()
+        val map1 = LWWMap(client1)
+        val map2 = LWWMap(client1)
 
-        map1.put(key1, valueBoolean, ts1)
-        map1.put(key1, valueDouble, ts2)
-        map1.put(key1, valueInt, ts3)
-        map1.put(key1, valueString, ts4)
-        map1.put(key2, valueBoolean, ts5)
-        map1.put(key2, valueDouble, ts6)
-        map1.put(key2, valueInt, ts7)
-        map1.put(key2, valueString, ts8)
-        map1.deleteBoolean(key2, ts9)
-        map1.deleteDouble(key2, ts10)
-        map1.deleteInt(key2, ts11)
-        map1.deleteString(key2, ts12)
-        map1.put(key3, valueBoolean, ts13)
-        map1.put(key3, valueDouble, ts14)
-        map1.put(key3, valueInt, ts15)
-        map1.put(key3, valueString, ts16)
+        map1.put(key1, valBoolean1)
+        map1.put(key1, valDouble1)
+        map1.put(key1, valInt1)
+        map1.put(key1, valString1)
+        vv.update(client1.tick())
+        map1.put(key2, valBoolean1)
+        map1.put(key2, valDouble1)
+        map1.put(key2, valInt1)
+        map1.put(key2, valString1)
+        map1.deleteBoolean(key2)
+        map1.deleteDouble(key2)
+        map1.deleteInt(key2)
+        map1.deleteString(key2)
+        map1.put(key3, valBoolean1)
+        map1.put(key3, valDouble1)
+        map1.put(key3, valInt1)
+        map1.put(key3, valString1)
         val delta = map1.generateDelta(vv)
         map2.merge(delta)
 
@@ -1486,29 +1167,29 @@ class LWWMapTest : StringSpec({
         map2.getDouble(key2).shouldBeNull()
         map2.getInt(key2).shouldBeNull()
         map2.getString(key2).shouldBeNull()
-        map2.getBoolean(key3).shouldBe(valueBoolean)
-        map2.getDouble(key3).shouldBe(valueDouble)
-        map2.getInt(key3).shouldBe(valueInt)
-        map2.getString(key3).shouldBe(valueString)
+        map2.getBoolean(key3).shouldBe(valBoolean1)
+        map2.getDouble(key3).shouldBe(valDouble1)
+        map2.getInt(key3).shouldBe(valInt1)
+        map2.getString(key3).shouldBe(valString1)
 
         val iteratorBoolean = map2.iteratorBoolean()
         iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key3, valueBoolean))
+        iteratorBoolean.next().shouldBe(Pair(key3, valBoolean1))
         iteratorBoolean.shouldBeEmpty()
 
         val iteratorDouble = map2.iteratorDouble()
         iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key3, valueDouble))
+        iteratorDouble.next().shouldBe(Pair(key3, valDouble1))
         iteratorDouble.shouldBeEmpty()
 
         val iteratorInt = map2.iteratorInt()
         iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key3, valueInt))
+        iteratorInt.next().shouldBe(Pair(key3, valInt1))
         iteratorInt.shouldBeEmpty()
 
         val iteratorString = map2.iteratorString()
         iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key3, valueString))
+        iteratorString.next().shouldBe(Pair(key3, valString1))
         iteratorString.shouldBeEmpty()
     }
 
@@ -1516,23 +1197,22 @@ class LWWMapTest : StringSpec({
      * This test evaluates JSON serialization an empty LWW map.
      */
     "empty JSON serialization" {
-        val map = LWWMap()
+        val map = LWWMap(client1)
 
         val mapJson = map.toJson()
 
-        mapJson.shouldBe("""{"_type":"LWWMap","_metadata":{"entries":{}}}""")
+        mapJson.shouldBe("""{"type":"LWWMap","metadata":{"entries":{}}}""")
     }
 
     /**
      * This test evaluates JSON deserialization of an empty LWW map.
      */
     "empty JSON deserialization" {
-        val uid = ClientUId("clientid")
-        val client = SimpleEnvironment(uid)
-        val ts = client.tick()
-
-        val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{}}}""")
-        mapJson.put("key1", "value1", ts)
+        val mapJson = LWWMap.fromJson(
+            """{"type":"LWWMap","metadata":{"entries":{}}}""",
+            client1
+        )
+        mapJson.put("key1", "value1")
 
         mapJson.getString("key1").shouldBe("value1")
         mapJson.getString("key2").shouldBeNull()
@@ -1545,40 +1225,29 @@ class LWWMapTest : StringSpec({
     "JSON serialization" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
-        val ts1 = client.tick()
-        val ts2 = client.tick()
-        val ts3 = client.tick()
-        val ts4 = client.tick()
-        val ts5 = client.tick()
-        val ts6 = client.tick()
-        val key1 = "key1"
-        val key2 = "key2"
-        val key3 = "key3"
-        val key4 = "key4"
-        val key5 = "key5"
         val value1 = 1
         val value2 = "value2"
         val value3 = "value3"
         val value4 = true
         val value5 = 3.14159
-        val map = LWWMap()
+        val map = LWWMap(client)
 
-        map.put(key1, value1, ts1)
-        map.put(key2, value2, ts2)
-        map.deleteString(key2, ts3)
-        map.put(key3, value3, ts4)
-        map.put(key4, value4, ts5)
-        map.put(key5, value5, ts6)
+        map.put(key1, value1)
+        map.put(key2, value2)
+        map.deleteString(key2)
+        map.put(key3, value3)
+        map.put(key4, value4)
+        map.put(key5, value5)
         val mapJson = map.toJson()
 
-        mapJson.shouldBe("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"clientid"},"cnt":-2147483647},"key2%STRING":{"uid":{"name":"clientid"},"cnt":-2147483645},"key3%STRING":{"uid":{"name":"clientid"},"cnt":-2147483644},"key4%BOOLEAN":{"uid":{"name":"clientid"},"cnt":-2147483643},"key5%DOUBLE":{"uid":{"name":"clientid"},"cnt":-2147483642}}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""")
+        mapJson.shouldBe("""{"type":"LWWMap","metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"clientid"},"cnt":-2147483647},"key2%STRING":{"uid":{"name":"clientid"},"cnt":-2147483645},"key3%STRING":{"uid":{"name":"clientid"},"cnt":-2147483644},"key4%BOOLEAN":{"uid":{"name":"clientid"},"cnt":-2147483643},"key5%DOUBLE":{"uid":{"name":"clientid"},"cnt":-2147483642}}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""")
     }
 
     /**
      * This test evaluates JSON deserialization of a LWW map.
      */
     "JSON deserialization" {
-        val mapJson = LWWMap.fromJson("""{"_type":"LWWMap","_metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"clientid"},"cnt":-2147483648},"key2%STRING":{"uid":{"name":"clientid"},"cnt":-2147483646},"key3%STRING":{"uid":{"name":"clientid"},"cnt":-2147483645},"key4%BOOLEAN":{"uid":{"name":"clientid"},"cnt":-2147483644},"key5%DOUBLE":{"uid":{"name":"clientid"},"cnt":-2147483643}}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""")
+        val mapJson = LWWMap.fromJson("""{"type":"LWWMap","metadata":{"entries":{"key1%INTEGER":{"uid":{"name":"clientid"},"cnt":-2147483648},"key2%STRING":{"uid":{"name":"clientid"},"cnt":-2147483646},"key3%STRING":{"uid":{"name":"clientid"},"cnt":-2147483645},"key4%BOOLEAN":{"uid":{"name":"clientid"},"cnt":-2147483644},"key5%DOUBLE":{"uid":{"name":"clientid"},"cnt":-2147483643}}},"key1%INTEGER":1,"key2%STRING":null,"key3%STRING":"value3","key4%BOOLEAN":true,"key5%DOUBLE":3.14159}""")
 
         mapJson.getInt("key1").shouldBe(1)
         mapJson.getString("key2").shouldBeNull()

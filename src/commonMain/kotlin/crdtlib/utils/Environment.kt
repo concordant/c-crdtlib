@@ -19,72 +19,70 @@
 
 package crdtlib.utils
 
+import crdtlib.crdt.DeltaCRDT
+
 /**
 * This abstract class represents a contextual environment.
 */
 abstract class Environment {
 
     /**
-     * Protected abstract method getting the state associated with the environment.
-     * @return the current state.
+     * The client uid linked to this environment.
      */
-    protected abstract fun getStateProtected(): VersionVector
+    val uid: ClientUId
 
-    /**
-     * Protected abstract method generating a monotonically increasing timestamp.
-     * @return the generated timestamp.
-     */
-    protected abstract fun tickProtected(): Timestamp
-
-    /**
-     * Protected abstract method updating the state with the given timestamp.
-     * @param ts the given timestamp.
-     */
-    protected abstract fun updateProtected(ts: Timestamp)
-
-    /**
-     * Protected abstract method updating the state with the given version vector.
-     * @param vv the given version vector.
-     */
-    protected abstract fun updateProtected(vv: VersionVector)
+    constructor(uid: ClientUId) {
+        this.uid = uid
+    }
 
     /**
      * Gets the state associated with the environment.
-     * This trick is used to be able to force the method name in the generated javascript.
+     *
      * @return the current state.
      */
     @Name("getState")
-    fun getState(): VersionVector {
-        return getStateProtected()
-    }
+    abstract fun getState(): VersionVector
 
     /**
      * Generates a monotonically increasing timestamp.
-     * This trick is used to be able to force the method name in the generated javascript.
+     *
      * @return the generated timestamp.
      */
     @Name("tick")
-    fun tick(): Timestamp {
-        return tickProtected()
-    }
+    abstract fun tick(): Timestamp
 
     /**
      * Updates the state with the given timestamp.
-     * This trick is used to be able to force the method name in the generated javascript.
+     *
      * @param ts the given timestamp.
      */
     @Name("updateTs")
-    fun update(ts: Timestamp) {
-        return updateProtected(ts)
-    }
+    abstract fun update(ts: Timestamp)
 
     /**
      * Updates the state with the given version vector.
-     * This trick is used to be able to force the method name in the generated javascript.
+     *
      * @param vv the given version vector.
      */
     @Name("updateVv")
-    fun update(vv: VersionVector) {
-        return updateProtected(vv)
-    }
+    abstract fun update(vv: VersionVector)
+
+    /**
+     * Hook method called by CRDTs on every read operation
+     *
+     * Note: a delta generation is not considered as an operation.
+     * @param obj the accessed object.
+     */
+    @Name("onRead")
+    open fun onRead(obj: DeltaCRDT) {}
+
+    /**
+     * Hook method called by CRDTs on every write operation
+     *
+     * Note: a merge is not considered as an operation.
+     * @param obj the modified object.
+     * @param delta the delta from this operation.
+     */
+    @Name("onWrite")
+    open fun onWrite(obj: DeltaCRDT, delta: DeltaCRDT) {}
 }

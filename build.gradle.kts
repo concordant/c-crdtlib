@@ -19,12 +19,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 description = "Concordant Conflict-Free Replicated Datatypes (CRDT) library"
 group = "concordant"
-version = "0.0.7-1"
+version = "1.0.0"
 
 plugins {
     kotlin("multiplatform") version "1.4.10"
     kotlin("plugin.serialization") version "1.4.10"
     id("org.jetbrains.dokka") version "1.4.10.2"
+    id("maven-publish")
     id("lt.petuska.npm.publish") version "1.0.2"
 }
 
@@ -71,8 +72,8 @@ kotlin {
 
         commonTest {
             dependencies {
-                implementation("io.kotest:kotest-property:4.3.0")
-                implementation("io.kotest:kotest-assertions-core:4.3.0")
+                implementation("io.kotest:kotest-property:4.3.1")
+                implementation("io.kotest:kotest-assertions-core:4.3.1")
             }
         }
 
@@ -84,13 +85,13 @@ kotlin {
 
         val jvmTest by getting {
             dependencies {
-                implementation("io.kotest:kotest-runner-junit5-jvm:4.3.0")
+                implementation("io.kotest:kotest-runner-junit5-jvm:4.3.1")
             }
         }
 
         val nodeJsTest by getting {
             dependencies {
-                implementation("io.kotest:kotest-core-js:4.2.0.RC2")
+                implementation("io.kotest:kotest-framework-engine:4.3.1")
             }
         }
     }
@@ -138,6 +139,25 @@ tasks.withType<Test> {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "Gitlab"
+            url = uri(
+                "https://gitlab.inria.fr/api/v4/projects/" +
+                    "${System.getenv("CI_PROJECT_ID")}/packages/maven"
+            )
+            credentials(HttpHeaderCredentials::class) {
+                name = "Job-Token"
+                value = System.getenv("CI_JOB_TOKEN")
+            }
+            authentication {
+                create<HttpHeaderAuthentication>("header")
+            }
+        }
+    }
 }
 
 npmPublishing {

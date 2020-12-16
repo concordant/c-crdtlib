@@ -19,6 +19,7 @@
 
 package crdtlib.crdt
 
+import crdtlib.utils.Environment
 import crdtlib.utils.Name
 import crdtlib.utils.VersionVector
 
@@ -26,6 +27,69 @@ import crdtlib.utils.VersionVector
 * Interface for delta based CRDT
 */
 abstract class DeltaCRDT {
+    /**
+     * The environment linked to this crdt.
+     */
+    protected lateinit var env: Environment
+
+    /**
+     * Setter for environment.
+     *
+     * Associate an environment to this; used for late initialization.
+     * Should be removed in the future ; still needed for deserialization.
+     * @param env the new environment reference
+     */
+    internal fun setEnv(env: Environment) {
+        this.env = env
+    }
+
+    /**
+     * Default delta constructor
+     *
+     * Create an empty CRDT.
+     * A CRDT without associated environment should be considered
+     * as a delta only:
+     * It won't allow any updating operation
+     * and may not support reading operations.
+     */
+    constructor()
+
+    /**
+     * Default CRDT constructor
+     *
+     * Create an empty CRDT, associated with the given environment.
+     * @param env the current environment.
+     * Passing null will create a CRDT with uninitialized environment
+     * (aka delta) :
+     * It won't allow any updating operation
+     * and may not support reading operations.
+     */
+    constructor(env: Environment?) {
+        if (env != null) this.env = env
+    }
+
+    /**
+     * Convenience method to notify a read to current environment.
+     *
+     * Must be called on every read operation on this.
+     * Call current environment onRead method.
+     * Do nothing if environment is not initialized.
+     */
+    protected fun onRead() {
+        if (this::env.isInitialized) this.env.onRead(this)
+    }
+
+    /**
+     * Convenience method to notify a read to current environment.
+     *
+     * Must be called on every write operation on this.
+     * Call current environment onWrite method.
+     * Environment must be initialized.
+     * @param delta the delta from this modification
+     */
+    protected fun onWrite(delta: DeltaCRDT) {
+        this.env.onWrite(this, delta)
+    }
 
     /**
      * Generates the delta from a given version vector by calling the protected abstract method.
@@ -36,7 +100,8 @@ abstract class DeltaCRDT {
     abstract fun generateDelta(vv: VersionVector): DeltaCRDT
 
     /**
-     * Merges a given delta into this CRDT by calling the protected method.
+     * Merges a given delta into this CRDT
+     *
      * @param delta the delta to be merge.
      */
     @Name("merge")
@@ -44,6 +109,7 @@ abstract class DeltaCRDT {
 
     /**
      * Serializes this delta crdt to a json string.
+     *
      * @return the resulted json string.
      */
     @Name("toJson")
@@ -51,42 +117,54 @@ abstract class DeltaCRDT {
 
     companion object {
         /**
+         * Get the type name for serialization.
+         *
+         * @return the type as a string.
+         */
+        @Name("getType")
+        fun getType(): String {
+            throw NotImplementedError("getType not implemented")
+        }
+
+        /**
          * Deserializes a given json string in the corresponding crdt type.
+         *
          * @param json the given json string.
          * @return the resulted delta crdt.
          */
         @Name("fromJson")
-        fun fromJson(json: String): DeltaCRDT {
-            val regex = """"_type":"(\w+)",""".toRegex()
-            val matchResult = regex.find(json)
+        fun fromJson(json: String, env: Environment? = null): DeltaCRDT {
+            val properJson = json.replace('\'', '"')
+            val regex = """"type"\s*:\s*"(\w+)",""".toRegex()
+            val matchResult = regex.find(properJson)
             val crdtType = matchResult?.groups?.get(1)?.value
             when (crdtType) {
                 "PNCounter" -> {
-                    return PNCounter.fromJson(json)
+                    return PNCounter.fromJson(properJson, env)
                 }
                 "BCounter" -> {
-                    return BCounter.fromJson(json)
+                    return BCounter.fromJson(properJson, env)
                 }
                 "LWWRegister" -> {
-                    return LWWRegister.fromJson(json)
+                    return LWWRegister.fromJson(properJson, env)
                 }
                 "MVRegister" -> {
-                    return MVRegister.fromJson(json)
+                    return MVRegister.fromJson(properJson, env)
                 }
                 "Ratchet" -> {
-                    return Ratchet.fromJson(json)
+                    return Ratchet.fromJson(properJson, env)
                 }
                 "RGA" -> {
-                    return RGA.fromJson(json)
+                    return RGA.fromJson(properJson, env)
                 }
                 "LWWMap" -> {
-                    return LWWMap.fromJson(json)
+                    return LWWMap.fromJson(properJson, env)
                 }
                 "MVMap" -> {
-                    return MVMap.fromJson(json)
+                    return MVMap.fromJson(properJson, env)
                 }
                 "Map" -> {
-                    return Map.fromJson(json)
+                    return Map.fromJson(properJson, env)
                 }
                 else -> {
                     throw IllegalArgumentException("DeltaCRDT cannot deserialize type: $crdtType")

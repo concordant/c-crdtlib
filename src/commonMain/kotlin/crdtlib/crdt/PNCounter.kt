@@ -20,6 +20,7 @@
 package crdtlib.crdt
 
 import crdtlib.utils.ClientUId
+import crdtlib.utils.Environment
 import crdtlib.utils.Json
 import crdtlib.utils.Name
 import crdtlib.utils.Timestamp
@@ -38,8 +39,8 @@ import kotlinx.serialization.json.jsonPrimitive
 * This class is a delta-based CRDT pn-counter.
 * It is serializable to JSON and respect the following schema:
 * {
-*   "_type": "PNCounter",
-*   "_metadata": {
+*   "type": "PNCounter",
+*   "metadata": {
 *       "increment": [
 *           (( ClientUId.toJson(), {
 *               "first": $value, // $value is an integer
@@ -81,6 +82,7 @@ class PNCounter : DeltaCRDT {
      * Default constructor.
      */
     constructor()
+    constructor(env: Environment) : super(env)
 
     /**
      * Gets the value of the counter.
@@ -88,6 +90,7 @@ class PNCounter : DeltaCRDT {
      */
     @Name("get")
     fun get(): Int {
+        onRead()
         return this.increment.values.sumBy { it.first } - this.decrement.values.sumBy { it.first }
     }
 
@@ -97,17 +100,22 @@ class PNCounter : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("increment")
-    fun increment(amount: Int, ts: Timestamp): PNCounter {
+    fun increment(amount: Int): PNCounter {
+        if (amount < 0) return this.decrement(-amount)
         val op = PNCounter()
-        if (amount == 0) return op
-        if (amount < 0) return this.decrement(-amount, ts)
+        if (amount == 0) {
+            onWrite(op)
+            return op
+        }
 
+        val ts = env.tick()
         val count = this.increment[ts.uid]?.first ?: 0
         if (Int.MAX_VALUE - count < amount - 1) {
             throw RuntimeException("PNCounter has reached Int.MAX_VALUE")
         }
         this.increment[ts.uid] = Pair(count + amount, ts)
         op.increment[ts.uid] = Pair(count + amount, ts)
+        onWrite(op)
         return op
     }
 
@@ -117,17 +125,22 @@ class PNCounter : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("decrement")
-    fun decrement(amount: Int, ts: Timestamp): PNCounter {
+    fun decrement(amount: Int): PNCounter {
+        if (amount < 0) return this.increment(-amount)
         val op = PNCounter()
-        if (amount == 0) return op
-        if (amount < 0) return this.increment(-amount, ts)
+        if (amount == 0) {
+            onWrite(op)
+            return op
+        }
 
+        val ts = env.tick()
         val count = this.decrement[ts.uid]?.first ?: 0
         if (Int.MAX_VALUE - count < amount - 1) {
             throw RuntimeException("PNCounter has reached Int.MAX_VALUE")
         }
         this.decrement[ts.uid] = Pair(count + amount, ts)
         op.decrement[ts.uid] = Pair(count + amount, ts)
+        onWrite(op)
         return op
     }
 
@@ -187,14 +200,25 @@ class PNCounter : DeltaCRDT {
 
     companion object {
         /**
+         * Get the type name for serialization.
+         * @return the type as a string.
+         */
+        @Name("getType")
+        fun getType(): String {
+            return "PNCounter"
+        }
+
+        /**
          * Deserializes a given json string in a crdt counter.
          * @param json the given json string.
          * @return the resulted crdt counter.
          */
         @Name("fromJson")
-        fun fromJson(json: String): PNCounter {
+        fun fromJson(json: String, env: Environment? = null): PNCounter {
             val jsonSerializer = JsonPNCounterSerializer(serializer())
-            return Json.decodeFromString(jsonSerializer, json)
+            val obj = Json.decodeFromString(jsonSerializer, json)
+            if (env != null) obj.env = env
+            return obj
         }
     }
 }
@@ -214,14 +238,14 @@ class JsonPNCounterSerializer(serializer: KSerializer<PNCounter>) :
         }.sumBy { it.jsonObject["first"]!!.jsonPrimitive.int }
         return JsonObject(
             mapOf(
-                "_type" to JsonPrimitive("PNCounter"),
-                "_metadata" to element,
+                "type" to JsonPrimitive("PNCounter"),
+                "metadata" to element,
                 "value" to JsonPrimitive(incValue - decValue)
             )
         )
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
-        return element.jsonObject["_metadata"]!!.jsonObject
+        return element.jsonObject["metadata"]!!.jsonObject
     }
 }

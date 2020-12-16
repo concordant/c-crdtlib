@@ -19,8 +19,11 @@
 
 package crdtlib.crdt
 
+import crdtlib.utils.ClientUId
+import crdtlib.utils.Environment
 import crdtlib.utils.Json
 import crdtlib.utils.Name
+import crdtlib.utils.SimpleEnvironment
 import crdtlib.utils.Timestamp
 import crdtlib.utils.VersionVector
 import kotlinx.serialization.*
@@ -30,8 +33,8 @@ import kotlinx.serialization.json.*
 * This class is a delta-based CRDT map implementing last writer wins (LWW) to resolve conflicts.
 * It is serializable to JSON and respect the following schema:
 * {
-*   "_type": "Map",
-*   "_metadata": {
+*   "type": "Map",
+*   "metadata": {
 *       "lwwMap": {
 *           // $key is a string
 *           ( "$key": Timestamp.toJson() )*( , "$key": Timestamp.toJson() )?
@@ -55,22 +58,44 @@ import kotlinx.serialization.json.*
 class Map : DeltaCRDT {
 
     /**
-     * A LWW map storing key / value pairs that should be merged using LWW.
+     * Proxy environment, for embedded CRDT maps
+     * Delegates tick() to env,
+     * intercept and allow to retrieve intermediate deltas.
      */
-    private val lwwMap: LWWMap = LWWMap()
+    private inner class ProxyEnv() :
+        SimpleEnvironment(ClientUId("Map Proxy Env")) {
+        override fun tick(): Timestamp {
+            return env.tick()
+        }
+    }
+
+    @Transient
+    private val proxyEnv = ProxyEnv()
 
     /**
      * A LWW map storing key / value pairs that should be merged using LWW.
      */
-    private val mvMap: MVMap = MVMap()
+    private val lwwMap = LWWMap(proxyEnv)
+
+    /**
+     * A LWW map storing key / value pairs that should be merged using LWW.
+     */
+    private val mvMap = MVMap(proxyEnv)
 
     @Required
     private val cntMap: MutableMap<String, PNCounter> = mutableMapOf()
 
+    // constructor(){
+    //     lwwMap = LWWMap(proxyEnv)
+    //     mvMap = MVMap(proxyEnv)
+    // }
+
     /**
      * Default constructor.
      */
-    constructor()
+    constructor() : super()
+
+    constructor(env: Environment) : super(env)
 
     /**
      * Gets the Boolean value corresponding to a given key.
@@ -80,6 +105,7 @@ class Map : DeltaCRDT {
      */
     @Name("getLWWBoolean")
     fun getLWWBoolean(key: String): Boolean? {
+        onRead()
         return this.lwwMap.getBoolean(key)
     }
 
@@ -91,6 +117,7 @@ class Map : DeltaCRDT {
      */
     @Name("getLWWDouble")
     fun getLWWDouble(key: String): Double? {
+        onRead()
         return this.lwwMap.getDouble(key)
     }
 
@@ -102,6 +129,7 @@ class Map : DeltaCRDT {
      */
     @Name("getLWWInt")
     fun getLWWInt(key: String): Int? {
+        onRead()
         return this.lwwMap.getInt(key)
     }
 
@@ -113,6 +141,7 @@ class Map : DeltaCRDT {
      */
     @Name("getLWWString")
     fun getLWWString(key: String): String? {
+        onRead()
         return this.lwwMap.getString(key)
     }
 
@@ -124,6 +153,7 @@ class Map : DeltaCRDT {
      */
     @Name("getMVBoolean")
     fun getMVBoolean(key: String): Set<Boolean?>? {
+        onRead()
         return this.mvMap.getBoolean(key)
     }
 
@@ -135,6 +165,7 @@ class Map : DeltaCRDT {
      */
     @Name("getMVDouble")
     fun getMVDouble(key: String): Set<Double?>? {
+        onRead()
         return this.mvMap.getDouble(key)
     }
 
@@ -146,6 +177,7 @@ class Map : DeltaCRDT {
      */
     @Name("getMVInt")
     fun getMVInt(key: String): Set<Int?>? {
+        onRead()
         return this.mvMap.getInt(key)
     }
 
@@ -157,6 +189,7 @@ class Map : DeltaCRDT {
      */
     @Name("getMVString")
     fun getMVString(key: String): Set<String?>? {
+        onRead()
         return this.mvMap.getString(key)
     }
 
@@ -168,6 +201,7 @@ class Map : DeltaCRDT {
      */
     @Name("getCntInt")
     fun getCntInt(key: String): Int? {
+        onRead()
         return this.cntMap[key]?.get()
     }
 
@@ -177,6 +211,7 @@ class Map : DeltaCRDT {
      */
     @Name("iteratorLWWBoolean")
     fun iteratorLWWBoolean(): Iterator<Pair<String, Boolean>> {
+        onRead()
         return this.lwwMap.iteratorBoolean()
     }
 
@@ -186,6 +221,7 @@ class Map : DeltaCRDT {
      */
     @Name("iteratorLWWDouble")
     fun iteratorLWWDouble(): Iterator<Pair<String, Double>> {
+        onRead()
         return this.lwwMap.iteratorDouble()
     }
 
@@ -195,6 +231,7 @@ class Map : DeltaCRDT {
      */
     @Name("iteratorLWWInt")
     fun iteratorLWWInt(): Iterator<Pair<String, Int>> {
+        onRead()
         return this.lwwMap.iteratorInt()
     }
 
@@ -204,6 +241,7 @@ class Map : DeltaCRDT {
      */
     @Name("iteratorLWWString")
     fun iteratorLWWString(): Iterator<Pair<String, String>> {
+        onRead()
         return this.lwwMap.iteratorString()
     }
 
@@ -213,6 +251,7 @@ class Map : DeltaCRDT {
      */
     @Name("iteratorMVBoolean")
     fun iteratorMVBoolean(): Iterator<Pair<String, Set<Boolean?>>> {
+        onRead()
         return this.mvMap.iteratorBoolean()
     }
 
@@ -222,6 +261,7 @@ class Map : DeltaCRDT {
      */
     @Name("iteratorMVDouble")
     fun iteratorMVDouble(): Iterator<Pair<String, Set<Double?>>> {
+        onRead()
         return this.mvMap.iteratorDouble()
     }
 
@@ -231,6 +271,7 @@ class Map : DeltaCRDT {
      */
     @Name("iteratorMVInt")
     fun iteratorMVInt(): Iterator<Pair<String, Set<Int?>>> {
+        onRead()
         return this.mvMap.iteratorInt()
     }
 
@@ -240,6 +281,7 @@ class Map : DeltaCRDT {
      */
     @Name("iteratorMVString")
     fun iteratorMVString(): Iterator<Pair<String, Set<String?>>> {
+        onRead()
         return this.mvMap.iteratorString()
     }
 
@@ -249,6 +291,7 @@ class Map : DeltaCRDT {
      */
     @Name("iteratorCntInt")
     fun iteratorCntInt(): Iterator<Pair<String, Int>> {
+        onRead()
         return this.cntMap.asSequence().map { (k, v) -> Pair(k, v.get()) }.iterator()
     }
 
@@ -256,13 +299,13 @@ class Map : DeltaCRDT {
      * Puts a key / Boolean value pair into the map.
      * @param key the key that is targeted.
      * @param value the Boolean value that should be assigned to the key.
-     * @param ts the timestamp of this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("setLWWBoolean")
-    fun putLWW(key: String, value: Boolean?, ts: Timestamp): Map {
+    fun putLWW(key: String, value: Boolean?): Map {
         val op = Map()
-        op.lwwMap.merge(this.lwwMap.put(key, value, ts))
+        op.lwwMap.merge(this.lwwMap.put(key, value))
+        onWrite(op)
         return op
     }
 
@@ -270,13 +313,13 @@ class Map : DeltaCRDT {
      * Puts a key / double value pair into the map.
      * @param key the key that is targeted.
      * @param value the double value that should be assigned to the key.
-     * @param ts the timestamp of this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("setLWWDouble")
-    fun putLWW(key: String, value: Double?, ts: Timestamp): Map {
+    fun putLWW(key: String, value: Double?): Map {
         val op = Map()
-        op.lwwMap.merge(this.lwwMap.put(key, value, ts))
+        op.lwwMap.merge(this.lwwMap.put(key, value))
+        onWrite(op)
         return op
     }
 
@@ -284,13 +327,13 @@ class Map : DeltaCRDT {
      * Puts a key / integer value pair into the map.
      * @param key the key that is targeted.
      * @param value the integer value that should be assigned to the key.
-     * @param ts the timestamp of this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("setLWWInt")
-    fun putLWW(key: String, value: Int?, ts: Timestamp): Map {
+    fun putLWW(key: String, value: Int?): Map {
         val op = Map()
-        op.lwwMap.merge(this.lwwMap.put(key, value, ts))
+        op.lwwMap.merge(this.lwwMap.put(key, value))
+        onWrite(op)
         return op
     }
 
@@ -298,13 +341,13 @@ class Map : DeltaCRDT {
      * Puts a key / string value pair into the map.
      * @param key the key that is targeted.
      * @param value the string value that should be assigned to the key.
-     * @param ts the timestamp of this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("setLWWString")
-    fun putLWW(key: String, value: String?, ts: Timestamp): Map {
+    fun putLWW(key: String, value: String?): Map {
         val op = Map()
-        op.lwwMap.merge(this.lwwMap.put(key, value, ts))
+        op.lwwMap.merge(this.lwwMap.put(key, value))
+        onWrite(op)
         return op
     }
 
@@ -312,13 +355,13 @@ class Map : DeltaCRDT {
      * Puts a key / Boolean value pair into the map.
      * @param key the key that is targeted.
      * @param value the Boolean value that should be assigned to the key.
-     * @param ts the timestamp of this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("setMVBoolean")
-    fun putMV(key: String, value: Boolean?, ts: Timestamp): Map {
+    fun putMV(key: String, value: Boolean?): Map {
         val op = Map()
-        op.mvMap.merge(this.mvMap.put(key, value, ts))
+        op.mvMap.merge(this.mvMap.put(key, value))
+        onWrite(op)
         return op
     }
 
@@ -326,13 +369,14 @@ class Map : DeltaCRDT {
      * Puts a key / double value pair into the map.
      * @param key the key that is targeted.
      * @param value the double value that should be assigned to the key.
-     * @param ts the timestamp of this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("setMVDouble")
-    fun putMV(key: String, value: Double?, ts: Timestamp): Map {
+    fun putMV(key: String, value: Double?): Map {
         val op = Map()
-        op.mvMap.merge(this.mvMap.put(key, value, ts))
+        this.mvMap.put(key, value)
+        op.mvMap.merge(proxyEnv.popWrite().second)
+        onWrite(op)
         return op
     }
 
@@ -340,13 +384,14 @@ class Map : DeltaCRDT {
      * Puts a key / integer value pair into the map.
      * @param key the key that is targeted.
      * @param value the integer value that should be assigned to the key.
-     * @param ts the timestamp of this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("setMVInt")
-    fun putMV(key: String, value: Int?, ts: Timestamp): Map {
+    fun putMV(key: String, value: Int?): Map {
         val op = Map()
-        op.mvMap.merge(this.mvMap.put(key, value, ts))
+        this.mvMap.put(key, value)
+        op.mvMap.merge(proxyEnv.popWrite().second)
+        onWrite(op)
         return op
     }
 
@@ -354,31 +399,32 @@ class Map : DeltaCRDT {
      * Puts a key / string value pair into the map.
      * @param key the key that is targeted.
      * @param value the string value that should be assigned to the key.
-     * @param ts the timestamp of this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("setMVString")
-    fun putMV(key: String, value: String?, ts: Timestamp): Map {
+    fun putMV(key: String, value: String?): Map {
         val op = Map()
-        op.mvMap.merge(this.mvMap.put(key, value, ts))
+        this.mvMap.put(key, value)
+        op.mvMap.merge(proxyEnv.popWrite().second)
+        onWrite(op)
         return op
     }
 
-    fun increment(key: String, inc: Int, ts: Timestamp): Map {
+    fun increment(key: String, inc: Int): Map {
         val op = Map()
-        var cnt = this.cntMap[key]
-        if (cnt == null) cnt = PNCounter()
-        op.cntMap[key] = cnt.increment(inc, ts)
-        this.cntMap[key] = cnt
+        var cnt = this.cntMap.getOrPut(key, { PNCounter(proxyEnv) })
+        cnt.increment(inc)
+        op.cntMap[key] = proxyEnv.popWrite().second as PNCounter
+        onWrite(op)
         return op
     }
 
-    fun decrement(key: String, dec: Int, ts: Timestamp): Map {
+    fun decrement(key: String, dec: Int): Map {
         val op = Map()
-        var cnt = this.cntMap[key]
-        if (cnt == null) cnt = PNCounter()
-        op.cntMap[key] = cnt.decrement(dec, ts)
-        this.cntMap[key] = cnt
+        var cnt = this.cntMap.getOrPut(key, { PNCounter(proxyEnv) })
+        cnt.decrement(dec)
+        op.cntMap[key] = proxyEnv.popWrite().second as PNCounter
+        onWrite(op)
         return op
     }
 
@@ -386,13 +432,14 @@ class Map : DeltaCRDT {
      * Deletes a given key / Boolean value pair if it is present in the map and has not yet been
      * deleted.
      * @param key the key that should be deleted.
-     * @param ts the timestamp linked to this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("deleteLWWBoolean")
-    fun deleteLWWBoolean(key: String, ts: Timestamp): Map {
+    fun deleteLWWBoolean(key: String): Map {
         val op = Map()
-        op.lwwMap.merge(this.lwwMap.deleteBoolean(key, ts))
+        this.lwwMap.deleteBoolean(key)
+        op.lwwMap.merge(proxyEnv.popWrite().second)
+        onWrite(op)
         return op
     }
 
@@ -400,13 +447,14 @@ class Map : DeltaCRDT {
      * Deletes a given key / double value pair if it is present in the map and has not yet been
      * deleted.
      * @param key the key that should be deleted.
-     * @param ts the timestamp linked to this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("deleteLWWDouble")
-    fun deleteLWWDouble(key: String, ts: Timestamp): Map {
+    fun deleteLWWDouble(key: String): Map {
         val op = Map()
-        op.lwwMap.merge(this.lwwMap.deleteDouble(key, ts))
+        this.lwwMap.deleteDouble(key)
+        op.lwwMap.merge(proxyEnv.popWrite().second)
+        onWrite(op)
         return op
     }
 
@@ -414,13 +462,14 @@ class Map : DeltaCRDT {
      * Deletes a given key / integer value pair if it is present in the map and has not yet been
      * deleted.
      * @param key the key that should be deleted.
-     * @param ts the timestamp linked to this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("deleteLWWInt")
-    fun deleteLWWInt(key: String, ts: Timestamp): Map {
+    fun deleteLWWInt(key: String): Map {
         val op = Map()
-        op.lwwMap.merge(this.lwwMap.deleteInt(key, ts))
+        this.lwwMap.deleteInt(key)
+        op.lwwMap.merge(proxyEnv.popWrite().second)
+        onWrite(op)
         return op
     }
 
@@ -428,13 +477,14 @@ class Map : DeltaCRDT {
      * Deletes a given key / string value pair if it is present in the map and has not yet been
      * deleted.
      * @param key the key that should be deleted.
-     * @param ts the timestamp linked to this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("deleteLWWString")
-    fun deleteLWWString(key: String, ts: Timestamp): Map {
+    fun deleteLWWString(key: String): Map {
         val op = Map()
-        op.lwwMap.merge(this.lwwMap.deleteString(key, ts))
+        this.lwwMap.deleteString(key)
+        op.lwwMap.merge(proxyEnv.popWrite().second)
+        onWrite(op)
         return op
     }
 
@@ -442,13 +492,14 @@ class Map : DeltaCRDT {
      * Deletes a given key / Boolean value pair if it is present in the map and has not yet been
      * deleted.
      * @param key the key that should be deleted.
-     * @param ts the timestamp linked to this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("deleteMVBoolean")
-    fun deleteMVBoolean(key: String, ts: Timestamp): Map {
+    fun deleteMVBoolean(key: String): Map {
         val op = Map()
-        op.mvMap.merge(this.mvMap.deleteBoolean(key, ts))
+        this.mvMap.deleteBoolean(key)
+        op.mvMap.merge(proxyEnv.popWrite().second)
+        onWrite(op)
         return op
     }
 
@@ -456,13 +507,14 @@ class Map : DeltaCRDT {
      * Deletes a given key / double value pair if it is present in the map and has not yet been
      * deleted.
      * @param key the key that should be deleted.
-     * @param ts the timestamp linked to this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("deleteMVDouble")
-    fun deleteMVDouble(key: String, ts: Timestamp): Map {
+    fun deleteMVDouble(key: String): Map {
         val op = Map()
-        op.mvMap.merge(this.mvMap.deleteDouble(key, ts))
+        this.mvMap.deleteDouble(key)
+        op.mvMap.merge(proxyEnv.popWrite().second)
+        onWrite(op)
         return op
     }
 
@@ -470,13 +522,14 @@ class Map : DeltaCRDT {
      * Deletes a given key / integer value pair if it is present in the map and has not yet been
      * deleted.
      * @param key the key that should be deleted.
-     * @param ts the timestamp linked to this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("deleteMVInt")
-    fun deleteMVInt(key: String, ts: Timestamp): Map {
+    fun deleteMVInt(key: String): Map {
         val op = Map()
-        op.mvMap.merge(this.mvMap.deleteInt(key, ts))
+        this.mvMap.deleteInt(key)
+        op.mvMap.merge(proxyEnv.popWrite().second)
+        onWrite(op)
         return op
     }
 
@@ -484,13 +537,14 @@ class Map : DeltaCRDT {
      * Deletes a given key / string value pair if it is present in the map and has not yet been
      * deleted.
      * @param key the key that should be deleted.
-     * @param ts the timestamp linked to this operation.
      * @return the delta corresponding to this operation.
      */
     @Name("deleteMVString")
-    fun deleteMVString(key: String, ts: Timestamp): Map {
+    fun deleteMVString(key: String): Map {
         val op = Map()
-        op.mvMap.merge(this.mvMap.deleteString(key, ts))
+        this.mvMap.deleteString(key)
+        op.mvMap.merge(proxyEnv.popWrite().second)
+        onWrite(op)
         return op
     }
 
@@ -528,7 +582,7 @@ class Map : DeltaCRDT {
 
         for ((key, cnt) in delta.cntMap) {
             var localCnt = this.cntMap[key]
-            if (localCnt == null) localCnt = PNCounter()
+            if (localCnt == null) localCnt = PNCounter(proxyEnv)
             localCnt.merge(cnt)
             this.cntMap[key] = localCnt
         }
@@ -565,14 +619,32 @@ class Map : DeltaCRDT {
         const val PNCOUNTER = SEPARATOR + "CNT"
 
         /**
+         * Get the type name for serialization.
+         * @return the type as a string.
+         */
+        @Name("getType")
+        fun getType(): String {
+            return "Map"
+        }
+
+        /**
          * Deserializes a given json string in a crdt map.
          * @param json the given json string.
          * @return the resulted crdt map.
          */
         @Name("fromJson")
-        fun fromJson(json: String): Map {
+        fun fromJson(json: String, env: Environment? = null): Map {
             val jsonSerializer = JsonMapSerializer(serializer())
-            return Json.decodeFromString(jsonSerializer, json)
+            val obj = Json.decodeFromString(jsonSerializer, json)
+            obj.lwwMap.setEnv(obj.proxyEnv)
+            obj.mvMap.setEnv(obj.proxyEnv)
+            for ((key, cnt) in obj.cntMap) {
+                cnt.setEnv(obj.proxyEnv)
+            }
+            if (env != null) {
+                obj.env = env
+            }
+            return obj
         }
     }
 }
@@ -644,11 +716,11 @@ class JsonMapSerializer(serializer: KSerializer<Map>) :
         }
 
         val metadata = JsonObject(mapOf("lwwMap" to lwwMetadata, "mvMap" to mvMetadata, "cntMap" to JsonObject(cntMetadata)))
-        return JsonObject(mapOf("_type" to JsonPrimitive("Map"), "_metadata" to metadata).plus(values))
+        return JsonObject(mapOf("type" to JsonPrimitive("Map"), "metadata" to metadata).plus(values))
     }
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
-        val metadata = element.jsonObject["_metadata"]!!.jsonObject
+        val metadata = element.jsonObject["metadata"]!!.jsonObject
 
         val lwwMetadata = metadata["lwwMap"]!!.jsonObject
         val lwwEntries = mutableMapOf<String, JsonElement>()
