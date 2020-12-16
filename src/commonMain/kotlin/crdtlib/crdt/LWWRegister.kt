@@ -82,6 +82,7 @@ class LWWRegister : DeltaCRDT {
      */
     @Name("get")
     fun get(): String? {
+        onRead()
         return value
     }
 
@@ -100,7 +101,9 @@ class LWWRegister : DeltaCRDT {
             this.ts = ts
             this.value = v
         }
-        return LWWRegister(this)
+        val delta = LWWRegister(this)
+        onWrite(delta)
+        return delta
     }
 
     /**

@@ -65,6 +65,7 @@ class LWWMap : DeltaCRDT {
      */
     @Name("getBoolean")
     fun getBoolean(key: String): Boolean? {
+        onRead()
         return this.entries[key + BOOLEAN]?.first?.toBoolean()
     }
 
@@ -76,6 +77,7 @@ class LWWMap : DeltaCRDT {
      */
     @Name("getDouble")
     fun getDouble(key: String): Double? {
+        onRead()
         return this.entries[key + DOUBLE]?.first?.toDoubleOrNull()
     }
 
@@ -87,6 +89,7 @@ class LWWMap : DeltaCRDT {
      */
     @Name("getInt")
     fun getInt(key: String): Int? {
+        onRead()
         return this.entries[key + INTEGER]?.first?.toIntOrNull()
     }
 
@@ -98,6 +101,7 @@ class LWWMap : DeltaCRDT {
      */
     @Name("getString")
     fun getString(key: String): String? {
+        onRead()
         return this.entries[key + STRING]?.first
     }
 
@@ -107,6 +111,7 @@ class LWWMap : DeltaCRDT {
      */
     @Name("iteratorBoolean")
     fun iteratorBoolean(): Iterator<Pair<String, Boolean>> {
+        onRead()
         return this.entries.asSequence().filter { (k, v) -> k.endsWith(BOOLEAN) && v.first != null }
             .map { (k, v) -> Pair(k.removeSuffix(BOOLEAN), v.first.toBoolean()) }.iterator()
     }
@@ -117,6 +122,7 @@ class LWWMap : DeltaCRDT {
      */
     @Name("iteratorDouble")
     fun iteratorDouble(): Iterator<Pair<String, Double>> {
+        onRead()
         return this.entries.asSequence().filter { (k, v) -> k.endsWith(DOUBLE) && v.first != null }
             .map { (k, v) -> Pair(k.removeSuffix(DOUBLE), v.first!!.toDouble()) }.iterator()
     }
@@ -127,6 +133,7 @@ class LWWMap : DeltaCRDT {
      */
     @Name("iteratorInt")
     fun iteratorInt(): Iterator<Pair<String, Int>> {
+        onRead()
         return this.entries.asSequence().filter { (k, v) -> k.endsWith(INTEGER) && v.first != null }
             .map { (k, v) -> Pair(k.removeSuffix(INTEGER), v.first!!.toInt()) }.iterator()
     }
@@ -137,6 +144,7 @@ class LWWMap : DeltaCRDT {
      */
     @Name("iteratorString")
     fun iteratorString(): Iterator<Pair<String, String>> {
+        onRead()
         return this.entries.asSequence().filter { (k, v) -> k.endsWith(STRING) && v.first != null }
             .map { (k, v) -> Pair(k.removeSuffix(STRING), v.first!!) }.iterator()
     }
@@ -156,6 +164,7 @@ class LWWMap : DeltaCRDT {
             this.entries[key + BOOLEAN] = Pair(value?.toString(), ts)
             op.entries[key + BOOLEAN] = Pair(value?.toString(), ts)
         }
+        onWrite(op)
         return op
     }
 
@@ -174,6 +183,7 @@ class LWWMap : DeltaCRDT {
             this.entries[key + DOUBLE] = Pair(value?.toString(), ts)
             op.entries[key + DOUBLE] = Pair(value?.toString(), ts)
         }
+        onWrite(op)
         return op
     }
 
@@ -192,6 +202,7 @@ class LWWMap : DeltaCRDT {
             this.entries[key + INTEGER] = Pair(value?.toString(), ts)
             op.entries[key + INTEGER] = Pair(value?.toString(), ts)
         }
+        onWrite(op)
         return op
     }
 
@@ -210,6 +221,7 @@ class LWWMap : DeltaCRDT {
             this.entries[key + STRING] = Pair(value, ts)
             op.entries[key + STRING] = Pair(value, ts)
         }
+        onWrite(op)
         return op
     }
 
@@ -221,7 +233,9 @@ class LWWMap : DeltaCRDT {
      */
     @Name("deleteBoolean")
     fun deleteBoolean(key: String): LWWMap {
-        return put(key, null as Boolean?)
+        val op = put(key, null as Boolean?)
+        onWrite(op)
+        return op
     }
 
     /**
@@ -232,7 +246,9 @@ class LWWMap : DeltaCRDT {
      */
     @Name("deleteDouble")
     fun deleteDouble(key: String): LWWMap {
-        return put(key, null as Double?)
+        val op = put(key, null as Double?)
+        onWrite(op)
+        return op
     }
 
     /**
@@ -243,7 +259,9 @@ class LWWMap : DeltaCRDT {
      */
     @Name("deleteInt")
     fun deleteInt(key: String): LWWMap {
-        return put(key, null as Int?)
+        val op = put(key, null as Int?)
+        onWrite(op)
+        return op
     }
 
     /**
@@ -254,7 +272,9 @@ class LWWMap : DeltaCRDT {
      */
     @Name("deleteString")
     fun deleteString(key: String): LWWMap {
-        return put(key, null as String?)
+        val op = put(key, null as String?)
+        onWrite(op)
+        return op
     }
 
     /**

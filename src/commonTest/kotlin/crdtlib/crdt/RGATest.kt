@@ -500,7 +500,10 @@ class RGATest : StringSpec({
         val rga1 = RGA(client1)
         val rga2 = RGA(client1)
 
-        val insertOp = rga1.insertAt(0, "A")
+        val returnedInsertOp = rga1.insertAt(0, "A")
+        val insertOp = client1.popWrite().second
+        returnedInsertOp.shouldBe(insertOp)
+
         rga2.merge(insertOp)
         rga2.merge(insertOp)
 
@@ -531,7 +534,10 @@ class RGATest : StringSpec({
 
         rga1.insertAt(0, "A")
         rga2.merge(rga1)
-        val removeOp = rga1.removeAt(0)
+        val returnedRemoveOp = rga1.removeAt(0)
+        val removeOp = client1.popWrite().second
+        returnedRemoveOp.shouldBe(removeOp)
+
         rga1.merge(removeOp)
         rga2.merge(removeOp)
 
@@ -557,8 +563,13 @@ class RGATest : StringSpec({
         val rga1 = RGA(client1)
         val rga2 = RGA(client1)
 
-        val insertOp = rga1.insertAt(0, "A")
-        val removeOp = rga1.removeAt(0)
+        val returnedInsertOp = rga1.insertAt(0, "A")
+        val insertOp = client1.popWrite().second
+        returnedInsertOp.shouldBe(insertOp)
+        val returnedRemoveOp = rga1.removeAt(0)
+        val removeOp = client1.popWrite().second
+        returnedRemoveOp.shouldBe(removeOp)
+
         rga1.merge(insertOp)
         rga1.merge(removeOp)
         rga2.merge(insertOp)
@@ -586,8 +597,13 @@ class RGATest : StringSpec({
         val rga1 = RGA(client1)
         val rga2 = RGA(client1)
 
-        val op1 = rga1.insertAt(0, "A")
-        val op2 = rga1.removeAt(0)
+        val returnedOp1 = rga1.insertAt(0, "A")
+        val op1 = client1.popWrite().second
+        returnedOp1.shouldBe(op1)
+        val returnedOp2 = rga1.removeAt(0)
+        val op2 = client1.popWrite().second
+        returnedOp2.shouldBe(op2)
+
         op1.merge(op2)
         rga1.merge(op1)
         rga2.merge(op1)
@@ -614,8 +630,13 @@ class RGATest : StringSpec({
         val rga1 = RGA(client1)
         val rga2 = RGA(client1)
 
-        val op1 = rga1.insertAt(0, "A")
-        val op2 = rga1.removeAt(0)
+        val returnedOp1 = rga1.insertAt(0, "A")
+        val op1 = client1.popWrite().second
+        returnedOp1.shouldBe(op1)
+        val returnedOp2 = rga1.removeAt(0)
+        val op2 = client1.popWrite().second
+        returnedOp2.shouldBe(op2)
+
         op2.merge(op1)
         rga1.merge(op2)
         rga2.merge(op2)

@@ -71,6 +71,7 @@ class Ratchet : DeltaCRDT {
      */
     @Name("get")
     fun get(): String? {
+        onRead()
         return this.value
     }
 
@@ -86,7 +87,9 @@ class Ratchet : DeltaCRDT {
         if (value != null && this.value.orEmpty() <= value) {
             this.value = value
         }
-        return Ratchet(this.value)
+        val delta = Ratchet(this.value)
+        onWrite(delta)
+        return delta
     }
 
     /**

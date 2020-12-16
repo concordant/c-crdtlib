@@ -123,6 +123,7 @@ class RGA : DeltaCRDT, Iterable<String> {
 
         val delta = RGA()
         delta.nodes.add(newNode)
+        onWrite(delta)
         return delta
     }
 
@@ -142,6 +143,7 @@ class RGA : DeltaCRDT, Iterable<String> {
 
         val delta = RGA()
         delta.nodes.add(newNode)
+        onWrite(delta)
         return delta
     }
 
@@ -151,6 +153,7 @@ class RGA : DeltaCRDT, Iterable<String> {
      */
     @Name("get")
     fun get(): List<String> {
+        onRead()
         return this.nodes.filter { !it.removed }.map { it.atom }
     }
 
@@ -160,6 +163,7 @@ class RGA : DeltaCRDT, Iterable<String> {
      */
     @Name("getAt")
     fun get(index: Int): String {
+        onRead()
         val realIndex = toRealIndex(index)
         return this.nodes[realIndex].atom
     }
