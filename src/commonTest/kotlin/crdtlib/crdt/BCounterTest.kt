@@ -271,7 +271,10 @@ class BCounterTest : StringSpec({
         val cnt1 = BCounter(client1)
         val cnt2 = BCounter(client1)
 
-        val incOp = cnt1.increment(11)
+        val returnedIncOp = cnt1.increment(11)
+        val incOp = client1.popWrite().second
+        returnedIncOp.shouldBe(incOp)
+
         cnt2.merge(incOp)
         cnt1.merge(incOp)
 
@@ -284,8 +287,13 @@ class BCounterTest : StringSpec({
         val cnt1 = BCounter(client1)
         val cnt2 = BCounter(client1)
 
-        val incOp = cnt1.increment(15)
-        val decOp = cnt1.decrement(11)
+        val returnedIncOp = cnt1.increment(15)
+        val incOp = client1.popWrite().second
+        returnedIncOp.shouldBe(incOp)
+        val returnedDecOp = cnt1.decrement(11)
+        val decOp = client1.popWrite().second
+        returnedDecOp.shouldBe(decOp)
+
         cnt2.merge(incOp)
         cnt1.merge(incOp)
         cnt2.merge(decOp)
