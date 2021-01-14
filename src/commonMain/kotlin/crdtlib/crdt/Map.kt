@@ -59,13 +59,18 @@ class Map : DeltaCRDT {
 
     /**
      * Proxy environment, for embedded CRDT maps
-     * Delegates tick() to env,
+     * Delegates tick() and update() to env,
      * intercept and allow to retrieve intermediate deltas.
      */
     private inner class ProxyEnv() :
         SimpleEnvironment(ClientUId("Map Proxy Env")) {
+        var lastTs: Timestamp? = null
         override fun tick(): Timestamp {
             return env.tick()
+        }
+        override fun update(ts: Timestamp) {
+            val currentTs = lastTs
+            if (currentTs == null || currentTs < ts) lastTs = ts
         }
     }
 
@@ -586,6 +591,7 @@ class Map : DeltaCRDT {
             localCnt.merge(cnt)
             this.cntMap[key] = localCnt
         }
+        onMerge(delta, proxyEnv.lastTs)
     }
 
     /**

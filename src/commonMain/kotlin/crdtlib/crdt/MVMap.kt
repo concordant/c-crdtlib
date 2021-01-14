@@ -355,6 +355,7 @@ class MVMap : DeltaCRDT {
     override fun merge(delta: DeltaCRDT) {
         if (delta !is MVMap) throw IllegalArgumentException("MVMap unsupported merge argument")
 
+        var lastTs: Timestamp? = null
         for ((key, foreignEntries) in delta.entries) {
 
             val keptEntries = mutableSetOf<Pair<String?, Timestamp>>()
@@ -366,18 +367,25 @@ class MVMap : DeltaCRDT {
                     }
                 }
                 for ((value, ts) in foreignEntries) {
+                    if (lastTs == null || lastTs < ts) {
+                        lastTs = ts
+                    }
                     if (!this.causalContext.contains(ts)) {
                         keptEntries.add(Pair(value, ts))
                     }
                 }
             } else {
                 for ((value, ts) in foreignEntries) {
+                    if (lastTs == null || lastTs < ts) {
+                        lastTs = ts
+                    }
                     keptEntries.add(Pair(value, ts))
                 }
             }
             this.entries[key] = keptEntries
         }
         this.causalContext.update(delta.causalContext)
+        onMerge(delta, lastTs)
     }
 
     /**

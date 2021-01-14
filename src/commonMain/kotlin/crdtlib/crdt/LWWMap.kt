@@ -304,7 +304,11 @@ class LWWMap : DeltaCRDT {
     override fun merge(delta: DeltaCRDT) {
         if (delta !is LWWMap) throw IllegalArgumentException("LWWMap unsupported merge argument")
 
+        var lastTs: Timestamp? = null
         for ((key, meta) in delta.entries) {
+            if (lastTs == null || lastTs < meta.second) {
+                lastTs = meta.second
+            }
             val value = meta.first
             val ts = meta.second
             val localTs = this.entries[key]?.second
@@ -312,6 +316,7 @@ class LWWMap : DeltaCRDT {
                 this.entries[key] = Pair(value, ts)
             }
         }
+        onMerge(delta, lastTs)
     }
 
     /**

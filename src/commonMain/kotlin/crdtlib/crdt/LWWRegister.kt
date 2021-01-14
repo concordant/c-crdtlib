@@ -130,6 +130,7 @@ class LWWRegister : DeltaCRDT {
             this.value = delta.value
             this.ts = delta.ts
         }
+        onMerge(delta, delta.ts)
     }
 
     /**

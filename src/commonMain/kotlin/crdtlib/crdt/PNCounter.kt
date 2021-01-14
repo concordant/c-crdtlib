@@ -175,18 +175,26 @@ class PNCounter : DeltaCRDT {
     override fun merge(delta: DeltaCRDT) {
         if (delta !is PNCounter) throw IllegalArgumentException("PNCounter unsupported merge argument")
 
+        var lastTs: Timestamp? = null
         for ((uid, meta) in delta.increment) {
+            if (lastTs == null || lastTs < meta.second) {
+                lastTs = meta.second
+            }
             val localMeta = this.increment[uid]
             if (localMeta == null || localMeta.first < meta.first) {
                 this.increment[uid] = Pair(meta.first, meta.second)
             }
         }
         for ((uid, meta) in delta.decrement) {
+            if (lastTs == null || lastTs < meta.second) {
+                lastTs = meta.second
+            }
             val localMeta = this.decrement[uid]
             if (localMeta == null || localMeta.first < meta.first) {
                 this.decrement[uid] = Pair(meta.first, meta.second)
             }
         }
+        onMerge(delta, lastTs)
     }
 
     /**
