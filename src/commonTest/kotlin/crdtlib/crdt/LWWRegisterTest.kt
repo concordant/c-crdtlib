@@ -78,8 +78,8 @@ class LWWRegisterTest : StringSpec({
     "R1: create empty; R2: create with greater timestamp, merge, get" {
         val value = "value"
 
-        val reg1 = LWWRegister()
-        val reg2 = LWWRegister(value, client1)
+        val reg1 = LWWRegister(client1)
+        val reg2 = LWWRegister(value, client2)
         reg1.merge(reg2)
         reg2.merge(reg1)
 
