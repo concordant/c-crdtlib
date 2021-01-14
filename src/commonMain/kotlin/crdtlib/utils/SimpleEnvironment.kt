@@ -76,4 +76,8 @@ open class SimpleEnvironment(uid: ClientUId) : Environment(uid) {
     override fun onWrite(obj: DeltaCRDT, delta: DeltaCRDT) {
         this.lastWrite = Pair(obj, delta)
     }
+
+    override fun onMerge(obj: DeltaCRDT, delta: DeltaCRDT, lastTs: Timestamp?) {
+        if (lastTs != null) this.update(lastTs)
+    }
 }

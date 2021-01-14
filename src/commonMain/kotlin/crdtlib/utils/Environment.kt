@@ -85,4 +85,15 @@ abstract class Environment {
      */
     @Name("onWrite")
     open fun onWrite(obj: DeltaCRDT, delta: DeltaCRDT) {}
+
+    /**
+     * Hook method called by CRDTs on every write operation
+     *
+     * Note: a merge is not considered as an operation.
+     * @param obj the object merge target.
+     * @param delta the delta to be merged.
+     * @param lastTs the foreign timestamp with greater value.
+     */
+    @Name("onMerge")
+    open fun onMerge(obj: DeltaCRDT, delta: DeltaCRDT, lastTs: Timestamp?) {}
 }
