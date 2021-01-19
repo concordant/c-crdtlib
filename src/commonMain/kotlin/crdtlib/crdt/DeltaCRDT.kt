@@ -21,6 +21,7 @@ package crdtlib.crdt
 
 import crdtlib.utils.Environment
 import crdtlib.utils.Name
+import crdtlib.utils.Timestamp
 import crdtlib.utils.VersionVector
 
 /**
@@ -85,10 +86,24 @@ abstract class DeltaCRDT {
      * Must be called on every write operation on this.
      * Call current environment onWrite method.
      * Environment must be initialized.
-     * @param delta the delta from this modification
+     * @param delta the delta from this modification.
      */
     protected fun onWrite(delta: DeltaCRDT) {
-        this.env.onWrite(this, delta)
+        if (this::env.isInitialized) this.env.onWrite(this, delta)
+    }
+
+    /**
+     * Convenience method to notify a merge to current environment.
+     *
+     * Must be called on every merge operation on this.
+     * Call current environment [onMerge](Environment.onMerge) method.
+     * Environment must be initialized.
+     * @param delta the delta to be merged.
+     * @param lastTs the foreign timestamp with greater value.
+     */
+    protected fun onMerge(delta: DeltaCRDT, lastTs: Timestamp?) {
+        println(this::env.isInitialized)
+        if (this::env.isInitialized) this.env.onMerge(this, delta, lastTs)
     }
 
     /**

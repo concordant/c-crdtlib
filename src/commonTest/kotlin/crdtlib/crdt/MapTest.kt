@@ -671,9 +671,9 @@ class MapTest : StringSpec({
     }
 
     /**
-     * This test evaluates the scenario: putLWW || put || merge1 del merge2 get/iterator.
-     * Call to get should return the value set by put registered in the second replica.
-     * Call to iterator should return an iterator containing the value set by put registered in the second replica.
+     * This test evaluates the scenario: put || put || merge1 del merge3 get/iterator.
+     * Call to get should return null.
+     * Call to iterator should return an empty iterator.
      */
     "LWW: R1 put ; merge R1->R2 ; R2 delete | R3 put ; merge R3->R2" {
         val map1 = Map(client1)
@@ -689,36 +689,27 @@ class MapTest : StringSpec({
         map2.deleteLWWDouble(key1)
         map2.deleteLWWInt(key1)
         map2.deleteLWWString(key1)
-        // client3 has a larger uid: next puts win
         map3.putLWW(key1, valBoolean2)
         map3.putLWW(key1, valDouble2)
         map3.putLWW(key1, valInt2)
         map3.putLWW(key1, valString2)
         map2.merge(map3)
 
-        map2.getLWWBoolean(key1).shouldBe(valBoolean2)
-        map2.getLWWDouble(key1).shouldBe(valDouble2)
-        map2.getLWWInt(key1).shouldBe(valInt2)
-        map2.getLWWString(key1).shouldBe(valString2)
+        map2.getLWWBoolean(key1).shouldBeNull()
+        map2.getLWWDouble(key1).shouldBeNull()
+        map2.getLWWInt(key1).shouldBeNull()
+        map2.getLWWString(key1).shouldBeNull()
 
-        val iteratorBoolean = map3.iteratorLWWBoolean()
-        iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key1, valBoolean2))
+        val iteratorBoolean = map2.iteratorLWWBoolean()
         iteratorBoolean.shouldBeEmpty()
 
-        val iteratorDouble = map3.iteratorLWWDouble()
-        iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key1, valDouble2))
+        val iteratorDouble = map2.iteratorLWWDouble()
         iteratorDouble.shouldBeEmpty()
 
-        val iteratorInt = map3.iteratorLWWInt()
-        iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key1, valInt2))
+        val iteratorInt = map2.iteratorLWWInt()
         iteratorInt.shouldBeEmpty()
 
-        val iteratorString = map3.iteratorLWWString()
-        iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key1, valString2))
+        val iteratorString = map2.iteratorLWWString()
         iteratorString.shouldBeEmpty()
     }
 
