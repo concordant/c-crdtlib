@@ -22,9 +22,13 @@ package crdtlib.utils
 import crdtlib.crdt.DeltaCRDT
 
 /**
-* This class represents a simple environment
-* generating increasing monotonic timestamps
-* and providing access to the last submitted delta.
+* A simple environment generating increasing monotonic timestamps
+*
+* For simplicity, it also:
+* - Provides access to the last submitted delta
+* - Automatically updates itself on merge operations to ensure
+*   a generated timestamp is always greater than any known timestamp
+*
 * @property uid the client unique identifier associated with this environment.
 */
 open class SimpleEnvironment(uid: ClientUId) : Environment(uid) {

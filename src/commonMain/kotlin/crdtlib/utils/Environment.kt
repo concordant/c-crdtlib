@@ -70,7 +70,8 @@ abstract class Environment {
     /**
      * Hook method called by CRDTs on every read operation
      *
-     * Note: a delta generation is not considered as an operation.
+     * Note: a delta generation is not considered as an operation
+     *       and MUST NOT trigger onRead.
      * @param obj the accessed object.
      */
     @Name("onRead")
@@ -79,7 +80,8 @@ abstract class Environment {
     /**
      * Hook method called by CRDTs on every write operation
      *
-     * Note: a merge is not considered as an operation.
+     * Note: a merge is not considered as an operation,
+     *       and MUST trigger [onMerge] instead.
      * @param obj the modified object.
      * @param delta the delta from this operation.
      */
@@ -87,12 +89,14 @@ abstract class Environment {
     open fun onWrite(obj: DeltaCRDT, delta: DeltaCRDT) {}
 
     /**
-     * Hook method called by CRDTs on every write operation
+     * Hook method called by CRDTs on every merge
      *
-     * Note: a merge is not considered as an operation.
+     * Note: a merge is not considered as an operation
+     *       and MUST NOT trigger [onWrite].
      * @param obj the object merge target.
      * @param delta the delta to be merged.
-     * @param lastTs the foreign timestamp with greater value.
+     * @param lastTs the foreign timestamp with greater value,
+     * or null if delta does not carry timestamps.
      */
     @Name("onMerge")
     open fun onMerge(obj: DeltaCRDT, delta: DeltaCRDT, lastTs: Timestamp?) {}

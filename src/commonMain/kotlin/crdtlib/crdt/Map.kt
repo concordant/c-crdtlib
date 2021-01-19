@@ -64,13 +64,31 @@ class Map : DeltaCRDT {
      */
     private inner class ProxyEnv() :
         SimpleEnvironment(ClientUId("Map Proxy Env")) {
-        var lastTs: Timestamp? = null
+        /**
+         * Store the last delta and timestamp submitted via onMerge()
+         **/
+        private var lastMerge: Pair<DeltaCRDT, Timestamp?>? = null
+
+        /** Pop (return and delete) last (delta, ts) submitted via onMerge
+         * Throws NullPointerException if last submitted delta
+         * has already been pop()ed.
+         * @return the last merge as a Pair(delta)
+         **/
+        fun popMerge(): Pair<DeltaCRDT, Timestamp?> {
+            val d = lastMerge
+            lastMerge = null
+            return d!!
+        }
+
         override fun tick(): Timestamp {
             return env.tick()
         }
-        override fun update(ts: Timestamp) {
-            val currentTs = lastTs
-            if (currentTs == null || currentTs < ts) lastTs = ts
+        override fun onMerge(
+            obj: DeltaCRDT,
+            delta: DeltaCRDT,
+            lastTs: Timestamp?,
+        ) {
+            this.lastMerge = Pair(delta, lastTs)
         }
     }
 
@@ -583,15 +601,26 @@ class Map : DeltaCRDT {
         if (delta !is Map) throw IllegalArgumentException("Map unsupported merge argument")
 
         this.lwwMap.merge(delta.lwwMap)
+        // compute max timestamp for onMerge()
+        var lastTs = proxyEnv.popMerge().second
+
         this.mvMap.merge(delta.mvMap)
+        val mvMapTs = proxyEnv.popMerge().second
+        if (lastTs == null || mvMapTs?.compareTo(lastTs) ?: 0 > 0) {
+            lastTs = mvMapTs
+        }
 
         for ((key, cnt) in delta.cntMap) {
             var localCnt = this.cntMap[key]
             if (localCnt == null) localCnt = PNCounter(proxyEnv)
             localCnt.merge(cnt)
+            val localCntTs = proxyEnv.popMerge().second
+            if (lastTs == null || localCntTs?.compareTo(lastTs) ?: 0 > 0) {
+                lastTs = localCntTs
+            }
             this.cntMap[key] = localCnt
         }
-        onMerge(delta, proxyEnv.lastTs)
+        onMerge(delta, lastTs)
     }
 
     /**

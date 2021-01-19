@@ -96,7 +96,7 @@ abstract class DeltaCRDT {
      * Convenience method to notify a merge to current environment.
      *
      * Must be called on every merge operation on this.
-     * Call current environment onMerge method.
+     * Call current environment [onMerge](Environment.onMerge) method.
      * Environment must be initialized.
      * @param delta the delta to be merged.
      * @param lastTs the foreign timestamp with greater value.
