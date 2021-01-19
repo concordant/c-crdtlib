@@ -661,9 +661,9 @@ class LWWMapTest : StringSpec({
     }
 
     /**
-     * This test evaluates the scenario: put || putLWW || merge1 del merge2 get/iterator.
-     * Call to get should return the value set by put registered in the second replica.
-     * Call to iterator should return an iterator containing the value set by the put registered in the second replica.
+     * This test evaluates the scenario: put || put || merge1 del merge3 get/iterator.
+     * Call to get should return null.
+     * Call to iterator should return an empty iterator.
      */
     "R1: put | R3: put; merge R1->R2, R2: delete, merge R3->R2" {
         val map1 = LWWMap(client1)
@@ -679,36 +679,27 @@ class LWWMapTest : StringSpec({
         map3.put(key1, valInt2)
         map3.put(key1, valString2)
         map2.merge(map1)
-        // environment not updated by merge: next deletes lose
         map2.deleteBoolean(key1)
         map2.deleteDouble(key1)
         map2.deleteInt(key1)
         map2.deleteString(key1)
         map2.merge(map3)
 
-        map2.getBoolean(key1).shouldBe(valBoolean2)
-        map2.getDouble(key1).shouldBe(valDouble2)
-        map2.getInt(key1).shouldBe(valInt2)
-        map2.getString(key1).shouldBe(valString2)
+        map2.getBoolean(key1).shouldBeNull()
+        map2.getDouble(key1).shouldBeNull()
+        map2.getInt(key1).shouldBeNull()
+        map2.getString(key1).shouldBeNull()
 
         val iteratorBoolean = map2.iteratorBoolean()
-        iteratorBoolean.shouldHaveNext()
-        iteratorBoolean.next().shouldBe(Pair(key1, valBoolean2))
         iteratorBoolean.shouldBeEmpty()
 
         val iteratorDouble = map2.iteratorDouble()
-        iteratorDouble.shouldHaveNext()
-        iteratorDouble.next().shouldBe(Pair(key1, valDouble2))
         iteratorDouble.shouldBeEmpty()
 
         val iteratorInt = map2.iteratorInt()
-        iteratorInt.shouldHaveNext()
-        iteratorInt.next().shouldBe(Pair(key1, valInt2))
         iteratorInt.shouldBeEmpty()
 
         val iteratorString = map2.iteratorString()
-        iteratorString.shouldHaveNext()
-        iteratorString.next().shouldBe(Pair(key1, valString2))
         iteratorString.shouldBeEmpty()
     }
 

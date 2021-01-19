@@ -116,6 +116,7 @@ class Ratchet : DeltaCRDT {
         ) {
             this.value = delta.value
         }
+        onMerge(delta, null)
     }
 
     /**

@@ -146,7 +146,11 @@ class MVRegister : DeltaCRDT, Iterable<String> {
                 keptEntries.add(Pair(value, ts))
             }
         }
+        var lastTs: Timestamp? = null
         for ((value, ts) in delta.entries) {
+            if (lastTs == null || lastTs < ts) {
+                lastTs = ts
+            }
             if (!this.causalContext.contains(ts) || this.entries.any { it.second == ts }) {
                 keptEntries.add(Pair(value, ts))
             }
@@ -154,6 +158,7 @@ class MVRegister : DeltaCRDT, Iterable<String> {
 
         this.entries = keptEntries
         this.causalContext.update(delta.causalContext)
+        onMerge(delta, lastTs)
     }
 
     /**

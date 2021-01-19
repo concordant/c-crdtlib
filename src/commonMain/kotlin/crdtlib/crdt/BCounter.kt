@@ -251,8 +251,12 @@ class BCounter : DeltaCRDT {
     override fun merge(delta: DeltaCRDT) {
         if (delta !is BCounter) throw IllegalArgumentException("BCounter unsupported merge argument")
 
+        var lastTs: Timestamp? = null
         for ((uid, meta2) in delta.increment) {
             for ((uid2, meta) in meta2) {
+                if (lastTs == null || lastTs < meta.second) {
+                    lastTs = meta.second
+                }
                 if (this.increment[uid] == null) {
                     this.increment[uid] = mutableMapOf(uid2 to Pair(meta.first, meta.second))
                 }
@@ -263,11 +267,15 @@ class BCounter : DeltaCRDT {
             }
         }
         for ((uid, meta) in delta.decrement) {
+            if (lastTs == null || lastTs < meta.second) {
+                lastTs = meta.second
+            }
             val localMeta = this.decrement[uid]
             if (localMeta == null || localMeta.first < meta.first) {
                 this.decrement[uid] = Pair(meta.first, meta.second)
             }
         }
+        onMerge(delta, lastTs)
     }
 
     /**

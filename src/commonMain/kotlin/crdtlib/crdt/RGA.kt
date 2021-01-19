@@ -196,7 +196,11 @@ class RGA : DeltaCRDT, Iterable<String> {
     override fun merge(delta: DeltaCRDT) {
         if (delta !is RGA) throw IllegalArgumentException("RGA unsupported merge argument")
 
+        var lastTs: Timestamp? = null
         for (node in delta.nodes) {
+            if (lastTs == null || lastTs < node.ts) {
+                lastTs = node.ts
+            }
             val localNode = this.nodes.find { it.uid == node.uid }
             if (localNode == null) { // First time this node is seen.
                 var index = 0
@@ -256,6 +260,7 @@ class RGA : DeltaCRDT, Iterable<String> {
                 }
             }
         }
+        onMerge(delta, lastTs)
     }
 
     /**
