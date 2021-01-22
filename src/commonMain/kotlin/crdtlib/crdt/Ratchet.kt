@@ -27,16 +27,30 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 
 /**
-* This class is a delta-based CRDT join semi-lattice ratchet.
-* A join (or upper) semi-lattice is a set of values on which a partial order is defined such that
-* the result of a merge operation for any two elements is the greatest upper bound of the elements
-* with respect to this partial order.
-* It is serializable to JSON and respect the following schema:
-* {
-*   "type": "Ratchet",
-*   "value": $value
-* }
-*/
+ * A delta-based CRDT join semi-lattice ratchet.
+ *
+ * A join (or upper) semi-lattice is a partially ordered set
+ * endowed with a join operation: for any two elements,
+ * the result of the join operation is their greatest upper bound
+ * with respect to the partial order.
+ *
+ * A Ratchet is a register whose value is the join of all assigned values:
+ * when assigning or merging, the retained value is the join
+ * of the two values.
+ * Note that join is not max: on a partially ordered set,
+ * the join of two values is not necessarily one of them.
+ *
+ * This is a sample implementation using Strings,
+ * with default (total) ordering.
+ *
+ * Its JSON serialization respects the following schema:
+ * ```json
+ * {
+ *   "type": "Ratchet",
+ *   "value": $value
+ * }
+ * ```
+ */
 @Serializable
 class Ratchet : DeltaCRDT {
     /*
@@ -46,20 +60,17 @@ class Ratchet : DeltaCRDT {
     var value: String? = null
 
     /**
-     * Default constructor creating an empty ratchet.
+     * Constructs an empty Ratchet instance.
      */
     constructor() : super()
 
     /**
-     * Constructor creating an empty ratchet with provided environment.
-     * @param env the current environment
+     * Constructs an empty Ratchet instance with provided environment.
      */
     constructor(env: Environment) : super(env)
 
     /**
-     * Constructor creating a ratchet with initial value and environment.
-     * @param value the initial value
-     * @param env the current environment
+     * Constructs a Ratchet instance with initial [value] and environment.
      */
     constructor(value: String?, env: Environment? = null) : super(env) {
         this.value = value
@@ -67,7 +78,6 @@ class Ratchet : DeltaCRDT {
 
     /**
      * Gets the value stored in the ratchet.
-     * @return the value stored in the ratchet.
      */
     @Name("get")
     fun get(): String? {
@@ -76,10 +86,9 @@ class Ratchet : DeltaCRDT {
     }
 
     /**
-     * Assigns a given value to the ratchet.
-     * This passed value overload the already present one iff it is greater.
-     * @param value the value that should be assigned.
-     * @return the delta corresponding to this operation.
+     * Assigns a given [value] to the ratchet.
+     *
+     * This is a no-op if [value] is not greater than current value.
      */
     @Name("set")
     fun assign(value: String?): Ratchet {
@@ -92,21 +101,10 @@ class Ratchet : DeltaCRDT {
         return delta
     }
 
-    /**
-     * Generates a delta of operations recorded and not already present in a given context.
-     * @param vv the context used as starting point to generate the delta.
-     * @return the corresponding delta of operations.
-     */
     override fun generateDelta(vv: VersionVector): Ratchet {
         return Ratchet(this.value)
     }
 
-    /**
-     * Merges information contained in a given delta into the local replica, the merge is unilateral
-     * and only the local replica is modified.
-     * A foreign value is kept iff it is greater than the local one.
-     * @param delta the delta that should be merge with the local replica.
-     */
     override fun merge(delta: DeltaCRDT) {
         if (delta !is Ratchet) throw IllegalArgumentException("Ratchet unsupported merge argument")
 
@@ -119,10 +117,6 @@ class Ratchet : DeltaCRDT {
         onMerge(delta, null)
     }
 
-    /**
-     * Serializes this crdt ratchet to a json string.
-     * @return the resulted json string.
-     */
     override fun toJson(): String {
         val jsonSerializer = JsonRatchetSerializer(serializer())
         return Json.encodeToString(jsonSerializer, this)

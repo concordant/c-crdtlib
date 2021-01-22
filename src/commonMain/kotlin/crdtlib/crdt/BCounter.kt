@@ -26,15 +26,15 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 
 /**
-* This class is a delta-based CRDT bounded-counter for invariant greater or equal to 0.
- * The initial value is 0.
+ * A delta-based CRDT bounded-counter (non-negative, initially 0).
  *
  * Following design from  V. Balegas et al., "Extending
  * Eventually Consistent Cloud Databases for Enforcing Numeric Invariants,"
  * 2015 IEEE 34th Symposium on Reliable Distributed Systems (SRDS),
  * Montreal, QC, 2015, pp. 31-36, doi: 10.1109/SRDS.2015.32.
  *
- * It is serializable to JSON and respect the following schema:
+ * Its JSON serialization respects the following schema:
+ * ```json
  * {
  *   "type": "BCounter",
  *   "metadata": {
@@ -61,6 +61,7 @@ import kotlinx.serialization.json.*
  *   },
  *   "value": $value // $value is an integer
  * }
+ * ```
  */
 @Serializable
 class BCounter : DeltaCRDT {
@@ -72,15 +73,18 @@ class BCounter : DeltaCRDT {
     constructor(env: Environment) : super(env)
 
     /**
-     * A mutable map of mutable map storing each client metadata relative to increment operations.
-     * increment[i][i] represent the increments by replica i.
-     * increment[i][j] with i!=j represent the rights transferred from replica i to replica j.
+     * A two-level mutable map storing each client metadata
+     * relative to increment operations:
+     * - increment[i][i] represents the increments by replica i.
+     * - increment[i][j] with i!=j represents the rights transferred
+     *                   from replica i to replica j.
      */
     @Required
     private val increment: MutableMap<ClientUId, MutableMap<ClientUId, Pair<Int, Timestamp>>> = mutableMapOf()
 
     /**
-     * A mutable map storing each client metadata relative to decrement operations.
+     * A mutable map storing each client metadata
+     * relative to decrement operations:
      * decrement[i] represent the rights consumed by replica i.
      * Invariant:
      * dec[i] ≤ inc[i][i] + 𝚺_{i≠j} inc[j][i] - 𝚺_{i≠j} inc[i][j]
@@ -91,7 +95,6 @@ class BCounter : DeltaCRDT {
 
     /**
      * Gets the value of the counter.
-     * @return the value of the counter.
      */
     @Name("get")
     fun get(): Int {
@@ -110,7 +113,6 @@ class BCounter : DeltaCRDT {
 
     /**
      * Gets the local rights of the counter.
-     * @return the local rights of the counter.
      */
     @Name("localRights")
     fun localRights(uid: ClientUId): Int {
@@ -132,8 +134,10 @@ class BCounter : DeltaCRDT {
     }
 
     /**
-     * Increments the counter by the given amount.
-     * @param amount the value that should be added to the counter.
+     * Increments the counter by the given [amount].
+     *
+     * Throw IllegalArgumentException if localRights is not sufficient
+     * (with negative amount only ; see [decrement]).
      * @return the delta corresponding to this operation.
      */
     @Name("increment")
@@ -156,8 +160,10 @@ class BCounter : DeltaCRDT {
     }
 
     /**
-     * Decrements the counter by the given amount.
-     * @param amount the value that should be removed to the counter.
+     * Decrements the counter by the given [amount].
+     *
+     * A replica can not decrement by more than its [localRights].
+     * Throw IllegalArgumentException if [localRights] are not sufficient.
      * @return the delta corresponding to this operation.
      */
     @Name("decrement")
@@ -185,9 +191,10 @@ class BCounter : DeltaCRDT {
     }
 
     /**
-     * Transfers rights from the local replica to some other replica to.
-     * @param amount the rights that should be transferred from the local replica to replica to.
-     * @param to the client uid to which rights are transfered.
+     * Transfers a given [amount] of rights from the local replica
+     * to some [other](to)
+     *
+     * Throw IllegalArgumentException if [localRights] are not sufficient.
      * @return the delta corresponding to this operation.
      */
     @Name("transfer")
@@ -214,11 +221,6 @@ class BCounter : DeltaCRDT {
         return op
     }
 
-    /**
-     * Generates a delta of operations recorded and not already present in a given context.
-     * @param vv the context used as starting point to generate the delta.
-     * @return the corresponding delta of operations.
-     */
     override fun generateDelta(vv: VersionVector): BCounter {
         val delta = BCounter()
         for ((uid1, meta2) in this.increment) {
@@ -240,14 +242,6 @@ class BCounter : DeltaCRDT {
         return delta
     }
 
-    /**
-     * Merges information contained in a given delta into the local replica, the merge is unilateral
-     * and only the local replica is modified.
-     * A foreign information (i.e., increment or decrement values) is applied if the last stored
-     * operation w.r.t to a given client is older than the foreign one, or no information is
-     * present for this client.
-     * @param delta the delta that should be merge with the local replica.
-     */
     override fun merge(delta: DeltaCRDT) {
         if (delta !is BCounter) throw IllegalArgumentException("BCounter unsupported merge argument")
 
@@ -278,10 +272,6 @@ class BCounter : DeltaCRDT {
         onMerge(delta, lastTs)
     }
 
-    /**
-     * Serializes this crdt counter to a json string.
-     * @return the resulted json string.
-     */
     override fun toJson(): String {
         val jsonSerializer = JsonBCounterSerializer(serializer())
         return Json.encodeToString(jsonSerializer, this)
