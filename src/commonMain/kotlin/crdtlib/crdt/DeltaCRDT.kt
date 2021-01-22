@@ -102,7 +102,6 @@ abstract class DeltaCRDT {
      * @param lastTs the foreign timestamp with greater value.
      */
     protected fun onMerge(delta: DeltaCRDT, lastTs: Timestamp?) {
-        println(this::env.isInitialized)
         if (this::env.isInitialized) this.env.onMerge(this, delta, lastTs)
     }
 
