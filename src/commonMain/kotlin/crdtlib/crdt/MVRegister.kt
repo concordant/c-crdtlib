@@ -30,16 +30,29 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 
 /**
-* This class is a delta-based CRDT multi-value register.
-* It is serializable to JSON and respect the following schema:
-* {
-*   "type": "MVRegister",
-*   "metadata": VersionVector.toJson(),
-*   "value": [
-*       (( $value, )*( $value ))?
-*   ]
-* }
-*/
+ * A delta-based CRDT multi-value register.
+ *
+ * Values written concurrently in different replicas of a MVRegister
+ * are all retained until a write replaces them;
+ * accessors return the set of current values.
+ * A write (or delete) replaces every *visible* (local or merged) value.
+ *
+ * On merging, a value is kept iff either:
+ * - it is in both replicas/deltas, or
+ * - it is in one replica and its associated timestamp is not
+ *   in the causal context of the other replica.
+ *
+ * Its JSON serialization respects the following schema:
+ * ```json
+ * {
+ *   "type": "MVRegister",
+ *   "metadata": VersionVector.toJson(),
+ *   "value": [
+ *       (( $value, )*( $value ))?
+ *   ]
+ * }
+ * ```
+ */
 @Serializable
 class MVRegister : DeltaCRDT, Iterable<String> {
 
@@ -62,9 +75,8 @@ class MVRegister : DeltaCRDT, Iterable<String> {
     constructor(env: Environment) : super(env)
 
     /**
-     * Constructor creating a register initialized with a given value.
-     * @param value the value to be put in the register.
-     * @param env the environment
+     * Constructs a MVRegister instance initialized with a given [value]
+     * and environment.
      */
     constructor(value: String, env: Environment) : super(env) {
         val ts = env.tick()
@@ -73,8 +85,9 @@ class MVRegister : DeltaCRDT, Iterable<String> {
     }
 
     /**
-     * Constructor creating a copy of a given register.
-     * @param other the register that should be copy.
+     * Copy constructor, discarding associated environment
+     *
+     * @return a copy of [other] with no env associated.
      */
     constructor(other: MVRegister) {
         this.entries = other.entries.toMutableSet()
@@ -92,7 +105,6 @@ class MVRegister : DeltaCRDT, Iterable<String> {
 
     /**
      * Gets the set of values currently stored in the register.
-     * @return the set of values stored.
      */
     @Name("get")
     fun get(): Set<String> {
@@ -101,11 +113,8 @@ class MVRegister : DeltaCRDT, Iterable<String> {
     }
 
     /**
-     * Assigns a given value to the register.
-     * This value overrides all others and the causal context is updated.
-     * Assign is not effective if the environment provides a timestamp
-     * already included in the causal context.
-     * @param value the value that should be assigned.
+     * Assigns a [value] to the register.
+     *
      * @return the delta corresponding to this operation.
      */
     @Name("set")
@@ -121,22 +130,10 @@ class MVRegister : DeltaCRDT, Iterable<String> {
         return delta
     }
 
-    /**
-     * Generates a delta of operations recorded and not already present in a given context.
-     * @param vv the context used as starting point to generate the delta.
-     * @return the corresponding delta of operations.
-     */
     override fun generateDelta(vv: VersionVector): MVRegister {
         return MVRegister(this)
     }
 
-    /**
-     * Merges information contained in a given delta into the local replica, the merge is unilateral
-     * and only the local replica is modified.
-     * A foreign (local) value is kept iff it is contained in the local (foreign) replica or its
-     * associated timestamp is not included in the local (foreign) causal context.
-     * @param delta the delta that should be merge with the local replica.
-     */
     override fun merge(delta: DeltaCRDT) {
         if (delta !is MVRegister) throw IllegalArgumentException("MVRegister unsupported merge argument")
 
@@ -161,10 +158,6 @@ class MVRegister : DeltaCRDT, Iterable<String> {
         onMerge(delta, lastTs)
     }
 
-    /**
-     * Serializes this crdt MV register to a json string.
-     * @return the resulted json string.
-     */
     override fun toJson(): String {
         val jsonSerializer = JsonMVRegisterSerializer(serializer())
         return Json.encodeToString(jsonSerializer, this)

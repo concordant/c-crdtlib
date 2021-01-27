@@ -28,14 +28,24 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 
 /**
-* This class is a delta-based CRDT last writer wins (LWW) register.
-* It is serializable to JSON and respects the following schema:
-* {
-*   "type": "LWWRegister",
-*   "metadata": Timestamp.toJson(),
-*   "value": $value
-* }
-*/
+ * A delta-based CRDT Last Writer Wins (LWW) register.
+ *
+ * Only the last written value is retained: the previous value (if any)
+ * is discarded.
+ *
+ * When merging, only the value associated with the greatest timestamp
+ * is retained.
+ * A deletion is represented as a null value and handled the same way.
+ *
+ * Its JSON serialization respects the following schema:
+ * ```json
+ * {
+ *   "type": "LWWRegister",
+ *   "metadata": Timestamp.toJson(),
+ *   "value": $value
+ * }
+ * ```
+ */
 @Serializable
 class LWWRegister : DeltaCRDT {
 
@@ -52,24 +62,24 @@ class LWWRegister : DeltaCRDT {
     var ts: Timestamp? = null
 
     /**
-     * Default constructor creating a empty register.
+     * Constructs an empty LWWRegister instance.
      */
     constructor() : super()
     constructor(env: Environment) : super(env)
 
     /**
-     * Constructor creating a register initialized with a given value.
-     * @param value the value to be put in the register.
-     * @param env the environment
+     * Constructs a LWWRegister instance initialized with a given [value]
+     * and environment.
      */
     constructor(value: String, env: Environment) : super(env) {
         this.value = value
         this.ts = env.tick()
     }
+
     /**
-     * Constructor creating a copy of a given register.
-     * @param other the register that should be copied.
-     * @return a copy with no env associated.
+     * Copy constructor, discarding associated environment
+     *
+     * @return a copy of [other] with no env associated.
      */
     constructor(other: LWWRegister) {
         this.value = other.value
@@ -78,7 +88,6 @@ class LWWRegister : DeltaCRDT {
 
     /**
      * Gets the value currently stored in the register.
-     * @return value stored in the register.
      */
     @Name("get")
     fun get(): String? {
@@ -87,10 +96,8 @@ class LWWRegister : DeltaCRDT {
     }
 
     /**
-     * Assigns a given value to the register.
-     * Assign is not effective if the timestamp provided by the environment
-     * is smaller (older) than the current one.
-     * @param v the value that should be assigned.
+     * Assigns a given [value](v) to the register.
+     *
      * @return the delta corresponding to this operation.
      */
     @Name("set")
@@ -106,21 +113,10 @@ class LWWRegister : DeltaCRDT {
         return delta
     }
 
-    /**
-     * Generates a delta of operations recorded and not already present in a given context.
-     * @param vv the context used as starting point to generate the delta.
-     * @return the corresponding delta of operations.
-     */
     override fun generateDelta(vv: VersionVector): LWWRegister {
         return LWWRegister(this)
     }
 
-    /**
-     * Merges information contained in a given delta into the local replica, the merge is unilateral
-     * and only the local replica is modified.
-     * The foreign value wins iff its associated timestamp is greater than the current one.
-     * @param delta the delta that should be merge with the local replica.
-     */
     override fun merge(delta: DeltaCRDT) {
         if (delta !is LWWRegister) throw IllegalArgumentException("LWWRegister unsupported merge argument")
 
@@ -133,10 +129,6 @@ class LWWRegister : DeltaCRDT {
         onMerge(delta, delta.ts)
     }
 
-    /**
-     * Serializes this crdt LWW register to a json string.
-     * @return the resulted json string.
-     */
     override fun toJson(): String {
         val jsonSerializer = JsonLWWRegisterSerializer(serializer())
         return Json.encodeToString(jsonSerializer, this)

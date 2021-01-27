@@ -36,33 +36,46 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 /**
-* This class is a delta-based CRDT pn-counter.
-* It is serializable to JSON and respect the following schema:
-* {
-*   "type": "PNCounter",
-*   "metadata": {
-*       "increment": [
-*           (( ClientUId.toJson(), {
-*               "first": $value, // $value is an integer
-*               "second": Timestamp.toJson()
-*           }, )*( ClientUId.toJson(), {
-*               "first": $value, // $value is an integer
-*               "second": Timestamp.toJson()
-*           } ))?
-*       ],
-*       "decrement": [
-*           (( ClientUId.toJson(), {
-*               "first": $value, // $value is an integer
-*               "second": Timestamp.toJson()
-*           }, )*( ClientUId.toJson(), {
-*               "first": $value, // $value is an integer
-*               "second": Timestamp.toJson()
-*           } ))?
-*       ]
-*   },
-*   "value": $value // $value is an integer
-* }
-*/
+ * A delta-based CRDT PN-counter.
+ *
+ * Initialized to 0, it can be concurrently incremented and decremented.
+ *
+ * For each replica, both sum of increments and decrements
+ * performed on the replica are retained as grow-only counters.
+ * The PN-Counter value is computed as the difference between
+ * increments and decrements of all replicas.
+ *
+ * When merging, the maximum value of every increment and decrement counter
+ * is retained (following grow-only semantic).
+ *
+ * Its JSON serialization respects the following schema:
+ * ```json
+ * {
+ *   "type": "PNCounter",
+ *   "metadata": {
+ *       "increment": [
+ *           (( ClientUId.toJson(), {
+ *               "first": $value, // $value is an integer
+ *               "second": Timestamp.toJson()
+ *           }, )*( ClientUId.toJson(), {
+ *               "first": $value, // $value is an integer
+ *               "second": Timestamp.toJson()
+ *           } ))?
+ *       ],
+ *       "decrement": [
+ *           (( ClientUId.toJson(), {
+ *               "first": $value, // $value is an integer
+ *               "second": Timestamp.toJson()
+ *           }, )*( ClientUId.toJson(), {
+ *               "first": $value, // $value is an integer
+ *               "second": Timestamp.toJson()
+ *           } ))?
+ *       ]
+ *   },
+ *   "value": $value // $value is an integer
+ * }
+ * ```
+ */
 @Serializable
 class PNCounter : DeltaCRDT {
 
@@ -86,7 +99,6 @@ class PNCounter : DeltaCRDT {
 
     /**
      * Gets the value of the counter.
-     * @return the value of the counter.
      */
     @Name("get")
     fun get(): Int {
@@ -95,8 +107,8 @@ class PNCounter : DeltaCRDT {
     }
 
     /**
-     * Increments the counter by the given amount.
-     * @param amount the value that should be added to the counter.
+     * Increments the counter by the given [amount].
+     *
      * @return the delta corresponding to this operation.
      */
     @Name("increment")
@@ -120,8 +132,8 @@ class PNCounter : DeltaCRDT {
     }
 
     /**
-     * Decrements the counter by the given amount.
-     * @param amount the value that should be removed to the counter.
+     * Decrements the counter by the given [amount].
+     *
      * @return the delta corresponding to this operation.
      */
     @Name("decrement")
@@ -144,11 +156,6 @@ class PNCounter : DeltaCRDT {
         return op
     }
 
-    /**
-     * Generates a delta of operations recorded and not already present in a given context.
-     * @param vv the context used as starting point to generate the delta.
-     * @return the corresponding delta of operations.
-     */
     override fun generateDelta(vv: VersionVector): PNCounter {
         val delta = PNCounter()
         for ((uid, meta) in increment) {
@@ -164,14 +171,6 @@ class PNCounter : DeltaCRDT {
         return delta
     }
 
-    /**
-     * Merges information contained in a given delta into the local replica, the merge is unilateral
-     * and only the local replica is modified.
-     * A foreign information (i.e., increment or decrement values) is applied if the last stored
-     * operation w.r.t to a given client is older than the foreign one, or no information is
-     * present for this client.
-     * @param delta the delta that should be merge with the local replica.
-     */
     override fun merge(delta: DeltaCRDT) {
         if (delta !is PNCounter) throw IllegalArgumentException("PNCounter unsupported merge argument")
 
@@ -197,10 +196,6 @@ class PNCounter : DeltaCRDT {
         onMerge(delta, lastTs)
     }
 
-    /**
-     * Serializes this crdt counter to a json string.
-     * @return the resulted json string.
-     */
     override fun toJson(): String {
         val jsonSerializer = JsonPNCounterSerializer(serializer())
         return Json.encodeToString(jsonSerializer, this)

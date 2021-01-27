@@ -25,8 +25,8 @@ import crdtlib.utils.Timestamp
 import crdtlib.utils.VersionVector
 
 /**
-* Interface for delta based CRDT
-*/
+ * Base class for delta-based CRDT objects and deltas
+ */
 abstract class DeltaCRDT {
     /**
      * The environment linked to this crdt.
@@ -36,9 +36,8 @@ abstract class DeltaCRDT {
     /**
      * Setter for environment.
      *
-     * Associate an environment to this; used for late initialization.
+     * Associate an environment [env] to this; used for late initialization.
      * Should be removed in the future ; still needed for deserialization.
-     * @param env the new environment reference
      */
     internal fun setEnv(env: Environment) {
         this.env = env
@@ -106,25 +105,21 @@ abstract class DeltaCRDT {
     }
 
     /**
-     * Generates the delta from a given version vector by calling the protected abstract method.
-     * @param vv the given version vector.
-     * @return the delta from the version vector.
+     * Return a delta from a given version vector [vv] to current state.
      */
     @Name("generateDelta")
     abstract fun generateDelta(vv: VersionVector): DeltaCRDT
 
     /**
-     * Merges a given delta into this CRDT
+     * Merge a given [delta] into this DeltaCRDT
      *
-     * @param delta the delta to be merge.
+     * The merge is unidirectional: only the local replica is modified.
      */
     @Name("merge")
     abstract fun merge(delta: DeltaCRDT)
 
     /**
-     * Serializes this delta crdt to a json string.
-     *
-     * @return the resulted json string.
+     * Serialize this DeltaCRDT to a JSON string.
      */
     @Name("toJson")
     abstract fun toJson(): String
@@ -133,6 +128,7 @@ abstract class DeltaCRDT {
         /**
          * Get the type name for serialization.
          *
+         * Must be implemented by every subclass
          * @return the type as a string.
          */
         @Name("getType")
@@ -141,10 +137,7 @@ abstract class DeltaCRDT {
         }
 
         /**
-         * Deserializes a given json string in the corresponding crdt type.
-         *
-         * @param json the given json string.
-         * @return the resulted delta crdt.
+         * Deserialize a given [json] string and return a CRDT.
          */
         @Name("fromJson")
         fun fromJson(json: String, env: Environment? = null): DeltaCRDT {

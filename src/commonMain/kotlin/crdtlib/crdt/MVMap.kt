@@ -28,23 +28,36 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 
 /**
-* This class is a delta-based CRDT map implementing last writer wins (MV) to resolve conflicts.
-* It is serializable to JSON and respect the following schema:
-* {
-*   "type": "MVMap",
-*   "metadata": {
-*       "entries": {
-*           // $key is a string
-*           (( "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] )*( , "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] ))?
-*       },
-*       "causalContext": VersionVector.toJson()
-*   }
-*   // $key is a string and $value can be Boolean, double, integer or string
-*   ( , "$key": [
-*           (( T.toJson(), )*( T.toJson() ))?
-*   ] )*
-* }
-*/
+ * A delta-based CRDT map implementing multi-value (MV) policy.
+ *
+ * Each entry behaves like a [MVRegister]:
+ * values written concurrently are all kept until a write replaces them;
+ * accessors return the set of current values.
+ * A write (or delete) replaces every *visible* (local or merged) value.
+ *
+ * On merging, for each key, a value is kept iff either:
+ * - it is in both replicas/deltas, or
+ * - it is in one replica and its associated timestamp is not
+ *   in the causal context of the other replica.
+ *
+ * Its JSON serialization respects the following schema:
+ * ```json
+ * {
+ *   "type": "MVMap",
+ *   "metadata": {
+ *       "entries": {
+ *           // $key is a string
+ *           (( "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] )*( , "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] ))?
+ *       },
+ *       "causalContext": VersionVector.toJson()
+ *   }
+ *   // $key is a string and $value can be a Boolean, Double, Int or String
+ *   ( , "$key": [
+ *           (( T.toJson(), )*( T.toJson() ))?
+ *   ] )*
+ * }
+ * ```
+ */
 @Serializable
 class MVMap : DeltaCRDT {
 
@@ -74,10 +87,11 @@ class MVMap : DeltaCRDT {
     }
 
     /**
-     * Gets the set of Boolean values corresponding to a given key.
-     * @param key the key that should be looked for.
-     * @return the set of Boolean values associated to the key, or null if the key is not present in
-     * the map or last operation is a delete.
+     * Gets the set of Boolean values corresponding to a given [key],
+     * or null if the key is not present in the map.
+     *
+     * A delete concurrent with writes appears as a null value
+     * in the returned set.
      */
     @Name("getBoolean")
     fun getBoolean(key: String): Set<Boolean?>? {
@@ -88,10 +102,11 @@ class MVMap : DeltaCRDT {
     }
 
     /**
-     * Gets the set of double values corresponding to a given key.
-     * @param key the key that should be looked for.
-     * @return the set of double values associated to the key, or null if the key is not present in
-     * the map or last operation is a delete.
+     * Gets the set of double values corresponding to a given [key],
+     * or null if the key is not present in the map.
+     *
+     * A delete concurrent with writes appears as a null value
+     * in the returned set.
      */
     @Name("getDouble")
     fun getDouble(key: String): Set<Double?>? {
@@ -102,10 +117,11 @@ class MVMap : DeltaCRDT {
     }
 
     /**
-     * Gets the set of integer values corresponding to a given key.
-     * @param key the key that should be looked for.
-     * @return the set of integer values associated to the key, or null if the key is not present in
-     * the map or last operation is a delete.
+     * Gets the set of integer values corresponding to a given [key],
+     * or null if the key is not present in the map.
+     *
+     * A delete concurrent with writes appears as a null value
+     * in the returned set.
      */
     @Name("getInt")
     fun getInt(key: String): Set<Int?>? {
@@ -116,10 +132,11 @@ class MVMap : DeltaCRDT {
     }
 
     /**
-     * Gets the set of string of values corresponding to a given key.
-     * @param key the key that should be looked for.
-     * @return the set of string values associated to the key, or null if the key is not present in
-     * the map or last operation is a delete.
+     * Gets the set of string of values corresponding to a given [key],
+     * or null if the key is not present in the map.
+     *
+     * A delete concurrent with writes appears as a null value
+     * in the returned set.
      */
     @Name("getString")
     fun getString(key: String): Set<String?>? {
@@ -130,8 +147,9 @@ class MVMap : DeltaCRDT {
     }
 
     /**
-     * Gets an iterator containing the Boolean values currently stored in the map.
-     * @return an iterator over the Boolean values stored in the map.
+     * Returns an iterator over the Boolean entries in the map.
+     *
+     * @see getBoolean for a description of each entry.
      */
     @Name("iteratorBoolean")
     fun iteratorBoolean(): Iterator<Pair<String, Set<Boolean?>>> {
@@ -142,8 +160,9 @@ class MVMap : DeltaCRDT {
     }
 
     /**
-     * Gets an iterator containing the double values currently stored in the map.
-     * @return an iterator over the double values stored in the map.
+     * Returns an iterator over the Double entries in the map.
+     *
+     * @see getDouble for a description of each entry.
      */
     @Name("iteratorDouble")
     fun iteratorDouble(): Iterator<Pair<String, Set<Double?>>> {
@@ -154,8 +173,9 @@ class MVMap : DeltaCRDT {
     }
 
     /**
-     * Gets an iterator containing the integer values currently stored in the map.
-     * @return an iterator over the integer values stored in the map.
+     * Returns an iterator over the Int entries in the map.
+     *
+     * @see getInt for a description of each entry.
      */
     @Name("iteratorInt")
     fun iteratorInt(): Iterator<Pair<String, Set<Int?>>> {
@@ -166,8 +186,9 @@ class MVMap : DeltaCRDT {
     }
 
     /**
-     * Gets an iterator containing the string values currently stored in the map.
-     * @return an iterator over the string values stored in the map.
+     * Returns an iterator over the String entries in the map.
+     *
+     * @see getString for a description of each entry.
      */
     @Name("iteratorString")
     fun iteratorString(): Iterator<Pair<String, Set<String?>>> {
@@ -178,9 +199,9 @@ class MVMap : DeltaCRDT {
     }
 
     /**
-     * Puts a key / Boolean value pair into the map.
-     * @param key the key that is targeted.
-     * @param value the Boolean value that should be assigned to the key.
+     * Puts a [key] / Boolean [value] pair into the map.
+     *
+     * If [value] is null, the [key] is deleted.
      * @return the delta corresponding to this operation.
      */
     @Name("setBoolean")
@@ -203,9 +224,9 @@ class MVMap : DeltaCRDT {
     }
 
     /**
-     * Puts a key / double value pair into the map.
-     * @param key the key that is targeted.
-     * @param value the double value that should be assigned to the key.
+     * Puts a [key] / Double [value] pair into the map.
+     *
+     * If [value] is null, the [key] is deleted.
      * @return the delta corresponding to this operation.
      */
     @Name("setDouble")
@@ -228,9 +249,9 @@ class MVMap : DeltaCRDT {
     }
 
     /**
-     * Puts a key / integer value pair into the map.
-     * @param key the key that is targeted.
-     * @param value the integer value that should be assigned to the key.
+     * Puts a [key] / Int [value] pair into the map.
+     *
+     * If [value] is null, the [key] is deleted.
      * @return the delta corresponding to this operation.
      */
     @Name("setInt")
@@ -253,9 +274,9 @@ class MVMap : DeltaCRDT {
     }
 
     /**
-     * Puts a key / string value pair into the map.
-     * @param key the key that is targeted.
-     * @param value the string value that should be assigned to the key.
+     * Puts a [key] / String [value] pair into the map.
+     *
+     * If [value] is null, the [key] is deleted.
      * @return the delta corresponding to this operation.
      */
     @Name("setString")
@@ -278,9 +299,8 @@ class MVMap : DeltaCRDT {
     }
 
     /**
-     * Deletes a given key / Boolean value pair if it is present in the map and has not yet been
-     * deleted.
-     * @param key the key that should be deleted.
+     * Removes the specified [key] / Boolean value pair from this map.
+     *
      * @return the delta corresponding to this operation.
      */
     @Name("deleteBoolean")
@@ -291,9 +311,8 @@ class MVMap : DeltaCRDT {
     }
 
     /**
-     * Deletes a given key / double value pair if it is present in the map and has not yet been
-     * deleted.
-     * @param key the key that should be deleted.
+     * Removes the specified [key] / Double value pair from this map.
+     *
      * @return the delta corresponding to this operation.
      */
     @Name("deleteDouble")
@@ -304,9 +323,8 @@ class MVMap : DeltaCRDT {
     }
 
     /**
-     * Deletes a given key / integer value pair if it is present in the map and has not yet been
-     * deleted.
-     * @param key the key that should be deleted.
+     * Removes the specified [key] / Int value pair from this map.
+     *
      * @return the delta corresponding to this operation.
      */
     @Name("deleteInt")
@@ -317,9 +335,8 @@ class MVMap : DeltaCRDT {
     }
 
     /**
-     * Deletes a given key / string value pair if it is present in the map and has not yet been
-     * deleted.
-     * @param key the key that should be deleted.
+     * Removes the specified [key] / String value pair from this map.
+     *
      * @return the delta corresponding to this operation.
      */
     @Name("deleteString")
@@ -329,11 +346,6 @@ class MVMap : DeltaCRDT {
         return op
     }
 
-    /**
-     * Generates a delta of operations recorded and not already present in a given context.
-     * @param vv the context used as starting point to generate the delta.
-     * @return the corresponding delta of operations.
-     */
     override fun generateDelta(vv: VersionVector): MVMap {
         val delta = MVMap()
         for ((key, meta) in this.entries) {
@@ -345,13 +357,6 @@ class MVMap : DeltaCRDT {
         return delta
     }
 
-    /**
-     * Merges information contained in a given delta into the local replica, the merge is unilateral
-     * and only the local replica is modified.
-     * A foreign (local) value is kept iff it is contained in the local (foreign) replica or its
-     * associated timestamp is not included in the local (foreign) causal context.
-     * @param delta the delta that should be merged with the local replica.
-     */
     override fun merge(delta: DeltaCRDT) {
         if (delta !is MVMap) throw IllegalArgumentException("MVMap unsupported merge argument")
 
@@ -432,11 +437,6 @@ class MVMap : DeltaCRDT {
             return "MVMap"
         }
 
-        /**
-         * Deserializes a given json string in a crdt map.
-         * @param json the given json string.
-         * @return the resulted crdt map.
-         */
         @Name("fromJson")
         fun fromJson(json: String, env: Environment? = null): MVMap {
             val jsonSerializer = JsonMVMapSerializer(serializer())
