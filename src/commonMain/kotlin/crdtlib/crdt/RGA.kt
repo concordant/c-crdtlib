@@ -294,6 +294,7 @@ class RGA : DeltaCRDT, Iterable<String> {
      * Returns an iterator over the elements of this RGA.
      */
     override fun iterator(): Iterator<String> {
+        onRead()
         return this.nodes.asSequence().filter { !it.removed }.map { it.atom }.iterator()
     }
 }

@@ -192,6 +192,7 @@ class MVRegister : DeltaCRDT, Iterable<String> {
      * @return an iterator over the values stored in the register.
      */
     override fun iterator(): Iterator<String> {
+        onRead()
         return this.entries.asSequence().map { it.first }.iterator()
     }
 }
