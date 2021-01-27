@@ -137,7 +137,7 @@ class BCounter : DeltaCRDT {
      * Increments the counter by the given [amount].
      *
      * Throw IllegalArgumentException if localRights is not sufficient
-     * (with negative amount only ; see [decrement]).
+     * (with negative amount only; see [decrement]).
      * @return the delta corresponding to this operation.
      */
     @Name("increment")
