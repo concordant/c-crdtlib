@@ -30,43 +30,61 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 
 /**
-* Represents a unique identifier for RGA nodes. We use timestamps as uids since we assume they are
-* distinct and monotonically increasing.
-*/
+ * A unique identifier for RGA nodes.
+ *
+ * We use timestamps as uids since we assume
+ * they are distinct and monotonically increasing.
+ */
 typealias RGAUId = Timestamp
 
 /**
-* Data class representing information stored in an RGA node.
-* @property atom the atom stored within the node.
-* @property anchor the uid of the node to the left of this node, when it was inserted.
-* @property uid the unique identifier associated with the node.
-* @property ts the timestamp associated with last update of the node
-*           (insertion or removal), used to generate deltas.
-* @property removed a boolean to mark if the node is a tombstone.
-*/
+ * A RGA node.
+ *
+ * @property atom the atom stored within the node.
+ * @property anchor the uid of the node to the left of this node,
+ *     when it was inserted.
+ * @property uid the unique identifier associated with the node.
+ * @property ts the timestamp associated with last update of the node
+ *           (insertion or removal), used to generate deltas.
+ * @property removed a boolean to mark if the node is a tombstone.
+ */
 @Serializable
 data class RGANode(val atom: String, val anchor: RGAUId?, val uid: RGAUId, val ts: Timestamp, val removed: Boolean)
 
 /**
-* This class is a delta-based CRDT Replicated Growable Array (RGA).
-* It is serializable to JSON and respect the following schema:
-* {
-*   "type": "RGA",
-*   "metadata": [
-*       ({
-*           ( "atom": $value, )? // If atom is present removed should be true.
-*           "anchor": RGAUId.toJson(),
-*           "uid": RGAUId.toJson(),
-*           "ts": Timestamp.toJson(),
-*           "removed" : ( true | false )
-*       })
-*   ],
-*   "value": [
-*       // Contains only values for which the corresponding metadata nodes have no atom field.
-*       (( $value, )*( $value ))?
-*   ]
-* }
-*/
+ * A delta-based CRDT Replicated Growable Array (RGA).
+ *
+ * Array nodes can be inserted and removed concurrently.
+ * When inserted, a node is linked ("anchored") to its precedent node.
+ * The tree thus formed is flattened to an array by depth-first search,
+ * ordering siblings by decreasing insertion timestamp.
+ * A node is removed by replacing it with a tombstone:
+ * a special empty node with the same uid still used as an anchor
+ * for previously inserted nodes.
+ *
+ * When merging, a remove-wins policy is applied:
+ * all nodes are retained except those hidden by a tombstone.
+ *
+ * Its JSON serialization respects the following schema:
+ * ```json
+ * {
+ *   "type": "RGA",
+ *   "metadata": [
+ *       ({
+ *           ( "atom": $value, )? // If atom is present removed should be true.
+ *           "anchor": RGAUId.toJson(),
+ *           "uid": RGAUId.toJson(),
+ *           "ts": Timestamp.toJson(),
+ *           "removed" : ( true | false )
+ *       })
+ *   ],
+ *   "value": [
+ *       // Contains only values for which the corresponding metadata nodes have no atom field.
+ *       (( $value, )*( $value ))?
+ *   ]
+ * }
+ * ```
+ */
 @Serializable
 class RGA : DeltaCRDT, Iterable<String> {
 
@@ -89,9 +107,7 @@ class RGA : DeltaCRDT, Iterable<String> {
     }
 
     /**
-     * Looks up for the real index of a given targeted index.
-     * @param index the targeted index.
-     * @return the real index.
+     * Returns the real (internal) index of the node at given [index].
      */
     private fun toRealIndex(index: Int): Int {
         if (index == -1) return -1
@@ -107,9 +123,8 @@ class RGA : DeltaCRDT, Iterable<String> {
     }
 
     /**
-     * Inserts a given atom at a given index.
-     * @param index the index where the atom should be inserted.
-     * @param atom the atom that should be inserted.
+     * Inserts an [atom] into the RGA at the specified [index].
+     *
      * @return the resulting delta operation.
      */
     @Name("insertAt")
@@ -128,8 +143,8 @@ class RGA : DeltaCRDT, Iterable<String> {
     }
 
     /**
-     * Removes the atom presents a a given index.
-     * @param index the index where atom should be removed.
+     * Removes an element at the specified [index] from the RGA.
+     *
      * @return the resulting delta operation.
      */
     @Name("removeAt")
@@ -148,8 +163,7 @@ class RGA : DeltaCRDT, Iterable<String> {
     }
 
     /**
-     * Gets the value associated with the RGA.
-     * @return a list containing the values present in the RGA.
+     * Returns a List containing all elements.
      */
     @Name("get")
     fun get(): List<String> {
@@ -158,8 +172,7 @@ class RGA : DeltaCRDT, Iterable<String> {
     }
 
     /**
-     * Gets the value present at the specified index in the RGA.
-     * @return the element at the specified index in the RGA.
+     * Returns the element at the specified [index] in the RGA.
      */
     @Name("getAt")
     fun get(index: Int): String {
@@ -168,11 +181,6 @@ class RGA : DeltaCRDT, Iterable<String> {
         return this.nodes[realIndex].atom
     }
 
-    /**
-     * Generates a delta of operations recorded and not already present in a given context.
-     * @param vv the context used as starting point to generate the delta.
-     * @return the corresponding delta of operations.
-     */
     override fun generateDelta(vv: VersionVector): RGA {
         val delta = RGA()
         for (node in this.nodes) {
@@ -183,16 +191,6 @@ class RGA : DeltaCRDT, Iterable<String> {
         return delta
     }
 
-    /**
-     * Merges information contained in a given delta into the local replica, the merge is unilateral
-     * and only local replica is modified.
-     * For each node in the delta: if the node already exists in the local replica, we update it by
-     * applying a last-remove-wins policy; else we insert it correctly. The correct place is at the
-     * right of the foreign node's anchor. If other nodes have the same anchor, higher timestamp
-     * wins: meaning that the delta's node will be either put at the left of the first weaker (with
-     * smaller timestamp) node found, or at the end of the array if no weaker node exists.
-     * @param delta the delta that should be merge with the local replica.
-     */
     override fun merge(delta: DeltaCRDT) {
         if (delta !is RGA) throw IllegalArgumentException("RGA unsupported merge argument")
 
@@ -263,10 +261,6 @@ class RGA : DeltaCRDT, Iterable<String> {
         onMerge(delta, lastTs)
     }
 
-    /**
-     * Serializes this crdt rga to a json string.
-     * @return the resulted json string.
-     */
     override fun toJson(): String {
         val jsonSerializer = JsonRGASerializer(serializer())
         return Json.encodeToString(jsonSerializer, this)
@@ -297,10 +291,10 @@ class RGA : DeltaCRDT, Iterable<String> {
     }
 
     /**
-     * Gets an iterator containing the values associated with the RGA.
-     * @return an iterator over the values present in the RGA.
+     * Returns an iterator over the elements of this RGA.
      */
     override fun iterator(): Iterator<String> {
+        onRead()
         return this.nodes.asSequence().filter { !it.removed }.map { it.atom }.iterator()
     }
 }

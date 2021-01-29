@@ -30,37 +30,45 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 
 /**
-* This class is a delta-based CRDT map implementing last writer wins (LWW) to resolve conflicts.
-* It is serializable to JSON and respect the following schema:
-* {
-*   "type": "Map",
-*   "metadata": {
-*       "lwwMap": {
-*           // $key is a string
-*           ( "$key": Timestamp.toJson() )*( , "$key": Timestamp.toJson() )?
-*       },
-*       "mvMap": {
-*           "entries": {
-*               // $key is a string
-*               (( "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] )*( , "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] ))?
-*           },
-*           "causalContext": VersionVector.toJson()
-*       },
-*       "cntMap": {
-*           ( "$key": PNCounter.toJson() )*( , "$key": PNCounter.toJson() )?
-*       }
-*   }
-*   // $key is a string and $value can be Boolean, double, integer, string or array
-*   ( , "$key": "$value" )*
-* }
-*/
+ * A delta-based CRDT map providing multiple conflict resolution policies.
+ *
+ * On each key, a [MV entry](MVMap), a [LWW entry](LWWMap)
+ * and a [PNCounter] entry can all be used independently.
+ *
+ * Its JSON serialization respects the following schema:
+ * ```json
+ * {
+ *   "type": "Map",
+ *   "metadata": {
+ *       "lwwMap": {
+ *           // $key is a string
+ *           ( "$key": Timestamp.toJson() )*( , "$key": Timestamp.toJson() )?
+ *       },
+ *       "mvMap": {
+ *           "entries": {
+ *               // $key is a string
+ *               (( "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] )*( , "$key": [ ( Timestamp.toJson() )*( , Timestamp.toJson() )? ] ))?
+ *           },
+ *           "causalContext": VersionVector.toJson()
+ *       },
+ *       "cntMap": {
+ *           ( "$key": PNCounter.toJson() )*( , "$key": PNCounter.toJson() )?
+ *       }
+ *   }
+ *   // $key is a string and $value can be Boolean, double, integer, string or array
+ *   ( , "$key": "$value" )*
+ * }
+ * ```
+ */
 @Serializable
 class Map : DeltaCRDT {
 
     /**
      * Proxy environment, for embedded CRDT maps
-     * Delegates tick() and update() to env,
-     * intercept and allow to retrieve intermediate deltas.
+     *
+     * Delegates tick() to env,
+     * intercept hooks (onRead(), onWrite() and onMerge())
+     * and allow to retrieve intermediate deltas.
      */
     private inner class ProxyEnv() :
         SimpleEnvironment(ClientUId("Map Proxy Env")) {
@@ -108,11 +116,6 @@ class Map : DeltaCRDT {
     @Required
     private val cntMap: MutableMap<String, PNCounter> = mutableMapOf()
 
-    // constructor(){
-    //     lwwMap = LWWMap(proxyEnv)
-    //     mvMap = MVMap(proxyEnv)
-    // }
-
     /**
      * Default constructor.
      */
@@ -121,10 +124,8 @@ class Map : DeltaCRDT {
     constructor(env: Environment) : super(env)
 
     /**
-     * Gets the Boolean value corresponding to a given key.
-     * @param key the key that should be looked for.
-     * @return the Boolean value associated to the key, or null if the key is not present in the map
-     * or last operation is a delete.
+     * Get the LWW Boolean value corresponding to a given [key] ,
+     * or null if such a key is not present in the map.
      */
     @Name("getLWWBoolean")
     fun getLWWBoolean(key: String): Boolean? {
@@ -133,10 +134,8 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Gets the Boolean value corresponding to a given key.
-     * @param key the key that should be looked for.
-     * @return the Boolean value associated to the key, or null if the key is not present in the map
-     * or last operation is a delete.
+     * Get the LWW Double value corresponding to a given [key],
+     * or null if such a key is not present in the map.
      */
     @Name("getLWWDouble")
     fun getLWWDouble(key: String): Double? {
@@ -145,10 +144,8 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Gets the integer value corresponding to a given key.
-     * @param key the key that should be looked for.
-     * @return the integer value associated to the key, or null if the key is not present in the map
-     * or last operation is a delete.
+     * Get the LWW Int value corresponding to a given [key],
+     * or null if such a key is not present in the map.
      */
     @Name("getLWWInt")
     fun getLWWInt(key: String): Int? {
@@ -157,10 +154,8 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Gets the string value corresponding to a given key.
-     * @param key the key that should be looked for.
-     * @return the string value associated to the key, or null if the key is not present in the map
-     * or last operation is a delete.
+     * Get the LWW String value corresponding to a given [key],
+     * or null if such a key is not present in the map.
      */
     @Name("getLWWString")
     fun getLWWString(key: String): String? {
@@ -169,10 +164,8 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Gets the set of Boolean values corresponding to a given key.
-     * @param key the key that should be looked for.
-     * @return the set of Boolean values associated to the key, or null if the key is not present in
-     * the map or last operation is a delete.
+     * Get the MV Boolean value corresponding to a given [key],
+     * or null if such a key is not present in the map.
      */
     @Name("getMVBoolean")
     fun getMVBoolean(key: String): Set<Boolean?>? {
@@ -181,10 +174,8 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Gets the set of double values corresponding to a given key.
-     * @param key the key that should be looked for.
-     * @return the set of double values associated to the key, or null if the key is not present in
-     * the map or last operation is a delete.
+     * Get the MV Double value corresponding to a given [key],
+     * or null if such a key is not present in the map.
      */
     @Name("getMVDouble")
     fun getMVDouble(key: String): Set<Double?>? {
@@ -193,10 +184,8 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Gets the set of integer values corresponding to a given key.
-     * @param key the key that should be looked for.
-     * @return the set of integer values associated to the key, or null if the key is not present in
-     * the map or last operation is a delete.
+     * Get the MV Int value corresponding to a given [key],
+     * or null if such a key is not present in the map.
      */
     @Name("getMVInt")
     fun getMVInt(key: String): Set<Int?>? {
@@ -205,10 +194,8 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Gets the set of string of values corresponding to a given key.
-     * @param key the key that should be looked for.
-     * @return the set of string values associated to the key, or null if the key is not present in
-     * the map or last operation is a delete.
+     * Get the MV String value corresponding to a given [key],
+     * or null if such a key is not present in the map.
      */
     @Name("getMVString")
     fun getMVString(key: String): Set<String?>? {
@@ -217,10 +204,8 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Gets the set of integer values corresponding to a given key.
-     * @param key the key that should be looked for.
-     * @return the set of integer values associated to the key, or null if the key is not present in
-     * the map or last operation is a delete.
+     * Get the PNCounter value corresponding to a given [key],
+     * or null if such a key is not present in the map.
      */
     @Name("getCntInt")
     fun getCntInt(key: String): Int? {
@@ -229,8 +214,7 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Gets an iterator containing the Boolean value currently stored in the map.
-     * @return an iterator over the Boolean value stored in the map.
+     * Get an iterator over the LWW Boolean entries in the map.
      */
     @Name("iteratorLWWBoolean")
     fun iteratorLWWBoolean(): Iterator<Pair<String, Boolean>> {
@@ -239,8 +223,7 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Gets an iterator containing the double value currently stored in the map.
-     * @return an iterator over the double value stored in the map.
+     * Get an iterator over the LWW Double entries in the map.
      */
     @Name("iteratorLWWDouble")
     fun iteratorLWWDouble(): Iterator<Pair<String, Double>> {
@@ -249,8 +232,7 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Gets an iterator containing the integer value currently stored in the map.
-     * @return an iterator over the integer value stored in the map.
+     * Get an iterator over the LWW Int entries in the map.
      */
     @Name("iteratorLWWInt")
     fun iteratorLWWInt(): Iterator<Pair<String, Int>> {
@@ -259,8 +241,7 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Gets an iterator containing the string value currently stored in the map.
-     * @return an iterator over the string value stored in the map.
+     * Get an iterator over the LWW String entries in the map.
      */
     @Name("iteratorLWWString")
     fun iteratorLWWString(): Iterator<Pair<String, String>> {
@@ -269,8 +250,7 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Gets an iterator containing the Boolean values currently stored in the map.
-     * @return an iterator over the Boolean values stored in the map.
+     * Get an iterator over the MV Boolean entries in the map.
      */
     @Name("iteratorMVBoolean")
     fun iteratorMVBoolean(): Iterator<Pair<String, Set<Boolean?>>> {
@@ -279,8 +259,7 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Gets an iterator containing the double values currently stored in the map.
-     * @return an iterator over the double values stored in the map.
+     * Get an iterator over the MV Double entries in the map.
      */
     @Name("iteratorMVDouble")
     fun iteratorMVDouble(): Iterator<Pair<String, Set<Double?>>> {
@@ -289,8 +268,7 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Gets an iterator containing the integer values currently stored in the map.
-     * @return an iterator over the integer values stored in the map.
+     * Get an iterator over the MV Int entries in the map.
      */
     @Name("iteratorMVInt")
     fun iteratorMVInt(): Iterator<Pair<String, Set<Int?>>> {
@@ -299,8 +277,7 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Gets an iterator containing the string values currently stored in the map.
-     * @return an iterator over the string values stored in the map.
+     * Get an iterator over the MV String entries in the map.
      */
     @Name("iteratorMVString")
     fun iteratorMVString(): Iterator<Pair<String, Set<String?>>> {
@@ -309,8 +286,7 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Gets an iterator containing the integer values currently stored in the map.
-     * @return an iterator over the integer values stored in the map.
+     * Get an iterator over the PNCounter entries in the map.
      */
     @Name("iteratorCntInt")
     fun iteratorCntInt(): Iterator<Pair<String, Int>> {
@@ -319,9 +295,9 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Puts a key / Boolean value pair into the map.
-     * @param key the key that is targeted.
-     * @param value the Boolean value that should be assigned to the key.
+     * Put a [key] / Boolean LWW [value] pair into the map.
+     *
+     * If [value] is null, the [key] is deleted.
      * @return the delta corresponding to this operation.
      */
     @Name("setLWWBoolean")
@@ -333,9 +309,9 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Puts a key / double value pair into the map.
-     * @param key the key that is targeted.
-     * @param value the double value that should be assigned to the key.
+     * Put a [key] / Double LWW [value] pair into the map.
+     *
+     * If [value] is null, the [key] is deleted.
      * @return the delta corresponding to this operation.
      */
     @Name("setLWWDouble")
@@ -347,9 +323,9 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Puts a key / integer value pair into the map.
-     * @param key the key that is targeted.
-     * @param value the integer value that should be assigned to the key.
+     * Put a [key] / Int LWW [value] pair into the map.
+     *
+     * If [value] is null, the [key] is deleted.
      * @return the delta corresponding to this operation.
      */
     @Name("setLWWInt")
@@ -361,9 +337,9 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Puts a key / string value pair into the map.
-     * @param key the key that is targeted.
-     * @param value the string value that should be assigned to the key.
+     * Put a [key] / String LWW [value] pair into the map.
+     *
+     * If [value] is null, the [key] is deleted.
      * @return the delta corresponding to this operation.
      */
     @Name("setLWWString")
@@ -375,9 +351,9 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Puts a key / Boolean value pair into the map.
-     * @param key the key that is targeted.
-     * @param value the Boolean value that should be assigned to the key.
+     * Put a [key] / Boolean MV [value] pair into the map.
+     *
+     * If [value] is null, the [key] is deleted.
      * @return the delta corresponding to this operation.
      */
     @Name("setMVBoolean")
@@ -389,9 +365,9 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Puts a key / double value pair into the map.
-     * @param key the key that is targeted.
-     * @param value the double value that should be assigned to the key.
+     * Put a [key] / Double MV [value] pair into the map.
+     *
+     * If [value] is null, the [key] is deleted.
      * @return the delta corresponding to this operation.
      */
     @Name("setMVDouble")
@@ -404,9 +380,9 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Puts a key / integer value pair into the map.
-     * @param key the key that is targeted.
-     * @param value the integer value that should be assigned to the key.
+     * Put a [key] / Int MV [value] pair into the map.
+     *
+     * If [value] is null, the [key] is deleted.
      * @return the delta corresponding to this operation.
      */
     @Name("setMVInt")
@@ -419,9 +395,9 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Puts a key / string value pair into the map.
-     * @param key the key that is targeted.
-     * @param value the string value that should be assigned to the key.
+     * Put a [key] / String MV [value] pair into the map.
+     *
+     * If [value] is null, the [key] is deleted.
      * @return the delta corresponding to this operation.
      */
     @Name("setMVString")
@@ -433,6 +409,12 @@ class Map : DeltaCRDT {
         return op
     }
 
+    /**
+     * Increment by [inc] the PNCounter
+     * associated with the specified [key] in the map
+     *
+     * @return the delta corresponding to this operation.
+     */
     fun increment(key: String, inc: Int): Map {
         val op = Map()
         var cnt = this.cntMap.getOrPut(key, { PNCounter(proxyEnv) })
@@ -442,6 +424,12 @@ class Map : DeltaCRDT {
         return op
     }
 
+    /**
+     * Decrement by [dec] the PNCounter
+     * associated with the specified [key] in the map
+     *
+     * @return the delta corresponding to this operation.
+     */
     fun decrement(key: String, dec: Int): Map {
         val op = Map()
         var cnt = this.cntMap.getOrPut(key, { PNCounter(proxyEnv) })
@@ -452,9 +440,8 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Deletes a given key / Boolean value pair if it is present in the map and has not yet been
-     * deleted.
-     * @param key the key that should be deleted.
+     * Removes the specified [key] / Boolean LWW value pair from this map.
+     *
      * @return the delta corresponding to this operation.
      */
     @Name("deleteLWWBoolean")
@@ -467,9 +454,8 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Deletes a given key / double value pair if it is present in the map and has not yet been
-     * deleted.
-     * @param key the key that should be deleted.
+     * Removes the specified [key] / Double LWW value pair from this map.
+     *
      * @return the delta corresponding to this operation.
      */
     @Name("deleteLWWDouble")
@@ -482,9 +468,8 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Deletes a given key / integer value pair if it is present in the map and has not yet been
-     * deleted.
-     * @param key the key that should be deleted.
+     * Removes the specified [key] / Int LWW value pair from this map.
+     *
      * @return the delta corresponding to this operation.
      */
     @Name("deleteLWWInt")
@@ -497,9 +482,8 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Deletes a given key / string value pair if it is present in the map and has not yet been
-     * deleted.
-     * @param key the key that should be deleted.
+     * Removes the specified [key] / String LWW value pair from this map.
+     *
      * @return the delta corresponding to this operation.
      */
     @Name("deleteLWWString")
@@ -512,9 +496,8 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Deletes a given key / Boolean value pair if it is present in the map and has not yet been
-     * deleted.
-     * @param key the key that should be deleted.
+     * Removes the specified [key] / Boolean MV value pair from this map.
+     *
      * @return the delta corresponding to this operation.
      */
     @Name("deleteMVBoolean")
@@ -527,9 +510,8 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Deletes a given key / double value pair if it is present in the map and has not yet been
-     * deleted.
-     * @param key the key that should be deleted.
+     * Removes the specified [key] / Double MV value pair from this map.
+     *
      * @return the delta corresponding to this operation.
      */
     @Name("deleteMVDouble")
@@ -542,9 +524,8 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Deletes a given key / integer value pair if it is present in the map and has not yet been
-     * deleted.
-     * @param key the key that should be deleted.
+     * Removes the specified [key] / Int MV value pair from this map.
+     *
      * @return the delta corresponding to this operation.
      */
     @Name("deleteMVInt")
@@ -557,9 +538,8 @@ class Map : DeltaCRDT {
     }
 
     /**
-     * Deletes a given key / string value pair if it is present in the map and has not yet been
-     * deleted.
-     * @param key the key that should be deleted.
+     * Removes the specified [key] / String MV value pair from this map.
+     *
      * @return the delta corresponding to this operation.
      */
     @Name("deleteMVString")
@@ -571,11 +551,6 @@ class Map : DeltaCRDT {
         return op
     }
 
-    /**
-     * Generates a delta of operations recorded and not already present in a given context.
-     * @param vv the context used as starting point to generate the delta.
-     * @return the corresponding delta of operations.
-     */
     override fun generateDelta(vv: VersionVector): Map {
         val delta = Map()
 
@@ -590,13 +565,6 @@ class Map : DeltaCRDT {
         return delta
     }
 
-    /**
-     * Merges information contained in a given delta into the local replica, the merge is unilateral
-     * and only the local replica is modified.
-     * A foreign operation (i.e., put or delete) is applied iff last locally stored operation has a
-     * smaller timestamp compared to the foreign one, or there is no local operation recorded.
-     * @param delta the delta that should be merged with the local replica.
-     */
     override fun merge(delta: DeltaCRDT) {
         if (delta !is Map) throw IllegalArgumentException("Map unsupported merge argument")
 
@@ -623,10 +591,6 @@ class Map : DeltaCRDT {
         onMerge(delta, lastTs)
     }
 
-    /**
-     * Serializes this crdt map to a json string.
-     * @return the resulted json string.
-     */
     override fun toJson(): String {
         val jsonSerializer = JsonMapSerializer(serializer())
         return Json.encodeToString(jsonSerializer, this)

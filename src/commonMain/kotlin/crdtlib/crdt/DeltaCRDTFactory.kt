@@ -23,16 +23,15 @@ import crdtlib.utils.Environment
 import crdtlib.utils.Name
 
 /**
-* This class repressents a delta crdt factory.
-*/
+ * A delta-CRDT factory.
+ */
 class DeltaCRDTFactory {
 
     companion object {
 
         /**
-         * Create an empty delta crdt of a given type.
-         * @param crdtType the given delta crdt type.
-         * @return an empty delta crdt of the given type.
+         * Create an empty delta crdt of a given [crdtType]
+         * with associated environment.
          */
         @Name("createDeltaCRDT")
         fun createDeltaCRDT(crdtType: String, env: Environment? = null): DeltaCRDT {
