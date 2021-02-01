@@ -141,37 +141,36 @@ abstract class DeltaCRDT {
          */
         @Name("fromJson")
         fun fromJson(json: String, env: Environment? = null): DeltaCRDT {
-            val properJson = json.replace('\'', '"').replace("""\"""", """"""")
             val regex = """"type"\s*:\s*"(\w+)",""".toRegex()
-            val matchResult = regex.find(properJson)
+            val matchResult = regex.find(json)
             val crdtType = matchResult?.groups?.get(1)?.value
             when (crdtType) {
                 "PNCounter" -> {
-                    return PNCounter.fromJson(properJson, env)
+                    return PNCounter.fromJson(json, env)
                 }
                 "BCounter" -> {
-                    return BCounter.fromJson(properJson, env)
+                    return BCounter.fromJson(json, env)
                 }
                 "LWWRegister" -> {
-                    return LWWRegister.fromJson(properJson, env)
+                    return LWWRegister.fromJson(json, env)
                 }
                 "MVRegister" -> {
-                    return MVRegister.fromJson(properJson, env)
+                    return MVRegister.fromJson(json, env)
                 }
                 "Ratchet" -> {
-                    return Ratchet.fromJson(properJson, env)
+                    return Ratchet.fromJson(json, env)
                 }
                 "RGA" -> {
-                    return RGA.fromJson(properJson, env)
+                    return RGA.fromJson(json, env)
                 }
                 "LWWMap" -> {
-                    return LWWMap.fromJson(properJson, env)
+                    return LWWMap.fromJson(json, env)
                 }
                 "MVMap" -> {
-                    return MVMap.fromJson(properJson, env)
+                    return MVMap.fromJson(json, env)
                 }
                 "Map" -> {
-                    return Map.fromJson(properJson, env)
+                    return Map.fromJson(json, env)
                 }
                 else -> {
                     throw IllegalArgumentException("DeltaCRDT cannot deserialize type: $crdtType")
