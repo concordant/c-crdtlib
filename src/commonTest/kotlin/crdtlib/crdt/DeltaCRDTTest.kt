@@ -181,24 +181,4 @@ class DeltaCRDTTest : StringSpec({
         val deltaCrdt = DeltaCRDT.fromJson(prettyCounterJson)
         deltaCrdt.toJson().shouldBe(counterJson)
     }
-
-    /**
-     * This test evaluates that deserializing a json crdt with quotes works.
-     */
-    "fromJson with simple quotes works" {
-        val counter = PNCounter()
-        val counterJson = counter.toJson()
-        // This is a PNCounter JSON string with some spaces, newlines, and
-        // simple quotes
-        val prettyCounterJson = """{
-            'type' : 'PNCounter',
-            'metadata' : {
-                'increment' : [],
-                'decrement':[]
-            },
-            'value' : 0
-        }"""
-        val deltaCrdt = DeltaCRDT.fromJson(prettyCounterJson)
-        deltaCrdt.toJson().shouldBe(counterJson)
-    }
 })
