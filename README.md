@@ -26,14 +26,8 @@ This library is delivered as both a [Maven package]() and an [NPM package](https
 ### Kotlin and Gradle
 
 In your project configuration build file `build.gradle.kts`:
-- Ensure one of `mavenCentral()` or `jcenter()`
+- Ensure `mavenCentral()`
   is listed in the `repositories{}` for usual packages.
-- Add JitPack to repositories:
-``` kotlin
-repositories {
-    maven(url = "https://jitpack.io")
-}
-```
 - Add the c-crdtlib Maven package as a dependency:
 ``` kotlin
 dependencies {

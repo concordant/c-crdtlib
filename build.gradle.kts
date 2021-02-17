@@ -163,8 +163,13 @@ npmPublishing {
     organization = group as String
     repositories {
         repository("Gitlab") {
+            access = RESTRICTED
             registry = uri("https://gitlab.inria.fr/api/v4/projects/${System.getenv("CI_PROJECT_ID")}/packages/npm")
             authToken = System.getenv("CI_JOB_TOKEN")
+        }
+        repository("npmjs") {
+            registry = uri("https://registry.npmjs.org")
+            authToken = System.getenv("NPMJS_AUTH_TOKEN")
         }
     }
     publications {
@@ -174,7 +179,10 @@ npmPublishing {
                 "description" to project.description
                 keywords = mutableListOf("concordant", "crdt", "conflict-free", "replicated datatypes")
                 homepage = "concordant.io"
-                license = "SEE LICENSE IN LICENSE"
+                license = "MIT"
+                "bugs" to jsonObject {
+                    "email" to "support@concordant.io"
+                }
             }
         }
     }

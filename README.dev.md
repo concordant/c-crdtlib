@@ -105,9 +105,9 @@ gitlabToken=<deployOrPersonalToken>
 ```
 
 Then, in your project configuration build file `build.gradle.kts`:
-- Ensure one of `jcenter()` or `mavenCentral()`
+- Ensure `mavenCentral()`
   is listed in the `repositories{}` for usual packages.
-- Add JitPack and Gitlab to repositories:
+- Add Gitlab to repositories:
 ``` kotlin
 repositories {
     maven(url = "https://jitpack.io")
