@@ -81,3 +81,62 @@ and to Javascript as a Node.js package.
 
 `gradle tasks`:
 - show all available tasks with descriptions.
+
+## Getting Started with private Gitlab packages registry
+
+This library is delivered as both a Maven package and an NPM package
+in a private [Gitlab Packages registry](
+https://gitlab.inria.fr/concordant/software/c-crdtlib/-/packages).
+
+To use it, you will need to authenticate to Gitlab, using either:
+- a Gitlab [deploy token](
+  https://docs.gitlab.com/ee/user/project/deploy_tokens/)
+  with at least the `read_package_registry` scope, or
+- a Gitlab [personal access token](
+  https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html)
+  with at least the `read_api` scope.
+
+### Kotlin and Gradle
+
+To setup authentication, add the token to your gradle properties file
+`~/.gradle/gradle.properties`:
+``` shell
+gitlabToken=<deployOrPersonalToken>
+```
+
+Then, in your project configuration build file `build.gradle.kts`:
+- Ensure one of `jcenter()` or `mavenCentral()`
+  is listed in the `repositories{}` for usual packages.
+- Add JitPack and Gitlab to repositories:
+``` kotlin
+repositories {
+    maven(url = "https://jitpack.io")
+    maven {
+        url = uri("https://gitlab.inria.fr/api/v4/projects/18591/packages/maven")
+        credentials(HttpHeaderCredentials::class) {
+            // set to "Deploy-Token" here if appropriate
+            name = "Private-Token"
+            val gitlabToken: String by project
+            value = gitlabToken
+        }
+        authentication {
+            create<HttpHeaderAuthentication>("header")
+        }
+    }
+}
+```
+- Add the c-crdtlib Maven package as a dependency:
+``` kotlin
+dependencies {
+    implementation("concordant:c-crdtlib:x.y.z")
+}
+```
+
+### JavaScript/TypeScript and NPM
+
+#### Installation
+First setup authentication:
+``` shell
+$ npm config set @concordant:registry "https://gitlab.inria.fr/api/v4/packages/npm/"
+$ npm config set '//gitlab.inria.fr/api/v4/packages/npm/:_authToken' "<deployOrPersonalToken>"
+```

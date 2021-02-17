@@ -30,9 +30,8 @@ plugins {
 }
 
 repositories {
-    jcenter()
     mavenCentral()
-    maven(url = "https://jitpack.io")
+    maven(url = "https://jitpack.io") // necessary for ts-generator
 }
 
 configurations {
@@ -173,6 +172,9 @@ npmPublishing {
             packageJson {
                 types = "c-crdtlib.d.ts"
                 "description" to project.description
+                keywords = mutableListOf("concordant", "crdt", "conflict-free", "replicated datatypes")
+                homepage = "concordant.io"
+                license = "SEE LICENSE IN LICENSE"
             }
         }
     }
