@@ -26,7 +26,7 @@ plugins {
     kotlin("plugin.serialization") version "1.4.10"
     id("org.jetbrains.dokka") version "1.4.10.2"
     id("maven-publish")
-    id("lt.petuska.npm.publish") version "1.0.2"
+    id("lt.petuska.npm.publish") version "1.1.1"
 }
 
 repositories {
@@ -181,7 +181,7 @@ npmPublishing {
                 "description" to project.description
                 keywords = mutableListOf("concordant", "crdt", "conflict-free", "replicated datatypes")
                 homepage = "concordant.io"
-                license = "MIT"
+                "license" to "MIT"
                 "bugs" to jsonObject {
                     "email" to "support@concordant.io"
                 }
