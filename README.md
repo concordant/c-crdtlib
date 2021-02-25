@@ -148,3 +148,71 @@ const lVV = lenv.getState()
 rMVReg.merge(lMVReg.generateDelta(lVV))
 console.log(lMVReg.get())    // [L, R]
 ```
+
+## CRDT Object API
+
+The Concordant CRDT library currently provides three main classes of CRDTs:
+- Counters: store an integer value which can be decremented and incremented.
+- Registers: strore a string value which can be reassigned.
+- Collections: store multiple string values which can be reassigned.
+
+All object types support the following methods:
+
+* `toJson` serialises the object into a JSON string representing its current
+  state.
+* `DeltaCRDT.fromJson` takes a JSON string and converts it to to an object
+  state of its corresponding type (and fails if the JSON does not parse
+  properly).
+
+The following sections describe for each object type its specificities.
+
+### Counters
+
+`PNCounter` is an integer counter, with increment and decrement operations.
+
+`BCounter` is a PNCounter whose value cannot become negative.
+
+Counters provides an `increment(nb)` and `decrement(nb)` methods to modify
+their value; their content can be retrieved using the `get()` method.
+
+### Registers
+
+`LWWRegister` stores a string; supports assignment; concurrent assignments
+resolve to a single value.
+
+`MVRegister` stores a string; supports assignment; concurrent assignments are
+all retained.
+
+`Ratchet` is a register with values taken from a custom semi-lattice.
+
+All registers support assignment using the `assign(value)` method; their
+content can be retrieved using the `get()` method.
+
+### Collections
+
+`RGA` is an ordered sequence of strings. Elements can be added (removed) to the
+object using the `insertAt(idx, elem)` (`removeAt(idx)`) method. The content of
+the object can be retrieved using the `get()` method or using the `iterator()`.
+
+`LWWMap` is a map from string to LWW scalar value (of type int, double, boolean
+or string). Elements can be added (removed) to the object using the
+`put(key, value)` (`deleteXXX(key)`) method. The content of the object can
+be retrieved using the `getXXX(key)` method or using the `iteratorXXX()`. Where
+`XXX` is one of the following suffix depending on the used types: `Int`,
+`Double`, `Boolean`, or `String`.
+
+`MVMap` is a map from string to MV value (of type string). Elements can be
+added (removed) to the object using the `put(key, value)` (`deleteXXX(key)`)
+method. The content of the object can be retrieved using the `getXXX(key)`
+method or using the `iteratorXXX()`. Where `XXX` is one of the following suffix
+depending on the used types: `Int`, `Double`, `Boolean`, or `String`.
+
+`Map` is a map from a string key to a value of type LWW-string union MV-string
+union PNCounter. Elements can be added (removed) to the object using the
+`putYYYXXX(key, value)` (`deleteYYYXXX(key)`) method. The content of the object
+can be retrieved using the `getYYYXXX(key)` method or using the
+`iteratorYYYXXX()`. Where `XXX` is one of the following suffix depending on the
+used types: `Int`, `Double`, `Boolean`, or `String`; and `YYY` is one of the
+following suffix depending on the used merging strategy: `LWW`, `MV`, `Cnt`.
+Moreover, it is possible to increment (decrement) a counter stored behind a
+given key using the `increment(key, nb)` (`decrement(key, nb)`).
