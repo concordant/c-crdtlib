@@ -428,6 +428,15 @@ class RGATest : StringSpec({
         it.shouldBeEmpty()
     }
 
+    /**
+     * This test evaluates the scenario: insert at 0 and 1 in all replicas,
+     * then merge first and second replica into the third one.
+     * Call to get in the third replica should return an array containing the
+     * six values correctly ordered: third replica's values first, then second
+     * replica's values, and finally first replica's values.
+     * Call to iterator should return an iterator containing the six values
+     * correctly ordered.
+     */
     "R1, R2, R3: insert 0, 1 ; merge R1, R2 -> R3" {
         val rga1 = RGA(client1)
         val rga2 = RGA(client2)
@@ -459,6 +468,15 @@ class RGATest : StringSpec({
         it.shouldBeEmpty()
     }
 
+    /**
+     * This test evaluates the scenario: insert at 0 and 1 in all replicas,
+     * then merge second and third replica into the first one.
+     * Call to get in the first replica should return an array containing the
+     * six values correctly ordered: third replica's values first, then second
+     * replica's values, and finally first replica's values.
+     * Call to iterator should return an iterator containing the six values
+     * correctly ordered.
+     */
     "R1, R2, R3: insert 0, 1 ; merge R3, R2 -> R1" {
         val rga1 = RGA(client1)
         val rga2 = RGA(client2)
@@ -488,6 +506,314 @@ class RGATest : StringSpec({
             it.next().shouldBe(value)
         }
         it.shouldBeEmpty()
+    }
+
+    /**
+     * This test evaluates the scenario of issue #35
+     *
+     * 1362 13452 134562
+     *   1       1       1
+     *  / \     / \     / \
+     * 3   2   3   2   3   2
+     * |      /       / \
+     * 6     4       4   6
+     *       |       |
+     *       5       5
+     *
+     * (assuming element 6 has a smaller timestamp than element 4)
+     * - 1, 2 and 3 are added and synchronized
+     * - 6 is added on R1, 4 and 5 on R2 (concurrently)
+     * - R1 to R2 are merged
+     */
+    "merge R1: 1362 and R2: 13452" {
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client2)
+
+        // add 132 to R1
+        rga1.insertAt(0, "1")
+        rga1.insertAt(1, "2")
+        rga1.insertAt(1, "3")
+
+        // merge R1 → R2
+        rga2.merge(rga1)
+
+        // add 6 to R1 (1362)
+        rga1.insertAt(2, "6")
+
+        rga1.get().shouldContainExactly("1", "3", "6", "2")
+        rga1.get(0).shouldBe("1")
+        rga1.get(1).shouldBe("3")
+        rga1.get(2).shouldBe("6")
+        rga1.get(3).shouldBe("2")
+        var it1 = rga1.iterator()
+        for (value in rga1.get()) {
+            it1.shouldHaveNext()
+            it1.next().shouldBe(value)
+        }
+        it1.shouldBeEmpty()
+
+        // add 4,5 to R2 (13452)
+        rga2.insertAt(2, "4")
+        rga2.insertAt(3, "5")
+
+        rga2.get().shouldContainExactly("1", "3", "4", "5", "2")
+        rga2.get(0).shouldBe("1")
+        rga2.get(1).shouldBe("3")
+        rga2.get(2).shouldBe("4")
+        rga2.get(3).shouldBe("5")
+        rga2.get(4).shouldBe("2")
+        var it2 = rga2.iterator()
+        for (value in rga2.get()) {
+            it2.shouldHaveNext()
+            it2.next().shouldBe(value)
+        }
+        it2.shouldBeEmpty()
+
+        // merge R1 and R2
+        rga2.merge(rga1)
+        rga1.merge(rga2)
+
+        rga1.get().shouldContainExactly("1", "3", "4", "5", "6", "2")
+        rga1.get(0).shouldBe("1")
+        rga1.get(1).shouldBe("3")
+        rga1.get(2).shouldBe("4")
+        rga1.get(3).shouldBe("5")
+        rga1.get(4).shouldBe("6")
+        rga1.get(5).shouldBe("2")
+        it1 = rga1.iterator()
+        for (value in rga1.get()) {
+            it1.shouldHaveNext()
+            it1.next().shouldBe(value)
+        }
+        it1.shouldBeEmpty()
+        rga2.get().shouldContainExactly("1", "3", "4", "5", "6", "2")
+        rga2.get(0).shouldBe("1")
+        rga2.get(1).shouldBe("3")
+        rga2.get(2).shouldBe("4")
+        rga2.get(3).shouldBe("5")
+        rga2.get(4).shouldBe("6")
+        rga2.get(5).shouldBe("2")
+        it2 = rga2.iterator()
+        for (value in rga2.get()) {
+            it2.shouldHaveNext()
+            it2.next().shouldBe(value)
+        }
+        it2.shouldBeEmpty()
+    }
+
+    /**
+     * A similar scenario with a deeper tree
+     *
+     * 1346572 13465982 134659872
+     *       1         1         1
+     *      / \       / \       / \
+     *     3   2     3   2     3   2
+     *    /         /         /
+     *   4         4         4
+     *  / \       / \       / \
+     * 6   5     6   5     6   5
+     *     |        / \       /|\
+     *     7       9   8     9 8 7
+     *
+     * (assuming element 7 has a smaller timestamp than element 8)
+     * - 1 to 5 are added and synchronized
+     * - 7 is added on R1, 8 and 9 on R2 (concurrently)
+     * - R1 to R2 are merged
+     */
+    "merge R1: 1346572 and R@: 13465982" {
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client2)
+
+        // add 134652 to R1
+        rga1.insertAt(0, "1")
+        rga1.insertAt(1, "2")
+        rga1.insertAt(1, "3")
+        rga1.insertAt(2, "4")
+        rga1.insertAt(3, "5")
+        rga1.insertAt(3, "6")
+
+        // merge R1 → R2
+        rga2.merge(rga1)
+
+        // add 7 to R1 (1346572)
+        rga1.insertAt(5, "7")
+
+        rga1.get().shouldContainExactly("1", "3", "4", "6", "5", "7", "2")
+        rga1.get(0).shouldBe("1")
+        rga1.get(1).shouldBe("3")
+        rga1.get(2).shouldBe("4")
+        rga1.get(3).shouldBe("6")
+        rga1.get(4).shouldBe("5")
+        rga1.get(5).shouldBe("7")
+        rga1.get(6).shouldBe("2")
+        var it1 = rga1.iterator()
+        for (value in rga1.get()) {
+            it1.shouldHaveNext()
+            it1.next().shouldBe(value)
+        }
+        it1.shouldBeEmpty()
+
+        // add 8,9 to R2 (13465982)
+        rga2.insertAt(5, "8")
+        rga2.insertAt(5, "9")
+
+        rga2.get().shouldContainExactly("1", "3", "4", "6", "5", "9", "8", "2")
+        rga2.get(0).shouldBe("1")
+        rga2.get(1).shouldBe("3")
+        rga2.get(2).shouldBe("4")
+        rga2.get(3).shouldBe("6")
+        rga2.get(4).shouldBe("5")
+        rga2.get(5).shouldBe("9")
+        rga2.get(6).shouldBe("8")
+        rga2.get(7).shouldBe("2")
+        var it2 = rga2.iterator()
+        for (value in rga2.get()) {
+            it2.shouldHaveNext()
+            it2.next().shouldBe(value)
+        }
+        it2.shouldBeEmpty()
+
+        // merge R1 and R2
+        rga2.merge(rga1)
+        rga1.merge(rga2)
+
+        rga1.get().shouldContainExactly("1", "3", "4", "6", "5", "9", "8", "7", "2")
+        rga1.get(0).shouldBe("1")
+        rga1.get(1).shouldBe("3")
+        rga1.get(2).shouldBe("4")
+        rga1.get(3).shouldBe("6")
+        rga1.get(4).shouldBe("5")
+        rga1.get(5).shouldBe("9")
+        rga1.get(6).shouldBe("8")
+        rga1.get(7).shouldBe("7")
+        rga1.get(8).shouldBe("2")
+        it1 = rga1.iterator()
+        for (value in rga1.get()) {
+            it1.shouldHaveNext()
+            it1.next().shouldBe(value)
+        }
+        it1.shouldBeEmpty()
+        rga2.get().shouldContainExactly("1", "3", "4", "6", "5", "9", "8", "7", "2")
+        rga2.get(0).shouldBe("1")
+        rga2.get(1).shouldBe("3")
+        rga2.get(2).shouldBe("4")
+        rga2.get(3).shouldBe("6")
+        rga2.get(4).shouldBe("5")
+        rga2.get(5).shouldBe("9")
+        rga2.get(6).shouldBe("8")
+        rga2.get(7).shouldBe("7")
+        rga2.get(8).shouldBe("2")
+        it2 = rga2.iterator()
+        for (value in rga2.get()) {
+            it2.shouldHaveNext()
+            it2.next().shouldBe(value)
+        }
+        it2.shouldBeEmpty()
+    }
+
+    /**
+     * Same scenario without the 2 (up to the root)
+     *
+     * 134657 1346598 13465987
+     *       1       1       1
+     *      /       /       /
+     *     3       3       3
+     *    /       /       /
+     *   4       4       4
+     *  / \     / \     / \
+     * 6   5   6   5   6   5
+     *     |      / \     /|\
+     *     7     9   8   9 8 7
+     *
+     * (assuming element 7 has a smaller timestamp than element 8)
+     * - 1 to 5 are added and synchronized
+     * - 7 is added on R1, 8 and 9 on R2 (concurrently)
+     * - R1 to R2 are merged
+     */
+    "merge R1: 134657 and R2: 1346598" {
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client2)
+
+        // add 13465 to R1
+        rga1.insertAt(0, "1")
+        rga1.insertAt(1, "3")
+        rga1.insertAt(2, "4")
+        rga1.insertAt(3, "5")
+        rga1.insertAt(3, "6")
+
+        // merge R1 → R2
+        rga2.merge(rga1)
+
+        // add 7 to R1 (134657)
+        rga1.insertAt(5, "7")
+
+        rga1.get().shouldContainExactly("1", "3", "4", "6", "5", "7")
+        rga1.get(0).shouldBe("1")
+        rga1.get(1).shouldBe("3")
+        rga1.get(2).shouldBe("4")
+        rga1.get(3).shouldBe("6")
+        rga1.get(4).shouldBe("5")
+        rga1.get(5).shouldBe("7")
+        var it1 = rga1.iterator()
+        for (value in rga1.get()) {
+            it1.shouldHaveNext()
+            it1.next().shouldBe(value)
+        }
+        it1.shouldBeEmpty()
+
+        // add 8,9 to R2 (1346598)
+        rga2.insertAt(5, "8")
+        rga2.insertAt(5, "9")
+
+        rga2.get().shouldContainExactly("1", "3", "4", "6", "5", "9", "8")
+        rga2.get(0).shouldBe("1")
+        rga2.get(1).shouldBe("3")
+        rga2.get(2).shouldBe("4")
+        rga2.get(3).shouldBe("6")
+        rga2.get(4).shouldBe("5")
+        rga2.get(5).shouldBe("9")
+        rga2.get(6).shouldBe("8")
+        var it2 = rga2.iterator()
+        for (value in rga2.get()) {
+            it2.shouldHaveNext()
+            it2.next().shouldBe(value)
+        }
+        it2.shouldBeEmpty()
+
+        // merge R1 and R2
+        rga2.merge(rga1)
+        rga1.merge(rga2)
+
+        rga1.get().shouldContainExactly("1", "3", "4", "6", "5", "9", "8", "7")
+        rga1.get(0).shouldBe("1")
+        rga1.get(1).shouldBe("3")
+        rga1.get(2).shouldBe("4")
+        rga1.get(3).shouldBe("6")
+        rga1.get(4).shouldBe("5")
+        rga1.get(5).shouldBe("9")
+        rga1.get(6).shouldBe("8")
+        rga1.get(7).shouldBe("7")
+        it1 = rga1.iterator()
+        for (value in rga1.get()) {
+            it1.shouldHaveNext()
+            it1.next().shouldBe(value)
+        }
+        it1.shouldBeEmpty()
+        rga2.get().shouldContainExactly("1", "3", "4", "6", "5", "9", "8", "7")
+        rga2.get(0).shouldBe("1")
+        rga2.get(1).shouldBe("3")
+        rga2.get(2).shouldBe("4")
+        rga2.get(3).shouldBe("6")
+        rga2.get(4).shouldBe("5")
+        rga2.get(5).shouldBe("9")
+        rga2.get(6).shouldBe("8")
+        rga2.get(7).shouldBe("7")
+        it2 = rga2.iterator()
+        for (value in rga2.get()) {
+            it2.shouldHaveNext()
+            it2.next().shouldBe(value)
+        }
+        it2.shouldBeEmpty()
     }
 
     /**
