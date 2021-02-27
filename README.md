@@ -1,6 +1,6 @@
 # Conflict-Free Replicated Datatypes (CRDT) library
 
-[![pipeline status](https://gitlab.inria.fr/concordant/software/crdtlib-kotlin/badges/master/pipeline.svg)](
+[![](https://gitlab.inria.fr/concordant/software/crdtlib-kotlin/badges/master/pipeline.svg)](
 https://gitlab.inria.fr/concordant/software/crdtlib-kotlin/commits/master)
 [![License](https://img.shields.io/badge/license-MIT-green)](
 https://opensource.org/licenses/MIT)
