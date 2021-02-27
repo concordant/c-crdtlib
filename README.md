@@ -164,7 +164,10 @@ All object types support the following methods:
   state of its corresponding type (and fails if the JSON does not parse
   properly).
 
-The following sections describe for each object type its specificities.
+The following sections briefly describes each type specificities.
+
+**Note:** interfaces described here are not stable yet
+  and will change in the next version of the CRDTlib.
 
 ### Counters
 
@@ -184,35 +187,46 @@ resolve to a single value.
 all retained.
 
 `Ratchet` is a register with values taken from a custom semi-lattice.
+Concurrent assignments retain their least upper bound.
+Only string values with default ordering are currently supported.
 
 All registers support assignment using the `assign(value)` method; their
 content can be retrieved using the `get()` method.
 
 ### Collections
 
-`RGA` is an ordered sequence of strings. Elements can be added (removed) to the
-object using the `insertAt(idx, elem)` (`removeAt(idx)`) method. The content of
-the object can be retrieved using the `get()` method or using the `iterator()`.
+`RGA` is an ordered sequence of strings.
+- `insertAt(idx, elem)` inserts an element to the RGA.
+- `removeAt(idx)` removes an element.
+- `get()` returns the whole RGA content as a list.
+- `iterator()` returns an iterator over the RGA.
 
-`LWWMap` is a map from string to LWW scalar value (of type int, double, boolean
-or string). Elements can be added (removed) to the object using the
-`put(key, value)` (`deleteXXX(key)`) method. The content of the object can
-be retrieved using the `getXXX(key)` method or using the `iteratorXXX()`. Where
-`XXX` is one of the following suffix depending on the used types: `Int`,
-`Double`, `Boolean`, or `String`.
+#### Maps
 
-`MVMap` is a map from string to MV value (of type string). Elements can be
-added (removed) to the object using the `put(key, value)` (`deleteXXX(key)`)
-method. The content of the object can be retrieved using the `getXXX(key)`
-method or using the `iteratorXXX()`. Where `XXX` is one of the following suffix
-depending on the used types: `Int`, `Double`, `Boolean`, or `String`.
+Map types currently only support
+`Int`, `Double`, `Boolean`, and `String` values.
+Specific methods are provided for each type (ex.: `getString(key)`),
+denoted here by `method<TYPE>()`.
+Note that a map may contain values of different types under the same key.
 
-`Map` is a map from a string key to a value of type LWW-string union MV-string
-union PNCounter. Elements can be added (removed) to the object using the
-`putYYYXXX(key, value)` (`deleteYYYXXX(key)`) method. The content of the object
-can be retrieved using the `getYYYXXX(key)` method or using the
-`iteratorYYYXXX()`. Where `XXX` is one of the following suffix depending on the
-used types: `Int`, `Double`, `Boolean`, or `String`; and `YYY` is one of the
-following suffix depending on the used merging strategy: `LWW`, `MV`, `Cnt`.
-Moreover, it is possible to increment (decrement) a counter stored behind a
-given key using the `increment(key, nb)` (`decrement(key, nb)`).
+`LWWMap` maps strings to LWW scalar values.
+- `put(key, value)` adds or updates an element to the map.
+- `delete<TYPE>(key)` removes an element from the map.
+- `get<TYPE>(key)` retrieves the values associated with `key`.
+- `iterator<TYPE>()` returns an iterator on the map key-value pairs.
+
+`MVMap` maps strings to MV scalar values.
+It supports the same methods as LWWMap,
+but values returned by `get<TYPE>(key)` and `iterator<TYPE>()`
+are multi-values (lists).
+
+`Map` maps strings to LWW, MV and PNcounter values.
+Specific methods are provided for each merging strategy
+(`LWW`, `MV` or `Cnt`)
+denoted here by `method<MS>()` (ex.: `getCnt(key)`).
+- `put<MS>(key, value)` adds or updates an element to the map.
+- `delete<MS><TYPE>(key)` removes an element from the map.
+- `get<MS><TYPE>(key)` retrieves the values associated with `key`.
+- `iterator<MS><TYPE>()` returns an iterator on the map key-value pairs.
+- `increment(key, nb)`, `decrement(key, nb)`
+  increments/decrements the corresponding PNCounter value.
