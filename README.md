@@ -153,14 +153,14 @@ console.log(lMVReg.get())    // [L, R]
 
 The Concordant CRDT library currently provides three main classes of CRDTs:
 - Counters: store an integer value which can be decremented and incremented.
-- Registers: strore a string value which can be reassigned.
+- Registers: store a string value which can be reassigned.
 - Collections: store multiple string values which can be reassigned.
 
 All object types support the following methods:
 
 * `toJson` serialises the object into a JSON string representing its current
   state.
-* `DeltaCRDT.fromJson` takes a JSON string and converts it to to an object
+* `DeltaCRDT.fromJson` takes a JSON string and converts it to an object
   state of its corresponding type (and fails if the JSON does not parse
   properly).
 
@@ -198,6 +198,7 @@ content can be retrieved using the `get()` method.
 `RGA` is an ordered sequence of strings.
 - `insertAt(idx, elem)` inserts an element to the RGA.
 - `removeAt(idx)` removes an element.
+- `getAt(idx)` returns the element at a particular index.
 - `get()` returns the whole RGA content as a list.
 - `iterator()` returns an iterator over the RGA.
 
@@ -218,7 +219,7 @@ Note that a map may contain values of different types under the same key.
 `MVMap` maps strings to MV scalar values.
 It supports the same methods as LWWMap,
 but values returned by `get<TYPE>(key)` and `iterator<TYPE>()`
-are multi-values (lists).
+are multi-values (sets).
 
 `Map` maps strings to LWW, MV and PNcounter values.
 Specific methods are provided for each merging strategy
