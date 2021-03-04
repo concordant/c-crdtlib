@@ -15,10 +15,25 @@
 // DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
 // OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+/**
+ * Gradle Build script
+ *
+ * Expected environment variables (may not be required):
+ * - OSSRH_USERNAME, OSSRH_TOKEN: MavenCentral credentials
+ * - NPMJS_AUTH_TOKEN: NPMjs credentials
+ * - CI_JOB_TOKEN: Gitlab CI job token (credentials for gitlab packages)
+ * - CI_PROJECT_ID: Gitlab Project ID, provided by CI (for gitlab packages)
+ *
+ * Expected Gradle properties (required by all Maven publishing tasks):
+ * - signing.secretKeyRingFile: path to GPG private signing key
+ * - signing.keyId: 8-characters GPG key ID
+ * - signing.password: GPG key password
+ */
+
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-description = "Concordant Conflict-Free Replicated Datatypes (CRDT) library"
-group = "concordant"
+description = "The Concordant Conflict-Free Replicated Datatypes (CRDT) library"
+group = "io.concordant"
 version = "1.0.5"
 
 plugins {
@@ -27,6 +42,7 @@ plugins {
     id("org.jetbrains.dokka") version "1.4.10.2"
     id("maven-publish")
     id("lt.petuska.npm.publish") version "1.1.1"
+    id("signing")
 }
 
 repositories {
@@ -107,6 +123,10 @@ kotlin {
             main = "crdtlib.GenerateTSKt"
             outputs.file("$buildDir/js/packages/c-crdtlib-nodeJs/kotlin/c-crdtlib.d.ts")
         }
+        register<Jar>("javadocJar") {
+            from(dokkaHtml)
+            archiveClassifier.set("javadoc")
+        }
         register<JavaExec>("ktlint") {
             group = "verification"
             description = "Ktlint: check"
@@ -142,6 +162,34 @@ tasks.withType<KotlinCompile> {
 }
 
 publishing {
+    publications {
+        withType<MavenPublication>().configureEach {
+            // MavenCentral requires javadoc and additional metadata
+            artifact(tasks.named("javadocJar"))
+
+            pom {
+                name.set("%s:%s".format(project.group, project.name))
+                description.set(project.description)
+                url.set("https://concordant.io")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("http://www.opensource.org/licenses/mit-license.php")
+                    }
+                }
+                developers {
+                    developer {
+                        name.set("Concordant")
+                        email.set("support@concordant.io")
+                    }
+                }
+                scm {
+                    url.set("https://github.com/concordant/c-crdtlib")
+                }
+            }
+        }
+    }
+
     repositories {
         maven {
             name = "Gitlab"
@@ -157,11 +205,26 @@ publishing {
                 create<HttpHeaderAuthentication>("header")
             }
         }
+        maven {
+            name = "MavenCentral"
+            url = uri(
+                "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            )
+            credentials {
+                username = System.getenv("OSSRH_USERNAME")
+                password = System.getenv("OSSRH_TOKEN")
+            }
+        }
     }
 }
 
+signing {
+    sign(publishing.publications)
+}
+
 npmPublishing {
-    organization = group as String
+    // Maven uses reversed URLs as groupId, while NPM uses simple names
+    organization = "concordant"
     readme = file("README.md")
     repositories {
         repository("Gitlab") {

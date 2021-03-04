@@ -27,11 +27,11 @@ This library is delivered as both a [Maven package]() and an [NPM package](https
 
 In your project configuration build file `build.gradle.kts`:
 - Ensure `mavenCentral()`
-  is listed in the `repositories{}` for usual packages.
+  is listed in the `repositories{}`.
 - Add the c-crdtlib Maven package as a dependency:
 ``` kotlin
 dependencies {
-    implementation("concordant:c-crdtlib:x.y.z")
+    implementation("io.concordant:c-crdtlib:x.y.z")
 }
 ```
 
