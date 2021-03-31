@@ -18,7 +18,7 @@ below.
 See also the [full documentation of the master branch on GitLab pages](
 https://concordant.gitlabpages.inria.fr/software/c-crdtlib/c-crdtlib).
 
-The main repository is in [the Inria gitlab](https://gitlab.inria.fr/concordant/software/c-crdtlib/) (this is where you can post tickets.  There is an identical clone in  [GitHub](https://github.com/concordant/c-crdtlib) (tickets here might be ignored).
+The main repository is in [the Inria gitlab](https://gitlab.inria.fr/concordant/software/c-crdtlib/) (this is where you can post tickets).  There is an identical clone in [GitHub](https://github.com/concordant/c-crdtlib) (tickets here might be ignored).
 
 ## Getting Started
 
