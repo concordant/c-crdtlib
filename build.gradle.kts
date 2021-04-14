@@ -220,6 +220,15 @@ publishing {
 
 signing {
     sign(publishing.publications)
+    // sign if signatory credentials are available only
+    setRequired(false)
+    // CI: use ASCII-armored key from environment variable
+    if ("GPG_SECRET_KEY" in System.getenv()) {
+        val signingKey = System.getenv("GPG_SECRET_KEY")
+        val signingKeyId = System.getenv("GPG_KEY_ID")
+        val signingPassword = System.getenv("GPG_PASSPHRASE")
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    }
 }
 
 npmPublishing {

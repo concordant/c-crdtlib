@@ -40,7 +40,7 @@ deliver-internal:
 
 # Expected environment variables (required to publish)
 # - OSSRH_USERNAME, OSSRH_TOKEN: MavenCentral credentials
-# - GPG_SECRET_KEY: path to GPG private signing key
+# - GPG_SECRET_KEY: ASCII-armored GPG private signing key
 # - GPG_KEY_ID: 8-characters GPG key ID
 # - GPG_PASSPHRASE: GPG key passphrase
 # - NPMJS_AUTH_TOKEN: NPMjs credentials
@@ -53,9 +53,6 @@ publish:
   dependencies:
     - build
   script:
-    - echo "signing.secretKeyRingFile=$GPG_SECRET_KEY" >>gradle.properties
-    - echo "signing.keyId=$GPG_KEY_ID"                 >>gradle.properties
-    - echo "signing.password=$GPG_PASSPHRASE"          >>gradle.properties
     - gradle publishAllPublicationsToMavenCentralRepository
              publishNodeJsNpmPublicationToNpmjs
 
