@@ -47,14 +47,13 @@ deliver-internal:
 publish:
   stage: deploy
   rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: manual
+    - when: manual
   # use only artifacts from build job
   dependencies:
     - build
   script:
     - gradle publishAllPublicationsToMavenCentralRepository
-             publishNodeJsNpmPublicationToNpmjs
+    #         publishNodeJsNpmPublicationToNpmjs
 
 pages:
   stage: deploy
