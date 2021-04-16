@@ -5,6 +5,8 @@ cache: &global_cache
   key: ${CI_COMMIT_REF_SLUG}
   paths:
     - .gradle/
+  # make push explicit
+  policy: pull
 
 build:
   stage: build
@@ -13,43 +15,57 @@ build:
   artifacts:
     paths:
       - build/
+  cache:
+    <<: *global_cache
+    policy: pull-push
 
 test:
   stage: test
   script:
-    - gradle allTests
+    - gradle check
   artifacts:
     paths:
       - build/reports/
     when: always
 
-publish:
+deliver-internal:
   stage: deploy
   when: manual
-  script:
-    - gradle publish
-  cache:
-    # only pull global_cache
-    <<: *global_cache
-    policy: pull
   # use only artifacts from build job
   dependencies:
     - build
+  script:
+    - gradle publishAllPublicationsToGitlabRepository
+             publishNodeJsNpmPublicationToGitlab
+
+# Expected environment variables (required to publish)
+# - OSSRH_USERNAME, OSSRH_TOKEN: MavenCentral credentials
+# - GPG_SECRET_KEY: ASCII-armored GPG private signing key
+# - GPG_KEY_ID: 8-characters GPG key ID
+# - GPG_PASSPHRASE: GPG key passphrase
+# - NPMJS_AUTH_TOKEN: NPMjs credentials
+publish:
+  stage: deploy
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: manual
+  # use only artifacts from build job
+  dependencies:
+    - build
+  script:
+    - gradle publishAllPublicationsToMavenCentralRepository
+             publishNodeJsNpmPublicationToNpmjs
 
 pages:
   stage: deploy
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+  # use only artifacts from build job
+  dependencies:
+    - build
   script:
     - gradle dokkaHtml
     - mv build/dokka/html public
   artifacts:
     paths:
       - public
-  only:
-    - master
-  cache:
-    # only pull global_cache
-    <<: *global_cache
-    policy: pull
-  # use only artifacts from build job
-  dependencies:
-    - build

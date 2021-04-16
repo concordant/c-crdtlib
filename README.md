@@ -18,6 +18,7 @@ below.
 See also the [full documentation of the master branch on GitLab pages](
 https://concordant.gitlabpages.inria.fr/software/c-crdtlib/c-crdtlib).
 
+The main repository is in [the Inria gitlab](https://gitlab.inria.fr/concordant/software/c-crdtlib/) (this is where you can post tickets).  There is an identical clone in [GitHub](https://github.com/concordant/c-crdtlib) (tickets here might be ignored).
 
 ## Getting Started
 
@@ -27,11 +28,11 @@ This library is delivered as both a [Maven package]() and an [NPM package](https
 
 In your project configuration build file `build.gradle.kts`:
 - Ensure `mavenCentral()`
-  is listed in the `repositories{}` for usual packages.
+  is listed in the `repositories{}`.
 - Add the c-crdtlib Maven package as a dependency:
 ``` kotlin
 dependencies {
-    implementation("concordant:c-crdtlib:x.y.z")
+    implementation("io.concordant:c-crdtlib:x.y.z")
 }
 ```
 
