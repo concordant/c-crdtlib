@@ -34,7 +34,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 description = "The Concordant Conflict-Free Replicated Datatypes (CRDT) library"
 group = "io.concordant"
-version = "1.0.5"
+version = "1.0.6"
 
 plugins {
     kotlin("multiplatform") version "1.4.10"
