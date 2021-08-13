@@ -26,8 +26,8 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.types.shouldBeInstanceOf
 
 /**
-* Represents a suite test for DeltaCRDTFactory.
-**/
+ * Represents a suite test for DeltaCRDTFactory.
+ */
 class DeltaCRDTFactoryTest : StringSpec({
 
     val uid = ClientUId("clientuid")

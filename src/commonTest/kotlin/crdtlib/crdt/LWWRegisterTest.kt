@@ -26,8 +26,8 @@ import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 
 /**
-* Represents a test suite for LWWRegister.
-**/
+ * Represents a test suite for LWWRegister.
+ */
 class LWWRegisterTest : StringSpec({
 
     val uid1 = ClientUId("clientid1")
@@ -136,10 +136,10 @@ class LWWRegisterTest : StringSpec({
         reg2.get().shouldBe("value4")
     }
 
-    /*
-    * This test evaluates the generation of delta plus its merging into another replica.
-    * Call to get should return the values set in the second replica.
-    */
+    /**
+     * This test evaluates the generation of delta plus its merging into another replica.
+     * Call to get should return the values set in the second replica.
+     */
     "generate delta then merge" {
         val reg1 = LWWRegister("value1", client1)
         val reg2 = LWWRegister("value2", client2)
@@ -157,7 +157,7 @@ class LWWRegisterTest : StringSpec({
 
     /**
      * This test evaluates JSON serialization of an empty lww register.
-     **/
+     */
     "empty JSON serialization" {
         val reg = LWWRegister()
         val regJson = reg.toJson()
@@ -167,7 +167,7 @@ class LWWRegisterTest : StringSpec({
 
     /**
      * This test evaluates JSON deserialization of an empty lww register.
-     **/
+     */
     "empty JSON deserialization" {
         val regJson = LWWRegister.fromJson("""{"type":"LWWRegister","metadata":null,"value":null}""")
 
@@ -175,7 +175,7 @@ class LWWRegisterTest : StringSpec({
     }
     /**
      * This test evaluates JSON serialization of a lww register.
-     **/
+     */
     "JSON serialization" {
         val value = "value"
 
@@ -187,7 +187,7 @@ class LWWRegisterTest : StringSpec({
 
     /**
      * This test evaluates JSON deserialization of a lww register.
-     **/
+     */
     "JSON deserialization" {
         val regJson = LWWRegister.fromJson("""{"type":"LWWRegister","metadata":{"uid":{"name":"clientid"},"cnt":-2147483647},"value":"value"}""")
 

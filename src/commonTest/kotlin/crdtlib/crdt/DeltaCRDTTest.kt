@@ -24,8 +24,8 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
 /**
-* Represents a suite test for DeltaCRDT.
-**/
+ * Represents a suite test for DeltaCRDT.
+ */
 class DeltaCRDTTest : StringSpec({
 
     /**

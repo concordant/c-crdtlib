@@ -27,8 +27,8 @@ import io.kotest.matchers.ints.shouldBeZero
 import io.kotest.matchers.shouldBe
 
 /**
-* Represents a suite test for BCounter.
-**/
+ * Represents a suite test for BCounter.
+ */
 class BCounterTest : StringSpec({
 
     val uid1 = ClientUId("clientid1")
