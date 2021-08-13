@@ -230,9 +230,13 @@ class RGA : DeltaCRDT, Iterable<String> {
             this.nodes.add(firstWeakerNodeIndex, node.copy())
             return firstWeakerNodeIndex
         } else {
-            var index = this.nodes.size
-            this.nodes.add(index, node.copy())
-            return index
+            return if (indexPreviousNode == -1) {
+                var index = this.nodes.size
+                this.nodes.add(index, node.copy())
+                index
+            } else {
+                this.mergeNode(-1, node)
+            }
         }
     }
 
@@ -245,7 +249,6 @@ class RGA : DeltaCRDT, Iterable<String> {
             if (lastTs == null || lastTs < node.ts) {
                 lastTs = node.ts
             }
-
             indexPreviousNode = this.mergeNode(indexPreviousNode, node)
         }
         onMerge(delta, lastTs)

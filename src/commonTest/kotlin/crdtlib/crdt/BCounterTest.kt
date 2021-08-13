@@ -27,8 +27,8 @@ import io.kotest.matchers.ints.shouldBeZero
 import io.kotest.matchers.shouldBe
 
 /**
-* Represents a suite test for BCounter.
-**/
+ * Represents a suite test for BCounter.
+ */
 class BCounterTest : StringSpec({
 
     val uid1 = ClientUId("clientid1")
@@ -305,6 +305,22 @@ class BCounterTest : StringSpec({
         cnt2.localRights(uid1).shouldBe(4)
     }
 
+    "use delta returned by transfer" {
+        val cnt1 = BCounter(client1)
+        val cnt2 = BCounter(client2)
+
+        cnt1.increment(20)
+        cnt2.merge(cnt1)
+        val delta = cnt1.transfer(5, uid2)
+        cnt2.merge(delta)
+        cnt1.get().shouldBe(20)
+        cnt2.get().shouldBe(20)
+        cnt1.localRights(uid1).shouldBe(15)
+        cnt1.localRights(uid2).shouldBe(5)
+        cnt2.localRights(uid1).shouldBe(15)
+        cnt2.localRights(uid2).shouldBe(5)
+    }
+
     "generate delta" {
         val cnt1 = BCounter(client1)
         val cnt2 = BCounter(client1)
@@ -326,7 +342,7 @@ class BCounterTest : StringSpec({
 
     "rights transfer, one way" {
         val cnt1 = BCounter(client1)
-        val cnt2 = BCounter(client1)
+        val cnt2 = BCounter(client2)
 
         cnt1.increment(20)
         cnt1.transfer(5, uid2)
@@ -335,6 +351,21 @@ class BCounterTest : StringSpec({
         cnt2.get().shouldBe(20)
         cnt1.localRights(uid1).shouldBe(15)
         cnt2.localRights(uid2).shouldBe(5)
+
+        shouldThrow<IllegalArgumentException> {
+            cnt2.decrement(10)
+        }
+        cnt1.transfer(5, uid2)
+        cnt2.merge(cnt1)
+        cnt2.decrement(10)
+        cnt1.merge(cnt2)
+
+        cnt1.get().shouldBe(10)
+        cnt2.get().shouldBe(10)
+        cnt1.localRights(uid1).shouldBe(10)
+        cnt1.localRights(uid2).shouldBe(0)
+        cnt2.localRights(uid1).shouldBe(10)
+        cnt2.localRights(uid2).shouldBe(0)
     }
 
     "two rights transfers, one way" {
@@ -400,19 +431,19 @@ class BCounterTest : StringSpec({
         cnt1.localRights(uid1).shouldBe(10)
         cnt2.localRights(uid2).shouldBe(30)
 
-        cnt1.transfer(5, uid2)
-        cnt2.merge(cnt1)
-        cnt1.get().shouldBe(40)
-        cnt2.get().shouldBe(40)
-        cnt1.localRights(uid1).shouldBe(5)
-        cnt2.localRights(uid2).shouldBe(35)
-
         cnt2.transfer(20, uid1)
         cnt1.merge(cnt2)
         cnt1.get().shouldBe(40)
         cnt2.get().shouldBe(40)
-        cnt1.localRights(uid1).shouldBe(25)
-        cnt2.localRights(uid2).shouldBe(15)
+        cnt1.localRights(uid1).shouldBe(30)
+        cnt2.localRights(uid2).shouldBe(10)
+
+        cnt1.transfer(15, uid2)
+        cnt2.merge(cnt1)
+        cnt1.get().shouldBe(40)
+        cnt2.get().shouldBe(40)
+        cnt1.localRights(uid1).shouldBe(15)
+        cnt2.localRights(uid2).shouldBe(25)
     }
 
     /* Overflow errors */

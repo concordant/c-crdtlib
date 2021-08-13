@@ -30,8 +30,8 @@ import io.kotest.matchers.iterator.shouldBeEmpty
 import io.kotest.matchers.iterator.shouldHaveNext
 
 /**
-* Represents a suite test for RGA.
-**/
+ * Represents a suite test for RGA.
+ */
 class RGATest : StringSpec({
 
     val uid1 = ClientUId("clientid1")
@@ -830,7 +830,7 @@ class RGATest : StringSpec({
         val insertOp = client1.popWrite().second
         returnedInsertOp.shouldBe(insertOp)
 
-        rga2.merge(insertOp)
+        rga1.merge(insertOp)
         rga2.merge(insertOp)
 
         rga1.get().shouldHaveSingleElement("A")
@@ -1015,7 +1015,7 @@ class RGATest : StringSpec({
 
     /**
      * This test evaluates JSON serialization of an empty RGA.
-     **/
+     */
     "empty JSON serialization" {
         val rga = RGA()
 
@@ -1026,7 +1026,7 @@ class RGATest : StringSpec({
 
     /**
      * This test evaluates JSON deserialization of an empty RGA.
-     **/
+     */
     "empty JSON deserialization" {
         val rgaJson = RGA.fromJson("""{"type":"RGA","metadata":[],"value":[]}""")
 
@@ -1035,7 +1035,7 @@ class RGATest : StringSpec({
 
     /**
      * This test evaluates JSON serialization of an RGA.
-     **/
+     */
     "JSON serialization" {
         val uid = ClientUId("clientid")
         val client = SimpleEnvironment(uid)
@@ -1052,7 +1052,7 @@ class RGATest : StringSpec({
 
     /**
      * This test evaluates JSON deserialization of an RGA.
-     **/
+     */
     "JSON deserialization" {
         val rgaJson = RGA.fromJson("""{"type":"RGA","metadata":[{"anchor":null,"uid":{"uid":{"name":"clientid"},"cnt":-2147483647},"ts":{"uid":{"name":"clientid"},"cnt":-2147483647},"removed":false},{"anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483644},"ts":{"uid":{"name":"clientid"},"cnt":-2147483644},"removed":false},{"atom":"B","anchor":{"uid":{"name":"clientid"},"cnt":-2147483647},"uid":{"uid":{"name":"clientid"},"cnt":-2147483646},"ts":{"uid":{"name":"clientid"},"cnt":-2147483645},"removed":true}],"value":["A","C"]}""")
 

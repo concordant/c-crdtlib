@@ -131,6 +131,9 @@ class MVRegister : DeltaCRDT, Iterable<String> {
     }
 
     override fun generateDelta(vv: VersionVector): MVRegister {
+        if (vv.isGreaterOrEquals(causalContext)) {
+            return MVRegister()
+        }
         return MVRegister(this)
     }
 

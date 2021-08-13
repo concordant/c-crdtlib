@@ -254,7 +254,7 @@ class MVMapTest : StringSpec({
      */
     "R1: put; R2: merge and get/iterator" {
         val map1 = MVMap(client1)
-        val map2 = MVMap(client1)
+        val map2 = MVMap(client2)
 
         map1.put(key1, valBoolean1)
         map1.put(key1, valDouble1)
@@ -616,7 +616,7 @@ class MVMapTest : StringSpec({
      * Call to get should return the value set by put registered in the second replica.
      * Call to iterator should return an iterator containing the value set by put registered in the second replica.
      */
-    "R1: put; R2: put; R3: merge R1, delete, merge R2 ,get/iterator" {
+    "R1: put; R2: put; R3: merge R1, delete, merge R2, get/iterator" {
         val map1 = MVMap(client1)
         val map2 = MVMap(client2)
         val map3 = MVMap(client3)
@@ -669,7 +669,7 @@ class MVMapTest : StringSpec({
      */
     "use deltas returned by put" {
         val map1 = MVMap(client1)
-        val map2 = MVMap(client1)
+        val map2 = MVMap(client2)
 
         val returnedOpBoolean = map1.put(key1, valBoolean1)
         val opBoolean = client1.popWrite().second
@@ -750,11 +750,7 @@ class MVMapTest : StringSpec({
      */
     "use deltas returned by put and delete" {
         val map1 = MVMap(client1)
-        val map2 = MVMap(client1)
-
-        val returnedOpBoolean = map1.put(key1, valBoolean1)
-        val opBoolean = client1.popWrite().second
-        returnedOpBoolean.shouldBe(opBoolean)
+        val map2 = MVMap(client2)
 
         val returnedPutOpBoolean = map1.put(key1, valBoolean1)
         val putOpBoolean = client1.popWrite().second
@@ -824,7 +820,7 @@ class MVMapTest : StringSpec({
      */
     "merge deltas returned by put operations" {
         val map1 = MVMap(client1)
-        val map2 = MVMap(client1)
+        val map2 = MVMap(client2)
 
         val returnedOpBoolean1 = map1.put(key1, valBoolean1)
         val opBoolean1 = client1.popWrite().second
@@ -922,7 +918,7 @@ class MVMapTest : StringSpec({
      */
     "merge deltas returned by put and delete operations" {
         val map1 = MVMap(client1)
-        val map2 = MVMap(client1)
+        val map2 = MVMap(client2)
 
         val returnedOpBoolean1 = map1.put(key1, valBoolean1)
         val opBoolean1 = client1.popWrite().second
@@ -1015,7 +1011,7 @@ class MVMapTest : StringSpec({
     "generate delta" {
         val vv = VersionVector()
         val map1 = MVMap(client1)
-        val map2 = MVMap(client1)
+        val map2 = MVMap(client2)
 
         map1.put(key1, valBoolean1)
         map1.put(key1, valDouble1)
@@ -1092,7 +1088,7 @@ class MVMapTest : StringSpec({
     "generate delta with delete" {
         val vv = VersionVector()
         val map1 = MVMap(client1)
-        val map2 = MVMap(client1)
+        val map2 = MVMap(client2)
 
         map1.put(key1, valBoolean1)
         map1.put(key1, valDouble1)

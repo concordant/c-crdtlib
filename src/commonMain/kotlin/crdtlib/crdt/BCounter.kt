@@ -150,7 +150,7 @@ class BCounter : DeltaCRDT {
         }
 
         val ts = env.tick()
-        val thisLine = this.increment.getOrPut(ts.uid, { mutableMapOf() })
+        val thisLine = this.increment.getOrPut(ts.uid) { mutableMapOf() }
         val count = checkedSum(thisLine[ts.uid]?.first ?: 0, amount)
         thisLine[ts.uid] = Pair(count, ts)
 
@@ -209,13 +209,12 @@ class BCounter : DeltaCRDT {
 
         val op = BCounter()
         if (amount == 0) return op
-        val rights = checkedSum(
-            this.increment[env.uid]?.get(to)?.first ?: 0,
-            amount
-        )
+        val thisLine = this.increment.getOrPut(env.uid) { mutableMapOf() }
+        val rights = checkedSum(thisLine[to]?.first ?: 0, amount)
 
         val ts = env.tick()
-        this.increment[env.uid]?.put(to, Pair(rights, ts))
+        thisLine[to] = Pair(rights, ts)
+        op.increment[env.uid] = mutableMapOf()
         op.increment[env.uid]?.put(to, Pair(rights, ts))
         onWrite(op)
         return op

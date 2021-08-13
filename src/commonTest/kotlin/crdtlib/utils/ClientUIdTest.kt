@@ -25,8 +25,8 @@ import io.kotest.matchers.booleans.*
 import io.kotest.matchers.comparables.*
 
 /**
-* Represents a test suite for ClientUId.
-**/
+ * Represents a test suite for ClientUId.
+ */
 class ClientUIdTest : StringSpec({
 
     /**
@@ -112,7 +112,7 @@ class ClientUIdTest : StringSpec({
 
     /**
      * This test evaluates JSON serialization.
-     **/
+     */
     "JSON serialization" {
         val client = ClientUId("clientid1")
 
@@ -123,7 +123,7 @@ class ClientUIdTest : StringSpec({
 
     /**
      * This test evaluates JSON deserialization.
-     **/
+     */
     "JSON deserialization" {
         val client = ClientUId("clientid1")
 

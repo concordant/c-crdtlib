@@ -27,8 +27,8 @@ import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 
 /**
-* Represents a suite test for Ratchet.
-**/
+ * Represents a suite test for Ratchet.
+ */
 class RatchetTest : StringSpec({
 
     val uid1 = ClientUId("clientid1")
@@ -219,7 +219,7 @@ class RatchetTest : StringSpec({
 
     /**
      * This test evaluates JSON serialization of a ratchet.
-     **/
+     */
     "JSON serialization" {
         val value = "VALUE"
 
@@ -231,7 +231,7 @@ class RatchetTest : StringSpec({
 
     /**
      * This test evaluates JSON deserialization of a ratchet.
-     **/
+     */
     "JSON deserialization" {
         val ratJson = Ratchet.fromJson("""{"type":"Ratchet","value":"VALUE"}""")
 

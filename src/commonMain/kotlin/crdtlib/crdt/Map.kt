@@ -637,7 +637,7 @@ class Map : DeltaCRDT {
             val obj = Json.decodeFromString(jsonSerializer, json)
             obj.lwwMap.setEnv(obj.proxyEnv)
             obj.mvMap.setEnv(obj.proxyEnv)
-            for ((key, cnt) in obj.cntMap) {
+            for ((_, cnt) in obj.cntMap) {
                 cnt.setEnv(obj.proxyEnv)
             }
             if (env != null) {

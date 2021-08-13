@@ -263,7 +263,7 @@ class MapTest : StringSpec({
      */
     "LWW R1: put; R2: merge, get/iterator" {
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         map1.putLWW(key1, valBoolean1)
         map1.putLWW(key1, valDouble1)
@@ -720,7 +720,7 @@ class MapTest : StringSpec({
      */
     "LWW use deltas returned by put" {
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         val returnedOpBoolean = map1.putLWW(key1, valBoolean1)
         val opBoolean = client1.popWrite().second
@@ -801,7 +801,7 @@ class MapTest : StringSpec({
      */
     "LWW use deltas returned by put and delete" {
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         val returnedPutOpBoolean = map1.putLWW(key1, valBoolean1)
         val putOpBoolean = client1.popWrite().second
@@ -871,7 +871,7 @@ class MapTest : StringSpec({
      */
     "LWW merge deltas returned by put operations" {
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         val returnedOpBoolean1 = map1.putLWW(key1, valBoolean1)
         val opBoolean1 = client1.popWrite().second
@@ -969,7 +969,7 @@ class MapTest : StringSpec({
      */
     "LWW merge deltas returned by put and delete operations" {
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         val returnedOpBoolean1 = map1.putLWW(key1, valBoolean1)
         val opBoolean1 = client1.popWrite().second
@@ -1062,7 +1062,7 @@ class MapTest : StringSpec({
     "LWW generate delta" {
         val vv = VersionVector()
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         map1.putLWW(key1, valBoolean1)
         map1.putLWW(key1, valDouble1)
@@ -1139,7 +1139,7 @@ class MapTest : StringSpec({
     "LWW generate delta with delete" {
         val vv = VersionVector()
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         map1.putLWW(key1, valBoolean1)
         map1.putLWW(key1, valDouble1)
@@ -1368,7 +1368,7 @@ class MapTest : StringSpec({
      */
     "MV R1: put; R2: merge, get/iterator" {
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         map1.putMV(key1, valBoolean1)
         map1.putMV(key1, valDouble1)
@@ -1783,7 +1783,7 @@ class MapTest : StringSpec({
      */
     "MV use deltas returned by put" {
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         val returnedOpBoolean = map1.putMV(key1, valBoolean1)
         val opBoolean = client1.popWrite().second
@@ -1864,7 +1864,7 @@ class MapTest : StringSpec({
      */
     "MV use deltas returned by put and delete" {
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         val returnedPutOpBoolean = map1.putMV(key1, valBoolean1)
         val putOpBoolean = client1.popWrite().second
@@ -1934,7 +1934,7 @@ class MapTest : StringSpec({
      */
     "MV merge deltas returned by put operations" {
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         val returnedOpBoolean1 = map1.putMV(key1, valBoolean1)
         val opBoolean1 = client1.popWrite().second
@@ -2032,7 +2032,7 @@ class MapTest : StringSpec({
      */
     "MV merge deltas returned by put and delete operations" {
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         val returnedOpBoolean1 = map1.putMV(key1, valBoolean1)
         val opBoolean1 = client1.popWrite().second
@@ -2125,7 +2125,7 @@ class MapTest : StringSpec({
     "MV generate delta" {
         val vv = VersionVector()
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         map1.putMV(key1, valBoolean1)
         map1.putMV(key1, valDouble1)
@@ -2202,7 +2202,7 @@ class MapTest : StringSpec({
     "MV generate delta with delete" {
         val vv = VersionVector()
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         map1.putMV(key1, valBoolean1)
         map1.putMV(key1, valDouble1)
@@ -2416,7 +2416,7 @@ class MapTest : StringSpec({
      */
     "CNT R1: increment; R2: merge and get/iterator" {
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         map1.increment(key1, 11)
         map2.merge(map1)
@@ -2443,7 +2443,7 @@ class MapTest : StringSpec({
      */
     "CNT R1: decrement; R2: merge and get/iterator" {
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         map1.decrement(key1, 11)
         map2.merge(map1)
@@ -2608,7 +2608,7 @@ class MapTest : StringSpec({
      */
     "CNT use delta return by increment" {
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         val returnedIncOp = map1.increment(key1, 11)
         val incOp = client1.popWrite().second
@@ -2638,7 +2638,7 @@ class MapTest : StringSpec({
      */
     "CNT use delta return by decrement" {
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         val returnedDecOp = map1.decrement(key1, 11)
         val decOp = client1.popWrite().second
@@ -2668,7 +2668,7 @@ class MapTest : StringSpec({
      */
     "CNT use delta return by increment and decrement" {
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         val returnedDecOp = map1.decrement(key1, 11)
         val decOp = client1.popWrite().second
@@ -2705,7 +2705,7 @@ class MapTest : StringSpec({
      */
     "CNT generate delta" {
         val map1 = Map(client1)
-        val map2 = Map(client1)
+        val map2 = Map(client2)
 
         map1.increment(key1, 11)
         map1.increment(key1, 33)

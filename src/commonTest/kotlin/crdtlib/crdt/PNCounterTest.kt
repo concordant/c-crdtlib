@@ -25,8 +25,8 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.*
 
 /**
-* Represents a suite test for PNCounter.
-**/
+ * Represents a suite test for PNCounter.
+ */
 class PNCounterTest : StringSpec({
 
     val uid1 = ClientUId("clientid1")
@@ -373,7 +373,7 @@ class PNCounterTest : StringSpec({
 
     /**
      * This test evaluates JSON serialization of an empty pncounter.
-     **/
+     */
     "empty JSON serialization" {
         val cnt = PNCounter()
 
@@ -384,7 +384,7 @@ class PNCounterTest : StringSpec({
 
     /**
      * This test evaluates JSON deserialization of an empty pncounter.
-     **/
+     */
     "empty JSON deserialization" {
         val cntJson = PNCounter.fromJson("""{"type":"PNCounter","metadata":{"increment":[],"decrement":[]},"value":0}""")
 
@@ -393,7 +393,7 @@ class PNCounterTest : StringSpec({
 
     /**
      * This test evaluates JSON serialization of a pncounter.
-     **/
+     */
     "JSON serialization" {
         val cnt1 = PNCounter(client1)
         val cnt2 = PNCounter(client2)
@@ -410,7 +410,7 @@ class PNCounterTest : StringSpec({
 
     /**
      * This test evaluates JSON deserialization of a pncounter.
-     **/
+     */
     "JSON deserialization" {
         val cntJson = PNCounter.fromJson("""{"type":"PNCounter","metadata":{"increment":[{"name":"clientid2"},{"first":30,"second":{"uid":{"name":"clientid2"},"cnt":-2147483646}},{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483646}}],"decrement":[{"name":"clientid2"},{"first":20,"second":{"uid":{"name":"clientid2"},"cnt":-2147483647}},{"name":"clientid1"},{"first":10,"second":{"uid":{"name":"clientid1"},"cnt":-2147483647}}]},"value":10}""")
 

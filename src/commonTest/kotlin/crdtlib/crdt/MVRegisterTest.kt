@@ -26,8 +26,8 @@ import io.kotest.matchers.*
 import io.kotest.matchers.collections.*
 
 /**
-* Represents a test suite for MVRegister.
-**/
+ * Represents a test suite for MVRegister.
+ */
 class MVRegisterTest : StringSpec({
 
     val uid1 = ClientUId("clientid1")
@@ -260,9 +260,9 @@ class MVRegisterTest : StringSpec({
     "generate delta then merge" {
         val reg1 = MVRegister("value1", client1)
         val reg2 = MVRegister("value2", client2)
-        val vv = client1.getState()
         val reg3 = MVRegister()
 
+        val vv = client2.getState()
         reg2.merge(reg1)
         val delta = reg2.generateDelta(vv)
         reg3.merge(delta)
@@ -272,7 +272,7 @@ class MVRegisterTest : StringSpec({
 
     /**
      * This test evaluates JSON serialization of an empty mv register.
-     **/
+     */
     "empty JSON serialization" {
         val reg = MVRegister()
         val regJson = reg.toJson()
@@ -282,7 +282,7 @@ class MVRegisterTest : StringSpec({
 
     /**
      * This test evaluates JSON deserialization of an empty mv register.
-     **/
+     */
     "empty JSON deserialization" {
         val regJson = MVRegister.fromJson("""{"type":"MVRegister","metadata":{"entries":[],"causalContext":{"entries":[]}},"value":[]}""")
 
@@ -291,7 +291,7 @@ class MVRegisterTest : StringSpec({
 
     /**
      * This test evaluates JSON serialization of a mv register.
-     **/
+     */
     "JSON serialization" {
         val reg1 = MVRegister("value1", client1)
         val reg2 = MVRegister(client2)
@@ -304,7 +304,7 @@ class MVRegisterTest : StringSpec({
 
     /**
      * This test evaluates JSON deserialization of a mv register.
-     **/
+     */
     "JSON deserialization" {
         val regJson = MVRegister.fromJson(
             """{"type":"MVRegister","metadata":{"entries":[{"uid":{"name":"clientid2"},"cnt":-2147483647},{"uid":{"name":"clientid1"},"cnt":-2147483647}],"causalContext":{"entries":[{"name":"clientid2"},-2147483647,{"name":"clientid1"},-2147483647]}},"value":["value2","value1"]}""",
