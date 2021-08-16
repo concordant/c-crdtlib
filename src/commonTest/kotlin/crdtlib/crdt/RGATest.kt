@@ -830,7 +830,7 @@ class RGATest : StringSpec({
         val insertOp = client1.popWrite().second
         returnedInsertOp.shouldBe(insertOp)
 
-        rga2.merge(insertOp)
+        rga1.merge(insertOp)
         rga2.merge(insertOp)
 
         rga1.get().shouldHaveSingleElement("A")
