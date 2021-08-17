@@ -305,6 +305,22 @@ class BCounterTest : StringSpec({
         cnt2.localRights(uid1).shouldBe(4)
     }
 
+    "use delta returned by transfer" {
+        val cnt1 = BCounter(client1)
+        val cnt2 = BCounter(client2)
+
+        cnt1.increment(20)
+        cnt2.merge(cnt1)
+        val delta = cnt1.transfer(5, uid2)
+        cnt2.merge(delta)
+        cnt1.get().shouldBe(20)
+        cnt2.get().shouldBe(20)
+        cnt1.localRights(uid1).shouldBe(15)
+        cnt1.localRights(uid2).shouldBe(5)
+        cnt2.localRights(uid1).shouldBe(15)
+        cnt2.localRights(uid2).shouldBe(5)
+    }
+
     "generate delta" {
         val cnt1 = BCounter(client1)
         val cnt2 = BCounter(client1)
