@@ -277,7 +277,7 @@ class RGAPropTest : StringSpec({
     }
 
     "deserialize is inverse to serialize" {
-        forAll(750, Arb.list(Arb.enum<RGAOpType>(), 0..75)) { ops ->
+        forAll(500, Arb.list(Arb.enum<RGAOpType>())) { ops ->
             val res = StringBuilder()
             val rga = RGA(client1)
 
