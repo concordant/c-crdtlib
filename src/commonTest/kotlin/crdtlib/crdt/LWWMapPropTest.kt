@@ -336,7 +336,7 @@ class LWWMapPropTest : StringSpec({
     }
 
     "R1: put | R2: put, merge 1->2" {
-        checkAll(500, Arb.list(Arb.string(), 0..25)) { keys ->
+        checkAll(500, Arb.list(Arb.string(), 0..15)) { keys ->
             val map1 = LWWMap(client1)
             val map2 = LWWMap(client2)
 
@@ -408,7 +408,7 @@ class LWWMapPropTest : StringSpec({
     }
 
     "R1: put | R2: put, merge R2->R1" {
-        checkAll(500, Arb.list(Arb.string(), 0..25)) { keys ->
+        checkAll(500, Arb.list(Arb.string(), 0..15)) { keys ->
             val map1 = LWWMap(client1)
             val map2 = LWWMap(client2)
 
@@ -476,7 +476,7 @@ class LWWMapPropTest : StringSpec({
     }
 
     "R1: put, delete LWW; R2: put, merge" {
-        checkAll(500, Arb.list(Arb.string(), 0..25)) { keys ->
+        checkAll(500, Arb.list(Arb.string(), 0..15)) { keys ->
             val map1 = LWWMap(client1)
             val map2 = LWWMap(client2)
 

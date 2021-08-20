@@ -78,8 +78,7 @@ class RatchetPropTest : StringSpec({
     }
 
     "merge with deltas" {
-        // Need to reduce range to 0..50 otherwise js test fails due to timeout (default is 0..100)
-        forAll(500, Arb.list(Arb.string(), 0..50), Arb.list(Arb.string(), 0..50)) { ops1, ops2 ->
+        forAll(750, Arb.list(Arb.string(), 0..25), Arb.list(Arb.string(), 0..25)) { ops1, ops2 ->
             val m1 = ops1.maxOrNull() ?: ""
             val m2 = ops2.maxOrNull() ?: ""
 
