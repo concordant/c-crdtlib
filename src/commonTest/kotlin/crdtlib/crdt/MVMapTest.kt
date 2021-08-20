@@ -616,7 +616,7 @@ class MVMapTest : StringSpec({
      * Call to get should return the value set by put registered in the second replica.
      * Call to iterator should return an iterator containing the value set by put registered in the second replica.
      */
-    "R1: put; R2: put; R3: merge R1, delete, merge R2 ,get/iterator" {
+    "R1: put; R2: put; R3: merge R1, delete, merge R2, get/iterator" {
         val map1 = MVMap(client1)
         val map2 = MVMap(client2)
         val map3 = MVMap(client3)
@@ -751,10 +751,6 @@ class MVMapTest : StringSpec({
     "use deltas returned by put and delete" {
         val map1 = MVMap(client1)
         val map2 = MVMap(client1)
-
-        val returnedOpBoolean = map1.put(key1, valBoolean1)
-        val opBoolean = client1.popWrite().second
-        returnedOpBoolean.shouldBe(opBoolean)
 
         val returnedPutOpBoolean = map1.put(key1, valBoolean1)
         val putOpBoolean = client1.popWrite().second

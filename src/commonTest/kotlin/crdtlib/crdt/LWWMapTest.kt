@@ -254,7 +254,7 @@ class LWWMapTest : StringSpec({
      */
     "R1: put; R2: merge and get/iterator" {
         val map1 = LWWMap(client1)
-        val map2 = LWWMap(client1)
+        val map2 = LWWMap(client2)
 
         map1.put(key1, valBoolean1)
         map1.put(key1, valDouble1)
@@ -690,17 +690,10 @@ class LWWMapTest : StringSpec({
         map2.getInt(key1).shouldBeNull()
         map2.getString(key1).shouldBeNull()
 
-        val iteratorBoolean = map2.iteratorBoolean()
-        iteratorBoolean.shouldBeEmpty()
-
-        val iteratorDouble = map2.iteratorDouble()
-        iteratorDouble.shouldBeEmpty()
-
-        val iteratorInt = map2.iteratorInt()
-        iteratorInt.shouldBeEmpty()
-
-        val iteratorString = map2.iteratorString()
-        iteratorString.shouldBeEmpty()
+        map2.iteratorBoolean().shouldBeEmpty()
+        map2.iteratorDouble().shouldBeEmpty()
+        map2.iteratorInt().shouldBeEmpty()
+        map2.iteratorString().shouldBeEmpty()
     }
 
     /**
@@ -710,7 +703,7 @@ class LWWMapTest : StringSpec({
      */
     "use deltas returned by put" {
         val map1 = LWWMap(client1)
-        val map2 = LWWMap(client1)
+        val map2 = LWWMap(client2)
 
         val returnedOpBoolean = map1.put(key1, valBoolean1)
         val opBoolean = client1.popWrite().second
@@ -791,7 +784,7 @@ class LWWMapTest : StringSpec({
      */
     "use deltas returned by put and delete" {
         val map1 = LWWMap(client1)
-        val map2 = LWWMap(client1)
+        val map2 = LWWMap(client2)
 
         val returnedPutOpBoolean = map1.put(key1, valBoolean1)
         val putOpBoolean = client1.popWrite().second
@@ -861,7 +854,7 @@ class LWWMapTest : StringSpec({
      */
     "merge deltas returned by put operations" {
         val map1 = LWWMap(client1)
-        val map2 = LWWMap(client1)
+        val map2 = LWWMap(client2)
 
         val returnedOpBoolean1 = map1.put(key1, valBoolean1)
         val opBoolean1 = client1.popWrite().second
@@ -959,7 +952,7 @@ class LWWMapTest : StringSpec({
      */
     "merge deltas returned by put and delete operations" {
         val map1 = LWWMap(client1)
-        val map2 = LWWMap(client1)
+        val map2 = LWWMap(client2)
 
         val returnedOpBoolean1 = map1.put(key1, valBoolean1)
         val opBoolean1 = client1.popWrite().second
@@ -1052,7 +1045,7 @@ class LWWMapTest : StringSpec({
     "generate delta" {
         val vv = VersionVector()
         val map1 = LWWMap(client1)
-        val map2 = LWWMap(client1)
+        val map2 = LWWMap(client2)
 
         map1.put(key1, valBoolean1)
         map1.put(key1, valDouble1)
@@ -1128,7 +1121,7 @@ class LWWMapTest : StringSpec({
     "generate delta with delete" {
         val vv = VersionVector()
         val map1 = LWWMap(client1)
-        val map2 = LWWMap(client1)
+        val map2 = LWWMap(client2)
 
         map1.put(key1, valBoolean1)
         map1.put(key1, valDouble1)

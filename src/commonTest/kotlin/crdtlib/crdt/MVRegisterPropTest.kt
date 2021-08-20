@@ -80,27 +80,27 @@ class MVRegisterPropTest : StringSpec({
     }
 
     "assign" {
-        forAll(750, Arb.list(Arb.string())) { ops ->
+        forAll(750, Arb.list(Arb.string(), 0..25)) { values ->
             val reg = MVRegister(client1)
             var res: String? = null
 
-            ops.map { op ->
-                res = op
-                reg.assign(op)
+            values.map { value ->
+                res = value
+                reg.assign(value)
             }
             reg.get() == setOfNotNull(res)
         }
     }
 
     "merge" {
-        forAll(750, Arb.list(Arb.string())) { ops ->
+        forAll(750, Arb.list(Arb.string(), 0..25)) { values ->
             val reg1 = MVRegister(client1)
             val reg2 = MVRegister(client2)
             var res: String? = null
 
-            ops.map { op ->
-                res = op
-                reg1.assign(op)
+            values.map { value ->
+                res = value
+                reg1.assign(value)
             }
             reg2.merge(reg1)
             reg1.get() == setOfNotNull(res) && reg1.get() == reg2.get()
@@ -194,29 +194,29 @@ class MVRegisterPropTest : StringSpec({
     }
 
     "use delta returned by assign" {
-        forAll(500, Arb.list(Arb.string())) { ops ->
+        forAll(750, Arb.list(Arb.string(), 0..50)) { values ->
             val reg1 = MVRegister(client1)
             val reg2 = MVRegister(client1)
             var res: String? = null
 
-            ops.map { op ->
-                res = op
-                reg2.merge(reg1.assign(op))
+            values.map { value ->
+                res = value
+                reg2.merge(reg1.assign(value))
             }
             reg1.get() == setOfNotNull(res) && reg1.get() == reg2.get()
         }
     }
 
     "merge delta returned by assign" {
-        forAll(500, Arb.list(Arb.string())) { ops ->
+        forAll(750, Arb.list(Arb.string(), 0..25)) { values ->
             val reg1 = MVRegister(client1)
             val reg2 = MVRegister(client1)
             val deltas = MVRegister()
             var res: String? = null
 
-            ops.map { op ->
-                res = op
-                deltas.merge(reg1.assign(op))
+            values.map { value ->
+                res = value
+                deltas.merge(reg1.assign(value))
             }
             reg2.merge(deltas)
             reg1.get() == setOfNotNull(res) && reg1.get() == reg2.get() && reg1.get() == deltas.get()
@@ -224,24 +224,24 @@ class MVRegisterPropTest : StringSpec({
     }
 
     "generate delta" {
-        forAll(500, Arb.list(Arb.string())) { ops ->
+        forAll(750, Arb.list(Arb.string(), 0..50)) { values ->
             val reg1 = MVRegister(client1)
             val reg2 = MVRegister(client1)
             var res: String? = null
 
-            val subListSize = Arb.int(0..ops.size).next()
-            val ops1 = ops.subList(0, subListSize)
-            val ops2 = ops.subList(subListSize, ops.size)
+            val subListSize = Arb.int(0..values.size).next()
+            val values1 = values.subList(0, subListSize)
+            val values2 = values.subList(subListSize, values.size)
 
-            ops1.map { op ->
-                res = op
-                reg1.assign(op)
+            values1.map { value ->
+                res = value
+                reg1.assign(value)
             }
             val vv = client1.getState()
 
-            ops2.map { op ->
-                res = op
-                reg1.assign(op)
+            values2.map { value ->
+                res = value
+                reg1.assign(value)
             }
             val delta = reg1.generateDelta(vv)
             reg2.merge(delta)
@@ -250,19 +250,19 @@ class MVRegisterPropTest : StringSpec({
     }
 
     "deserialize is inverse to serialize" {
-        forAll(500, Arb.list(Arb.string())) { ops ->
+        forAll(750, Arb.list(Arb.string(), 0..25)) { values ->
             val reg1 = MVRegister(client1)
             val reg2 = MVRegister(client2)
 
-            val subListSize = Arb.int(0..ops.size).next()
-            val ops1 = ops.subList(0, subListSize)
-            val ops2 = ops.subList(subListSize, ops.size)
+            val subListSize = Arb.int(0..values.size).next()
+            val values1 = values.subList(0, subListSize)
+            val values2 = values.subList(subListSize, values.size)
 
-            ops1.map { op ->
-                reg1.assign(op)
+            values1.map { value ->
+                reg1.assign(value)
             }
-            ops2.map { op ->
-                reg2.assign(op)
+            values2.map { value ->
+                reg2.assign(value)
             }
             reg2.merge(reg1)
 
