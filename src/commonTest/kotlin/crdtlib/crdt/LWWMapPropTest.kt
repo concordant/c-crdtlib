@@ -1081,54 +1081,47 @@ class LWWMapPropTest : StringSpec({
             }
             map2.merge(deltas)
 
-            val iteratorBoolean1 = map1.iteratorBoolean()
-            val iteratorBoolean2 = map2.iteratorBoolean()
             for ((k, v) in mapBoolean) {
                 map1.getBoolean(k).shouldBe(v)
                 map2.getBoolean(k).shouldBe(v)
-                iteratorBoolean1.shouldHaveNext()
-                iteratorBoolean1.next().shouldBe(Pair(k, v))
-                iteratorBoolean2.shouldHaveNext()
-                iteratorBoolean2.next().shouldBe(Pair(k, v))
             }
-            iteratorBoolean1.shouldBeEmpty()
-            iteratorBoolean2.shouldBeEmpty()
-            val iteratorDouble1 = map1.iteratorDouble()
-            val iteratorDouble2 = map2.iteratorDouble()
             for ((k, v) in mapDouble) {
                 map1.getDouble(k).shouldBe(v)
                 map2.getDouble(k).shouldBe(v)
-                iteratorDouble1.shouldHaveNext()
-                iteratorDouble1.next().shouldBe(Pair(k, v))
-                iteratorDouble2.shouldHaveNext()
-                iteratorDouble2.next().shouldBe(Pair(k, v))
             }
-            iteratorDouble1.shouldBeEmpty()
-            iteratorDouble2.shouldBeEmpty()
-            val iteratorInt1 = map1.iteratorInt()
-            val iteratorInt2 = map2.iteratorInt()
             for ((k, v) in mapInt) {
                 map1.getInt(k).shouldBe(v)
                 map2.getInt(k).shouldBe(v)
-                iteratorInt1.shouldHaveNext()
-                iteratorInt1.next().shouldBe(Pair(k, v))
-                iteratorInt2.shouldHaveNext()
-                iteratorInt2.next().shouldBe(Pair(k, v))
             }
-            iteratorInt1.shouldBeEmpty()
-            iteratorInt2.shouldBeEmpty()
-            val iteratorString1 = map1.iteratorString()
-            val iteratorString2 = map2.iteratorString()
             for ((k, v) in mapString) {
                 map1.getString(k).shouldBe(v)
                 map2.getString(k).shouldBe(v)
-                iteratorString1.shouldHaveNext()
-                iteratorString1.next().shouldBe(Pair(k, v))
-                iteratorString2.shouldHaveNext()
-                iteratorString2.next().shouldBe(Pair(k, v))
             }
-            iteratorString1.shouldBeEmpty()
-            iteratorString2.shouldBeEmpty()
+
+            val iteratorBoolean = map2.iteratorBoolean()
+            for ((k, v) in iteratorBoolean) {
+                map1.getBoolean(k).shouldBe(v)
+                map2.getBoolean(k).shouldBe(v)
+                mapBoolean[k].shouldBe(v)
+            }
+            val iteratorDouble = map2.iteratorDouble()
+            for ((k, v) in iteratorDouble) {
+                map1.getDouble(k).shouldBe(v)
+                map2.getDouble(k).shouldBe(v)
+                mapDouble[k].shouldBe(v)
+            }
+            val iteratorInt = map2.iteratorInt()
+            for ((k, v) in iteratorInt) {
+                map1.getInt(k).shouldBe(v)
+                map2.getInt(k).shouldBe(v)
+                mapInt[k].shouldBe(v)
+            }
+            val iteratorString = map2.iteratorString()
+            for ((k, v) in iteratorString) {
+                map1.getString(k).shouldBe(v)
+                map2.getString(k).shouldBe(v)
+                mapString[k].shouldBe(v)
+            }
         }
     }
 
@@ -1172,38 +1165,47 @@ class LWWMapPropTest : StringSpec({
             val delta = map1.generateDelta(vv)
             map2.merge(delta)
 
-            val iteratorBoolean = map2.iteratorBoolean()
             for ((k, v) in mapBoolean) {
                 map1.getBoolean(k).shouldBe(v)
                 map2.getBoolean(k).shouldBe(v)
-                iteratorBoolean.shouldHaveNext()
-                iteratorBoolean.next().shouldBe(Pair(k, v))
             }
-            iteratorBoolean.shouldBeEmpty()
-            val iteratorDouble = map2.iteratorDouble()
             for ((k, v) in mapDouble) {
                 map1.getDouble(k).shouldBe(v)
                 map2.getDouble(k).shouldBe(v)
-                iteratorDouble.shouldHaveNext()
-                iteratorDouble.next().shouldBe(Pair(k, v))
             }
-            iteratorDouble.shouldBeEmpty()
-            val iteratorInt = map2.iteratorInt()
             for ((k, v) in mapInt) {
                 map1.getInt(k).shouldBe(v)
                 map2.getInt(k).shouldBe(v)
-                iteratorInt.shouldHaveNext()
-                iteratorInt.next().shouldBe(Pair(k, v))
             }
-            iteratorInt.shouldBeEmpty()
-            val iteratorString = map2.iteratorString()
             for ((k, v) in mapString) {
                 map1.getString(k).shouldBe(v)
                 map2.getString(k).shouldBe(v)
-                iteratorString.shouldHaveNext()
-                iteratorString.next().shouldBe(Pair(k, v))
             }
-            iteratorString.shouldBeEmpty()
+
+            val iteratorBoolean = map2.iteratorBoolean()
+            for ((k, v) in iteratorBoolean) {
+                map1.getBoolean(k).shouldBe(v)
+                map2.getBoolean(k).shouldBe(v)
+                mapBoolean[k].shouldBe(v)
+            }
+            val iteratorDouble = map2.iteratorDouble()
+            for ((k, v) in iteratorDouble) {
+                map1.getDouble(k).shouldBe(v)
+                map2.getDouble(k).shouldBe(v)
+                mapDouble[k].shouldBe(v)
+            }
+            val iteratorInt = map2.iteratorInt()
+            for ((k, v) in iteratorInt) {
+                map1.getInt(k).shouldBe(v)
+                map2.getInt(k).shouldBe(v)
+                mapInt[k].shouldBe(v)
+            }
+            val iteratorString = map2.iteratorString()
+            for ((k, v) in iteratorString) {
+                map1.getString(k).shouldBe(v)
+                map2.getString(k).shouldBe(v)
+                mapString[k].shouldBe(v)
+            }
         }
     }
 
@@ -1262,38 +1264,47 @@ class LWWMapPropTest : StringSpec({
             val delta = map1.generateDelta(vv)
             map2.merge(delta)
 
-            val iteratorBoolean = map2.iteratorBoolean()
             for ((k, v) in mapBoolean) {
                 map1.getBoolean(k).shouldBe(v)
                 map2.getBoolean(k).shouldBe(v)
-                iteratorBoolean.shouldHaveNext()
-                iteratorBoolean.next().shouldBe(Pair(k, v))
             }
-            iteratorBoolean.shouldBeEmpty()
-            val iteratorDouble = map2.iteratorDouble()
             for ((k, v) in mapDouble) {
                 map1.getDouble(k).shouldBe(v)
                 map2.getDouble(k).shouldBe(v)
-                iteratorDouble.shouldHaveNext()
-                iteratorDouble.next().shouldBe(Pair(k, v))
             }
-            iteratorDouble.shouldBeEmpty()
-            val iteratorInt = map2.iteratorInt()
             for ((k, v) in mapInt) {
                 map1.getInt(k).shouldBe(v)
                 map2.getInt(k).shouldBe(v)
-                iteratorInt.shouldHaveNext()
-                iteratorInt.next().shouldBe(Pair(k, v))
             }
-            iteratorInt.shouldBeEmpty()
-            val iteratorString = map2.iteratorString()
             for ((k, v) in mapString) {
                 map1.getString(k).shouldBe(v)
                 map2.getString(k).shouldBe(v)
-                iteratorString.shouldHaveNext()
-                iteratorString.next().shouldBe(Pair(k, v))
             }
-            iteratorString.shouldBeEmpty()
+
+            val iteratorBoolean = map2.iteratorBoolean()
+            for ((k, v) in iteratorBoolean) {
+                map1.getBoolean(k).shouldBe(v)
+                map2.getBoolean(k).shouldBe(v)
+                mapBoolean[k].shouldBe(v)
+            }
+            val iteratorDouble = map2.iteratorDouble()
+            for ((k, v) in iteratorDouble) {
+                map1.getDouble(k).shouldBe(v)
+                map2.getDouble(k).shouldBe(v)
+                mapDouble[k].shouldBe(v)
+            }
+            val iteratorInt = map2.iteratorInt()
+            for ((k, v) in iteratorInt) {
+                map1.getInt(k).shouldBe(v)
+                map2.getInt(k).shouldBe(v)
+                mapInt[k].shouldBe(v)
+            }
+            val iteratorString = map2.iteratorString()
+            for ((k, v) in iteratorString) {
+                map1.getString(k).shouldBe(v)
+                map2.getString(k).shouldBe(v)
+                mapString[k].shouldBe(v)
+            }
         }
     }
 
