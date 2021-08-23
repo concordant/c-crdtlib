@@ -48,7 +48,7 @@ class MVMapPropTest : StringSpec({
     }
 
     "multiple put" {
-        checkAll(500, Arb.list(Arb.string(), 0..15)) { keys ->
+        checkAll(500, Arb.list(Arb.string(0..1), 0..15)) { keys ->
             val map = MVMap(client1)
 
             val mapBoolean = mutableMapOf<String, Boolean>()
@@ -203,7 +203,7 @@ class MVMapPropTest : StringSpec({
     }
 
     "R1: put; R2: merge" {
-        checkAll(500, Arb.list(Arb.string(), 0..15)) { keys ->
+        checkAll(500, Arb.list(Arb.string(0..1), 0..15)) { keys ->
             val map1 = MVMap(client1)
             val map2 = MVMap(client2)
 
@@ -269,7 +269,7 @@ class MVMapPropTest : StringSpec({
     }
 
     "R1: put; R2: merge, put" {
-        checkAll(50, Arb.list(Arb.string(), 0..10)) { keys ->
+        checkAll(50, Arb.list(Arb.string(0..1), 0..10)) { keys ->
             val map1 = MVMap(client1)
             val map2 = MVMap(client2)
 
@@ -337,7 +337,7 @@ class MVMapPropTest : StringSpec({
     }
 
     "R1: put; R2: put, merge" {
-        checkAll(250, Arb.list(Arb.string(), 0..15)) { keys ->
+        checkAll(250, Arb.list(Arb.string(0..1), 0..15)) { keys ->
             val map1 = MVMap(client1)
             val map2 = MVMap(client2)
 
@@ -417,7 +417,7 @@ class MVMapPropTest : StringSpec({
     }
 
     "R1: put, delete; R2: put with older timestamp, merge" {
-        checkAll(250, Arb.list(Arb.string(), 0..15)) { keys ->
+        checkAll(250, Arb.list(Arb.string(0..1), 0..15)) { keys ->
             val map1 = MVMap(client1)
             val map2 = MVMap(client2)
 
@@ -491,7 +491,7 @@ class MVMapPropTest : StringSpec({
     }
 
     "R1: put, delete; R2: put with older timestamp, merge before delete, merge after delete" {
-        checkAll(250, Arb.list(Arb.string(), 0..15)) { keys ->
+        checkAll(250, Arb.list(Arb.string(0..1), 0..15)) { keys ->
             val map1 = MVMap(client1)
             val map2 = MVMap(client2)
 
@@ -566,7 +566,7 @@ class MVMapPropTest : StringSpec({
     }
 
     "R1: put, delete; R2: put with newer timestamp, merge" {
-        checkAll(200, Arb.list(Arb.string(), 0..15)) { keys ->
+        checkAll(200, Arb.list(Arb.string(0..1), 0..15)) { keys ->
             val map1 = MVMap(client1)
             val map2 = MVMap(client2)
 
@@ -645,7 +645,7 @@ class MVMapPropTest : StringSpec({
     }
 
     "R1: put, delete; R2: put with newer timestamp, merge before delete, merge after delete" {
-        checkAll(250, Arb.list(Arb.string(), 0..15)) { keys ->
+        checkAll(250, Arb.list(Arb.string(0..1), 0..15)) { keys ->
             val map1 = MVMap(client1)
             val map2 = MVMap(client2)
 
@@ -720,7 +720,7 @@ class MVMapPropTest : StringSpec({
     }
 
     "R1: put; R2: put; R3: merge R1, delete, merge R2" {
-        checkAll(250, Arb.list(Arb.string(), 0..15)) { keys ->
+        checkAll(250, Arb.list(Arb.string(0..1), 0..15)) { keys ->
             val map1 = MVMap(client1)
             val map2 = MVMap(client2)
             val map3 = MVMap(client3)
@@ -796,7 +796,7 @@ class MVMapPropTest : StringSpec({
     }
 
     "use deltas returned by put" {
-        checkAll(500, Arb.list(Arb.string(), 0..15)) { keys ->
+        checkAll(500, Arb.list(Arb.string(0..1), 0..15)) { keys ->
             val map1 = MVMap(client1)
             val map2 = MVMap(client2)
 
@@ -861,7 +861,7 @@ class MVMapPropTest : StringSpec({
     }
 
     "use deltas returned by put and delete" {
-        checkAll(500, Arb.list(Arb.string(), 0..15)) { keys ->
+        checkAll(500, Arb.list(Arb.string(0..1), 0..15)) { keys ->
             val map1 = MVMap(client1)
             val map2 = MVMap(client2)
 
