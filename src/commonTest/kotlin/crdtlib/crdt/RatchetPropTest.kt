@@ -62,7 +62,7 @@ class RatchetPropTest : StringSpec({
     }
 
     "arbitrary set and merge always yields largest element" {
-        forAll(500, Arb.list(OperationArb)) { ops ->
+        forAll(500, Arb.list(OperationArb, 0..75)) { ops ->
             val maybeMaximum = ops.maxByOrNull { it.second }
             val maximum = maybeMaximum?.second ?: ""
 

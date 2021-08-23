@@ -80,7 +80,7 @@ class MVRegisterPropTest : StringSpec({
     }
 
     "assign" {
-        forAll(750, Arb.list(Arb.string(), 0..25)) { values ->
+        forAll(500, Arb.list(Arb.string(), 0..50)) { values ->
             val reg = MVRegister(client1)
             var res: String? = null
 
@@ -93,7 +93,7 @@ class MVRegisterPropTest : StringSpec({
     }
 
     "merge" {
-        forAll(750, Arb.list(Arb.string(), 0..25)) { values ->
+        forAll(500, Arb.list(Arb.string(), 0..50)) { values ->
             val reg1 = MVRegister(client1)
             val reg2 = MVRegister(client2)
             var res: String? = null
@@ -208,7 +208,7 @@ class MVRegisterPropTest : StringSpec({
     }
 
     "merge delta returned by assign" {
-        forAll(750, Arb.list(Arb.string(), 0..25)) { values ->
+        forAll(500, Arb.list(Arb.string(), 0..50)) { values ->
             val reg1 = MVRegister(client1)
             val reg2 = MVRegister(client1)
             val deltas = MVRegister()
@@ -250,7 +250,7 @@ class MVRegisterPropTest : StringSpec({
     }
 
     "deserialize is inverse to serialize" {
-        forAll(750, Arb.list(Arb.string(), 0..25)) { values ->
+        forAll(500, Arb.list(Arb.string(), 0..50)) { values ->
             val reg1 = MVRegister(client1)
             val reg2 = MVRegister(client2)
 

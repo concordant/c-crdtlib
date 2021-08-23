@@ -48,7 +48,7 @@ class MVMapPropTest : StringSpec({
     }
 
     "multiple put" {
-        checkAll(500, Arb.list(Arb.string(0..1), 0..15)) { keys ->
+        checkAll(250, Arb.list(Arb.string(0..1), 0..25)) { keys ->
             val map = MVMap(client1)
 
             val mapBoolean = mutableMapOf<String, Boolean>()
@@ -203,7 +203,7 @@ class MVMapPropTest : StringSpec({
     }
 
     "R1: put; R2: merge" {
-        checkAll(500, Arb.list(Arb.string(0..1), 0..15)) { keys ->
+        checkAll(250, Arb.list(Arb.string(0..1), 0..25)) { keys ->
             val map1 = MVMap(client1)
             val map2 = MVMap(client2)
 
@@ -796,7 +796,7 @@ class MVMapPropTest : StringSpec({
     }
 
     "use deltas returned by put" {
-        checkAll(500, Arb.list(Arb.string(0..1), 0..15)) { keys ->
+        checkAll(250, Arb.list(Arb.string(0..1), 0..25)) { keys ->
             val map1 = MVMap(client1)
             val map2 = MVMap(client2)
 
@@ -861,7 +861,7 @@ class MVMapPropTest : StringSpec({
     }
 
     "use deltas returned by put and delete" {
-        checkAll(500, Arb.list(Arb.string(0..1), 0..15)) { keys ->
+        checkAll(250, Arb.list(Arb.string(0..1), 0..25)) { keys ->
             val map1 = MVMap(client1)
             val map2 = MVMap(client2)
 
@@ -905,7 +905,10 @@ class MVMapPropTest : StringSpec({
     }
 
     "merge deltas returned by put operations" {
-        checkAll(250, Arb.list(Arb.string(0..1), 0..15), Arb.list(Arb.string(0..1), 0..15)) { keys1, keys2 ->
+        checkAll(
+            250, Arb.list(Arb.string(0..1), 0..15),
+            Arb.list(Arb.string(0..1), 0..15)
+        ) { keys1, keys2 ->
             val map1 = MVMap(client1)
             val map2 = MVMap(client2)
             val deltas = MVMap()
@@ -1008,7 +1011,10 @@ class MVMapPropTest : StringSpec({
     }
 
     "merge deltas returned by put and delete operations" {
-        checkAll(250, Arb.list(Arb.string(0..1), 0..15), Arb.list(Arb.string(0..1), 0..15)) { keys1, keys2 ->
+        checkAll(
+            200, Arb.list(Arb.string(0..1), 0..15),
+            Arb.list(Arb.string(0..1), 0..15)
+        ) { keys1, keys2 ->
             val map1 = MVMap(client1)
             val map2 = MVMap(client2)
             val deltas = MVMap()
@@ -1096,7 +1102,10 @@ class MVMapPropTest : StringSpec({
     }
 
     "generate delta" {
-        checkAll(250, Arb.list(Arb.string(0..1), 0..15), Arb.list(Arb.string(0..1), 0..15)) { keys1, keys2 ->
+        checkAll(
+            250, Arb.list(Arb.string(0..1), 0..15),
+            Arb.list(Arb.string(0..1), 0..15)
+        ) { keys1, keys2 ->
             val vv = VersionVector()
             val map1 = MVMap(client1)
             val map2 = MVMap(client2)
@@ -1181,7 +1190,11 @@ class MVMapPropTest : StringSpec({
 
     "generate delta with delete" {
         checkAll(
-            250, Arb.list(Arb.string(0..1), 0..15), Arb.list(Arb.string(0..1), 0..15),
+            200, Arb.list(Arb.string(0..1), 0..15),
+            Arb.list(
+                Arb.string(0..1),
+                0..15
+            ),
             Arb.list(Arb.string(0..1), 0..15)
         ) { keys1, keys2, keys3 ->
             val vv = VersionVector()
