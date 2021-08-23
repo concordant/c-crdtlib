@@ -180,7 +180,7 @@ class MapPropTest : StringSpec({
     }
 
     "LWW multiple put on same key String, delete" {
-        checkAll(Arb.list(Arb.string(), 0..25)) { values ->
+        checkAll(Arb.list(Arb.string(0..1), 0..25)) { values ->
             val map = Map(client1)
             val key = Arb.string().next()
 
@@ -936,7 +936,7 @@ class MapPropTest : StringSpec({
     }
 
     "LWW merge deltas returned by put operations" {
-        checkAll(500, Arb.list(Arb.string(), 0..15), Arb.list(Arb.string(), 0..15)) { keys1, keys2 ->
+        checkAll(500, Arb.list(Arb.string(0..1), 0..15), Arb.list(Arb.string(0..1), 0..15)) { keys1, keys2 ->
             val map1 = Map(client1)
             val map2 = Map(client2)
             val deltas = Map()
@@ -1039,7 +1039,7 @@ class MapPropTest : StringSpec({
     }
 
     "LWW merge deltas returned by put and delete operations" {
-        checkAll(500, Arb.list(Arb.string(), 0..15), Arb.list(Arb.string(), 0..15)) { keys1, keys2 ->
+        checkAll(500, Arb.list(Arb.string(0..1), 0..15), Arb.list(Arb.string(0..1), 0..15)) { keys1, keys2 ->
             val map1 = Map(client1)
             val map2 = Map(client2)
             val deltas = Map()
@@ -1134,7 +1134,7 @@ class MapPropTest : StringSpec({
     }
 
     "LWW generate delta" {
-        checkAll(500, Arb.list(Arb.string(), 0..15), Arb.list(Arb.string(), 0..15)) { keys1, keys2 ->
+        checkAll(500, Arb.list(Arb.string(0..1), 0..15), Arb.list(Arb.string(0..1), 0..15)) { keys1, keys2 ->
             val vv = VersionVector()
             val map1 = Map(client1)
             val map2 = Map(client2)
@@ -1210,8 +1210,8 @@ class MapPropTest : StringSpec({
 
     "LWW generate delta with delete" {
         checkAll(
-            500, Arb.list(Arb.string(), 0..15), Arb.list(Arb.string(), 0..15),
-            Arb.list(Arb.string(), 0..15)
+            500, Arb.list(Arb.string(0..1), 0..15), Arb.list(Arb.string(0..1), 0..15),
+            Arb.list(Arb.string(0..1), 0..15)
         ) { keys1, keys2, keys3 ->
             val vv = VersionVector()
             val map1 = Map(client1)
@@ -1431,7 +1431,7 @@ class MapPropTest : StringSpec({
     }
 
     "MV multiple put on same key String, delete" {
-        checkAll(Arb.list(Arb.string(), 0..25)) { values ->
+        checkAll(Arb.list(Arb.string(0..1), 0..25)) { values ->
             val map = Map(client1)
             val key = Arb.string().next()
 
@@ -2156,7 +2156,7 @@ class MapPropTest : StringSpec({
     }
 
     "MV merge deltas returned by put operations" {
-        checkAll(250, Arb.list(Arb.string(), 0..15), Arb.list(Arb.string(), 0..15)) { keys1, keys2 ->
+        checkAll(250, Arb.list(Arb.string(0..1), 0..15), Arb.list(Arb.string(0..1), 0..15)) { keys1, keys2 ->
             val map1 = Map(client1)
             val map2 = Map(client2)
             val deltas = Map()
@@ -2259,7 +2259,7 @@ class MapPropTest : StringSpec({
     }
 
     "MV merge deltas returned by put and delete operations" {
-        checkAll(250, Arb.list(Arb.string(), 0..15), Arb.list(Arb.string(), 0..15)) { keys1, keys2 ->
+        checkAll(250, Arb.list(Arb.string(0..1), 0..15), Arb.list(Arb.string(0..1), 0..15)) { keys1, keys2 ->
             val map1 = Map(client1)
             val map2 = Map(client2)
             val deltas = Map()
@@ -2354,7 +2354,7 @@ class MapPropTest : StringSpec({
     }
 
     "MV generate delta" {
-        checkAll(250, Arb.list(Arb.string(), 0..15), Arb.list(Arb.string(), 0..15)) { keys1, keys2 ->
+        checkAll(250, Arb.list(Arb.string(0..1), 0..15), Arb.list(Arb.string(0..1), 0..15)) { keys1, keys2 ->
             val vv = VersionVector()
             val map1 = Map(client1)
             val map2 = Map(client2)
@@ -2430,8 +2430,8 @@ class MapPropTest : StringSpec({
 
     "MV generate delta with delete" {
         checkAll(
-            250, Arb.list(Arb.string(), 0..15), Arb.list(Arb.string(), 0..15),
-            Arb.list(Arb.string(), 0..15)
+            250, Arb.list(Arb.string(0..1), 0..15), Arb.list(Arb.string(0..1), 0..15),
+            Arb.list(Arb.string(0..1), 0..15)
         ) { keys1, keys2, keys3 ->
             val vv = VersionVector()
             val map1 = Map(client1)

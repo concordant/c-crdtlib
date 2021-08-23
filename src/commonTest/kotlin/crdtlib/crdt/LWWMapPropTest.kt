@@ -179,7 +179,7 @@ class LWWMapPropTest : StringSpec({
     }
 
     "multiple put on same key String, delete" {
-        checkAll(Arb.list(Arb.string(), 0..25)) { values ->
+        checkAll(Arb.list(Arb.string(0..1), 0..25)) { values ->
             val map = LWWMap(client1)
             val key = Arb.string().next()
 
@@ -935,7 +935,7 @@ class LWWMapPropTest : StringSpec({
     }
 
     "merge deltas returned by put operations" {
-        checkAll(500, Arb.list(Arb.string(), 0..15), Arb.list(Arb.string(), 0..15)) { keys1, keys2 ->
+        checkAll(500, Arb.list(Arb.string(0..1), 0..15), Arb.list(Arb.string(0..1), 0..15)) { keys1, keys2 ->
             val map1 = LWWMap(client1)
             val map2 = LWWMap(client2)
             val deltas = LWWMap()
@@ -1038,7 +1038,7 @@ class LWWMapPropTest : StringSpec({
     }
 
     "merge deltas returned by put and delete operations" {
-        checkAll(500, Arb.list(Arb.string(), 0..15), Arb.list(Arb.string(), 0..15)) { keys1, keys2 ->
+        checkAll(500, Arb.list(Arb.string(0..1), 0..15), Arb.list(Arb.string(0..1), 0..15)) { keys1, keys2 ->
             val map1 = LWWMap(client1)
             val map2 = LWWMap(client2)
             val deltas = LWWMap()
@@ -1133,7 +1133,7 @@ class LWWMapPropTest : StringSpec({
     }
 
     "generate delta" {
-        checkAll(500, Arb.list(Arb.string(), 0..15), Arb.list(Arb.string(), 0..15)) { keys1, keys2 ->
+        checkAll(500, Arb.list(Arb.string(0..1), 0..15), Arb.list(Arb.string(0..1), 0..15)) { keys1, keys2 ->
             val vv = VersionVector()
             val map1 = LWWMap(client1)
             val map2 = LWWMap(client2)
@@ -1209,8 +1209,8 @@ class LWWMapPropTest : StringSpec({
 
     "generate delta with delete" {
         checkAll(
-            500, Arb.list(Arb.string(), 0..15), Arb.list(Arb.string(), 0..15),
-            Arb.list(Arb.string(), 0..15)
+            500, Arb.list(Arb.string(0..1), 0..15), Arb.list(Arb.string(0..1), 0..15),
+            Arb.list(Arb.string(0..1), 0..15)
         ) { keys1, keys2, keys3 ->
             val vv = VersionVector()
             val map1 = LWWMap(client1)
