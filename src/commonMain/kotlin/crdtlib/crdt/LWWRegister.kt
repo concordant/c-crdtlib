@@ -114,7 +114,10 @@ class LWWRegister : DeltaCRDT {
     }
 
     override fun generateDelta(vv: VersionVector): LWWRegister {
-        return LWWRegister(this)
+        if (this.ts != null && !vv.contains(this.ts!!)) {
+            return LWWRegister(this)
+        }
+        return LWWRegister()
     }
 
     override fun merge(delta: DeltaCRDT) {
