@@ -430,7 +430,7 @@ class BCounterPropTest : StringSpec({
     }
 
     "deserialize is inverse to serialize" {
-        forAll(750, Arb.list(Arb.enum<CounterOpType>(), 0..100)) { ops ->
+        forAll(750, Arb.list(Arb.enum<CounterOpType>(), 0..75)) { ops ->
             var rights1 = 0
             val cnt1 = BCounter(client1)
             val cnt2 = BCounter(client2)

@@ -49,7 +49,7 @@ class LWWRegisterPropTest : StringSpec({
     }
 
     "assign" {
-        forAll(750, Arb.list(Arb.string())) { values ->
+        forAll(750, Arb.list(Arb.string(), 0..75)) { values ->
             val reg = LWWRegister(client1)
             var res: String? = null
 
@@ -62,7 +62,7 @@ class LWWRegisterPropTest : StringSpec({
     }
 
     "merge" {
-        forAll(750, Arb.list(Arb.string())) { values ->
+        forAll(750, Arb.list(Arb.string(), 0..75)) { values ->
             val reg1 = LWWRegister(client1)
             val reg2 = LWWRegister(client2)
             var res: String? = null
@@ -110,7 +110,7 @@ class LWWRegisterPropTest : StringSpec({
     }
 
     "use delta returned by assign" {
-        forAll(750, Arb.list(Arb.string())) { values ->
+        forAll(750, Arb.list(Arb.string(), 0..75)) { values ->
             val reg1 = LWWRegister(client1)
             val reg2 = LWWRegister(client1)
             var res: String? = null
@@ -124,7 +124,7 @@ class LWWRegisterPropTest : StringSpec({
     }
 
     "merge delta returned by assign" {
-        forAll(750, Arb.list(Arb.string())) { values ->
+        forAll(750, Arb.list(Arb.string(), 0..75)) { values ->
             val reg1 = LWWRegister(client1)
             val reg2 = LWWRegister(client1)
             val deltas = LWWRegister()
@@ -140,7 +140,7 @@ class LWWRegisterPropTest : StringSpec({
     }
 
     "generate delta" {
-        forAll(750, Arb.list(Arb.string())) { values ->
+        forAll(750, Arb.list(Arb.string(), 0..75)) { values ->
             val reg1 = LWWRegister(client1)
             val reg2 = LWWRegister(client1)
             var res: String? = null
