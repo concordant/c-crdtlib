@@ -249,7 +249,6 @@ class RGA : DeltaCRDT, Iterable<String> {
             if (lastTs == null || lastTs < node.ts) {
                 lastTs = node.ts
             }
-
             indexPreviousNode = this.mergeNode(indexPreviousNode, node)
         }
         onMerge(delta, lastTs)

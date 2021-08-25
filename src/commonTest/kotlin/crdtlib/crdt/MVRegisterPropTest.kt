@@ -234,7 +234,6 @@ class MVRegisterPropTest : StringSpec({
             val values2 = values.subList(subListSize, values.size)
 
             values1.map { value ->
-                res = value
                 reg1.assign(value)
             }
             val vv = client1.getState()

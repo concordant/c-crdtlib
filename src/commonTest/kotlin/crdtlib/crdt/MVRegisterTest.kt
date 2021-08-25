@@ -260,9 +260,9 @@ class MVRegisterTest : StringSpec({
     "generate delta then merge" {
         val reg1 = MVRegister("value1", client1)
         val reg2 = MVRegister("value2", client2)
-        val vv = client1.getState()
         val reg3 = MVRegister()
 
+        val vv = client2.getState()
         reg2.merge(reg1)
         val delta = reg2.generateDelta(vv)
         reg3.merge(delta)
