@@ -100,10 +100,12 @@ class RGA : DeltaCRDT, Iterable<String> {
     constructor() : super()
     constructor(env: Environment) : super(env)
 
-    constructor(nodes: List<RGANode>, env: Environment) : super(env) {
-        for (node in nodes) {
-            this.nodes.add(node)
+    override fun copy(): RGA {
+        val copy = RGA(this.env)
+        for (node in this.nodes) {
+            copy.nodes.add(node.copy())
         }
+        return copy
     }
 
     /**
@@ -224,13 +226,13 @@ class RGA : DeltaCRDT, Iterable<String> {
             }
         }
 
-        if (firstWeakerNodeIndex > -1) {
+        return if (firstWeakerNodeIndex > -1) {
             // insert before first weaker node after the anchor
             // this node is the first weaker sibling or next element up the tree
             this.nodes.add(firstWeakerNodeIndex, node.copy())
-            return firstWeakerNodeIndex
+            firstWeakerNodeIndex
         } else {
-            return if (indexPreviousNode == -1) {
+            if (indexPreviousNode == -1) {
                 var index = this.nodes.size
                 this.nodes.add(index, node.copy())
                 index

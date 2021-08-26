@@ -60,7 +60,7 @@ class MVRegister : DeltaCRDT, Iterable<String> {
      * A mutable set storing the different values with their associated timestamp.
      */
     @Required
-    var entries: MutableSet<Pair<String, Timestamp>> = mutableSetOf()
+    val entries: MutableSet<Pair<String, Timestamp>> = mutableSetOf()
 
     /**
      * A version vector summarizing the entries seen by all values.
@@ -80,27 +80,15 @@ class MVRegister : DeltaCRDT, Iterable<String> {
      */
     constructor(value: String, env: Environment) : super(env) {
         val ts = env.tick()
-        this.entries = mutableSetOf(Pair(value, ts))
+        this.entries.add(Pair(value, ts))
         this.causalContext.update(ts)
     }
 
-    /**
-     * Copy constructor, discarding associated environment
-     *
-     * @return a copy of [other] with no env associated.
-     */
-    constructor(other: MVRegister) {
-        this.entries = other.entries.toMutableSet()
-        this.causalContext.update(other.causalContext)
-    }
-
-    constructor(
-        entries: Set<Pair<String, Timestamp>>,
-        causalContext: VersionVector,
-        env: Environment
-    ) : super(env) {
-        this.entries = entries.toMutableSet()
-        this.causalContext.update(causalContext)
+    override fun copy(): MVRegister {
+        val copy = MVRegister(this.env)
+        copy.entries.addAll(this.entries.toMutableSet())
+        copy.causalContext.update(this.causalContext)
+        return copy
     }
 
     /**
@@ -125,7 +113,7 @@ class MVRegister : DeltaCRDT, Iterable<String> {
             this.entries.add(Pair(value, ts))
             this.causalContext.update(ts)
         }
-        val delta = MVRegister(this)
+        val delta = this.copy()
         onWrite(delta)
         return delta
     }
@@ -134,7 +122,7 @@ class MVRegister : DeltaCRDT, Iterable<String> {
         if (vv.isGreaterOrEquals(causalContext)) {
             return MVRegister()
         }
-        return MVRegister(this)
+        return this.copy()
     }
 
     override fun merge(delta: DeltaCRDT) {
@@ -156,7 +144,8 @@ class MVRegister : DeltaCRDT, Iterable<String> {
             }
         }
 
-        this.entries = keptEntries
+        this.entries.clear()
+        this.entries.addAll(keptEntries)
         this.causalContext.update(delta.causalContext)
         onMerge(delta, lastTs)
     }

@@ -70,7 +70,7 @@ class Map : DeltaCRDT {
      * intercept hooks (onRead(), onWrite() and onMerge())
      * and allow to retrieve intermediate deltas.
      */
-    private inner class ProxyEnv() :
+    private inner class ProxyEnv :
         SimpleEnvironment(ClientUId("Map Proxy Env")) {
         /**
          * Store the last delta and timestamp submitted via onMerge()
@@ -91,11 +91,8 @@ class Map : DeltaCRDT {
         override fun tick(): Timestamp {
             return env.tick()
         }
-        override fun onMerge(
-            obj: DeltaCRDT,
-            delta: DeltaCRDT,
-            lastTs: Timestamp?,
-        ) {
+
+        override fun onMerge(obj: DeltaCRDT, delta: DeltaCRDT, lastTs: Timestamp?) {
             this.lastMerge = Pair(delta, lastTs)
         }
     }
@@ -120,8 +117,15 @@ class Map : DeltaCRDT {
      * Default constructor.
      */
     constructor() : super()
-
     constructor(env: Environment) : super(env)
+
+    override fun copy(): Map {
+        val copy = Map(this.env)
+        copy.lwwMap.merge(this.lwwMap.copy())
+        copy.mvMap.merge(this.mvMap.copy())
+        copy.cntMap.putAll(this.cntMap.toMutableMap())
+        return copy
+    }
 
     /**
      * Get the LWW Boolean value corresponding to a given [key] ,
@@ -417,7 +421,7 @@ class Map : DeltaCRDT {
      */
     fun increment(key: String, inc: Int): Map {
         val op = Map()
-        var cnt = this.cntMap.getOrPut(key, { PNCounter(proxyEnv) })
+        val cnt = this.cntMap.getOrPut(key) { PNCounter(proxyEnv) }
         cnt.increment(inc)
         op.cntMap[key] = proxyEnv.popWrite().second as PNCounter
         onWrite(op)
@@ -432,7 +436,7 @@ class Map : DeltaCRDT {
      */
     fun decrement(key: String, dec: Int): Map {
         val op = Map()
-        var cnt = this.cntMap.getOrPut(key, { PNCounter(proxyEnv) })
+        val cnt = this.cntMap.getOrPut(key) { PNCounter(proxyEnv) }
         cnt.decrement(dec)
         op.cntMap[key] = proxyEnv.popWrite().second as PNCounter
         onWrite(op)
@@ -574,7 +578,7 @@ class Map : DeltaCRDT {
 
         this.mvMap.merge(delta.mvMap)
         val mvMapTs = proxyEnv.popMerge().second
-        if (lastTs == null || mvMapTs?.compareTo(lastTs) ?: 0 > 0) {
+        if (lastTs == null || (mvMapTs?.compareTo(lastTs) ?: 0) > 0) {
             lastTs = mvMapTs
         }
 
@@ -583,7 +587,7 @@ class Map : DeltaCRDT {
             if (localCnt == null) localCnt = PNCounter(proxyEnv)
             localCnt.merge(cnt)
             val localCntTs = proxyEnv.popMerge().second
-            if (lastTs == null || localCntTs?.compareTo(lastTs) ?: 0 > 0) {
+            if (lastTs == null || (localCntTs?.compareTo(lastTs) ?: 0) > 0) {
                 lastTs = localCntTs
             }
             this.cntMap[key] = localCnt

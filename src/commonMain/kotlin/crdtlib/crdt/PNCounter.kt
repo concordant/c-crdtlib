@@ -97,6 +97,13 @@ class PNCounter : DeltaCRDT {
     constructor()
     constructor(env: Environment) : super(env)
 
+    override fun copy(): PNCounter {
+        val copy = PNCounter(this.env)
+        copy.increment.putAll(increment.toMutableMap())
+        copy.decrement.putAll(decrement.toMutableMap())
+        return copy
+    }
+
     /**
      * Gets the value of the counter.
      */

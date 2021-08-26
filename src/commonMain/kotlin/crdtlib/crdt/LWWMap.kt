@@ -67,6 +67,12 @@ class LWWMap : DeltaCRDT {
     constructor() : super()
     constructor(env: Environment) : super(env)
 
+    override fun copy(): LWWMap {
+        val copy = LWWMap(this.env)
+        copy.entries.putAll(this.entries.toMutableMap())
+        return copy
+    }
+
     /**
      * Get the Boolean value corresponding to a given [key],
      * or null if the key is not present in the map.
