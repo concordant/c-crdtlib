@@ -100,10 +100,12 @@ class RGA : DeltaCRDT, Iterable<String> {
     constructor() : super()
     constructor(env: Environment) : super(env)
 
-    constructor(nodes: List<RGANode>, env: Environment) : super(env) {
-        for (node in nodes) {
-            this.nodes.add(node)
+    override fun copy(): RGA {
+        val copy = RGA(this.env)
+        for (node in this.nodes) {
+            copy.nodes.add(node.copy())
         }
+        return copy
     }
 
     /**

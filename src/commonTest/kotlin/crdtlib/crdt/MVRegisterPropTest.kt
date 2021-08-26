@@ -59,21 +59,21 @@ class MVRegisterPropTest : StringSpec({
         }
     }
 
-    "copy with copy constructor" {
+    "copy with copy method" {
         forAll(Arb.string()) { s ->
             val reg1 = MVRegister(s, client1)
-            val reg2 = MVRegister(reg1)
+            val reg2 = reg1.copy()
             reg2.get() == setOf(s)
         }
     }
 
-    "copy with copy constructor a register with multi-values" {
+    "copy with copy method a register with multi-values" {
         forAll(Arb.pair(Arb.string(), Arb.string())) { p ->
             val reg1 = MVRegister(p.first, client1)
             val reg2 = MVRegister(p.second, client2)
 
             reg2.merge(reg1)
-            val reg3 = MVRegister(reg2)
+            val reg3 = reg2.copy()
 
             reg3.get() == setOf(p.first, p.second)
         }

@@ -67,12 +67,6 @@ import kotlinx.serialization.json.*
 class BCounter : DeltaCRDT {
 
     /**
-     * Default constructor.
-     */
-    constructor() : super()
-    constructor(env: Environment) : super(env)
-
-    /**
      * A two-level mutable map storing each client metadata
      * relative to increment operations:
      * - increment[i][i] represents the increments by replica i.
@@ -92,6 +86,19 @@ class BCounter : DeltaCRDT {
      */
     @Required
     private val decrement: MutableMap<ClientUId, Pair<Int, Timestamp>> = mutableMapOf()
+
+    /**
+     * Default constructor.
+     */
+    constructor() : super()
+    constructor(env: Environment) : super(env)
+
+    override fun copy(): BCounter {
+        val copy = BCounter(this.env)
+        copy.increment.putAll(increment.toMutableMap())
+        copy.decrement.putAll(decrement.toMutableMap())
+        return copy
+    }
 
     /**
      * Gets the value of the counter.

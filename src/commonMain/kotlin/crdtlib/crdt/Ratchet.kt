@@ -76,6 +76,10 @@ class Ratchet : DeltaCRDT {
         this.value = value
     }
 
+    override fun copy(): Ratchet {
+        return Ratchet(this.value, this.env)
+    }
+
     /**
      * Gets the value stored in the ratchet.
      */

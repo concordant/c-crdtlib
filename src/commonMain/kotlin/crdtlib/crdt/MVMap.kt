@@ -71,7 +71,7 @@ class MVMap : DeltaCRDT {
      * A causal context summarizing executed operations.
      */
     @Required
-    private var causalContext: VersionVector = VersionVector()
+    private val causalContext: VersionVector = VersionVector()
 
     /**
      * Default constructor.
@@ -83,7 +83,14 @@ class MVMap : DeltaCRDT {
      * Constructor initializing the causal context.
      */
     constructor(cc: VersionVector, env: Environment) : super(env) {
-        this.causalContext = cc
+        this.causalContext.update(cc)
+    }
+
+    override fun copy(): MVMap {
+        val copy = MVMap(this.env)
+        copy.entries.putAll(this.entries.toMutableMap())
+        copy.causalContext.update(this.causalContext)
+        return copy
     }
 
     /**

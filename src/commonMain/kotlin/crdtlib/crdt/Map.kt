@@ -120,8 +120,15 @@ class Map : DeltaCRDT {
      * Default constructor.
      */
     constructor() : super()
-
     constructor(env: Environment) : super(env)
+
+    override fun copy(): Map {
+        val copy = Map(this.env)
+        copy.lwwMap.merge(this.lwwMap.copy())
+        copy.mvMap.merge(this.mvMap.copy())
+        copy.cntMap.putAll(this.cntMap.toMutableMap())
+        return copy
+    }
 
     /**
      * Get the LWW Boolean value corresponding to a given [key] ,
