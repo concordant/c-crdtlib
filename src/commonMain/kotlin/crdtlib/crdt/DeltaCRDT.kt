@@ -150,8 +150,7 @@ abstract class DeltaCRDT {
         fun fromJson(json: String, env: Environment? = null): DeltaCRDT {
             val regex = """"type"\s*:\s*"(\w+)",""".toRegex()
             val matchResult = regex.find(json)
-            val crdtType = matchResult?.groups?.get(1)?.value
-            when (crdtType) {
+            when (val crdtType = matchResult?.groups?.get(1)?.value) {
                 "PNCounter" -> {
                     return PNCounter.fromJson(json, env)
                 }

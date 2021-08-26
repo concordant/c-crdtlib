@@ -28,7 +28,7 @@ import kotlinx.serialization.json.*
 /**
  * A delta-based CRDT bounded-counter (non-negative, initially 0).
  *
- * Following design from  V. Balegas et al., "Extending
+ * Following design from V. Balegas et al., "Extending
  * Eventually Consistent Cloud Databases for Enforcing Numeric Invariants,"
  * 2015 IEEE 34th Symposium on Reliable Distributed Systems (SRDS),
  * Montreal, QC, 2015, pp. 31-36, doi: 10.1109/SRDS.2015.32.
@@ -311,7 +311,7 @@ class BCounter : DeltaCRDT {
 /**
  * This class is a json transformer for BCounter, it allows the separation between data and metadata.
  */
-class JsonBCounterSerializer(private val serializer: KSerializer<BCounter>) :
+class JsonBCounterSerializer(serializer: KSerializer<BCounter>) :
     JsonTransformingSerializer<BCounter>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {
