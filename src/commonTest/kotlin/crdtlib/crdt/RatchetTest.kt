@@ -20,8 +20,10 @@
 package crdtlib.crdt
 
 import crdtlib.utils.ClientUId
+import crdtlib.utils.ReadOnlyEnvironment
 import crdtlib.utils.SimpleEnvironment
 import crdtlib.utils.VersionVector
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
@@ -202,6 +204,16 @@ class RatchetTest : StringSpec({
         rat2.merge(delta)
 
         rat2.get().shouldBe(val3)
+    }
+
+    "Read Only Environment" {
+        client1 = ReadOnlyEnvironment(uid1)
+        val rat = Ratchet(val1, client1)
+
+        shouldThrow<RuntimeException> {
+            rat.assign(val2)
+        }
+        rat.get().shouldBe(val1)
     }
 
     "Empty JSON serialization" {

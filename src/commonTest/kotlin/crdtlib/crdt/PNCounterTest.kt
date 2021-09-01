@@ -20,7 +20,9 @@
 package crdtlib.crdt
 
 import crdtlib.utils.ClientUId
+import crdtlib.utils.ReadOnlyEnvironment
 import crdtlib.utils.SimpleEnvironment
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.*
 
@@ -369,6 +371,25 @@ class PNCounterTest : StringSpec({
         cnt2.merge(delta)
 
         cnt2.get().shouldBe(-30)
+    }
+
+    "Read Only Environment" {
+        client2 = ReadOnlyEnvironment(uid2)
+        val cnt1 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
+
+        cnt1.increment(20)
+        cnt1.decrement(5)
+        cnt2.merge(cnt1)
+
+        shouldThrow<RuntimeException> {
+            cnt2.increment(10)
+        }
+        shouldThrow<RuntimeException> {
+            cnt2.decrement(20)
+        }
+        cnt1.get().shouldBe(15)
+        cnt2.get().shouldBe(15)
     }
 
     /**

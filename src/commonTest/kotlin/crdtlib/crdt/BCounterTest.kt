@@ -20,6 +20,7 @@
 package crdtlib.crdt
 
 import crdtlib.utils.ClientUId
+import crdtlib.utils.ReadOnlyEnvironment
 import crdtlib.utils.SimpleEnvironment
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
@@ -504,6 +505,31 @@ class BCounterTest : StringSpec({
             cnt1.decrement(Int.MAX_VALUE)
         }
         cnt1.get().shouldBe(Int.MAX_VALUE)
+    }
+
+    "Read Only Environment" {
+        val inc = 10
+        client2 = ReadOnlyEnvironment(uid2)
+        val cnt1 = BCounter(client1)
+        val cnt2 = BCounter(client2)
+
+        cnt1.increment(inc)
+        cnt1.transfer(inc, uid2)
+        cnt2.merge(cnt1)
+
+        shouldThrow<RuntimeException> {
+            cnt2.increment(20)
+        }
+        shouldThrow<RuntimeException> {
+            cnt2.decrement(5)
+        }
+        shouldThrow<RuntimeException> {
+            cnt2.transfer(5, uid1)
+        }
+
+        cnt2.get().shouldBe(10)
+        cnt2.localRights(uid1).shouldBe(0)
+        cnt2.localRights(uid2).shouldBe(10)
     }
 
     /* Serialization */
