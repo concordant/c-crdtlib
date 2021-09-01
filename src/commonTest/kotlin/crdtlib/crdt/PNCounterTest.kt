@@ -20,7 +20,9 @@
 package crdtlib.crdt
 
 import crdtlib.utils.ClientUId
+import crdtlib.utils.ReadOnlyEnvironment
 import crdtlib.utils.SimpleEnvironment
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.*
 
@@ -161,7 +163,7 @@ class PNCounterTest : StringSpec({
      */
     "R1: increment; R2: merge and get" {
         val cnt1 = PNCounter(client1)
-        val cnt2 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
         cnt1.increment(11)
         cnt2.merge(cnt1)
@@ -178,7 +180,7 @@ class PNCounterTest : StringSpec({
     "R1: decrement; R2: merge and get" {
         val dec = 11
         val cnt1 = PNCounter(client1)
-        val cnt2 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
         cnt1.decrement(dec)
         cnt2.merge(cnt1)
@@ -296,7 +298,7 @@ class PNCounterTest : StringSpec({
      */
     "use delta returned by increment" {
         val cnt1 = PNCounter(client1)
-        val cnt2 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
         val returnedIncOp = cnt1.increment(11)
         val incOp = client1.popWrite().second
@@ -314,7 +316,7 @@ class PNCounterTest : StringSpec({
      */
     "use delta returned by decrement" {
         val cnt1 = PNCounter(client1)
-        val cnt2 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
         val returnedDecOp = cnt1.decrement(11)
         val decOp = client1.popWrite().second
@@ -333,7 +335,7 @@ class PNCounterTest : StringSpec({
      */
     "use delta returned by increment and decrement" {
         val cnt1 = PNCounter(client1)
-        val cnt2 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
         val returnedDecOp = cnt1.decrement(11)
         val decOp = client1.popWrite().second
@@ -358,7 +360,7 @@ class PNCounterTest : StringSpec({
     */
     "generate delta" {
         val cnt1 = PNCounter(client1)
-        val cnt2 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
         cnt1.increment(11)
         cnt1.increment(33)
@@ -369,6 +371,25 @@ class PNCounterTest : StringSpec({
         cnt2.merge(delta)
 
         cnt2.get().shouldBe(-30)
+    }
+
+    "Read Only Environment" {
+        client2 = ReadOnlyEnvironment(uid2)
+        val cnt1 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
+
+        cnt1.increment(20)
+        cnt1.decrement(5)
+        cnt2.merge(cnt1)
+
+        shouldThrow<RuntimeException> {
+            cnt2.increment(10)
+        }
+        shouldThrow<RuntimeException> {
+            cnt2.decrement(20)
+        }
+        cnt1.get().shouldBe(15)
+        cnt2.get().shouldBe(15)
     }
 
     /**

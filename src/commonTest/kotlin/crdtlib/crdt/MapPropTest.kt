@@ -830,10 +830,14 @@ class MapPropTest : StringSpec({
                 val valDouble = arbDouble.next()
                 val valInt = arbInt.next()
                 val valString = arbString.next()
-                map2.merge(map1.putLWW(key, valBoolean))
-                map2.merge(map1.putLWW(key, valDouble))
-                map2.merge(map1.putLWW(key, valInt))
-                map2.merge(map1.putLWW(key, valString))
+                map1.putLWW(key, valBoolean)
+                map2.merge(client1.popWrite().second)
+                map1.putLWW(key, valDouble)
+                map2.merge(client1.popWrite().second)
+                map1.putLWW(key, valInt)
+                map2.merge(client1.popWrite().second)
+                map1.putLWW(key, valString)
+                map2.merge(client1.popWrite().second)
                 mapBoolean[key] = valBoolean
                 mapDouble[key] = valDouble
                 mapInt[key] = valInt
@@ -902,16 +906,24 @@ class MapPropTest : StringSpec({
             val arbString = Arb.string()
 
             keys.map { key ->
-                map2.merge(map1.putLWW(key, arbBoolean.next()))
-                map2.merge(map1.putLWW(key, arbDouble.next()))
-                map2.merge(map1.putLWW(key, arbInt.next()))
-                map2.merge(map1.putLWW(key, arbString.next()))
+                map1.putLWW(key, arbBoolean.next())
+                map2.merge(client1.popWrite().second)
+                map1.putLWW(key, arbDouble.next())
+                map2.merge(client1.popWrite().second)
+                map1.putLWW(key, arbInt.next())
+                map2.merge(client1.popWrite().second)
+                map1.putLWW(key, arbString.next())
+                map2.merge(client1.popWrite().second)
             }
             keys.map { key ->
-                map2.merge(map1.deleteLWWBoolean(key))
-                map2.merge(map1.deleteLWWDouble(key))
-                map2.merge(map1.deleteLWWInt(key))
-                map2.merge(map1.deleteLWWString(key))
+                map1.deleteLWWBoolean(key)
+                map2.merge(client1.popWrite().second)
+                map1.deleteLWWDouble(key)
+                map2.merge(client1.popWrite().second)
+                map1.deleteLWWInt(key)
+                map2.merge(client1.popWrite().second)
+                map1.deleteLWWString(key)
+                map2.merge(client1.popWrite().second)
             }
 
             keys.map { key ->
@@ -955,20 +967,28 @@ class MapPropTest : StringSpec({
             val arbString = Arb.string()
 
             keys1.map { key ->
-                deltas.merge(map1.putLWW(key, arbBoolean.next()))
-                deltas.merge(map1.putLWW(key, arbDouble.next()))
-                deltas.merge(map1.putLWW(key, arbInt.next()))
-                deltas.merge(map1.putLWW(key, arbString.next()))
+                map1.putLWW(key, arbBoolean.next())
+                deltas.merge(client1.popWrite().second)
+                map1.putLWW(key, arbDouble.next())
+                deltas.merge(client1.popWrite().second)
+                map1.putLWW(key, arbInt.next())
+                deltas.merge(client1.popWrite().second)
+                map1.putLWW(key, arbString.next())
+                deltas.merge(client1.popWrite().second)
             }
             keys1.map { key ->
                 val valBoolean = arbBoolean.next()
                 val valDouble = arbDouble.next()
                 val valInt = arbInt.next()
                 val valString = arbString.next()
-                deltas.merge(map1.putLWW(key, valBoolean))
-                deltas.merge(map1.putLWW(key, valDouble))
-                deltas.merge(map1.putLWW(key, valInt))
-                deltas.merge(map1.putLWW(key, valString))
+                map1.putLWW(key, valBoolean)
+                deltas.merge(client1.popWrite().second)
+                map1.putLWW(key, valDouble)
+                deltas.merge(client1.popWrite().second)
+                map1.putLWW(key, valInt)
+                deltas.merge(client1.popWrite().second)
+                map1.putLWW(key, valString)
+                deltas.merge(client1.popWrite().second)
                 mapBoolean[key] = valBoolean
                 mapDouble[key] = valDouble
                 mapInt[key] = valInt
@@ -979,10 +999,14 @@ class MapPropTest : StringSpec({
                 val valDouble = arbDouble.next()
                 val valInt = arbInt.next()
                 val valString = arbString.next()
-                deltas.merge(map1.putLWW(key, valBoolean))
-                deltas.merge(map1.putLWW(key, valDouble))
-                deltas.merge(map1.putLWW(key, valInt))
-                deltas.merge(map1.putLWW(key, valString))
+                map1.putLWW(key, valBoolean)
+                deltas.merge(client1.popWrite().second)
+                map1.putLWW(key, valDouble)
+                deltas.merge(client1.popWrite().second)
+                map1.putLWW(key, valInt)
+                deltas.merge(client1.popWrite().second)
+                map1.putLWW(key, valString)
+                deltas.merge(client1.popWrite().second)
                 mapBoolean[key] = valBoolean
                 mapDouble[key] = valDouble
                 mapInt[key] = valInt
@@ -1061,26 +1085,38 @@ class MapPropTest : StringSpec({
             val arbString = Arb.string()
 
             keys1.map { key ->
-                deltas.merge(map1.putLWW(key, arbBoolean.next()))
-                deltas.merge(map1.putLWW(key, arbDouble.next()))
-                deltas.merge(map1.putLWW(key, arbInt.next()))
-                deltas.merge(map1.putLWW(key, arbString.next()))
+                map1.putLWW(key, arbBoolean.next())
+                deltas.merge(client1.popWrite().second)
+                map1.putLWW(key, arbDouble.next())
+                deltas.merge(client1.popWrite().second)
+                map1.putLWW(key, arbInt.next())
+                deltas.merge(client1.popWrite().second)
+                map1.putLWW(key, arbString.next())
+                deltas.merge(client1.popWrite().second)
             }
             keys1.map { key ->
-                deltas.merge(map1.deleteLWWBoolean(key))
-                deltas.merge(map1.deleteLWWDouble(key))
-                deltas.merge(map1.deleteLWWInt(key))
-                deltas.merge(map1.deleteLWWString(key))
+                map1.deleteLWWBoolean(key)
+                deltas.merge(client1.popWrite().second)
+                map1.deleteLWWDouble(key)
+                deltas.merge(client1.popWrite().second)
+                map1.deleteLWWInt(key)
+                deltas.merge(client1.popWrite().second)
+                map1.deleteLWWString(key)
+                deltas.merge(client1.popWrite().second)
             }
             keys2.map { key ->
                 val valBoolean = arbBoolean.next()
                 val valDouble = arbDouble.next()
                 val valInt = arbInt.next()
                 val valString = arbString.next()
-                deltas.merge(map1.putLWW(key, valBoolean))
-                deltas.merge(map1.putLWW(key, valDouble))
-                deltas.merge(map1.putLWW(key, valInt))
-                deltas.merge(map1.putLWW(key, valString))
+                map1.putLWW(key, valBoolean)
+                deltas.merge(client1.popWrite().second)
+                map1.putLWW(key, valDouble)
+                deltas.merge(client1.popWrite().second)
+                map1.putLWW(key, valInt)
+                deltas.merge(client1.popWrite().second)
+                map1.putLWW(key, valString)
+                deltas.merge(client1.popWrite().second)
                 mapBoolean[key] = valBoolean
                 mapDouble[key] = valDouble
                 mapInt[key] = valInt
@@ -2086,10 +2122,14 @@ class MapPropTest : StringSpec({
                 val valDouble = arbDouble.next()
                 val valInt = arbInt.next()
                 val valString = arbString.next()
-                map2.merge(map1.putMV(key, valBoolean))
-                map2.merge(map1.putMV(key, valDouble))
-                map2.merge(map1.putMV(key, valInt))
-                map2.merge(map1.putMV(key, valString))
+                map1.putMV(key, valBoolean)
+                map2.merge(client1.popWrite().second)
+                map1.putMV(key, valDouble)
+                map2.merge(client1.popWrite().second)
+                map1.putMV(key, valInt)
+                map2.merge(client1.popWrite().second)
+                map1.putMV(key, valString)
+                map2.merge(client1.popWrite().second)
                 mapBoolean[key] = valBoolean
                 mapDouble[key] = valDouble
                 mapInt[key] = valInt
@@ -2142,16 +2182,24 @@ class MapPropTest : StringSpec({
             val arbString = Arb.string()
 
             keys.map { key ->
-                map2.merge(map1.putMV(key, arbBoolean.next()))
-                map2.merge(map1.putMV(key, arbDouble.next()))
-                map2.merge(map1.putMV(key, arbInt.next()))
-                map2.merge(map1.putMV(key, arbString.next()))
+                map1.putMV(key, arbBoolean.next())
+                map2.merge(client1.popWrite().second)
+                map1.putMV(key, arbDouble.next())
+                map2.merge(client1.popWrite().second)
+                map1.putMV(key, arbInt.next())
+                map2.merge(client1.popWrite().second)
+                map1.putMV(key, arbString.next())
+                map2.merge(client1.popWrite().second)
             }
             keys.map { key ->
-                map2.merge(map1.deleteMVBoolean(key))
-                map2.merge(map1.deleteMVDouble(key))
-                map2.merge(map1.deleteMVInt(key))
-                map2.merge(map1.deleteMVString(key))
+                map1.deleteMVBoolean(key)
+                map2.merge(client1.popWrite().second)
+                map1.deleteMVDouble(key)
+                map2.merge(client1.popWrite().second)
+                map1.deleteMVInt(key)
+                map2.merge(client1.popWrite().second)
+                map1.deleteMVString(key)
+                map2.merge(client1.popWrite().second)
             }
 
             keys.map { key ->
@@ -2195,20 +2243,28 @@ class MapPropTest : StringSpec({
             val arbString = Arb.string()
 
             keys1.map { key ->
-                deltas.merge(map1.putMV(key, arbBoolean.next()))
-                deltas.merge(map1.putMV(key, arbDouble.next()))
-                deltas.merge(map1.putMV(key, arbInt.next()))
-                deltas.merge(map1.putMV(key, arbString.next()))
+                map1.putMV(key, arbBoolean.next())
+                deltas.merge(client1.popWrite().second)
+                map1.putMV(key, arbDouble.next())
+                deltas.merge(client1.popWrite().second)
+                map1.putMV(key, arbInt.next())
+                deltas.merge(client1.popWrite().second)
+                map1.putMV(key, arbString.next())
+                deltas.merge(client1.popWrite().second)
             }
             keys1.map { key ->
                 val valBoolean = arbBoolean.next()
                 val valDouble = arbDouble.next()
                 val valInt = arbInt.next()
                 val valString = arbString.next()
-                deltas.merge(map1.putMV(key, valBoolean))
-                deltas.merge(map1.putMV(key, valDouble))
-                deltas.merge(map1.putMV(key, valInt))
-                deltas.merge(map1.putMV(key, valString))
+                map1.putMV(key, valBoolean)
+                deltas.merge(client1.popWrite().second)
+                map1.putMV(key, valDouble)
+                deltas.merge(client1.popWrite().second)
+                map1.putMV(key, valInt)
+                deltas.merge(client1.popWrite().second)
+                map1.putMV(key, valString)
+                deltas.merge(client1.popWrite().second)
                 mapBoolean[key] = valBoolean
                 mapDouble[key] = valDouble
                 mapInt[key] = valInt
@@ -2219,10 +2275,14 @@ class MapPropTest : StringSpec({
                 val valDouble = arbDouble.next()
                 val valInt = arbInt.next()
                 val valString = arbString.next()
-                deltas.merge(map1.putMV(key, valBoolean))
-                deltas.merge(map1.putMV(key, valDouble))
-                deltas.merge(map1.putMV(key, valInt))
-                deltas.merge(map1.putMV(key, valString))
+                map1.putMV(key, valBoolean)
+                deltas.merge(client1.popWrite().second)
+                map1.putMV(key, valDouble)
+                deltas.merge(client1.popWrite().second)
+                map1.putMV(key, valInt)
+                deltas.merge(client1.popWrite().second)
+                map1.putMV(key, valString)
+                deltas.merge(client1.popWrite().second)
                 mapBoolean[key] = valBoolean
                 mapDouble[key] = valDouble
                 mapInt[key] = valInt
@@ -2298,26 +2358,38 @@ class MapPropTest : StringSpec({
             val arbString = Arb.string()
 
             keys1.map { key ->
-                deltas.merge(map1.putMV(key, arbBoolean.next()))
-                deltas.merge(map1.putMV(key, arbDouble.next()))
-                deltas.merge(map1.putMV(key, arbInt.next()))
-                deltas.merge(map1.putMV(key, arbString.next()))
+                map1.putMV(key, arbBoolean.next())
+                deltas.merge(client1.popWrite().second)
+                map1.putMV(key, arbDouble.next())
+                deltas.merge(client1.popWrite().second)
+                map1.putMV(key, arbInt.next())
+                deltas.merge(client1.popWrite().second)
+                map1.putMV(key, arbString.next())
+                deltas.merge(client1.popWrite().second)
             }
             keys1.map { key ->
-                deltas.merge(map1.deleteMVBoolean(key))
-                deltas.merge(map1.deleteMVDouble(key))
-                deltas.merge(map1.deleteMVInt(key))
-                deltas.merge(map1.deleteMVString(key))
+                map1.deleteMVBoolean(key)
+                deltas.merge(client1.popWrite().second)
+                map1.deleteMVDouble(key)
+                deltas.merge(client1.popWrite().second)
+                map1.deleteMVInt(key)
+                deltas.merge(client1.popWrite().second)
+                map1.deleteMVString(key)
+                deltas.merge(client1.popWrite().second)
             }
             keys2.map { key ->
                 val valBoolean = arbBoolean.next()
                 val valDouble = arbDouble.next()
                 val valInt = arbInt.next()
                 val valString = arbString.next()
-                deltas.merge(map1.putMV(key, valBoolean))
-                deltas.merge(map1.putMV(key, valDouble))
-                deltas.merge(map1.putMV(key, valInt))
-                deltas.merge(map1.putMV(key, valString))
+                map1.putMV(key, valBoolean)
+                deltas.merge(client1.popWrite().second)
+                map1.putMV(key, valDouble)
+                deltas.merge(client1.popWrite().second)
+                map1.putMV(key, valInt)
+                deltas.merge(client1.popWrite().second)
+                map1.putMV(key, valString)
+                deltas.merge(client1.popWrite().second)
                 mapBoolean[key] = valBoolean
                 mapDouble[key] = valDouble
                 mapInt[key] = valInt
@@ -2739,11 +2811,13 @@ class MapPropTest : StringSpec({
                 when (op.first) {
                     CounterOpType.INCR -> {
                         res += op.second
-                        map2.merge(map1.increment(key, op.second))
+                        map1.increment(key, op.second)
+                        map2.merge(client1.popWrite().second)
                     }
                     CounterOpType.DECR -> {
                         res -= op.second
-                        map2.merge(map1.decrement(key, op.second))
+                        map1.decrement(key, op.second)
+                        map2.merge(client1.popWrite().second)
                     }
                 }
             }

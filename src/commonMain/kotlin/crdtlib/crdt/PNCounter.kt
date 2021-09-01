@@ -132,9 +132,9 @@ class PNCounter : DeltaCRDT {
         if (Int.MAX_VALUE - count < amount - 1) {
             throw RuntimeException("PNCounter has reached Int.MAX_VALUE")
         }
-        this.increment[ts.uid] = Pair(count + amount, ts)
         op.increment[ts.uid] = Pair(count + amount, ts)
         onWrite(op)
+        this.increment[ts.uid] = Pair(count + amount, ts)
         return op
     }
 
@@ -157,9 +157,9 @@ class PNCounter : DeltaCRDT {
         if (Int.MAX_VALUE - count < amount - 1) {
             throw RuntimeException("PNCounter has reached Int.MAX_VALUE")
         }
-        this.decrement[ts.uid] = Pair(count + amount, ts)
         op.decrement[ts.uid] = Pair(count + amount, ts)
         onWrite(op)
+        this.decrement[ts.uid] = Pair(count + amount, ts)
         return op
     }
 

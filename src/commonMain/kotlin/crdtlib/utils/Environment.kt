@@ -22,8 +22,8 @@ package crdtlib.utils
 import crdtlib.crdt.DeltaCRDT
 
 /**
-* This abstract class represents a contextual environment.
-*/
+ * This abstract class represents a contextual environment.
+ */
 abstract class Environment {
 
     /**

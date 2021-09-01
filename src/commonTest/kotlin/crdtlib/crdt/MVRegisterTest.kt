@@ -20,7 +20,9 @@
 package crdtlib.crdt
 
 import crdtlib.utils.ClientUId
+import crdtlib.utils.ReadOnlyEnvironment
 import crdtlib.utils.SimpleEnvironment
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.*
 import io.kotest.matchers.collections.*
@@ -268,6 +270,16 @@ class MVRegisterTest : StringSpec({
         reg3.merge(delta)
 
         reg3.shouldContainExactlyInAnyOrder("value1", "value2")
+    }
+
+    "Read Only Environment" {
+        client1 = ReadOnlyEnvironment(uid1)
+        val reg = MVRegister("value1", client1)
+
+        shouldThrow<RuntimeException> {
+            reg.assign("value2")
+        }
+        reg.shouldContainExactlyInAnyOrder("value1")
     }
 
     /**
