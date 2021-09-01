@@ -22,9 +22,9 @@ package crdtlib.utils
 import kotlinx.serialization.*
 
 /**
-* This class represents a client unique identifier (UId).
-* @property name the name associated with the client.
-**/
+ * This class represents a client unique identifier (UId).
+ * @property name the name associated with the client.
+ */
 @Serializable
 data class ClientUId(private val name: String) {
 
@@ -32,7 +32,7 @@ data class ClientUId(private val name: String) {
      * Compares this client name to a given other client name.
      * @param other the other instance of client unique id.
      * @return the results of the comparison between the two client names.
-     **/
+     */
     @Name("compareTo")
     operator fun compareTo(other: ClientUId): Int {
         return this.name.compareTo(other.name)

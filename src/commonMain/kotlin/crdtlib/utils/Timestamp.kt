@@ -22,10 +22,10 @@ package crdtlib.utils
 import kotlinx.serialization.*
 
 /**
-* This class represents a timestamp.
-* @property uid the client unique id.
-* @property cnt the value associated to the timestamp.
-**/
+ * This class represents a timestamp.
+ * @property uid the client unique id.
+ * @property cnt the value associated to the timestamp.
+ */
 @Serializable
 data class Timestamp(val uid: ClientUId, val cnt: Int) {
 
@@ -34,7 +34,7 @@ data class Timestamp(val uid: ClientUId, val cnt: Int) {
      * First comparison is made on their values and if equal on their client unique ids.
      * @param other the other instance of timestamp.
      * @return the results of the comparison between the two timestamp.
-     **/
+     */
     @Name("compareTo")
     operator fun compareTo(other: Timestamp): Int {
         if (this.cnt != other.cnt)

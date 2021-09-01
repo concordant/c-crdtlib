@@ -70,18 +70,18 @@ class Map : DeltaCRDT {
      * intercept hooks (onRead(), onWrite() and onMerge())
      * and allow to retrieve intermediate deltas.
      */
-    private inner class ProxyEnv :
-        SimpleEnvironment(ClientUId("Map Proxy Env")) {
+    private inner class ProxyEnv : SimpleEnvironment(ClientUId("Map Proxy Env")) {
+
         /**
          * Store the last delta and timestamp submitted via onMerge()
-         **/
+         */
         private var lastMerge: Pair<DeltaCRDT, Timestamp?>? = null
 
         /** Pop (return and delete) last (delta, ts) submitted via onMerge
          * Throws NullPointerException if last submitted delta
          * has already been pop()ed.
          * @return the last merge as a Pair(delta)
-         **/
+         */
         fun popMerge(): Pair<DeltaCRDT, Timestamp?> {
             val d = lastMerge
             lastMerge = null
