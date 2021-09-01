@@ -71,7 +71,7 @@ class PNCounterPropTest : StringSpec({
         forAll(Arb.list(CounterOperationArb, 0..100)) { ops ->
             var res = 0
             val cnt1 = PNCounter(client1)
-            val cnt2 = PNCounter(client1)
+            val cnt2 = PNCounter(client2)
 
             ops.map { op ->
                 when (op.first) {
@@ -175,7 +175,7 @@ class PNCounterPropTest : StringSpec({
         forAll(Arb.list(CounterOperationArb, 0..100)) { ops ->
             var res = 0
             val cnt1 = PNCounter(client1)
-            val cnt2 = PNCounter(client1)
+            val cnt2 = PNCounter(client2)
 
             ops.map { op ->
                 when (op.first) {
@@ -244,7 +244,7 @@ class PNCounterPropTest : StringSpec({
         forAll(Arb.list(Arb.positiveInts(1000), 0..100)) { ops ->
             var res = 0
             val cnt1 = PNCounter(client1)
-            val cnt2 = PNCounter(client1)
+            val cnt2 = PNCounter(client2)
 
             val subListSize = Arb.int(0..ops.size).next()
             val ops1 = ops.subList(0, subListSize)

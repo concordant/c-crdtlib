@@ -163,7 +163,7 @@ class PNCounterTest : StringSpec({
      */
     "R1: increment; R2: merge and get" {
         val cnt1 = PNCounter(client1)
-        val cnt2 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
         cnt1.increment(11)
         cnt2.merge(cnt1)
@@ -180,7 +180,7 @@ class PNCounterTest : StringSpec({
     "R1: decrement; R2: merge and get" {
         val dec = 11
         val cnt1 = PNCounter(client1)
-        val cnt2 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
         cnt1.decrement(dec)
         cnt2.merge(cnt1)
@@ -298,7 +298,7 @@ class PNCounterTest : StringSpec({
      */
     "use delta returned by increment" {
         val cnt1 = PNCounter(client1)
-        val cnt2 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
         val returnedIncOp = cnt1.increment(11)
         val incOp = client1.popWrite().second
@@ -316,7 +316,7 @@ class PNCounterTest : StringSpec({
      */
     "use delta returned by decrement" {
         val cnt1 = PNCounter(client1)
-        val cnt2 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
         val returnedDecOp = cnt1.decrement(11)
         val decOp = client1.popWrite().second
@@ -335,7 +335,7 @@ class PNCounterTest : StringSpec({
      */
     "use delta returned by increment and decrement" {
         val cnt1 = PNCounter(client1)
-        val cnt2 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
         val returnedDecOp = cnt1.decrement(11)
         val decOp = client1.popWrite().second
@@ -360,7 +360,7 @@ class PNCounterTest : StringSpec({
     */
     "generate delta" {
         val cnt1 = PNCounter(client1)
-        val cnt2 = PNCounter(client1)
+        val cnt2 = PNCounter(client2)
 
         cnt1.increment(11)
         cnt1.increment(33)
