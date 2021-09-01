@@ -136,11 +136,10 @@ class RGA : DeltaCRDT, Iterable<String> {
         val ts = env.tick()
         val newNode = RGANode(atom, anchor, ts, ts, false)
 
-        this.nodes.add(realIdx + 1, newNode)
-
         val delta = RGA()
         delta.nodes.add(newNode)
         onWrite(delta)
+        this.nodes.add(realIdx + 1, newNode)
         return delta
     }
 
@@ -156,11 +155,10 @@ class RGA : DeltaCRDT, Iterable<String> {
         val ts = env.tick()
         val newNode = RGANode(node.atom, node.anchor, node.uid, ts, true)
 
-        this.nodes[realIdx] = newNode
-
         val delta = RGA()
         delta.nodes.add(newNode)
         onWrite(delta)
+        this.nodes[realIdx] = newNode
         return delta
     }
 

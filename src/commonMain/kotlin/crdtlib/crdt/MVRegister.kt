@@ -107,14 +107,18 @@ class MVRegister : DeltaCRDT, Iterable<String> {
      */
     @Name("set")
     fun assign(value: String): MVRegister {
+        val delta = MVRegister()
         val ts = env.tick()
+        if (!this.causalContext.contains(ts)) {
+            delta.entries.add(Pair(value, ts))
+            delta.causalContext.update(ts)
+        }
+        onWrite(delta)
         if (!this.causalContext.contains(ts)) {
             this.entries.clear()
             this.entries.add(Pair(value, ts))
             this.causalContext.update(ts)
         }
-        val delta = this.copy()
-        onWrite(delta)
         return delta
     }
 

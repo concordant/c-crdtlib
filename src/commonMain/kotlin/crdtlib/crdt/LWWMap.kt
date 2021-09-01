@@ -165,10 +165,12 @@ class LWWMap : DeltaCRDT {
         val currentTs = this.entries[key + BOOLEAN]?.second
         val ts = env.tick()
         if (currentTs == null || currentTs < ts) {
-            this.entries[key + BOOLEAN] = Pair(value?.toString(), ts)
             op.entries[key + BOOLEAN] = Pair(value?.toString(), ts)
         }
         onWrite(op)
+        if (currentTs == null || currentTs < ts) {
+            this.entries[key + BOOLEAN] = Pair(value?.toString(), ts)
+        }
         return op
     }
 
@@ -184,10 +186,12 @@ class LWWMap : DeltaCRDT {
         val currentTs = this.entries[key + DOUBLE]?.second
         val ts = env.tick()
         if (currentTs == null || currentTs < ts) {
-            this.entries[key + DOUBLE] = Pair(value?.toString(), ts)
             op.entries[key + DOUBLE] = Pair(value?.toString(), ts)
         }
         onWrite(op)
+        if (currentTs == null || currentTs < ts) {
+            this.entries[key + DOUBLE] = Pair(value?.toString(), ts)
+        }
         return op
     }
 
@@ -203,10 +207,12 @@ class LWWMap : DeltaCRDT {
         val currentTs = this.entries[key + INTEGER]?.second
         val ts = env.tick()
         if (currentTs == null || currentTs < ts) {
-            this.entries[key + INTEGER] = Pair(value?.toString(), ts)
             op.entries[key + INTEGER] = Pair(value?.toString(), ts)
         }
         onWrite(op)
+        if (currentTs == null || currentTs < ts) {
+            this.entries[key + INTEGER] = Pair(value?.toString(), ts)
+        }
         return op
     }
 
@@ -222,10 +228,12 @@ class LWWMap : DeltaCRDT {
         val currentTs = this.entries[key + STRING]?.second
         val ts = env.tick()
         if (currentTs == null || currentTs < ts) {
-            this.entries[key + STRING] = Pair(value, ts)
             op.entries[key + STRING] = Pair(value, ts)
         }
         onWrite(op)
+        if (currentTs == null || currentTs < ts) {
+            this.entries[key + STRING] = Pair(value, ts)
+        }
         return op
     }
 
@@ -236,9 +244,7 @@ class LWWMap : DeltaCRDT {
      */
     @Name("deleteBoolean")
     fun deleteBoolean(key: String): LWWMap {
-        val op = put(key, null as Boolean?)
-        onWrite(op)
-        return op
+        return put(key, null as Boolean?)
     }
 
     /**
@@ -248,9 +254,7 @@ class LWWMap : DeltaCRDT {
      */
     @Name("deleteDouble")
     fun deleteDouble(key: String): LWWMap {
-        val op = put(key, null as Double?)
-        onWrite(op)
-        return op
+        return put(key, null as Double?)
     }
 
     /**
@@ -260,9 +264,7 @@ class LWWMap : DeltaCRDT {
      */
     @Name("deleteInt")
     fun deleteInt(key: String): LWWMap {
-        val op = put(key, null as Int?)
-        onWrite(op)
-        return op
+        return put(key, null as Int?)
     }
 
     /**
@@ -272,9 +274,7 @@ class LWWMap : DeltaCRDT {
      */
     @Name("deleteString")
     fun deleteString(key: String): LWWMap {
-        val op = put(key, null as String?)
-        onWrite(op)
-        return op
+        return put(key, null as String?)
     }
 
     override fun generateDelta(vv: VersionVector): LWWMap {

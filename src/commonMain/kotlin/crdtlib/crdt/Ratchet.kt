@@ -96,12 +96,15 @@ class Ratchet : DeltaCRDT {
      */
     @Name("set")
     fun assign(value: String?): Ratchet {
+        val delta = Ratchet(this.value)
+        if (value != null && this.value.orEmpty() <= value) {
+            delta.value = value
+        }
+        onWrite(delta)
         // if x == null and value == "", then x.orEmpty() == value
         if (value != null && this.value.orEmpty() <= value) {
             this.value = value
         }
-        val delta = Ratchet(this.value)
-        onWrite(delta)
         return delta
     }
 
