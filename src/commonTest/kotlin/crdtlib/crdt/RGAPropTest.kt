@@ -218,6 +218,45 @@ class RGAPropTest : StringSpec({
         }
     }
 
+    "merge concurrent insert deltas" {
+        forAll(Arb.list(Arb.string(1..1), 0..15)) { ops ->
+            val rga1 = RGA(client1)
+            val rga2 = RGA(client2)
+
+            val initText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor " +
+                "incididunt ut labore et dolore magna aliqua."
+            for (i in initText.indices) {
+                rga2.merge(rga1.insertAt(i, initText[i].toString()))
+            }
+            rga1.get() == rga2.get() && rga1.get().joinToString("") == initText
+
+            val subListSize = Arb.int(0..ops.size).next()
+            val ops1 = ops.subList(0, subListSize)
+            val ops2 = ops.subList(subListSize, ops.size)
+
+            var res = StringBuilder(initText)
+            val deltas1 = RGA()
+            ops1.map { op ->
+                val index = Arb.int(0..res.length).next()
+                res.insert(index, op)
+                deltas1.merge(rga1.insertAt(index, op))
+            }
+
+            res = StringBuilder(initText)
+            val deltas2 = RGA()
+            ops2.map { op ->
+                val index = Arb.int(0..res.length).next()
+                res.insert(index, op)
+                deltas2.merge(rga2.insertAt(index, op))
+            }
+
+            rga1.merge(deltas2)
+            rga2.merge(deltas1)
+
+            rga1.get() == rga2.get()
+        }
+    }
+
     "generate delta" {
         forAll(Arb.list(Arb.enum<RGAOpType>(), 0..100)) { ops ->
             val res = StringBuilder()

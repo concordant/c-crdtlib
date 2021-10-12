@@ -1318,7 +1318,7 @@ class LWWMapPropTest : StringSpec({
     }
 
     "deserialize is inverse to serialize" {
-        checkAll<String, String, String, String, String>(750) { key1, key2, key3, key4, key5 ->
+        checkAll<String, String, String, String, String>(500) { key1, key2, key3, key4, key5 ->
             val map = LWWMap(client1)
 
             val value1 = Arb.int().next()
