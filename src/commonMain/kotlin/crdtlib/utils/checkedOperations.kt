@@ -20,13 +20,13 @@
 package crdtlib.utils
 
 /**
-* Return the sum of two integers, checking for overflow
-*
-* @param a an Int operand
-* @param b an Int operand
-* @return a+b
-* @throws ArithmeticException on overflow
-**/
+ * Return the sum of two integers, checking for overflow
+ *
+ * @param a an Int operand
+ * @param b an Int operand
+ * @return a+b
+ * @throws ArithmeticException on overflow
+ */
 fun checkedSum(a: Int, b: Int): Int {
     val s: Int = a + b
     if ((a > 0 && b > 0 && s <= 0) ||
@@ -38,17 +38,17 @@ fun checkedSum(a: Int, b: Int): Int {
 }
 
 /**
-* Add and subtract non-negative integers, checking for overflow
-*
-* Compute add[*] - sub[*], ensuring an exception is thrown
-* iff the final result overflows
-* (and not because of an intermediate overflowing result).
-*
-* @param add a Sequence of non-negative integers to add
-* @param sub a Sequence of non-negative integers to subtract
-* @return add[*] - sub[*]
-* @throws ArithmeticException on overflow
-**/
+ * Add and subtract non-negative integers, checking for overflow
+ *
+ * Compute add[*] - sub[*], ensuring an exception is thrown
+ * iff the final result overflows
+ * (and not because of an intermediate overflowing result).
+ *
+ * @param add a Sequence of non-negative integers to add
+ * @param sub a Sequence of non-negative integers to subtract
+ * @return add[*] - sub[*]
+ * @throws ArithmeticException on overflow
+ */
 fun checkedSum(add: Sequence<Int>, sub: Sequence<Int>): Int {
     var s = 0
     val P = add.iterator()

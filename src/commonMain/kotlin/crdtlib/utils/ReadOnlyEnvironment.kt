@@ -19,43 +19,20 @@
 
 package crdtlib.utils
 
-import kotlinx.serialization.*
+import crdtlib.crdt.DeltaCRDT
 
 /**
- * This class represents a client unique identifier (UId).
- * @property name the name associated with the client.
+ * A simple read-only environment generating increasing monotonic timestamps
+ *
+ * For simplicity, it also:
+ * - Provides access to the last submitted delta
+ * - Automatically updates itself on merge operations to ensure
+ *   a generated timestamp is always greater than any known timestamp
+ *
+ * @property uid the client unique identifier associated with this environment.
  */
-@Serializable
-data class ClientUId(private val name: String) {
-
-    /**
-     * Compares this client name to a given other client name.
-     * @param other the other instance of client unique id.
-     * @return the results of the comparison between the two client names.
-     */
-    @Name("compareTo")
-    operator fun compareTo(other: ClientUId): Int {
-        return this.name.compareTo(other.name)
-    }
-
-    /**
-     * Serializes this client unique id to a json string.
-     * @return the resulted json string.
-     */
-    @Name("toJson")
-    fun toJson(): String {
-        return Json.encodeToString(serializer(), this)
-    }
-
-    companion object {
-        /**
-         * Deserializes a given json string in a client id object.
-         * @param json the given json string.
-         * @return the resulted client id.
-         */
-        @Name("fromJson")
-        fun fromJson(json: String): ClientUId {
-            return Json.decodeFromString(serializer(), json)
-        }
+open class ReadOnlyEnvironment(uid: ClientUId) : SimpleEnvironment(uid) {
+    override fun onWrite(obj: DeltaCRDT, delta: DeltaCRDT) {
+        throw RuntimeException("Object is not writable.")
     }
 }

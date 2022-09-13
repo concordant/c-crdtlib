@@ -98,14 +98,18 @@ class LWWRegister : DeltaCRDT {
      */
     @Name("set")
     fun assign(v: String): LWWRegister {
+        val delta = LWWRegister()
         val ts = env.tick()
         val currentTs = this.ts
+        if (currentTs == null || currentTs < ts) {
+            delta.ts = ts
+            delta.value = v
+        }
+        onWrite(delta)
         if (currentTs == null || currentTs < ts) {
             this.ts = ts
             this.value = v
         }
-        val delta = this.copy()
-        onWrite(delta)
         return delta
     }
 

@@ -26,8 +26,8 @@ import io.kotest.property.arbitrary.int
 import io.kotest.property.forAll
 
 /**
-* Represents a test suite for SimpleEnvironment.
-**/
+ * Represents a test suite for SimpleEnvironment.
+ */
 class SimpleEnvironmentPropTest : StringSpec({
 
     // AB: This seems rather special for this particular environment
