@@ -22,15 +22,16 @@ package crdtlib.utils
 import crdtlib.crdt.DeltaCRDT
 
 /**
-* A simple environment generating increasing monotonic timestamps
-*
-* For simplicity, it also:
-* - Provides access to the last submitted delta
-* - Automatically updates itself on merge operations to ensure
-*   a generated timestamp is always greater than any known timestamp
-*
-* @property uid the client unique identifier associated with this environment.
-*/
+ *
+ * A simple environment generating increasing monotonic timestamps
+ *
+ * For simplicity, it also:
+ * - Provides access to the last submitted delta
+ * - Automatically updates itself on merge operations to ensure
+ *   a generated timestamp is always greater than any known timestamp
+ *
+ * @property uid the client unique identifier associated with this environment.
+ */
 open class SimpleEnvironment(uid: ClientUId) : Environment(uid) {
 
     /**
@@ -40,15 +41,15 @@ open class SimpleEnvironment(uid: ClientUId) : Environment(uid) {
 
     /**
      * Store the last obj and delta submitted via onWrite()
-     **/
+     */
     private var lastWrite: Pair<DeltaCRDT, DeltaCRDT>? = null
 
     /**
      * Pop (return and delete) the last delta submitted via onWrite()
      * Throws NullPointerException if last submitted delta
-     * has already been pop()ed.
+     * has already been popped.
      * @return the last write as a Pair(obj, delta)
-     **/
+     */
     fun popWrite(): Pair<DeltaCRDT, DeltaCRDT> {
         val d = lastWrite
         lastWrite = null

@@ -20,7 +20,9 @@
 package crdtlib.crdt
 
 import crdtlib.utils.ClientUId
+import crdtlib.utils.ReadOnlyEnvironment
 import crdtlib.utils.SimpleEnvironment
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
@@ -153,6 +155,16 @@ class LWWRegisterTest : StringSpec({
 
         reg1.get().shouldBe("value2")
         reg2.get().shouldBe("value2")
+    }
+
+    "Read Only Environment" {
+        client1 = ReadOnlyEnvironment(uid1)
+        val reg = LWWRegister("value1", client1)
+
+        shouldThrow<RuntimeException> {
+            reg.assign("value2")
+        }
+        reg.get().shouldBe("value1")
     }
 
     /**

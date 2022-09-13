@@ -20,8 +20,10 @@
 package crdtlib.crdt
 
 import crdtlib.utils.ClientUId
+import crdtlib.utils.ReadOnlyEnvironment
 import crdtlib.utils.SimpleEnvironment
 import crdtlib.utils.VersionVector
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.*
 import io.kotest.matchers.iterator.shouldBeEmpty
@@ -1175,6 +1177,52 @@ class LWWMapTest : StringSpec({
         iteratorString.shouldHaveNext()
         iteratorString.next().shouldBe(Pair(key3, valString1))
         iteratorString.shouldBeEmpty()
+    }
+
+    "Read Only Environment" {
+        client2 = ReadOnlyEnvironment(uid2)
+        val map1 = LWWMap(client1)
+        val map2 = LWWMap(client2)
+
+        map1.put(key1, valBoolean1)
+        map1.put(key1, valDouble1)
+        map1.put(key1, valInt1)
+        map1.put(key1, valString1)
+        map2.merge(map1)
+
+        shouldThrow<RuntimeException> {
+            map2.put(key1, valBoolean2)
+        }
+        shouldThrow<RuntimeException> {
+            map2.put(key1, valDouble2)
+        }
+        shouldThrow<RuntimeException> {
+            map2.put(key1, valInt2)
+        }
+        shouldThrow<RuntimeException> {
+            map2.put(key1, valString2)
+        }
+        shouldThrow<RuntimeException> {
+            map2.deleteBoolean(key1)
+        }
+        shouldThrow<RuntimeException> {
+            map2.deleteDouble(key1)
+        }
+        shouldThrow<RuntimeException> {
+            map2.deleteInt(key1)
+        }
+        shouldThrow<RuntimeException> {
+            map2.deleteString(key1)
+        }
+
+        map1.getBoolean(key1).shouldBe(valBoolean1)
+        map1.getDouble(key1).shouldBe(valDouble1)
+        map1.getInt(key1).shouldBe(valInt1)
+        map1.getString(key1).shouldBe(valString1)
+        map2.getBoolean(key1).shouldBe(valBoolean1)
+        map2.getDouble(key1).shouldBe(valDouble1)
+        map2.getInt(key1).shouldBe(valInt1)
+        map2.getString(key1).shouldBe(valString1)
     }
 
     /**

@@ -71,19 +71,15 @@ class LWWRegister : DeltaCRDT {
      * Constructs a LWWRegister instance initialized with a given [value]
      * and environment.
      */
-    constructor(value: String, env: Environment) : super(env) {
+    constructor(value: String?, env: Environment) : super(env) {
         this.value = value
         this.ts = env.tick()
     }
 
-    /**
-     * Copy constructor, discarding associated environment
-     *
-     * @return a copy of [other] with no env associated.
-     */
-    constructor(other: LWWRegister) {
-        this.value = other.value
-        this.ts = other.ts
+    override fun copy(): LWWRegister {
+        val copy = LWWRegister(this.value, this.env)
+        copy.ts = this.ts
+        return copy
     }
 
     /**
@@ -102,20 +98,24 @@ class LWWRegister : DeltaCRDT {
      */
     @Name("set")
     fun assign(v: String): LWWRegister {
+        val delta = LWWRegister()
         val ts = env.tick()
         val currentTs = this.ts
+        if (currentTs == null || currentTs < ts) {
+            delta.ts = ts
+            delta.value = v
+        }
+        onWrite(delta)
         if (currentTs == null || currentTs < ts) {
             this.ts = ts
             this.value = v
         }
-        val delta = LWWRegister(this)
-        onWrite(delta)
         return delta
     }
 
     override fun generateDelta(vv: VersionVector): LWWRegister {
         if (this.ts != null && !vv.contains(this.ts!!)) {
-            return LWWRegister(this)
+            return this.copy()
         }
         return LWWRegister()
     }

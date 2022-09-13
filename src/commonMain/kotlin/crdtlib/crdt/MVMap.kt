@@ -71,7 +71,7 @@ class MVMap : DeltaCRDT {
      * A causal context summarizing executed operations.
      */
     @Required
-    private var causalContext: VersionVector = VersionVector()
+    private val causalContext: VersionVector = VersionVector()
 
     /**
      * Default constructor.
@@ -83,7 +83,14 @@ class MVMap : DeltaCRDT {
      * Constructor initializing the causal context.
      */
     constructor(cc: VersionVector, env: Environment) : super(env) {
-        this.causalContext = cc
+        this.causalContext.update(cc)
+    }
+
+    override fun copy(): MVMap {
+        val copy = MVMap(this.env)
+        copy.entries.putAll(this.entries.toMutableMap())
+        copy.causalContext.update(this.causalContext)
+        return copy
     }
 
     /**
@@ -209,17 +216,14 @@ class MVMap : DeltaCRDT {
         val op = MVMap()
         val ts = env.tick()
         if (!this.causalContext.contains(ts)) {
-            var meta = this.entries[key + BOOLEAN]
-            if (meta == null) meta = mutableSetOf()
-            else meta.clear()
-            meta.add(Pair(value?.toString(), ts))
-
-            this.entries[key + BOOLEAN] = meta
-            op.entries[key + BOOLEAN] = meta.toMutableSet()
-            this.causalContext.update(ts)
+            op.entries[key + BOOLEAN] = mutableSetOf(Pair(value?.toString(), ts))
             op.causalContext.update(ts)
         }
         onWrite(op)
+        if (!this.causalContext.contains(ts)) {
+            this.entries[key + BOOLEAN] = mutableSetOf(Pair(value?.toString(), ts))
+            this.causalContext.update(ts)
+        }
         return op
     }
 
@@ -234,17 +238,14 @@ class MVMap : DeltaCRDT {
         val op = MVMap()
         val ts = env.tick()
         if (!this.causalContext.contains(ts)) {
-            var meta = this.entries[key + DOUBLE]
-            if (meta == null) meta = mutableSetOf()
-            else meta.clear()
-            meta.add(Pair(value?.toString(), ts))
-
-            this.entries[key + DOUBLE] = meta
-            op.entries[key + DOUBLE] = meta.toMutableSet()
-            this.causalContext.update(ts)
+            op.entries[key + DOUBLE] = mutableSetOf(Pair(value?.toString(), ts))
             op.causalContext.update(ts)
         }
         onWrite(op)
+        if (!this.causalContext.contains(ts)) {
+            this.entries[key + DOUBLE] = mutableSetOf(Pair(value?.toString(), ts))
+            this.causalContext.update(ts)
+        }
         return op
     }
 
@@ -259,17 +260,14 @@ class MVMap : DeltaCRDT {
         val op = MVMap()
         val ts = env.tick()
         if (!this.causalContext.contains(ts)) {
-            var meta = this.entries[key + INTEGER]
-            if (meta == null) meta = mutableSetOf()
-            else meta.clear()
-            meta.add(Pair(value?.toString(), ts))
-
-            this.entries[key + INTEGER] = meta
-            op.entries[key + INTEGER] = meta.toMutableSet()
-            this.causalContext.update(ts)
+            op.entries[key + INTEGER] = mutableSetOf(Pair(value?.toString(), ts))
             op.causalContext.update(ts)
         }
         onWrite(op)
+        if (!this.causalContext.contains(ts)) {
+            this.entries[key + INTEGER] = mutableSetOf(Pair(value?.toString(), ts))
+            this.causalContext.update(ts)
+        }
         return op
     }
 
@@ -284,17 +282,14 @@ class MVMap : DeltaCRDT {
         val op = MVMap()
         val ts = env.tick()
         if (!this.causalContext.contains(ts)) {
-            var meta = this.entries[key + STRING]
-            if (meta == null) meta = mutableSetOf()
-            else meta.clear()
-            meta.add(Pair(value, ts))
-
-            this.entries[key + STRING] = meta
-            op.entries[key + STRING] = meta.toMutableSet()
-            this.causalContext.update(ts)
+            op.entries[key + STRING] = mutableSetOf(Pair(value, ts))
             op.causalContext.update(ts)
         }
         onWrite(op)
+        if (!this.causalContext.contains(ts)) {
+            this.entries[key + STRING] = mutableSetOf(Pair(value, ts))
+            this.causalContext.update(ts)
+        }
         return op
     }
 
@@ -305,9 +300,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("deleteBoolean")
     fun deleteBoolean(key: String): MVMap {
-        val op = put(key, null as Boolean?)
-        onWrite(op)
-        return op
+        return put(key, null as Boolean?)
     }
 
     /**
@@ -317,9 +310,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("deleteDouble")
     fun deleteDouble(key: String): MVMap {
-        val op = put(key, null as Double?)
-        onWrite(op)
-        return op
+        return put(key, null as Double?)
     }
 
     /**
@@ -329,9 +320,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("deleteInt")
     fun deleteInt(key: String): MVMap {
-        val op = put(key, null as Int?)
-        onWrite(op)
-        return op
+        return put(key, null as Int?)
     }
 
     /**
@@ -341,9 +330,7 @@ class MVMap : DeltaCRDT {
      */
     @Name("deleteString")
     fun deleteString(key: String): MVMap {
-        val op = put(key, null as String?)
-        onWrite(op)
-        return op
+        return put(key, null as String?)
     }
 
     override fun generateDelta(vv: VersionVector): MVMap {

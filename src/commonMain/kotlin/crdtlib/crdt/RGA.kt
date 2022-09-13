@@ -100,10 +100,12 @@ class RGA : DeltaCRDT, Iterable<String> {
     constructor() : super()
     constructor(env: Environment) : super(env)
 
-    constructor(nodes: List<RGANode>, env: Environment) : super(env) {
-        for (node in nodes) {
-            this.nodes.add(node)
+    override fun copy(): RGA {
+        val copy = RGA(this.env)
+        for (node in this.nodes) {
+            copy.nodes.add(node.copy())
         }
+        return copy
     }
 
     /**
@@ -134,11 +136,10 @@ class RGA : DeltaCRDT, Iterable<String> {
         val ts = env.tick()
         val newNode = RGANode(atom, anchor, ts, ts, false)
 
-        this.nodes.add(realIdx + 1, newNode)
-
         val delta = RGA()
         delta.nodes.add(newNode)
         onWrite(delta)
+        this.nodes.add(realIdx + 1, newNode)
         return delta
     }
 
@@ -154,11 +155,10 @@ class RGA : DeltaCRDT, Iterable<String> {
         val ts = env.tick()
         val newNode = RGANode(node.atom, node.anchor, node.uid, ts, true)
 
-        this.nodes[realIdx] = newNode
-
         val delta = RGA()
         delta.nodes.add(newNode)
         onWrite(delta)
+        this.nodes[realIdx] = newNode
         return delta
     }
 
@@ -194,62 +194,116 @@ class RGA : DeltaCRDT, Iterable<String> {
     /**
      * This function is called by merge when trying to merge a node.
      */
-    private fun mergeNode(indexPreviousNode: Int, node: RGANode): Int {
-        var anchorIndex = -1
-        var firstWeakerNodeIndex = -1
+    private fun mergeNode(indexPreviousAnchor: Int, node: RGANode): Int {
+        var anchorIndex = -2
 
-        for (idx in indexPreviousNode + 1 until this.nodes.size) {
-            val localNode = this.nodes[idx]
+        if (node.anchor == null) {
+            // If the anchor is the root
+            anchorIndex = -1
+        } else if (indexPreviousAnchor > -1 && node.anchor == this.nodes[indexPreviousAnchor].uid) {
+            // If the anchor is the same as the previous one
+            anchorIndex = indexPreviousAnchor
+        }
 
-            if (localNode.uid == node.uid) {
-                // This node already exists
-                if (node.removed && !this.nodes[idx].removed) {
-                    // This node already exists and foreign node is a tombstone.
-                    this.nodes[idx] = node.copy()
+        if (anchorIndex < -1) {
+            // Looking for the anchor forward
+            for (idx in indexPreviousAnchor + 1 until this.nodes.size) {
+                val localNode = this.nodes[idx]
+
+                if (localNode.uid == node.uid) {
+                    if (node.removed && !localNode.removed) {
+                        this.nodes[idx] = node.copy()
+                    }
+                    return idx
                 }
-                return idx
-            }
 
-            if (anchorIndex == -1 && localNode.uid == node.anchor) {
-                anchorIndex = idx
-                firstWeakerNodeIndex = -1
-                continue
-            }
-
-            if (firstWeakerNodeIndex == -1 && localNode.uid < node.uid) {
-                firstWeakerNodeIndex = idx
-                if (anchorIndex > -1) {
+                if (localNode.uid == node.anchor) {
+                    anchorIndex = idx
                     break
                 }
             }
         }
 
-        if (firstWeakerNodeIndex > -1) {
-            // insert before first weaker node after the anchor
-            // this node is the first weaker sibling or next element up the tree
-            this.nodes.add(firstWeakerNodeIndex, node.copy())
-            return firstWeakerNodeIndex
-        } else {
-            return if (indexPreviousNode == -1) {
-                var index = this.nodes.size
-                this.nodes.add(index, node.copy())
-                index
-            } else {
-                this.mergeNode(-1, node)
+        if (anchorIndex < -1) {
+            // Looking for the anchor backwards
+            for (idx in indexPreviousAnchor - 1 downTo 0) {
+                val localNode = this.nodes[idx]
+
+                if (localNode.uid == node.uid) {
+                    if (node.removed && !localNode.removed) {
+                        this.nodes[idx] = node.copy()
+                    }
+                    return idx
+                }
+
+                if (localNode.uid == node.anchor) {
+                    anchorIndex = idx
+                    break
+                }
+        }
+
+        if (anchorIndex < -1) {
+            // No anchor found, insert the node at the end
+            var index = this.nodes.size
+            this.nodes.add(index, node.copy())
+            return -1
+        }
+
+        for (idx in anchorIndex + 1 until this.nodes.size) {
+            val localNode = this.nodes[idx]
+
+            if (localNode.uid == node.uid) {
+                // This node already exists
+                if (node.removed && !localNode.removed) {
+                    // This node already exists and foreign node is a tombstone.
+                    this.nodes[idx] = node.copy()
+                }
+                return anchorIndex
+            }
+
+        if (anchorIndex < -1) {
+            // No anchor found, insert the node at the end
+            var index = this.nodes.size
+            this.nodes.add(index, node.copy())
+            return -1
+        }
+
+        for (idx in anchorIndex + 1 until this.nodes.size) {
+            val localNode = this.nodes[idx]
+
+            if (localNode.uid == node.uid) {
+                // This node already exists
+                if (node.removed && !localNode.removed) {
+                    // This node already exists and foreign node is a tombstone.
+                    this.nodes[idx] = node.copy()
+                }
+                return anchorIndex
+            }
+
+            if (localNode.uid < node.uid) {
+                // insert before first weaker node after the anchor
+                // this node is the first weaker sibling or next element up the tree
+                this.nodes.add(idx, node.copy())
+                return anchorIndex
             }
         }
+
+        // No weaker node found, insert the node at the end
+        var index = this.nodes.size
+        this.nodes.add(index, node.copy())
+        return anchorIndex
     }
 
     override fun merge(delta: DeltaCRDT) {
         if (delta !is RGA) throw IllegalArgumentException("RGA unsupported merge argument")
 
         var lastTs: Timestamp? = null
-        var indexPreviousNode = -1
+        var indexPreviousAnchor = -1
         for (node in delta.nodes) {
             if (lastTs == null || lastTs < node.ts) {
                 lastTs = node.ts
             }
-            indexPreviousNode = this.mergeNode(indexPreviousNode, node)
+            indexPreviousAnchor = this.mergeNode(indexPreviousAnchor, node)
         }
         onMerge(delta, lastTs)
     }

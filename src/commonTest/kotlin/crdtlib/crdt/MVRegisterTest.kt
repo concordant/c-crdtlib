@@ -20,7 +20,9 @@
 package crdtlib.crdt
 
 import crdtlib.utils.ClientUId
+import crdtlib.utils.ReadOnlyEnvironment
 import crdtlib.utils.SimpleEnvironment
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.*
 import io.kotest.matchers.collections.*
@@ -76,10 +78,10 @@ class MVRegisterTest : StringSpec({
      * Call to get should return a set containing the assigned value in the first replica.
      * Call to iterator should return an iterator containing the assigned value in the first replica.
      */
-    "copy with copy constructor and get/iterator" {
+    "copy with copy method and get/iterator" {
         val reg1 = MVRegister("value1", client1)
 
-        val reg2 = MVRegister(reg1)
+        val reg2 = reg1.copy()
 
         reg2.shouldContainExactlyInAnyOrder("value1")
     }
@@ -89,12 +91,12 @@ class MVRegisterTest : StringSpec({
      * Call to get should return a set containing values assigned in first and second replicas.
      * Call to iterator should return an iterator containing values assigned in first and second replicas.
      */
-    "copy with copy constructor a register with multi-values and get/iterator" {
+    "copy a register with multi-values with copy method and get/iterator" {
         val reg1 = MVRegister("value1", client1)
         val reg2 = MVRegister("value2", client2)
 
         reg2.merge(reg1)
-        val reg3 = MVRegister(reg2)
+        val reg3 = reg2.copy()
 
         reg3.shouldContainExactlyInAnyOrder("value1", "value2")
     }
@@ -268,6 +270,16 @@ class MVRegisterTest : StringSpec({
         reg3.merge(delta)
 
         reg3.shouldContainExactlyInAnyOrder("value1", "value2")
+    }
+
+    "Read Only Environment" {
+        client1 = ReadOnlyEnvironment(uid1)
+        val reg = MVRegister("value1", client1)
+
+        shouldThrow<RuntimeException> {
+            reg.assign("value2")
+        }
+        reg.shouldContainExactlyInAnyOrder("value1")
     }
 
     /**

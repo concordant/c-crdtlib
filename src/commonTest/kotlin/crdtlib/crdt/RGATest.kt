@@ -20,6 +20,7 @@
 package crdtlib.crdt
 
 import crdtlib.utils.ClientUId
+import crdtlib.utils.ReadOnlyEnvironment
 import crdtlib.utils.SimpleEnvironment
 import crdtlib.utils.VersionVector
 import io.kotest.assertions.throwables.shouldThrow
@@ -1011,6 +1012,26 @@ class RGATest : StringSpec({
             it.next().shouldBe(value)
         }
         it.shouldBeEmpty()
+    }
+
+    "Read Only Environment" {
+        client2 = ReadOnlyEnvironment(uid2)
+        val rga1 = RGA(client1)
+        val rga2 = RGA(client2)
+
+        rga1.insertAt(0, "A")
+        rga1.insertAt(1, "B")
+        rga1.removeAt(1)
+        rga2.merge(rga1)
+
+        shouldThrow<RuntimeException> {
+            rga2.insertAt(1, "C")
+        }
+        shouldThrow<RuntimeException> {
+            rga2.removeAt(0)
+        }
+        rga1.get().shouldHaveSingleElement("A")
+        rga2.get().shouldHaveSingleElement("A")
     }
 
     /**

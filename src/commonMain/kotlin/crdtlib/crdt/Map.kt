@@ -70,18 +70,18 @@ class Map : DeltaCRDT {
      * intercept hooks (onRead(), onWrite() and onMerge())
      * and allow to retrieve intermediate deltas.
      */
-    private inner class ProxyEnv() :
-        SimpleEnvironment(ClientUId("Map Proxy Env")) {
+    private inner class ProxyEnv : SimpleEnvironment(ClientUId("Map Proxy Env")) {
+
         /**
          * Store the last delta and timestamp submitted via onMerge()
-         **/
+         */
         private var lastMerge: Pair<DeltaCRDT, Timestamp?>? = null
 
         /** Pop (return and delete) last (delta, ts) submitted via onMerge
          * Throws NullPointerException if last submitted delta
          * has already been pop()ed.
          * @return the last merge as a Pair(delta)
-         **/
+         */
         fun popMerge(): Pair<DeltaCRDT, Timestamp?> {
             val d = lastMerge
             lastMerge = null
@@ -91,11 +91,31 @@ class Map : DeltaCRDT {
         override fun tick(): Timestamp {
             return env.tick()
         }
-        override fun onMerge(
-            obj: DeltaCRDT,
-            delta: DeltaCRDT,
-            lastTs: Timestamp?,
-        ) {
+
+        override fun onRead(obj: DeltaCRDT) {
+            onRead()
+        }
+
+        override fun onWrite(obj: DeltaCRDT, delta: DeltaCRDT) {
+            val op = Map()
+            when (obj) {
+                is LWWMap -> op.lwwMap.merge(delta)
+                is MVMap -> op.mvMap.merge(delta)
+                is PNCounter -> {
+                    val key: String? = cntToKey[obj]
+                    if (key != null) {
+                        val pn: PNCounter = delta as PNCounter
+                        op.cntMap[key] = pn
+                        op.cntToKey[pn] = key
+                    } else {
+                        throw RuntimeException("PNCounter not found.")
+                    }
+                }
+            }
+            onWrite(op)
+        }
+
+        override fun onMerge(obj: DeltaCRDT, delta: DeltaCRDT, lastTs: Timestamp?) {
             this.lastMerge = Pair(delta, lastTs)
         }
     }
@@ -116,12 +136,22 @@ class Map : DeltaCRDT {
     @Required
     private val cntMap: MutableMap<String, PNCounter> = mutableMapOf()
 
+    private val cntToKey: MutableMap<PNCounter, String> = mutableMapOf()
+
     /**
      * Default constructor.
      */
     constructor() : super()
-
     constructor(env: Environment) : super(env)
+
+    override fun copy(): Map {
+        val copy = Map(this.env)
+        copy.lwwMap.merge(this.lwwMap.copy())
+        copy.mvMap.merge(this.mvMap.copy())
+        copy.cntMap.putAll(this.cntMap.toMutableMap())
+        copy.cntToKey.putAll(this.cntToKey.toMutableMap())
+        return copy
+    }
 
     /**
      * Get the LWW Boolean value corresponding to a given [key] ,
@@ -301,11 +331,8 @@ class Map : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("setLWWBoolean")
-    fun putLWW(key: String, value: Boolean?): Map {
-        val op = Map()
-        op.lwwMap.merge(this.lwwMap.put(key, value))
-        onWrite(op)
-        return op
+    fun putLWW(key: String, value: Boolean?) {
+        this.lwwMap.put(key, value)
     }
 
     /**
@@ -315,11 +342,8 @@ class Map : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("setLWWDouble")
-    fun putLWW(key: String, value: Double?): Map {
-        val op = Map()
-        op.lwwMap.merge(this.lwwMap.put(key, value))
-        onWrite(op)
-        return op
+    fun putLWW(key: String, value: Double?) {
+        this.lwwMap.put(key, value)
     }
 
     /**
@@ -329,11 +353,8 @@ class Map : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("setLWWInt")
-    fun putLWW(key: String, value: Int?): Map {
-        val op = Map()
-        op.lwwMap.merge(this.lwwMap.put(key, value))
-        onWrite(op)
-        return op
+    fun putLWW(key: String, value: Int?) {
+        this.lwwMap.put(key, value)
     }
 
     /**
@@ -343,11 +364,8 @@ class Map : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("setLWWString")
-    fun putLWW(key: String, value: String?): Map {
-        val op = Map()
-        op.lwwMap.merge(this.lwwMap.put(key, value))
-        onWrite(op)
-        return op
+    fun putLWW(key: String, value: String?) {
+        this.lwwMap.put(key, value)
     }
 
     /**
@@ -357,11 +375,8 @@ class Map : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("setMVBoolean")
-    fun putMV(key: String, value: Boolean?): Map {
-        val op = Map()
-        op.mvMap.merge(this.mvMap.put(key, value))
-        onWrite(op)
-        return op
+    fun putMV(key: String, value: Boolean?) {
+        this.mvMap.put(key, value)
     }
 
     /**
@@ -371,12 +386,8 @@ class Map : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("setMVDouble")
-    fun putMV(key: String, value: Double?): Map {
-        val op = Map()
+    fun putMV(key: String, value: Double?) {
         this.mvMap.put(key, value)
-        op.mvMap.merge(proxyEnv.popWrite().second)
-        onWrite(op)
-        return op
     }
 
     /**
@@ -386,12 +397,8 @@ class Map : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("setMVInt")
-    fun putMV(key: String, value: Int?): Map {
-        val op = Map()
+    fun putMV(key: String, value: Int?) {
         this.mvMap.put(key, value)
-        op.mvMap.merge(proxyEnv.popWrite().second)
-        onWrite(op)
-        return op
     }
 
     /**
@@ -401,12 +408,8 @@ class Map : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("setMVString")
-    fun putMV(key: String, value: String?): Map {
-        val op = Map()
+    fun putMV(key: String, value: String?) {
         this.mvMap.put(key, value)
-        op.mvMap.merge(proxyEnv.popWrite().second)
-        onWrite(op)
-        return op
     }
 
     /**
@@ -415,13 +418,10 @@ class Map : DeltaCRDT {
      *
      * @return the delta corresponding to this operation.
      */
-    fun increment(key: String, inc: Int): Map {
-        val op = Map()
-        var cnt = this.cntMap.getOrPut(key, { PNCounter(proxyEnv) })
+    fun increment(key: String, inc: Int) {
+        val cnt = this.cntMap.getOrPut(key) { PNCounter(proxyEnv) }
+        this.cntToKey[cnt] = key
         cnt.increment(inc)
-        op.cntMap[key] = proxyEnv.popWrite().second as PNCounter
-        onWrite(op)
-        return op
     }
 
     /**
@@ -430,13 +430,10 @@ class Map : DeltaCRDT {
      *
      * @return the delta corresponding to this operation.
      */
-    fun decrement(key: String, dec: Int): Map {
-        val op = Map()
-        var cnt = this.cntMap.getOrPut(key, { PNCounter(proxyEnv) })
+    fun decrement(key: String, dec: Int) {
+        val cnt = this.cntMap.getOrPut(key) { PNCounter(proxyEnv) }
+        this.cntToKey[cnt] = key
         cnt.decrement(dec)
-        op.cntMap[key] = proxyEnv.popWrite().second as PNCounter
-        onWrite(op)
-        return op
     }
 
     /**
@@ -445,12 +442,8 @@ class Map : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("deleteLWWBoolean")
-    fun deleteLWWBoolean(key: String): Map {
-        val op = Map()
+    fun deleteLWWBoolean(key: String) {
         this.lwwMap.deleteBoolean(key)
-        op.lwwMap.merge(proxyEnv.popWrite().second)
-        onWrite(op)
-        return op
     }
 
     /**
@@ -459,12 +452,8 @@ class Map : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("deleteLWWDouble")
-    fun deleteLWWDouble(key: String): Map {
-        val op = Map()
+    fun deleteLWWDouble(key: String) {
         this.lwwMap.deleteDouble(key)
-        op.lwwMap.merge(proxyEnv.popWrite().second)
-        onWrite(op)
-        return op
     }
 
     /**
@@ -473,12 +462,8 @@ class Map : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("deleteLWWInt")
-    fun deleteLWWInt(key: String): Map {
-        val op = Map()
+    fun deleteLWWInt(key: String) {
         this.lwwMap.deleteInt(key)
-        op.lwwMap.merge(proxyEnv.popWrite().second)
-        onWrite(op)
-        return op
     }
 
     /**
@@ -487,12 +472,8 @@ class Map : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("deleteLWWString")
-    fun deleteLWWString(key: String): Map {
-        val op = Map()
+    fun deleteLWWString(key: String) {
         this.lwwMap.deleteString(key)
-        op.lwwMap.merge(proxyEnv.popWrite().second)
-        onWrite(op)
-        return op
     }
 
     /**
@@ -501,12 +482,8 @@ class Map : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("deleteMVBoolean")
-    fun deleteMVBoolean(key: String): Map {
-        val op = Map()
+    fun deleteMVBoolean(key: String) {
         this.mvMap.deleteBoolean(key)
-        op.mvMap.merge(proxyEnv.popWrite().second)
-        onWrite(op)
-        return op
     }
 
     /**
@@ -515,12 +492,8 @@ class Map : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("deleteMVDouble")
-    fun deleteMVDouble(key: String): Map {
-        val op = Map()
+    fun deleteMVDouble(key: String) {
         this.mvMap.deleteDouble(key)
-        op.mvMap.merge(proxyEnv.popWrite().second)
-        onWrite(op)
-        return op
     }
 
     /**
@@ -529,12 +502,8 @@ class Map : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("deleteMVInt")
-    fun deleteMVInt(key: String): Map {
-        val op = Map()
+    fun deleteMVInt(key: String) {
         this.mvMap.deleteInt(key)
-        op.mvMap.merge(proxyEnv.popWrite().second)
-        onWrite(op)
-        return op
     }
 
     /**
@@ -543,12 +512,8 @@ class Map : DeltaCRDT {
      * @return the delta corresponding to this operation.
      */
     @Name("deleteMVString")
-    fun deleteMVString(key: String): Map {
-        val op = Map()
+    fun deleteMVString(key: String) {
         this.mvMap.deleteString(key)
-        op.mvMap.merge(proxyEnv.popWrite().second)
-        onWrite(op)
-        return op
     }
 
     override fun generateDelta(vv: VersionVector): Map {
@@ -574,16 +539,16 @@ class Map : DeltaCRDT {
 
         this.mvMap.merge(delta.mvMap)
         val mvMapTs = proxyEnv.popMerge().second
-        if (lastTs == null || mvMapTs?.compareTo(lastTs) ?: 0 > 0) {
+        if (lastTs == null || (mvMapTs?.compareTo(lastTs) ?: 0) > 0) {
             lastTs = mvMapTs
         }
 
         for ((key, cnt) in delta.cntMap) {
-            var localCnt = this.cntMap[key]
-            if (localCnt == null) localCnt = PNCounter(proxyEnv)
+            val localCnt = this.cntMap.getOrPut(key) { PNCounter(proxyEnv) }
+            this.cntToKey[localCnt] = key
             localCnt.merge(cnt)
             val localCntTs = proxyEnv.popMerge().second
-            if (lastTs == null || localCntTs?.compareTo(lastTs) ?: 0 > 0) {
+            if (lastTs == null || (localCntTs?.compareTo(lastTs) ?: 0) > 0) {
                 lastTs = localCntTs
             }
             this.cntMap[key] = localCnt

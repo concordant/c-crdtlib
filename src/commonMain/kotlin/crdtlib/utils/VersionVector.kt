@@ -22,8 +22,8 @@ package crdtlib.utils
 import kotlinx.serialization.*
 
 /**
-* This class represents a version vector.
-*/
+ * This class represents a version vector.
+ */
 @Serializable
 class VersionVector {
 

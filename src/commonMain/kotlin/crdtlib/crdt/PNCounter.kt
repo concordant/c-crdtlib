@@ -97,6 +97,13 @@ class PNCounter : DeltaCRDT {
     constructor()
     constructor(env: Environment) : super(env)
 
+    override fun copy(): PNCounter {
+        val copy = PNCounter(this.env)
+        copy.increment.putAll(increment.toMutableMap())
+        copy.decrement.putAll(decrement.toMutableMap())
+        return copy
+    }
+
     /**
      * Gets the value of the counter.
      */
@@ -125,9 +132,9 @@ class PNCounter : DeltaCRDT {
         if (Int.MAX_VALUE - count < amount - 1) {
             throw RuntimeException("PNCounter has reached Int.MAX_VALUE")
         }
-        this.increment[ts.uid] = Pair(count + amount, ts)
         op.increment[ts.uid] = Pair(count + amount, ts)
         onWrite(op)
+        this.increment[ts.uid] = Pair(count + amount, ts)
         return op
     }
 
@@ -150,9 +157,9 @@ class PNCounter : DeltaCRDT {
         if (Int.MAX_VALUE - count < amount - 1) {
             throw RuntimeException("PNCounter has reached Int.MAX_VALUE")
         }
-        this.decrement[ts.uid] = Pair(count + amount, ts)
         op.decrement[ts.uid] = Pair(count + amount, ts)
         onWrite(op)
+        this.decrement[ts.uid] = Pair(count + amount, ts)
         return op
     }
 

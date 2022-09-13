@@ -28,7 +28,7 @@ import kotlinx.serialization.json.*
 /**
  * A delta-based CRDT bounded-counter (non-negative, initially 0).
  *
- * Following design from  V. Balegas et al., "Extending
+ * Following design from V. Balegas et al., "Extending
  * Eventually Consistent Cloud Databases for Enforcing Numeric Invariants,"
  * 2015 IEEE 34th Symposium on Reliable Distributed Systems (SRDS),
  * Montreal, QC, 2015, pp. 31-36, doi: 10.1109/SRDS.2015.32.
@@ -67,12 +67,6 @@ import kotlinx.serialization.json.*
 class BCounter : DeltaCRDT {
 
     /**
-     * Default constructor.
-     */
-    constructor() : super()
-    constructor(env: Environment) : super(env)
-
-    /**
      * A two-level mutable map storing each client metadata
      * relative to increment operations:
      * - increment[i][i] represents the increments by replica i.
@@ -92,6 +86,19 @@ class BCounter : DeltaCRDT {
      */
     @Required
     private val decrement: MutableMap<ClientUId, Pair<Int, Timestamp>> = mutableMapOf()
+
+    /**
+     * Default constructor.
+     */
+    constructor() : super()
+    constructor(env: Environment) : super(env)
+
+    override fun copy(): BCounter {
+        val copy = BCounter(this.env)
+        copy.increment.putAll(increment.toMutableMap())
+        copy.decrement.putAll(decrement.toMutableMap())
+        return copy
+    }
 
     /**
      * Gets the value of the counter.
@@ -152,10 +159,9 @@ class BCounter : DeltaCRDT {
         val ts = env.tick()
         val thisLine = this.increment.getOrPut(ts.uid) { mutableMapOf() }
         val count = checkedSum(thisLine[ts.uid]?.first ?: 0, amount)
-        thisLine[ts.uid] = Pair(count, ts)
-
         op.increment[ts.uid] = mutableMapOf(ts.uid to Pair(count, ts))
         onWrite(op)
+        thisLine[ts.uid] = Pair(count, ts)
         return op
     }
 
@@ -184,9 +190,9 @@ class BCounter : DeltaCRDT {
         }
         val count = checkedSum(this.decrement[env.uid]?.first ?: 0, amount)
         val ts = env.tick()
-        this.decrement[ts.uid] = Pair(count, ts)
         op.decrement[ts.uid] = Pair(count, ts)
         onWrite(op)
+        this.decrement[ts.uid] = Pair(count, ts)
         return op
     }
 
@@ -213,10 +219,10 @@ class BCounter : DeltaCRDT {
         val rights = checkedSum(thisLine[to]?.first ?: 0, amount)
 
         val ts = env.tick()
-        thisLine[to] = Pair(rights, ts)
         op.increment[env.uid] = mutableMapOf()
         op.increment[env.uid]?.put(to, Pair(rights, ts))
         onWrite(op)
+        thisLine[to] = Pair(rights, ts)
         return op
     }
 
@@ -304,7 +310,7 @@ class BCounter : DeltaCRDT {
 /**
  * This class is a json transformer for BCounter, it allows the separation between data and metadata.
  */
-class JsonBCounterSerializer(private val serializer: KSerializer<BCounter>) :
+class JsonBCounterSerializer(serializer: KSerializer<BCounter>) :
     JsonTransformingSerializer<BCounter>(serializer) {
 
     override fun transformSerialize(element: JsonElement): JsonElement {
