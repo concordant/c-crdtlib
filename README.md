@@ -1,42 +1,38 @@
-# Conflict-Free Replicated Datatypes (CRDT) library
+# Concordant Conflict-Free Replicated Datatypes (CRDT) library
 
-[![](https://gitlab.inria.fr/concordant/software/crdtlib-kotlin/badges/master/pipeline.svg)](
+[![pipeline](https://gitlab.inria.fr/concordant/software/crdtlib-kotlin/badges/master/pipeline.svg)](
 https://gitlab.inria.fr/concordant/software/crdtlib-kotlin/commits/master)
 [![License](https://img.shields.io/badge/license-MIT-green)](
 https://opensource.org/licenses/MIT)
 
 CRDT library in Kotlin for the Concordant platform API.
-This project is based on [Kotlin multiplatform feature](
-https://kotlinlang.org/docs/reference/multiplatform.html).
+This project is based on [Kotlin multiplatform feature](https://kotlinlang.org/docs/reference/multiplatform.html).
 
-The Kotlin code is compiled to both JVM Bytecode and Javascript;
-see respective Getting Started sections
-for [Java and Gradle](#java-and-gradle)
-and [JavaScript/TypeScript and NPM](#javascript-typescript-and-npm)
-below.
+The Kotlin code is compiled to both JVM Bytecode and Javascript/Typescript;
+see respective Getting Started sections for Kotlin and Gradle
+and JavaScript/TypeScript and NPM secitons below.
 
-See also the [full documentation of the master branch on GitLab pages](
-https://concordant.gitlabpages.inria.fr/software/c-crdtlib/c-crdtlib).
-
-The main repository is in [the Inria gitlab](https://gitlab.inria.fr/concordant/software/c-crdtlib/) (this is where you can post tickets).  There is an identical clone in [GitHub](https://github.com/concordant/c-crdtlib) (tickets here might be ignored).
+The full documentation is available on [our GitLab pages](https://concordant.gitlabpages.inria.fr/software/c-crdtlib/c-crdtlib).
 
 ## Getting Started
 
-This library is delivered as both a [Maven package]() and an [NPM package](https://www.npmjs.com/package/@concordant/c-crdtlib).
+This library is delivered as both a [Maven package](https://mavenlibs.com/maven/dependency/io.concordant/c-crdtlib) and an [NPM package](https://www.npmjs.compackage/@concordant/c-crdtlib).
 
 ### Kotlin and Gradle
 
 In your project configuration build file `build.gradle.kts`:
-- Ensure `mavenCentral()`
-  is listed in the `repositories{}`.
+
+- Ensure `mavenCentral()` is listed in the `repositories{}`.
 - Add the c-crdtlib Maven package as a dependency:
+
 ``` kotlin
 dependencies {
     implementation("io.concordant:c-crdtlib:x.y.z")
 }
 ```
 
-#### Usage
+#### Kotlin Usage
+
 ``` kotlin
 // consider refining to avoid wildcard import
 import crdtlib.*
@@ -87,15 +83,20 @@ fun main() {
     println(lMVReg.get())    // [L, R]
 }
 ```
+
 ### JavaScript/TypeScript and NPM
 
+The JS/TS lib is available on [NPM](https://www.npmjs.com/package/@concordant/c-crdtlib)
+
 #### Installation
+
 Install the package:
+
 ``` shell
-$ npm i @concordant/c-crdtlib
+npm i @concordant/c-crdtlib
 ```
 
-#### Usage
+#### JS/TS Usage
 
 As JavaScript does not support overloading,
 some method names differ from Kotlin names.
@@ -153,17 +154,15 @@ console.log(lMVReg.get())    // [L, R]
 ## CRDT Object API
 
 The Concordant CRDT library currently provides three main classes of CRDTs:
+
 - Counters: store an integer value which can be decremented and incremented.
 - Registers: store a string value which can be reassigned.
 - Collections: store multiple string values which can be reassigned.
 
 All object types support the following methods:
 
-* `toJson` serialises the object into a JSON string representing its current
-  state.
-* `DeltaCRDT.fromJson` takes a JSON string and converts it to an object
-  state of its corresponding type (and fails if the JSON does not parse
-  properly).
+- `toJson` serialises the object into a JSON string representing its current state.
+- `DeltaCRDT.fromJson` takes a JSON string and converts it to an object state of its corresponding type (and fails if the JSON does not parse properly).
 
 The following sections briefly describes each type specificities.
 
@@ -197,6 +196,7 @@ content can be retrieved using the `get()` method.
 ### Collections
 
 `RGA` is an ordered sequence of strings.
+
 - `insertAt(idx, elem)` inserts an element to the RGA.
 - `removeAt(idx)` removes an element.
 - `getAt(idx)` returns the element at a particular index.
@@ -212,6 +212,7 @@ denoted here by `method<TYPE>()`.
 Note that a map may contain values of different types under the same key.
 
 `LWWMap` maps strings to LWW scalar values.
+
 - `put(key, value)` adds or updates an element to the map.
 - `delete<TYPE>(key)` removes an element from the map.
 - `get<TYPE>(key)` retrieves the values associated with `key`.
@@ -226,9 +227,9 @@ are multi-values (sets).
 Specific methods are provided for each merging strategy
 (`LWW`, `MV` or `Cnt`)
 denoted here by `method<MS>()` (ex.: `getCnt(key)`).
+
 - `put<MS>(key, value)` adds or updates an element to the map.
 - `delete<MS><TYPE>(key)` removes an element from the map.
 - `get<MS><TYPE>(key)` retrieves the values associated with `key`.
 - `iterator<MS><TYPE>()` returns an iterator on the map key-value pairs.
-- `increment(key, nb)`, `decrement(key, nb)`
-  increments/decrements the corresponding PNCounter value.
+- `increment(key, nb)`, `decrement(key, nb)` increments/decrements the corresponding PNCounter value.
