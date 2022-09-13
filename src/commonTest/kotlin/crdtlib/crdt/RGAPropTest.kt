@@ -1,5 +1,7 @@
 /*
-* Copyright © 2020, Concordant and contributors.
+* MIT License
+*
+* Copyright © 2022, Concordant and contributors.
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 * associated documentation files (the "Software"), to deal in the Software without restriction,
