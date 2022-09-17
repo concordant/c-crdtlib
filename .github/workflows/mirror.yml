@@ -5,6 +5,7 @@ on: [push, delete]
 jobs:
   to_gitlab:
     runs-on: ubuntu-latest
+    if: github.repository_owner == 'Concordant'
     steps:
       - uses: actions/checkout@v2
         with:
